@@ -10,19 +10,19 @@
  *   - Signal handling for crash diagnostics (SIGSEGV, SIGABRT, etc.)
  *
  * Usage:
- *   - Define your test functions to return int (0 for pass, 1 for fail)
+ *   - Define your test functions to return int32_t (0 for pass, 1 for fail)
  *   - Use `ASSERT_*` macros for checks
- *   - Register with TEST_CASE(name) and run with `stdx_run_tests(...)`
+ *   - Register with STDX_TEST(name) and run with `stdx_run_tests(...)`
  *   - Define STDX_IMPLEMENTATION_TEST before including to enable main runner
  *
  * Example:
- *   int test_example() {
+ *   int32_t test_example() {
  *     ASSERT_TRUE(2 + 2 == 4);
  *     return 0;
  *   }
- *   int main() {
+ *   int32_t main() {
  *     STDXTestCase tests[] = {
- *       TEST_CASE(test_example)
+ *       STDX_TEST(test_example)
  *     };
  *     return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
  *   }
@@ -56,7 +56,7 @@ extern "C" {
   #endif
 #endif
 #include <stdx_log.h>
-
+#include <stdint.h>
 #include <math.h>
 
 #ifndef STDX_TEST_SUCCESS  
@@ -103,15 +103,15 @@ extern "C" {
   } \
 } while (0)
 
-typedef int (*STDXTestFunction)();
+typedef int32_t (*STDXTestFunction)();
 
 typedef struct
 {
-  const char *name;
+  const int8_t *name;
   STDXTestFunction func;
 } STDXTestCase;
 
-#define TEST_CASE(name) {#name, name}
+#define STDX_TEST(name) {#name, name}
 
 #ifdef STDX_IMPLEMENTATION_TEST
 
@@ -119,15 +119,15 @@ typedef struct
 #include <signal.h>
 static void x_test_internalOnSignal(int signal)
 {
-  const char* signalName = "Unknown signal";
+  const int8_t* signalName = "Unknown signal";
   switch(signal)
   {
-    case SIGABRT: signalName = (const char*) "SIGABRT"; break;
-    case SIGFPE:  signalName = (const char*) "SIGFPE"; break;
-    case SIGILL:  signalName = (const char*) "SIGILL"; break;
-    case SIGINT:  signalName = (const char*) "SIGINT"; break;
-    case SIGSEGV: signalName = (const char*) "SIGSEGV"; break;
-    case SIGTERM: signalName = (const char*) "SIGTERM"; break;
+    case SIGABRT: signalName = (const int8_t*) "SIGABRT"; break;
+    case SIGFPE:  signalName = (const int8_t*) "SIGFPE"; break;
+    case SIGILL:  signalName = (const int8_t*) "SIGILL"; break;
+    case SIGINT:  signalName = (const int8_t*) "SIGINT"; break;
+    case SIGSEGV: signalName = (const int8_t*) "SIGSEGV"; break;
+    case SIGTERM: signalName = (const int8_t*) "SIGTERM"; break;
   }
 
   fflush(stderr);
@@ -135,7 +135,7 @@ static void x_test_internalOnSignal(int signal)
   x_log_error("\n[!!!!]  Test Crashed! %s", signalName);
 }
 
-int stdx_run_tests(STDXTestCase* tests, unsigned int num_tests)
+int stdx_run_tests(STDXTestCase* tests, int32_t num_tests)
 { 
   signal(SIGABRT, x_test_internalOnSignal);
   signal(SIGFPE,  x_test_internalOnSignal);
@@ -144,12 +144,12 @@ int stdx_run_tests(STDXTestCase* tests, unsigned int num_tests)
   signal(SIGSEGV, x_test_internalOnSignal);
   signal(SIGTERM, x_test_internalOnSignal);
 
-  int passed = 0; 
-  for (unsigned int i = 0; i < num_tests; ++i)
+  int32_t passed = 0; 
+  for (int32_t i = 0; i < num_tests; ++i)
   {
     fflush(stdout);
 
-    int result = tests[i].func();
+    int32_t result = tests[i].func();
     if (result == 0)
     {
       XLOG_WHITE(" [", 0);

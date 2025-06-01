@@ -216,20 +216,20 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    TEST_CASE(test_x_array_create),
-    TEST_CASE(test_x_array_add),
-    TEST_CASE(test_x_array_insert),
-    TEST_CASE(test_x_array_get),
-    TEST_CASE(test_x_array_get_data),
-    TEST_CASE(test_x_array_count),
-    TEST_CASE(test_x_array_capacity),
-    TEST_CASE(test_x_array_delete_range),
-    TEST_CASE(test_x_array_clear),
-    TEST_CASE(test_x_array_delete_at),
-    TEST_CASE(test_x_array_push_and_top),
-    TEST_CASE(test_x_array_push_multiple),
-    TEST_CASE(test_x_array_pop),
-    TEST_CASE(test_x_array_is_empty),
+    STDX_TEST(test_x_array_create),
+    STDX_TEST(test_x_array_add),
+    STDX_TEST(test_x_array_insert),
+    STDX_TEST(test_x_array_get),
+    STDX_TEST(test_x_array_get_data),
+    STDX_TEST(test_x_array_count),
+    STDX_TEST(test_x_array_capacity),
+    STDX_TEST(test_x_array_delete_range),
+    STDX_TEST(test_x_array_clear),
+    STDX_TEST(test_x_array_delete_at),
+    STDX_TEST(test_x_array_push_and_top),
+    STDX_TEST(test_x_array_push_multiple),
+    STDX_TEST(test_x_array_pop),
+    STDX_TEST(test_x_array_is_empty),
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

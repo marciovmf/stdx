@@ -10,7 +10,7 @@
  *   - A thread pool for concurrent task execution
  *
  * Designed to abstract platform-specific APIs (e.g., pthreads, Win32)
- * behind a consistent and lightweight interface.
+ * behind a consistent and lightweight int32_terface.
  *
  * To compile the implementation, define:
  *     #define STDX_IMPLEMENTATION_THREAD
@@ -35,6 +35,7 @@ extern "C" {
 
 #define STDX_THREADING_VERSION (STDX_THREADING_VERSION_MAJOR * 10000 + STDX_THREADING_VERSION_MINOR * 100 + STDX_THREADING_VERSION_PATCH)
 
+#include <stdint.h>
 
   typedef struct XXThread XThread;
   typedef struct XXMutex XMutex;
@@ -48,7 +49,7 @@ extern "C" {
   // Basic thread operations
   // ---------------------------------------------------------------------------
 
-  int   x_thread_create(XThread** t, x_thread_func_t func, void* arg);
+  int32_t   x_thread_create(XThread** t, x_thread_func_t func, void* arg);
   void  x_thread_join(XThread* t);
   void  x_thread_destroy(XThread* t);
 
@@ -56,11 +57,11 @@ extern "C" {
   // Thread Synchronization
   // ---------------------------------------------------------------------------
 
-  int   x_thread_mutex_init(XMutex** m);
+  int32_t   x_thread_mutex_init(XMutex** m);
   void  x_thread_mutex_lock(XMutex* m);
   void  x_thread_mutex_unlock(XMutex* m);
   void  x_thread_mutex_destroy(XMutex* m);
-  int   x_thread_condvar_init(XCondVar** cv);
+  int32_t   x_thread_condvar_init(XCondVar** cv);
   void  x_thread_condvar_wait(XCondVar* cv, XMutex* m);
   void  x_thread_condvar_signal(XCondVar* cv);
   void  x_thread_condvar_broadcast(XCondVar* cv);
@@ -74,7 +75,7 @@ extern "C" {
   // ---------------------------------------------------------------------------
 
   XThreadPool* threadpool_create(int num_threads);
-  int threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
+  int32_t threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
   void threadpool_destroy(XThreadPool* pool);
 
 
@@ -106,7 +107,7 @@ extern "C" {
     return (DWORD)(uintptr_t)result;
   }
 
-  int x_thread_create(XThread** t, x_thread_func_t func, void* arg)
+  int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg)
   {
     if (!t || !func) return -1;
     *t = malloc(sizeof(XThread));
@@ -130,7 +131,7 @@ extern "C" {
     if (t) free(t);
   }
 
-  int x_thread_mutex_init(XMutex** m)
+  int32_t x_thread_mutex_init(XMutex** m)
   {
     *m = malloc(sizeof(XMutex));
     InitializeCriticalSection(&(*m)->cs);
@@ -153,7 +154,7 @@ extern "C" {
     free(m);
   }
 
-  int x_thread_condvar_init(XCondVar** cv)
+  int32_t x_thread_condvar_init(XCondVar** cv)
   {
     *cv = malloc(sizeof(XCondVar));
     InitializeConditionVariable(&(*cv)->cv);
@@ -201,7 +202,7 @@ extern "C" {
   struct mutex  { px_thread_XMutex m; };
   struct condvar { px_thread_cond_t cv; };
 
-  int x_thread_create(XThread** t, x_thread_func_t func, void* arg)
+  int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg)
   {
     if (!t || !func) return -1;
     *t = malloc(sizeof(XThread));
@@ -220,7 +221,7 @@ extern "C" {
     if (t) free(t);
   }
 
-  int x_thread_mutexinit(XMutex** m) {
+  int32_t x_thread_mutexinit(XMutex** m) {
     *m = malloc(sizeof(XMutex));
     px_thread_x_thread_mutexinit(&(*m)->m, NULL);
     return 0;
@@ -230,7 +231,7 @@ extern "C" {
   {
     px_thread_x_thread_mutexlock(&m->m);
   }
- 
+
   void x_thread_mutex_unlock(XMutex* m)
   {
     px_thread_x_thread_mutexunlock(&m->m);
@@ -242,7 +243,7 @@ extern "C" {
     free(m);
   }
 
-  int x_thread_condvar_init(XCondVar** cv)
+  int32_t x_thread_condvar_init(XCondVar** cv)
   {
     *cv = malloc(sizeof(XCondVar));
     px_thread_cond_init(&(*cv)->cv, NULL);
@@ -258,7 +259,7 @@ extern "C" {
   {
     px_thread_cond_signal(&cv->cv);
   }
-  
+
   void x_thread_condvar_broadcast(XCondVar* cv)
   {
     px_thread_cond_broadcast(&cv->cv);
@@ -299,7 +300,7 @@ extern "C" {
   {
     uint32_t magic;
     XThread** threads;
-    int num_threads;
+    int32_t num_threads;
 
     XTask* head;
     XTask* tail;
@@ -364,7 +365,7 @@ extern "C" {
     return pool;
   }
 
-  int threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg)
+  int32_t threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg)
   {
     if (!fn || !pool || pool->magic != THREADPOOL_MAGIC) return -1;
 

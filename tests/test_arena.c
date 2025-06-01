@@ -98,13 +98,13 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    TEST_CASE(test_x_arena_create_destroy),
-    TEST_CASE(test_x_arena_simple_alloc),
-    TEST_CASE(test_x_arena_multi_alloc_same_chunk),
-    TEST_CASE(test_x_arena_alloc_triggers_new_chunk),
-    TEST_CASE(test_x_arena_alloc_large_block),
-    TEST_CASE(test_x_arena_reset_allows_reuse),
-    TEST_CASE(test_x_arena_null_and_zero_alloc)
+    STDX_TEST(test_x_arena_create_destroy),
+    STDX_TEST(test_x_arena_simple_alloc),
+    STDX_TEST(test_x_arena_multi_alloc_same_chunk),
+    STDX_TEST(test_x_arena_alloc_triggers_new_chunk),
+    STDX_TEST(test_x_arena_alloc_large_block),
+    STDX_TEST(test_x_arena_reset_allows_reuse),
+    STDX_TEST(test_x_arena_null_and_zero_alloc)
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

@@ -60,7 +60,7 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    TEST_CASE(test_producer_consumer),
+    STDX_TEST(test_producer_consumer),
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

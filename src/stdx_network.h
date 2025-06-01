@@ -33,7 +33,6 @@ extern "C"
 {
 #endif
 
-
 #define STDX_NETWORK_VERSION_MAJOR 1
 #define STDX_NETWORK_VERSION_MINOR 0
 #define STDX_NETWORK_VERSION_PATCH 0
@@ -48,7 +47,7 @@ extern "C"
 #include <winsock2.h>
 #include <ws2tcpip.h>
   typedef SOCKET XSocket;
-  typedef int socklen_t;
+  typedef int32_t socklen_t;
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -57,13 +56,13 @@ extern "C"
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-  typedef int XSocket;
+  typedef int32_t XSocket;
 #define INVALID_SOCKET (-1)
 #endif
 
   typedef struct
   {
-    int family;
+    int32_t family;
     socklen_t addrlen;
     struct sockaddr_storage addr;
   } XAddress;
@@ -82,20 +81,20 @@ extern "C"
 
   typedef struct
   {
-    char name[128];
+    int8_t name[128];
   } XNetAdapter;
 
   typedef struct
   {
-    char name[128];
-    char description[256];
-    char mac[18];      // MAC address XX:XX:XX:XX:XX:XX
-    char ipv4[16];     // IPv4 address
-    char ipv6[46];     // IPv6 address
+    int8_t name[128];
+    int8_t description[256];
+    int8_t mac[18];      // MAC address XX:XX:XX:XX:XX:XX
+    int8_t ipv4[16];     // IPv4 address
+    int8_t ipv6[46];     // IPv6 address
     uint64_t speed_bps;// Link speed in bits per second (if known)
     bool is_wireless;  //
-    int mtu;           // MTU size
-    unsigned int ifindex;
+    int32_t mtu;           // MTU size
+    uint32_t ifindex;
   } XNetAdapterInfo;
 
   // Core
@@ -103,7 +102,7 @@ extern "C"
   void x_net_shutdown(void);                                    // Clean up the networking subsystem.
   bool x_net_socket_is_valid(XSocket sock);                    // Check if a socket is valid.
   void x_net_close(XSocket sock);                               // Close a socket.
-  int  x_net_set_nonblocking(XSocket sock, int nonblocking);    // Enable or disable non-blocking mode.
+  int32_t  x_net_set_nonblocking(XSocket sock, int32_t nonblocking);    // Enable or disable non-blocking mode.
 
   // Socket Creation
   XSocket x_net_socket(XAddressFamily family, XSocketType type); // Create a socket with specified family and type.
@@ -117,9 +116,9 @@ extern "C"
   bool x_net_bind_any(XSocket sock, XAddressFamily family, uint16_t port); // Bind socket to any local address of a given family.
   bool x_net_bind_any_udp(XSocket sock);                        // Bind UDP socket to any IPv4 address.
   bool x_net_bind_any_udp6(XSocket sock);                       // Bind UDP socket to any IPv6 address.
-  bool x_net_listen(XSocket sock, int backlog);                 // Mark socket as listening for connections.
+  bool x_net_listen(XSocket sock, int32_t backlog);                 // Mark socket as listening for connections.
   XSocket x_net_accept(XSocket sock, XAddress* out_addr);       // Accept an incoming connection.
-  int x_net_connect(XSocket sock, const XAddress* addr);        // Connect to a remote address.
+  int32_t x_net_connect(XSocket sock, const XAddress* addr);        // Connect to a remote address.
 
   // Send/Receive
   size_t x_net_send(XSocket sock, const void* buf, size_t len);     // Send data on a connected socket.
@@ -128,28 +127,28 @@ extern "C"
   size_t x_net_recvfrom(XSocket sock, void* buf, size_t len, XAddress* out_addr);      // Receive data from a socket and get sender's address.
 
   // Polling
-  int   x_net_select(XSocket* read_sockets, int read_count, int timeout_ms); // Wait for readability on multiple sockets.
-  int   x_net_poll(XSocket sock, int events, int timeout_ms);   // Wait for specific events on a socket.
+  int32_t   x_net_select(XSocket* read_sockets, int32_t read_count, int32_t timeout_ms); // Wait for readability on multiple sockets.
+  int32_t   x_net_poll(XSocket sock, int32_t events, int32_t timeout_ms);   // Wait for specific events on a socket.
 
   // Address Utilities
-  bool  x_net_resolve(const char* host, const char* port, XAddressFamily family, XAddress* out_addr); // Resolve hostname and port to address.
-  int   x_net_parse_ip(XAddressFamily family, const char* ip, void* out_addr); // Parse IP string into raw address.
-  int   x_net_format_address(const XAddress* addr, char* out_str, int maxlen); // Format address as a string.
+  bool  x_net_resolve(const int8_t* host, const int8_t* port, XAddressFamily family, XAddress* out_addr); // Resolve hostname and port to address.
+  int32_t   x_net_parse_ip(XAddressFamily family, const int8_t* ip, void* out_addr); // Parse IP string into raw address.
+  int32_t   x_net_format_address(const XAddress* addr, char* out_str, int32_t maxlen); // Format address as a string.
 
   void  x_net_address_clear(XAddress* addr); // Clear the XAddress struct (zero it out).
-  void  x_net_address_any(XAddress* out_addr, int family, uint16_t port); // Create "any" address for binding.
-  int   x_net_address_from_ip_port(const char* ip, uint16_t port, XAddress* out_addr); // Parse IP and port into XAddress.
-  int   x_net_address_equal(const XAddress* a, const XAddress* b); // Compare two XAddress values.
-  int   x_net_address_to_string(const XAddress* addr, char* buf, int buf_len); // Format XAddress to string (IP:port).
+  void  x_net_address_any(XAddress* out_addr, int32_t family, uint16_t port); // Create "any" address for binding.
+  int32_t   x_net_address_from_ip_port(const int8_t* ip, uint16_t port, XAddress* out_addr); // Parse IP and port into XAddress.
+  int32_t   x_net_address_equal(const XAddress* a, const XAddress* b); // Compare two XAddress values.
+  int32_t   x_net_address_to_string(const XAddress* addr, char* buf, int32_t buf_len); // Format XAddress to string (IP:port).
 
   // DNS
-  int   x_net_dns_resolve(const char* hostname, XAddressFamily family, XAddress* out_addr); // Resolve hostname to address.
+  int32_t   x_net_dns_resolve(const int8_t* hostname, XAddressFamily family, XAddress* out_addr); // Resolve hostname to address.
 
   // Multicast
-  bool  x_net_join_multicast_ipv4(XSocket sock, const char* group); // Join an IPv4 multicast group.
-  bool  x_net_leave_multicast_ipv4(XSocket sock, const char* group); // Leave an IPv4 multicast group.
-  bool  x_net_join_multicast_ipv6(XSocket sock, const char* multicast_ip, unsigned int ifindex); // Join an IPv6 multicast group.
-  bool  x_net_leave_multicast_ipv6(XSocket sock, const char* multicast_ip, unsigned int ifindex); // Leave an IPv6 multicast group.
+  bool  x_net_join_multicast_ipv4(XSocket sock, const int8_t* group); // Join an IPv4 multicast group.
+  bool  x_net_leave_multicast_ipv4(XSocket sock, const int8_t* group); // Leave an IPv4 multicast group.
+  bool  x_net_join_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex); // Join an IPv6 multicast group.
+  bool  x_net_leave_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex); // Leave an IPv6 multicast group.
   bool  x_net_join_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr); // Join an IPv4 multicast group (using address struct).
   bool  x_net_leave_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr); // Leave an IPv4 multicast group (using address struct).
 
@@ -157,13 +156,13 @@ extern "C"
   bool  x_net_enable_broadcast(XSocket sock, bool enable); // Enable or disable broadcast on a socket.
 
   // Adapter information
-  int   x_net_get_adapter_count(void); // Returns the number of network adapters on the system, or -1 on error.
-  int   x_net_list_adapters(XNetAdapter* out_adapters, int max_adapters); // List all available network adapters. Returns the number found, or -1 on error.
-  bool  x_net_get_adapter_info(const char* name, XNetAdapterInfo* out_info); // Get detailed information about an adapter by name. Returns 0 on success, -1 on error.
+  int32_t   x_net_get_adapter_count(void); // Returns the number of network adapters on the system, or -1 on error.
+  int32_t   x_net_list_adapters(XNetAdapter* out_adapters, int32_t max_adapters); // List all available network adapters. Returns the number found, or -1 on error.
+  bool  x_net_get_adapter_info(const int8_t* name, XNetAdapterInfo* out_info); // Get detailed information about an adapter by name. Returns 0 on success, -1 on error.
 
   // Error handling
-  int   x_net_get_last_error(void); // Returns the last network error code for the current thread/process. On Windows, this returns WSAGetLastError(). On POSIX, it returns errno.
-  int   x_net_get_last_error_message(char* buf, int buf_len);   // Writes a human-readable error message for the last network error into `buf`. Returns 0 on success, or -1 on failure (e.g., buffer too small).
+  int32_t   x_net_get_last_error(void); // Returns the last network error code for the current thread/process. On Windows, this returns WSAGetLastError(). On POSIX, it returns errno.
+  int32_t   x_net_get_last_error_message(char* buf, int32_t buf_len);   // Writes a human-readable error message for the last network error into `buf`. Returns 0 on success, or -1 on failure (e.g., buffer too small).
 
 
 #ifdef STDX_IMPLEMENTATION_NETWORK
@@ -205,7 +204,7 @@ extern "C"
 #if defined(_WIN32)
     if (x_net_initialized) return true;
     WSADATA wsaData;
-    int r = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    int32_t r = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (r == 0) x_net_initialized = true;
     return true;
 #else
@@ -242,14 +241,14 @@ extern "C"
 #endif
   }
 
-  int x_net_set_nonblocking(XSocket sock, int nonblocking)
+  int32_t x_net_set_nonblocking(XSocket sock, int32_t nonblocking)
   {
 #if defined(_WIN32)
     u_long mode = nonblocking ? 1 : 0;
     return ioctlsocket(sock, FIONBIO, &mode);
 #else
 
-    int flags = fcntl(sock, F_GETFL, 0);
+    int32_t flags = fcntl(sock, F_GETFL, 0);
     if (flags < 0) return -1;
     if (nonblocking)
       flags |= O_NONBLOCK;
@@ -260,7 +259,7 @@ extern "C"
   }
 
   // Socket Creation
-  static int x_net_family_to_af(XAddressFamily family)
+  static int32_t x_net_family_to_af(XAddressFamily family)
   {
     switch(family)
     {
@@ -270,7 +269,7 @@ extern "C"
     }
   }
 
-  static int x_net_type_to_socktype(XSocketType type)
+  static int32_t x_net_type_to_socktype(XSocketType type)
   {
     switch(type)
     {
@@ -282,8 +281,8 @@ extern "C"
 
   XSocket x_net_socket(XAddressFamily family, XSocketType type)
   {
-    int af = x_net_family_to_af(family);
-    int st = x_net_type_to_socktype(type);
+    int32_t af = x_net_family_to_af(family);
+    int32_t st = x_net_type_to_socktype(type);
     XSocket s = socket(af, st, 0);
     return s;
   }
@@ -330,7 +329,7 @@ extern "C"
     return x_net_bind_any(sock, X_NET_AF_IPV6, 0);
   }
 
-  bool x_net_listen(XSocket sock, int backlog)
+  bool x_net_listen(XSocket sock, int32_t backlog)
   {
     return listen(sock, backlog) == 0;
   }
@@ -347,7 +346,7 @@ extern "C"
     return client;
   }
 
-  int x_net_connect(XSocket sock, const XAddress* addr)
+  int32_t x_net_connect(XSocket sock, const XAddress* addr)
   {
     return connect(sock, (const struct sockaddr*)&addr->addr, addr->addrlen);
   }
@@ -355,7 +354,7 @@ extern "C"
   size_t x_net_send(XSocket sock, const void* buf, size_t len)
   {
     size_t sent = 
-      send(sock, (const char*)buf,
+      send(sock, (const int8_t*)buf,
           (int) len, 0);
     return sent;
   }
@@ -368,7 +367,7 @@ extern "C"
 
   size_t x_net_sendto(XSocket sock, const void* buf, size_t len, const XAddress* addr)
   {
-    size_t sent = sendto(sock, (const char*)buf, (int) len, 0, (const struct sockaddr*)&addr->addr, addr->addrlen);
+    size_t sent = sendto(sock, (const int8_t*)buf, (int) len, 0, (const struct sockaddr*)&addr->addr, addr->addrlen);
     return sent;
   }
 
@@ -384,7 +383,7 @@ extern "C"
     return recvd;
   }
 
-  int x_net_select(XSocket* read_sockets, int read_count, int timeout_ms)
+  int32_t x_net_select(XSocket* read_sockets, int32_t read_count, int32_t timeout_ms)
   {
     if (read_count <= 0 || read_sockets == NULL) return -1;
 
@@ -406,14 +405,14 @@ extern "C"
     }
 
 #if defined(_WIN32)
-    int r = select(0, &readfds, NULL, NULL, (timeout_ms >= 0) ? &tv : NULL);
+    int32_t r = select(0, &readfds, NULL, NULL, (timeout_ms >= 0) ? &tv : NULL);
 #else
-    int r = select((int)(maxfd + 1), &readfds, NULL, NULL, (timeout_ms >= 0) ? &tv : NULL);
+    int32_t r = select((int)(maxfd + 1), &readfds, NULL, NULL, (timeout_ms >= 0) ? &tv : NULL);
 #endif
 
     if (r <= 0) return r;
 
-    int ready_count = 0;
+    int32_t ready_count = 0;
     for (int i = 0; i < read_count; i++)
     {
       if (FD_ISSET(read_sockets[i], &readfds))
@@ -422,7 +421,7 @@ extern "C"
     return ready_count;
   }
 
-  int x_net_poll(XSocket sock, int events, int timeout_ms)
+  int32_t x_net_poll(XSocket sock, int32_t events, int32_t timeout_ms)
   {
 #if defined(_WIN32)
     WSAPOLLFD pfd;
@@ -430,9 +429,9 @@ extern "C"
     pfd.events = 0;
     if (events & X_NET_POLLIN) pfd.events |= POLLRDNORM;
     if (events & X_NET_POLLOUT) pfd.events |= POLLWRNORM;
-    int ret = WSAPoll(&pfd, 1, timeout_ms);
+    int32_t ret = WSAPoll(&pfd, 1, timeout_ms);
     if (ret <= 0) return ret;
-    int result = 0;
+    int32_t result = 0;
     if (pfd.revents & POLLRDNORM) result |= X_NET_POLLIN;
     if (pfd.revents & POLLWRNORM) result |= X_NET_POLLOUT;
     return result;
@@ -442,9 +441,9 @@ extern "C"
     pfd.events = 0;
     if (events & X_NET_POLLIN) pfd.events |= POLLIN;
     if (events & X_NET_POLLOUT) pfd.events |= POLLOUT;
-    int ret = poll(&pfd, 1, timeout_ms);
+    int32_t ret = poll(&pfd, 1, timeout_ms);
     if (ret <= 0) return ret;
-    int result = 0;
+    int32_t result = 0;
     if (pfd.revents & POLLIN) result |= X_NET_POLLIN;
     if (pfd.revents & POLLOUT) result |= X_NET_POLLOUT;
     return result;
@@ -457,7 +456,7 @@ extern "C"
     memset(addr, 0, sizeof(*addr));
   }
 
-  void x_net_address_any(XAddress* out_addr, int family, uint16_t port)
+  void x_net_address_any(XAddress* out_addr, int32_t family, uint16_t port)
   {
     x_net_address_clear(out_addr);
     if (family == X_NET_AF_IPV4)
@@ -482,7 +481,7 @@ extern "C"
     }
   }
 
-  int x_net_address_from_ip_port(const char* ip, uint16_t port, XAddress* out_addr)
+  int32_t x_net_address_from_ip_port(const int8_t* ip, uint16_t port, XAddress* out_addr)
   {
     if (!ip || !out_addr) return -1;
     x_net_address_clear(out_addr);
@@ -492,10 +491,10 @@ extern "C"
     hints.ai_family = AF_UNSPEC; // IPv4 or IPv6
     hints.ai_socktype = SOCK_STREAM;
 
-    char port_str[16];
+    int8_t port_str[16];
     snprintf(port_str, sizeof(port_str), "%u", port);
 
-    int err = getaddrinfo(ip, port_str, &hints, &res);
+    int32_t err = getaddrinfo(ip, port_str, &hints, &res);
     if (err != 0 || !res)
     {
       return -1;
@@ -509,7 +508,7 @@ extern "C"
     return 0;
   }
 
-  int x_net_address_equal(const XAddress* a, const XAddress* b)
+  int32_t x_net_address_equal(const XAddress* a, const XAddress* b)
   {
     if (!a || !b) return 0;
     if (a->family != b->family) return 0;
@@ -530,10 +529,10 @@ extern "C"
     return 0;
   }
 
-  int x_net_address_to_string(const XAddress* addr, char* buf, int buf_len)
+  int32_t x_net_address_to_string(const XAddress* addr, char* buf, int32_t buf_len)
   {
     if (!addr || !buf || buf_len <= 0) return -1;
-    char ipstr[INET6_ADDRSTRLEN];
+    int8_t ipstr[INET6_ADDRSTRLEN];
     uint16_t port = 0;
 
     if (addr->family == AF_INET)
@@ -552,7 +551,7 @@ extern "C"
     return -1;
   }
 
-  bool x_net_resolve(const char* host, const char* port, XAddressFamily family, XAddress* out_addr)
+  bool x_net_resolve(const int8_t* host, const int8_t* port, XAddressFamily family, XAddress* out_addr)
   {
     if (!host || !port || !out_addr) return -1;
     struct addrinfo hints, *res = NULL;
@@ -562,7 +561,7 @@ extern "C"
       (family == X_NET_AF_IPV6) ? AF_INET6 : AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
 
-    int err = getaddrinfo(host, port, &hints, &res);
+    int32_t err = getaddrinfo(host, port, &hints, &res);
     if (err != 0 || !res) return false;
 
     memcpy(&out_addr->addr, res->ai_addr, res->ai_addrlen);
@@ -573,53 +572,53 @@ extern "C"
     return true;
   }
 
-  int x_net_parse_ip(XAddressFamily family, const char* ip, void* out_addr)
+  int32_t x_net_parse_ip(XAddressFamily family, const int8_t* ip, void* out_addr)
   {
     if (!ip || !out_addr) return -1;
-    int af = (family == X_NET_AF_IPV4) ? AF_INET : AF_INET6;
+    int32_t af = (family == X_NET_AF_IPV4) ? AF_INET : AF_INET6;
     return inet_pton(af, ip, out_addr) == 1 ? 0 : -1;
   }
 
-  int x_net_format_address(const XAddress* addr, char* out_str, int maxlen)
+  int32_t x_net_format_address(const XAddress* addr, char* out_str, int32_t maxlen)
   {
     return x_net_address_to_string(addr, out_str, maxlen) != -1;
   }
 
-  int x_net_dns_resolve(const char* hostname, XAddressFamily family, XAddress* out_addr)
+  int32_t x_net_dns_resolve(const int8_t* hostname, XAddressFamily family, XAddress* out_addr)
   {
     return x_net_resolve(hostname, "0", family, out_addr);
   }
 
-  bool x_net_join_multicast_ipv4(XSocket sock, const char* group)
+  bool x_net_join_multicast_ipv4(XSocket sock, const int8_t* group)
   {
     struct ip_mreq mreq;
     if (inet_pton(AF_INET, group, &mreq.imr_multiaddr) != 1) return -1;
     mreq.imr_interface.s_addr = INADDR_ANY;
-    return setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const char*)&mreq, sizeof(mreq)) == 0;
+    return setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const int8_t*)&mreq, sizeof(mreq)) == 0;
   }
 
-  bool x_net_leave_multicast_ipv4(XSocket sock, const char* group)
+  bool x_net_leave_multicast_ipv4(XSocket sock, const int8_t* group)
   {
     struct ip_mreq mreq;
     if (inet_pton(AF_INET, group, &mreq.imr_multiaddr) != 1) return -1;
     mreq.imr_interface.s_addr = INADDR_ANY;
-    return setsockopt(sock, IPPROTO_IP, IP_DROP_MEMBERSHIP, (const char*)&mreq, sizeof(mreq)) == 0;
+    return setsockopt(sock, IPPROTO_IP, IP_DROP_MEMBERSHIP, (const int8_t*)&mreq, sizeof(mreq)) == 0;
   }
 
-  bool x_net_join_multicast_ipv6(XSocket sock, const char* multicast_ip, unsigned int ifindex)
+  bool x_net_join_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex)
   {
     struct ipv6_mreq mreq;
     if (inet_pton(AF_INET6, multicast_ip, &mreq.ipv6mr_multiaddr) != 1) return -1;
     mreq.ipv6mr_interface = ifindex;
-    return setsockopt(sock, IPPROTO_IPV6, IPV6_JOIN_GROUP, (const char*)&mreq, sizeof(mreq)) == 0;
+    return setsockopt(sock, IPPROTO_IPV6, IPV6_JOIN_GROUP, (const int8_t*)&mreq, sizeof(mreq)) == 0;
   }
 
-  bool x_net_leave_multicast_ipv6(XSocket sock, const char* multicast_ip, unsigned int ifindex)
+  bool x_net_leave_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex)
   {
     struct ipv6_mreq mreq;
     if (inet_pton(AF_INET6, multicast_ip, &mreq.ipv6mr_multiaddr) != 1) return -1;
     mreq.ipv6mr_interface = ifindex;
-    return setsockopt(sock, IPPROTO_IPV6, IPV6_LEAVE_GROUP, (const char*)&mreq, sizeof(mreq)) == 0;
+    return setsockopt(sock, IPPROTO_IPV6, IPV6_LEAVE_GROUP, (const int8_t*)&mreq, sizeof(mreq)) == 0;
   }
 
   bool x_net_join_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr)
@@ -628,7 +627,7 @@ extern "C"
     struct ip_mreq mreq;
     mreq.imr_multiaddr = ((struct sockaddr_in*)&group_addr->addr)->sin_addr;
     mreq.imr_interface.s_addr = INADDR_ANY;
-    return setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const char*)&mreq, sizeof(mreq)) == 0;
+    return setsockopt(sock, IPPROTO_IP, IP_ADD_MEMBERSHIP, (const int8_t*)&mreq, sizeof(mreq)) == 0;
   }
 
   bool x_net_leave_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr)
@@ -637,20 +636,20 @@ extern "C"
     struct ip_mreq mreq;
     mreq.imr_multiaddr = ((struct sockaddr_in*)&group_addr->addr)->sin_addr;
     mreq.imr_interface.s_addr = INADDR_ANY;
-    return setsockopt(sock, IPPROTO_IP, IP_DROP_MEMBERSHIP, (const char*)&mreq, sizeof(mreq)) == 0;
+    return setsockopt(sock, IPPROTO_IP, IP_DROP_MEMBERSHIP, (const int8_t*)&mreq, sizeof(mreq)) == 0;
   }
 
   bool x_net_enable_broadcast(XSocket sock, bool enable)
   {
-    int val = enable ? 1 : 0;
-    return setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const char*)&val, sizeof(val)) == 0;
+    int32_t val = enable ? 1 : 0;
+    return setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (const int8_t*)&val, sizeof(val)) == 0;
   }
 
   // Adapter info functions: platform-specific stubs (return -1 to indicate not implemented)
 
 #if defined(_WIN32)
 
-  int x_net_get_adapter_count_win32(void)
+  int32_t x_net_get_adapter_count_win32(void)
   {
     ULONG size = 0;
     DWORD ret = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &size);
@@ -666,7 +665,7 @@ extern "C"
       return -1;
     }
 
-    int count = 0;
+    int32_t count = 0;
     IP_ADAPTER_ADDRESSES* adapter = adapters;
     while (adapter)
     {
@@ -677,7 +676,7 @@ extern "C"
     return count;
   }
 
-  int x_net_list_adapters_win32(XNetAdapter* out_adapters, int max_adapters)
+  int32_t x_net_list_adapters_win32(XNetAdapter* out_adapters, int32_t max_adapters)
   {
     ULONG size = 0;
     DWORD ret = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &size);
@@ -693,7 +692,7 @@ extern "C"
       return -1;
     }
 
-    int count = 0;
+    int32_t count = 0;
     IP_ADAPTER_ADDRESSES* adapter = adapters;
     while (adapter && count < max_adapters)
     {
@@ -706,7 +705,7 @@ extern "C"
     return count;
   }
 
-  int x_net_get_adapter_info_win32(const char* name, XNetAdapterInfo* out_info)
+  int32_t x_net_get_adapter_info_win32(const int8_t* name, XNetAdapterInfo* out_info)
   {
     if (!name || !out_info) return -1;
 
@@ -737,7 +736,7 @@ extern "C"
         out_info->ifindex = (int)adapter->IfIndex;
         out_info->speed_bps = adapter->TransmitLinkSpeed;
         // Convert description from WCHAR to char
-        int desc_len = WideCharToMultiByte(CP_UTF8, 0, adapter->Description, -1, out_info->description, sizeof(out_info->description), NULL, NULL);
+        int32_t desc_len = WideCharToMultiByte(CP_UTF8, 0, adapter->Description, -1, out_info->description, sizeof(out_info->description), NULL, NULL);
         if (desc_len == 0) out_info->description[0] = '\0';
 
         // MAC address
@@ -760,7 +759,7 @@ extern "C"
         while (addr)
         {
           SOCKADDR* sockaddr = addr->Address.lpSockaddr;
-          char buf[INET6_ADDRSTRLEN] =
+          int8_t buf[INET6_ADDRSTRLEN] =
           {0};
           if (sockaddr->sa_family == AF_INET)
           {
@@ -789,14 +788,14 @@ extern "C"
 
 #else
 
-  int x_net_get_adapter_count_posix(void)
+  int32_t x_net_get_adapter_count_posix(void)
   {
     struct ifaddrs* ifaddr;
     if (getifaddrs(&ifaddr) == -1) return -1;
 
-    int count = 0;
+    int32_t count = 0;
     struct ifaddrs* ifa = ifaddr;
-    char last_name[IFNAMSIZ] =
+    int8_t last_name[IFNAMSIZ] =
     {0};
     while (ifa)
     {
@@ -812,13 +811,13 @@ extern "C"
     return count;
   }
 
-  int x_net_list_adapters_posix(XNetAdapter* out_adapters, int max_adapters)
+  int32_t x_net_list_adapters_posix(XNetAdapter* out_adapters, int32_t max_adapters)
   {
     struct ifaddrs* ifaddr;
     if (getifaddrs(&ifaddr) == -1) return -1;
 
-    int count = 0;
-    char last_name[IFNAMSIZ] =
+    int32_t count = 0;
+    int8_t last_name[IFNAMSIZ] =
     {0};
 
     struct ifaddrs* ifa = ifaddr;
@@ -838,7 +837,7 @@ extern "C"
     return count;
   }
 
-  int x_net_get_adapter_info_posix(const char* name, XNetAdapterInfo* out_info)
+  int32_t x_net_get_adapter_info_posix(const int8_t* name, XNetAdapterInfo* out_info)
   {
     if (!name || !out_info) return -1;
 
@@ -849,7 +848,7 @@ extern "C"
     strncpy(out_info->name, name, sizeof(out_info->name) - 1);
 
     // MAC address retrieval via SIOCGIFHWADDR (socket ioctl)
-    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    int32_t sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock < 0)
     {
       freeifaddrs(ifaddr);
@@ -861,7 +860,7 @@ extern "C"
     strncpy(ifr.ifr_name, name, IFNAMSIZ - 1);
     if (ioctl(sock, SIOCGIFHWADDR, &ifr) == 0)
     {
-      unsigned char* mac = (unsigned char*)ifr.ifr_hwaddr.sa_data;
+      uint8_t* mac = (uint8_t*)ifr.ifr_hwaddr.sa_data;
       snprintf(out_info->mac, sizeof(out_info->mac), "%02X:%02X:%02X:%02X:%02X:%02X",
           mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
     } else
@@ -876,8 +875,8 @@ extern "C"
     {
       if (ifa->ifa_name && strcmp(ifa->ifa_name, name) == 0 && ifa->ifa_addr)
       {
-        int family = ifa->ifa_addr->sa_family;
-        char buf[INET6_ADDRSTRLEN] =
+        int32_t family = ifa->ifa_addr->sa_family;
+        int8_t buf[INET6_ADDRSTRLEN] =
         {0};
         out_info->ifindex = ifa->IfIndex;
         out_info->is_wireless = (ifa->IfType == IF_TYPE_IEEE80211) ? 1 : 0;
@@ -906,7 +905,7 @@ extern "C"
   }
 #endif
 
-  int x_net_get_adapter_count(void)
+  int32_t x_net_get_adapter_count(void)
   {
 #if defined(_WIN32)
     return x_net_get_adapter_count_win32();
@@ -915,7 +914,7 @@ extern "C"
 #endif
   }
 
-  int x_net_list_adapters(XNetAdapter* out_adapters, int max_adapters)
+  int32_t x_net_list_adapters(XNetAdapter* out_adapters, int32_t max_adapters)
   {
 #if defined(_WIN32)
     return x_net_list_adapters_win32(out_adapters, max_adapters);
@@ -924,7 +923,7 @@ extern "C"
 #endif
   }
 
-  bool x_net_get_adapter_info(const char* name, XNetAdapterInfo* out_info)
+  bool x_net_get_adapter_info(const int8_t* name, XNetAdapterInfo* out_info)
   {
 #if defined(_WIN32)
     return x_net_get_adapter_info_win32(name, out_info) == 0;
@@ -933,7 +932,7 @@ extern "C"
 #endif
   }
 
-  int x_net_get_last_error(void)
+  int32_t x_net_get_last_error(void)
   {
 #if defined(_WIN32)
     return WSAGetLastError();
@@ -942,7 +941,7 @@ extern "C"
 #endif
   }
 
-  int x_net_get_last_error_message(char* buf, int buf_len)
+  int32_t x_net_get_last_error_message(char* buf, int32_t buf_len)
   {
     if (!buf || buf_len <= 0) return -1;
 
@@ -968,8 +967,8 @@ extern "C"
     return 0;
 
 #else
-    int err = errno;
-    const char* msg = strerror(err);
+    int32_t err = errno;
+    const int8_t* msg = strerror(err);
     if (!msg)
     {
       snprintf(buf, buf_len, "Unknown error %d", err);

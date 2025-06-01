@@ -142,14 +142,14 @@ int main()
 
   STDXTestCase tests[] =
   {
-    TEST_CASE(test_get_adapters_info),
-    TEST_CASE(test_tcp_socket),
-    TEST_CASE(test_udp_socket),
-    TEST_CASE(test_bind_listen_accept),
-    TEST_CASE(test_address_resolution),
-    TEST_CASE(test_udp_send_recv),
-    TEST_CASE(test_multicast_ipv4),
-    TEST_CASE(test_multicast_ipv6),
+    STDX_TEST(test_get_adapters_info),
+    STDX_TEST(test_tcp_socket),
+    STDX_TEST(test_udp_socket),
+    STDX_TEST(test_bind_listen_accept),
+    STDX_TEST(test_address_resolution),
+    STDX_TEST(test_udp_send_recv),
+    STDX_TEST(test_multicast_ipv4),
+    STDX_TEST(test_multicast_ipv6),
   };
 
   int result = stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

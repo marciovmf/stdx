@@ -19,7 +19,8 @@ int test_write_and_read_text()
   return 0;
 }
 
-int test_append_text() {
+int test_append_text()
+{
   ASSERT_TRUE(x_io_append_text(TEMP_FILE, STR2));
 
   char *text = x_io_read_text(TEMP_FILE, NULL);
@@ -29,7 +30,8 @@ int test_append_text() {
   return 0;
 }
 
-int test_read_all() {
+int test_read_all()
+{
   XFile *f = x_io_open(TEMP_FILE, "rb", NULL);
   ASSERT_TRUE(f);
 
@@ -45,7 +47,8 @@ int test_read_all() {
   return 0;
 }
 
-int test_seek_tell() {
+int test_seek_tell()
+{
   XFile *f = x_io_open(TEMP_FILE, "rb", NULL);
   ASSERT_TRUE(f);
 
@@ -62,7 +65,8 @@ int test_seek_tell() {
   return 0;
 }
 
-int test_eof_error() {
+int test_eof_error()
+{
   XFile *f = x_io_open(TEMP_FILE, "rb", NULL);
   ASSERT_TRUE(f);
 
@@ -96,12 +100,12 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    TEST_CASE(test_write_and_read_text),
-    TEST_CASE(test_append_text),
-    TEST_CASE(test_read_all),
-    TEST_CASE(test_seek_tell),
-    TEST_CASE(test_eof_error),
-    TEST_CASE(test_allocator_usage)
+    STDX_TEST(test_write_and_read_text),
+    STDX_TEST(test_append_text),
+    STDX_TEST(test_read_all),
+    STDX_TEST(test_seek_tell),
+    STDX_TEST(test_eof_error),
+    STDX_TEST(test_allocator_usage)
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
