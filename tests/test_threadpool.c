@@ -73,8 +73,8 @@ int main()
 
   STDXTestCase tests[] =
   {
-    TEST_CASE(test_threadpool_execution),
-    TEST_CASE(test_enqueue_after_destroy),
+    STDX_TEST(test_threadpool_execution),
+    STDX_TEST(test_enqueue_after_destroy),
   };
 
   int result = stdx_run_tests(tests, sizeof(tests) / sizeof(tests[0]));

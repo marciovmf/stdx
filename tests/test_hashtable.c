@@ -138,11 +138,11 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    TEST_CASE(test_x_hashtable_basic_malloc),
-    TEST_CASE(test_x_hashtable_rehash_malloc),
-    TEST_CASE(test_x_hashtable_with_arena),
-    TEST_CASE(test_x_hashtable_rehash_with_arena),
-    TEST_CASE(test_x_hashtable_iteration)
+    STDX_TEST(test_x_hashtable_basic_malloc),
+    STDX_TEST(test_x_hashtable_rehash_malloc),
+    STDX_TEST(test_x_hashtable_with_arena),
+    STDX_TEST(test_x_hashtable_rehash_with_arena),
+    STDX_TEST(test_x_hashtable_iteration)
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
