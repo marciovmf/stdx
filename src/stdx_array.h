@@ -33,6 +33,7 @@ extern "C" {
 
 #define STDX_ARRAY_VERSION (STDX_ARRAY_VERSION_MAJOR * 10000 + STDX_ARRAY_VERSION_MINOR * 100 + STDX_ARRAY_VERSION_PATCH)
 
+#include <stdint.h>
 #include <stdbool.h>
 
   typedef struct XArray_t XArray;
@@ -46,9 +47,9 @@ extern "C" {
   void      x_array_clear(XArray* arr);
   void      x_array_delete_at(XArray* arr, size_t index);
   void      x_array_destroy(XArray* arr);  
-  unsigned int x_array_count(XArray* arr);
-  unsigned int x_array_capacity(XArray* arr);
-  
+  uint32_t x_array_count(XArray* arr);
+  uint32_t x_array_capacity(XArray* arr);
+
   void      x_array_push(XArray* array, void* value);
   void      x_array_pop(XArray* array);
   void*     x_array_top(XArray* array);
@@ -100,7 +101,7 @@ extern "C" {
     }
 
     if (data != NULL)
-      memcpy((char*)arr->array + (arr->size * arr->elementSize), data, arr->elementSize);
+      memcpy((uint8_t*)arr->array + (arr->size * arr->elementSize), data, arr->elementSize);
 
     arr->size++;
   }
@@ -126,10 +127,10 @@ extern "C" {
       }
     }
 
-    memmove((char*)arr->array + ((index + 1) * arr->elementSize),
-        (char*)arr->array + (index * arr->elementSize),
+    memmove((uint8_t*)arr->array + ((index + 1) * arr->elementSize),
+        (uint8_t*)arr->array + (index * arr->elementSize),
         (arr->size - index) * arr->elementSize);
-    memcpy((char*)arr->array + (index * arr->elementSize), data, arr->elementSize);
+    memcpy((uint8_t*)arr->array + (index * arr->elementSize), data, arr->elementSize);
     arr->size++;
   }
 
@@ -143,7 +144,7 @@ extern "C" {
       return NULL;
     }
 
-    return (char*)arr->array + (index * arr->elementSize);
+    return (uint8_t*)arr->array + (index * arr->elementSize);
   }
 
   void x_array_destroy(XArray* arr)
@@ -168,8 +169,8 @@ extern "C" {
 
     size_t deleteCount = end - start + 1;
     memmove(
-        (char*)arr->array + (start * arr->elementSize),       // Destination
-        (char*)arr->array + ((end + 1) * arr->elementSize),   // Source
+        (uint8_t*)arr->array + (start * arr->elementSize),       // Destination
+        (uint8_t*)arr->array + ((end + 1) * arr->elementSize),   // Source
         (arr->size - end - 1) * arr->elementSize);            // Size
     arr->size -= deleteCount;
   }
@@ -181,18 +182,18 @@ extern "C" {
     arr->size = 0;
   }
 
-  unsigned int x_array_count(XArray* arr)
+  uint32_t x_array_count(XArray* arr)
   {
     ASSERT(arr->array != NULL);
     ASSERT(arr->capacity > 0);
-    return (unsigned int) arr->size;
+    return (uint32_t) arr->size;
   }
 
-  unsigned int x_array_capacity(XArray* arr)
+  uint32_t x_array_capacity(XArray* arr)
   {
     ASSERT(arr->array != NULL);
     ASSERT(arr->capacity > 0);
-    return (unsigned int) arr->capacity;
+    return (uint32_t) arr->capacity;
   }
 
   void x_array_delete_at(XArray* arr, size_t index)
@@ -216,7 +217,7 @@ extern "C" {
 
   void x_array_pop(XArray* array)
   {
-    unsigned int count = x_array_count(array);
+    uint32_t count = x_array_count(array);
     if (count > 0) {
       x_array_delete_at(array, count - 1);
     }
@@ -224,7 +225,7 @@ extern "C" {
 
   void* x_array_top(XArray* array)
   {
-    unsigned int count = x_array_count(array);
+    uint32_t count = x_array_count(array);
     if (count == 0) return NULL;
     return x_array_get(array, count - 1);
   }

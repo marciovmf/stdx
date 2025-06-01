@@ -147,7 +147,8 @@ int test_x_strview_split_at(void)
   }
 
   { // Test advancing the stringview by tokens
-    const char* results[] = { "wako", "yako", "dotty" };
+    const char* results[] =
+    { "wako", "yako", "dotty" };
     XStrview csv = x_strview("wako,yako,dotty");
     XStrview token;
     int i = 0;
@@ -166,25 +167,181 @@ int test_x_strview_split_at(void)
   return 0;
 }
 
+int test_xwsmallstr_tokenize(void)
+{
+    XWSmallstr s;
+    x_wsmallstr_from_wcstr(&s, L"אחד,שתיים,שלוש");
+    XWSmallstrTokenIterator iter;
+    x_wsmallstr_token_iter_init(&iter, &s, L',');
+    XWSmallstr token;
+    int count = 0;
+
+    while (x_wsmallstr_token_iter_next(&iter, &token))
+    {
+        count++;
+        ASSERT_TRUE(token.length > 0);
+    }
+    ASSERT_TRUE(count == 3);
+    return 0;
+}
+
+int test_cstr_wcstr_conversions(void)
+{
+  const char* ascii = "Café UTF-8";
+  wchar_t wide[128];
+  char back[128];
+
+  size_t wlen = x_cstr_to_wcstr(ascii, wide, 128);
+  size_t clen = x_wcstr_to_cstr(wide, back, 128);
+
+  ASSERT_TRUE(wlen > 0);
+  ASSERT_TRUE(clen > 0);
+  ASSERT_TRUE(strcmp(ascii, back) == 0);
+  return 0;
+}
+
+int test_wcstr_starts_ends_with(void)
+{
+  const wchar_t* text = L"HelloWorld";
+  ASSERT_TRUE(x_wcstr_starts_with(text, L"Hello"));
+  ASSERT_TRUE(x_wcstr_ends_with(text, L"World"));
+  ASSERT_TRUE(!x_wcstr_starts_with(text, L"world"));
+  ASSERT_TRUE(!x_wcstr_ends_with(text, L"Hello"));
+  return 0;
+}
+
+int test_wcstr_starts_ends_with_ci(void)
+{
+  const wchar_t* text = L"HelloWorld";
+  ASSERT_TRUE(x_wcstr_starts_with_ci(text, L"hello"));
+  ASSERT_TRUE(x_wcstr_ends_with_ci(text, L"world"));
+  ASSERT_TRUE(!x_wcstr_starts_with_ci(text, L"nope"));
+  return 0;
+}
+
+int test_wcstr_casecmp(void)
+{
+  ASSERT_TRUE(x_wcstr_casecmp(L"Hello", L"hello") == 0);
+  ASSERT_TRUE(x_wcstr_casecmp(L"ABC", L"abc") == 0);
+  ASSERT_TRUE(x_wcstr_casecmp(L"Hello", L"HELLO!") != 0);
+  return 0;
+}
+
+int test_chinese_wcstr(void)
+{
+  const wchar_t* greeting = L"你好世界"; // "Hello world"
+  ASSERT_TRUE(x_wcstr_starts_with(greeting, L"你"));   // starts with "you"
+  ASSERT_TRUE(x_wcstr_ends_with(greeting, L"世界"));   // ends with "world"
+  ASSERT_FALSE(x_wcstr_casecmp(greeting, L"你好世界")); // No case in chinese
+  return 0;
+}
+
+int test_hebrew_wcstr(void)
+{
+  const wchar_t* word = L"שָׁלוֹם";  // "Shalom" with niqqud (diacritics)
+  const wchar_t* plain = L"שלום"; // plain "Shalom"
+
+  // Will NOT match with x_wcstr_casecmp due to Unicode combining chars
+  ASSERT_TRUE(x_wcstr_casecmp(word, word) == 0);
+  ASSERT_TRUE(x_wcstr_casecmp(plain, plain) == 0);
+  ASSERT_TRUE(x_wcstr_casecmp(word, plain) != 0); // Fails due to combining chars
+  return 0;
+}
+
+int test_arabic_wcstr(void)
+{
+  const wchar_t* phrase = L"السلام عليكم";
+  ASSERT_TRUE(x_wcstr_starts_with(phrase, L"السلام"));
+  ASSERT_TRUE(x_wcstr_ends_with(phrase, L"عليكم"));
+  return 0;
+}
+
+int test_conversion_utf8_and_back(void)
+{
+  const char* utf8 = "שלום"; // UTF-8 Hebrew word
+  wchar_t wbuf[128];
+  char back[128];
+
+  size_t wlen = x_cstr_to_wcstr(utf8, wbuf, 128);
+  size_t clen = x_wcstr_to_cstr(wbuf, back, 128);
+
+  ASSERT_TRUE(wlen > 0 && clen > 0);
+  ASSERT_TRUE(strcmp(utf8, back) == 0); // round-trip must match
+  return 0;
+}
+
+int test_xwstrview_basic(void)
+{
+  XWStrview sv = x_wstrview(L" שלום ");
+  ASSERT_TRUE(!x_wstrview_empty(sv));
+  ASSERT_TRUE(x_wstrview_eq(sv, x_wstrview(L" שלום ")));
+  ASSERT_TRUE(x_wstrview_cmp(sv, x_wstrview(L" עולם ")) != 0);
+  return 0;
+}
+
+int test_xwstrview_trim(void)
+{
+  XWStrview sv = x_wstrview(L" \t\nשלום\n ");
+  XWStrview trimmed = x_wstrview_trim(sv);
+  ASSERT_TRUE(x_wstrview_eq(trimmed, x_wstrview(L"שלום")));
+  return 0;
+}
+
+int test_xwstrview_substr(void)
+{
+  XWStrview full = x_wstrview(L"שלוםעולם");
+  XWStrview mid = x_wstrview_substr(full, 2, 2);
+  ASSERT_TRUE(mid.length == 2);
+  ASSERT_TRUE(mid.data[0] == L'ו' && mid.data[1] == L'ם');
+  return 0;
+}
+
+int test_wsmallstr_functions(void)
+{
+  XWSmallstr ws;
+  x_wsmallstr_from_wcstr(&ws, L"  שלום  ");
+  x_wsmallstr_trim(&ws);
+  ASSERT_TRUE(ws.length == 4);
+  ASSERT_TRUE(wcsncmp(ws.buf, L"שלום", 4) == 0);
+  return 0;
+}
 
 int main()
 {
-  STDXTestCase tests[] = {
-    TEST_CASE(test_str_starts_with),
-    TEST_CASE(test_str_ends_with),
-    TEST_CASE(test_x_smallstr_basic),
-    TEST_CASE(test_x_smallstr_truncation),
-    TEST_CASE(test_x_smallstr_format),
-    TEST_CASE(test_x_smallstr_clear),
-    TEST_CASE(test_str_hash),
+  x_utf8_set_locale();
 
-    TEST_CASE(test_x_strview_empty),
-    TEST_CASE(test_x_strview_eq_and_cmp),
-    TEST_CASE(test_x_strview_case_eq_and_cmp),
-    TEST_CASE(test_x_strview_substr),
-    TEST_CASE(test_x_strview_trim),
-    TEST_CASE(test_x_strview_find_and_rfind),
-    TEST_CASE(test_x_strview_split_at),
+  STDXTestCase tests[] =
+  {
+    STDX_TEST(test_wsmallstr_functions),
+    STDX_TEST(test_xwstrview_basic),
+    STDX_TEST(test_xwstrview_trim),
+    STDX_TEST(test_xwstrview_substr),
+
+    STDX_TEST(test_chinese_wcstr),
+    STDX_TEST(test_arabic_wcstr),
+    STDX_TEST(test_conversion_utf8_and_back),
+
+    STDX_TEST(test_cstr_wcstr_conversions),
+    STDX_TEST(test_wcstr_starts_ends_with),
+    STDX_TEST(test_wcstr_casecmp),
+    STDX_TEST(test_wcstr_starts_ends_with_ci),
+
+    STDX_TEST(test_str_starts_with),
+    STDX_TEST(test_str_ends_with),
+    STDX_TEST(test_x_smallstr_basic),
+    STDX_TEST(test_x_smallstr_truncation),
+    STDX_TEST(test_x_smallstr_format),
+    STDX_TEST(test_x_smallstr_clear),
+    STDX_TEST(test_str_hash),
+
+    STDX_TEST(test_x_strview_empty),
+    STDX_TEST(test_x_strview_eq_and_cmp),
+    STDX_TEST(test_x_strview_case_eq_and_cmp),
+    STDX_TEST(test_x_strview_substr),
+    STDX_TEST(test_x_strview_trim),
+    STDX_TEST(test_x_strview_find_and_rfind),
+    STDX_TEST(test_x_strview_split_at),
+    STDX_TEST(test_xwsmallstr_tokenize)
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

@@ -5,9 +5,9 @@
 #include <stdx_string.h>
 
 
-  // ---------------------------------------------------------------------------
-  // Test path manipulation functions
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Test path manipulation functions
+// ---------------------------------------------------------------------------
 
 int test_x_fs_path_executable_path(void)
 {
@@ -127,9 +127,9 @@ int test_x_fs_path_exists(void)
   return 0;
 }
 
-  // ---------------------------------------------------------------------------
-  // Test filesystem functions
-  // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// Test filesystem functions
+// ---------------------------------------------------------------------------
 
 int test_x_fs_path_equality(void)
 {
@@ -229,8 +229,8 @@ int test_x_fs_directory_traversal(void)
   FILE* f1 = fopen("dirlist/a.txt", "w"); fclose(f1);
   FILE* f2 = fopen("dirlist/b.txt", "w"); fclose(f2);
 
-  XFSDirectoryEntry entry;
-  XFSDirectoryHandle* handle = x_fs_find_first_file("dirlist", &entry);
+  XFSDireEntry entry;
+  XFSDireHandle* handle = x_fs_find_first_file("dirlist", &entry);
   ASSERT_TRUE(handle != NULL);
   int count = 1;
 
@@ -256,9 +256,10 @@ int test_x_fs_temp_folder(void)
   return 0;
 }
 
-  // ---------------------------------------------------------------------------
-  // Test filesystem watching
-  // ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// Test filesystem watching
+// ---------------------------------------------------------------------------
 
 int test_x_fs_watch_empty(void)
 {
@@ -272,27 +273,27 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    TEST_CASE(test_x_fs_path_executable_path),
-    TEST_CASE(test_x_fs_path_init_and_set),
-    TEST_CASE(test_x_fs_path_normalize),
-    TEST_CASE(test_x_fs_path_basename),
-    TEST_CASE(test_x_fs_path_dirname),
-    TEST_CASE(test_x_fs_path_extension),
-    TEST_CASE(test_x_fs_path_extension_change),
-    TEST_CASE(test_x_fs_path_is_absolute),
-    TEST_CASE(test_x_fs_path_relative),
-    TEST_CASE(test_x_fs_path_split),
-    TEST_CASE(test_x_fs_path_exists),
+    STDX_TEST(test_x_fs_path_executable_path),
+    STDX_TEST(test_x_fs_path_init_and_set),
+    STDX_TEST(test_x_fs_path_normalize),
+    STDX_TEST(test_x_fs_path_basename),
+    STDX_TEST(test_x_fs_path_dirname),
+    STDX_TEST(test_x_fs_path_extension),
+    STDX_TEST(test_x_fs_path_extension_change),
+    STDX_TEST(test_x_fs_path_is_absolute),
+    STDX_TEST(test_x_fs_path_relative),
+    STDX_TEST(test_x_fs_path_split),
+    STDX_TEST(test_x_fs_path_exists),
 
-    TEST_CASE(test_x_fs_path_equality),
-    TEST_CASE(test_x_fs_path_functions),
-    TEST_CASE(test_x_fs_file_operations),
-    TEST_CASE(test_x_fs_directory_operations),
-    TEST_CASE(test_x_fs_cwd_functions),
-    TEST_CASE(test_x_fs_directory_traversal),
-    TEST_CASE(test_x_fs_temp_folder),
+    STDX_TEST(test_x_fs_path_equality),
+    STDX_TEST(test_x_fs_path_functions),
+    STDX_TEST(test_x_fs_file_operations),
+    STDX_TEST(test_x_fs_directory_operations),
+    STDX_TEST(test_x_fs_cwd_functions),
+    STDX_TEST(test_x_fs_directory_traversal),
+    STDX_TEST(test_x_fs_temp_folder),
 
-    TEST_CASE(test_x_fs_watch_empty),
+    STDX_TEST(test_x_fs_watch_empty),
 
   };
 

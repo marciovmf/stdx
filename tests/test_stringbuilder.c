@@ -5,92 +5,137 @@
 
 int test_strbuilder_append_and_to_string()
 {
-  XStrBuilder* sb = strbuilder_create();
+  XStrBuilder* sb = x_strbuilder_create();
   ASSERT_TRUE(sb != NULL);
 
-  strbuilder_append(sb, "Hello");
-  strbuilder_append(sb, ", ");
-  strbuilder_append(sb, "World!");
+  x_strbuilder_append(sb, "Hello");
+  x_strbuilder_append(sb, ", ");
+  x_strbuilder_append(sb, "World!");
 
-  const char* result = strbuilder_to_string(sb);
+  const char* result = x_strbuilder_to_string(sb);
   ASSERT_TRUE(result != NULL);
   ASSERT_EQ(strcmp(result, "Hello, World!"), 0);
 
-  strbuilder_destroy(sb);
+  x_strbuilder_destroy(sb);
   return 0;
 }
 
 int test_strbuilder_append_char()
 {
-  XStrBuilder* sb = strbuilder_create();
+  XStrBuilder* sb = x_strbuilder_create();
   ASSERT_TRUE(sb != NULL);
 
-  strbuilder_append_char(sb, 'A');
-  strbuilder_append_char(sb, 'B');
-  strbuilder_append_char(sb, 'C');
+  x_strbuilder_append_char(sb, 'A');
+  x_strbuilder_append_char(sb, 'B');
+  x_strbuilder_append_char(sb, 'C');
 
-  const char* result = strbuilder_to_string(sb);
+  const char* result = x_strbuilder_to_string(sb);
   ASSERT_EQ(strcmp(result, "ABC"), 0);
 
-  strbuilder_destroy(sb);
+  x_strbuilder_destroy(sb);
   return 0;
 }
 
 int test_strbuilder_append_format()
 {
-  XStrBuilder* sb = strbuilder_create();
+  XStrBuilder* sb = x_strbuilder_create();
   ASSERT_TRUE(sb != NULL);
 
-  strbuilder_append_format(sb, "%d + %d = %d", 2, 3, 5);
+  x_strbuilder_append_format(sb, "%d + %d = %d", 2, 3, 5);
 
-  const char* result = strbuilder_to_string(sb);
+  const char* result = x_strbuilder_to_string(sb);
   ASSERT_EQ(strcmp(result, "2 + 3 = 5"), 0);
 
-  strbuilder_destroy(sb);
+  x_strbuilder_destroy(sb);
   return 0;
 }
 
 int test_strbuilder_append_substring()
 {
-  XStrBuilder* sb = strbuilder_create();
+  XStrBuilder* sb = x_strbuilder_create();
   ASSERT_TRUE(sb != NULL);
 
   const char* text = "substring test";
-  strbuilder_append_substring(sb, text, 9);  // "substring"
+  x_strbuilder_append_substring(sb, text, 9);  // "substring"
 
-  const char* result = strbuilder_to_string(sb);
+  const char* result = x_strbuilder_to_string(sb);
   ASSERT_EQ(strcmp(result, "substring"), 0);
 
-  strbuilder_destroy(sb);
+  x_strbuilder_destroy(sb);
   return 0;
 }
 
 int test_strbuilder_clear_and_length()
 {
-  XStrBuilder* sb = strbuilder_create();
+  XStrBuilder* sb = x_strbuilder_create();
   ASSERT_TRUE(sb != NULL);
 
-  strbuilder_append(sb, "temp");
-  ASSERT_EQ(strbuilder_length(sb), 4);
+  x_strbuilder_append(sb, "temp");
+  ASSERT_EQ(x_strbuilder_length(sb), 4);
 
-  strbuilder_clear(sb);
-  ASSERT_EQ(strbuilder_length(sb), 0);
+  x_strbuilder_clear(sb);
+  ASSERT_EQ(x_strbuilder_length(sb), 0);
 
-  const char* result = strbuilder_to_string(sb);
+  const char* result = x_strbuilder_to_string(sb);
   ASSERT_EQ(strcmp(result, ""), 0);
 
-  strbuilder_destroy(sb);
+  x_strbuilder_destroy(sb);
+  return 0;
+}
+
+int test_strbuilder_append_utf8_substring_middle(void)
+{
+  XStrBuilder* sb = x_strbuilder_create();
+  const char* text = "🙂😇😎👍"; // 4 emoji, each 4 bytes
+                                 // Extract "😇😎" (start at codepoint 1, len 2)
+  x_strbuilder_append_utf8_substring(sb, text, 1, 2);
+  ASSERT_TRUE(strcmp(x_strbuilder_to_string(sb), "😇😎") == 0);
+  x_strbuilder_destroy(sb);
+  return 0;
+}
+
+int test_strbuilder_utf8_charlen_emoji(void)
+{
+  XStrBuilder* sb = x_strbuilder_create();
+  x_strbuilder_append(sb, "🚀🌕🌍");
+  ASSERT_TRUE(x_strbuilder_utf8_charlen(sb) == 3);
+  x_strbuilder_destroy(sb);
+  return 0;
+}
+
+int test_x_wstrbuilder_basic(void)
+{
+  XWStrBuilder* sb = x_wstrbuilder_create();
+  x_wstrbuilder_append(sb, L"שלום");
+  x_wstrbuilder_append_char(sb, L' ');
+  x_wstrbuilder_append(sb, L"עולם");
+  ASSERT_TRUE(wcscmp(x_wstrbuilder_to_string(sb), L"שלום עולם") == 0);
+  ASSERT_TRUE(x_wstrbuilder_length(sb) == wcslen(L"שלום עולם"));
+  x_wstrbuilder_destroy(sb);
+  return 0;
+}
+
+int test_x_wstrbuilder_format(void)
+{
+  XWStrBuilder* sb = x_wstrbuilder_create();
+  x_wstrbuilder_append_format(sb, L"%ls %d", L"תוצאה:", 42);
+  ASSERT_TRUE(wcsstr(x_wstrbuilder_to_string(sb), L"תוצאה: 42") != NULL);
+  x_wstrbuilder_destroy(sb);
   return 0;
 }
 
 int main()
 {
   STDXTestCase tests[] = {
-    TEST_CASE(test_strbuilder_append_and_to_string),
-    TEST_CASE(test_strbuilder_append_char),
-    TEST_CASE(test_strbuilder_append_format),
-    TEST_CASE(test_strbuilder_append_substring),
-    TEST_CASE(test_strbuilder_clear_and_length),
+    STDX_TEST(test_strbuilder_append_and_to_string),
+    STDX_TEST(test_strbuilder_append_char),
+    STDX_TEST(test_strbuilder_append_format),
+    STDX_TEST(test_strbuilder_append_substring),
+    STDX_TEST(test_strbuilder_clear_and_length),
+    STDX_TEST(test_strbuilder_append_utf8_substring_middle),
+    STDX_TEST(test_strbuilder_utf8_charlen_emoji),
+    STDX_TEST(test_x_wstrbuilder_format),
+    STDX_TEST(test_x_wstrbuilder_basic),
   };
 
   return stdx_run_tests(tests, sizeof(tests) / sizeof(tests[0]));

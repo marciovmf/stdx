@@ -37,40 +37,40 @@ extern "C"
 
 
 #ifdef STDX_IMPLEMENTATION_HASHTABLE
-  #ifndef STDX_IMPLEMENTATION_ARENA
-    #define STDX_INTERNAL_ARENA_IMPLEMENTATION
-    #define STDX_IMPLEMENTATION_ARENA
-  #endif
+#ifndef STDX_IMPLEMENTATION_ARENA
+#define STDX_INTERNAL_ARENA_IMPLEMENTATION
+#define STDX_IMPLEMENTATION_ARENA
+#endif
 #endif
 #include <stdx_arena.h>
 
 #include <stddef.h>
 #include <stdbool.h>
 
-/**
- * VALUE_PTR(type, val)
- *
- * Wraps a value of a primitive type (e.g., int, float, etc.) in a temporary
- * compound literal and returns a pointer to it, cast as (const void*).
- *
- * This macro is primarily intended to facilitate the use of value types with
- * generic hashtable interfaces such as:
- *
- *     bool x_hashtable_set(XHashtable* table, const void* key, const void* value);
- *
- * Example usage:
- *
- *     x_hashtable_set(table, "health", VALUE_PTR(int, 100));
- *     x_hashtable_set(table, "pi", VALUE_PTR(float, 3.14f));
- *
- * The compound literal ensures the value persists for the duration of the
- * full expression, making the resulting pointer safe to use within the
- * x_hashtable_set call.
- *
- * NOTE:
- * - Requires C99 or later (for compound literals).
- * - The pointer must not be stored or used after the function call.
- */
+  /**
+   * VALUE_PTR(type, val)
+   *
+   * Wraps a value of a primitive type (e.g., int, float, etc.) in a temporary
+   * compound literal and returns a pointer to it, cast as (const void*).
+   *
+   * This macro is primarily intended to facilitate the use of value types with
+   * generic hashtable interfaces such as:
+   *
+   *     bool x_hashtable_set(XHashtable* table, const void* key, const void* value);
+   *
+   * Example usage:
+   *
+   *     x_hashtable_set(table, "health", VALUE_PTR(int8_t, 100));
+   *     x_hashtable_set(table, "pi", VALUE_PTR(float, 3.14f));
+   *
+   * The compound literal ensures the value persists for the duration of the
+   * full expression, making the resulting pointer safe to use within the
+   * x_hashtable_set call.
+   *
+   * NOTE:
+   * - Requires C99 or later (for compound literals).
+   * - The pointer must not be stored or used after the function call.
+   */
 #define VALUE_PTR(type, val) ((const void*)&(type){ (val) })
 
   typedef size_t (*HashFn)(const void* key);
@@ -128,8 +128,8 @@ extern "C"
 #include <stdlib.h>
 #include <string.h>
 
-#define INITIAL_CAPACITY 16
-#define LOAD_FACTOR 0.75
+#define STDX_HASHTABLE_INITIAL_CAPACITY 16
+#define STDX_HASHTABLE_LOAD_FACTOR 0.75
 
   static void x_hashtable_rehash(XHashtable* table);
 
@@ -141,13 +141,13 @@ extern "C"
     t->key_size = key_size;
     t->value_size = value_size;
     t->count = 0;
-    t->capacity = INITIAL_CAPACITY;
+    t->capacity = STDX_HASHTABLE_INITIAL_CAPACITY;
     t->hash_fn = hash_fn;
     t->eq_fn = eq_fn;
     t->allocator = allocator;
 
-    t->entries = (XHashEntry*) stdx_alloc(allocator, INITIAL_CAPACITY * sizeof(XHashEntry));
-    memset(t->entries, 0, INITIAL_CAPACITY * sizeof(XHashEntry));
+    t->entries = (XHashEntry*) stdx_alloc(allocator, STDX_HASHTABLE_INITIAL_CAPACITY * sizeof(XHashEntry));
+    memset(t->entries, 0, STDX_HASHTABLE_INITIAL_CAPACITY * sizeof(XHashEntry));
     return t;
   }
 
@@ -190,7 +190,7 @@ extern "C"
   {
     if (!table) return false;
 
-    if ((double)table->count / table->capacity >= LOAD_FACTOR)
+    if ((double)table->count / table->capacity >= STDX_HASHTABLE_LOAD_FACTOR)
       x_hashtable_rehash(table);
 
     bool found;
@@ -270,15 +270,15 @@ extern "C"
   // Helper: string hash & compare
   size_t stdx_hash_str(const void* ptr)
   {
-    const char* str = (const char*) ptr;
+    const int8_t* str = (const int8_t*) ptr;
     size_t hash = 5381;
-    while (*str) hash = ((hash << 5) + hash) + (unsigned char)(*str++);
+    while (*str) hash = ((hash << 5) + hash) + (uint8_t)(*str++);
     return hash;
   }
 
   bool stdx_str_eq(const void* a, const void* b)
   {
-    return strcmp((const char*)a, (const char*)b) == 0;
+    return strcmp((const int8_t*)a, (const int8_t*)b) == 0;
   }
 
   void x_hashtable_iter_init(XHashIter* iter, const XHashtable* table)
@@ -303,8 +303,8 @@ extern "C"
 #endif // STDX_IMPLEMENTATION_HASHTABLE
 
 #ifdef STDX_INTERNAL_ARENA_IMPLEMENTATION
-  #undef STDX_IMPLEMENTATION_ARENA
-  #undef STDX_INTERNAL_ARENA_IMPLEMENTATION
+#undef STDX_IMPLEMENTATION_ARENA
+#undef STDX_INTERNAL_ARENA_IMPLEMENTATION
 #endif
 
 #ifdef __cplusplus
