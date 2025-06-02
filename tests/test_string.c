@@ -1,4 +1,5 @@
 #include "stdx_common.h"
+#include <wchar.h>
 #define STDX_IMPLEMENTATION_TEST
 #include <stdx_test.h>
 #define STDX_IMPLEMENTATION_STRING
@@ -301,8 +302,10 @@ int test_wsmallstr_functions(void)
   XWSmallstr ws;
   x_wsmallstr_from_wcstr(&ws, L"  שלום  ");
   x_wsmallstr_trim(&ws);
-  ASSERT_TRUE(ws.length == 4);
-  ASSERT_TRUE(wcsncmp(ws.buf, L"שלום", 4) == 0);
+  size_t len = wcslen(ws.buf);
+  ASSERT_TRUE(x_wsmallstr_len(&ws) == 4);
+  ASSERT_TRUE(wcslen(ws.buf) == 4);
+  ASSERT_TRUE(x_wsmallstr_cmp_cstr(&ws, L"שלום") == 0);
   return 0;
 }
 
