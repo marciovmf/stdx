@@ -146,6 +146,7 @@ extern "C"
   void      x_smallstr_utf8_trim(XSmallstr* s);
   int       x_wsmallstr_from_wcstr(XWSmallstr* s, const wchar_t* src);
   int       x_wsmallstr_cmp(const XWSmallstr* a, const XWSmallstr* b);
+  int       x_wsmallstr_cmp_cstr(const XWSmallstr* a, const wchar_t* b);
   int       x_wsmallstr_casecmp(const XWSmallstr* a, const XWSmallstr* b);
   size_t    x_wsmallstr_len(const XWSmallstr* s);
   void      x_wsmallstr_clear(XWSmallstr* s);
@@ -672,7 +673,6 @@ extern "C"
   {
     size_t count = 0;
     for (size_t i = 0; i < s->length;)
-
     {
       uint8_t c = s->buf[i];
       if ((c & 0x80) == 0x00) i += 1;
@@ -839,6 +839,11 @@ extern "C"
     return wcsncmp(a->buf, b->buf, a->length);
   }
 
+  int x_wsmallstr_cmp_cstr(const XWSmallstr* a, const wchar_t* b)
+  {
+    return wcsncmp(a->buf, b, wcslen(b));
+  }
+
   int x_wsmallstr_casecmp(const XWSmallstr* a, const XWSmallstr* b)
   {
     if (a->length != b->length) return 1;
@@ -886,24 +891,24 @@ extern "C"
 
   void x_wsmallstr_trim(XWSmallstr* s)
   {
-    // Left trim
-    size_t i = 0;
-    while (i < s->length && iswspace(s->buf[i]))
-      i++;
+    size_t start = 0;
+    size_t end = s->length;
 
-    if (i > 0)
-    {
-      size_t new_len = s->length - i;
-      wmemmove(s->buf, &s->buf[i], new_len);
-      s->length = new_len;
-      s->buf[s->length] = L'\0';
-    }
+    // Find first non-space
+    while (start < end && iswspace(s->buf[start]))
+      start++;
 
-    // Right trim
-    while (s->length > 0 && iswspace(s->buf[s->length - 1]))
-      s->length--;
+    // Find last non-space
+    while (end > start && iswspace(s->buf[end - 1]))
+      end--;
 
-    s->buf[s->length] = L'\0';
+    size_t new_len = end - start;
+
+    if (start > 0 && new_len > 0)
+      wmemmove(s->buf, s->buf + start, new_len);
+
+    s->length = new_len;
+    s->buf[new_len] = L'\0';
   }
 
   void x_wsmallstr_token_iter_init(XWSmallstrTokenIterator* iter, const XWSmallstr* s, wchar_t delimiter)
