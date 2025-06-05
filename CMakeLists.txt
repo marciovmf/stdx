@@ -4,6 +4,12 @@ set(CMAKE_C_STANDARD 99)
 
 project(stdx C)
 
+if (MSVC)
+  add_compile_options(/utf-8)
+elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
+  add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+endif()
+
 set(OUTPUT_DIR "${CMAKE_CURRENT_LIST_DIR}/bin/${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}/$<CONFIG>")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${OUTPUT_DIR}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${OUTPUT_DIR}")
