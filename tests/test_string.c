@@ -1,4 +1,6 @@
 #include "stdx_common.h"
+#include <stdint.h>
+#include <wchar.h>
 #define STDX_IMPLEMENTATION_TEST
 #include <stdx_test.h>
 #define STDX_IMPLEMENTATION_STRING
@@ -65,9 +67,9 @@ int test_x_smallstr_clear(void)
 
 int test_str_hash(void)
 {
-  u32 hash1 = str_hash("test");
-  u32 hash2 = str_hash("test");
-  u32 hash3 = str_hash("different");
+  uint32_t hash1 = x_cstr_hash("test");
+  uint32_t hash2 = x_cstr_hash("test");
+  uint32_t hash3 = x_cstr_hash("different");
   ASSERT_EQ(hash1, hash2);
   ASSERT_NEQ(hash1, hash3);
   return STDX_TEST_SUCCESS;
@@ -169,20 +171,20 @@ int test_x_strview_split_at(void)
 
 int test_xwsmallstr_tokenize(void)
 {
-    XWSmallstr s;
-    x_wsmallstr_from_wcstr(&s, L"אחד,שתיים,שלוש");
-    XWSmallstrTokenIterator iter;
-    x_wsmallstr_token_iter_init(&iter, &s, L',');
-    XWSmallstr token;
-    int count = 0;
+  XWSmallstr s;
+  x_wsmallstr_from_wcstr(&s, L"אחד,שתיים,שלוש");
+  XWSmallstrTokenIterator iter;
+  x_wsmallstr_token_iter_init(&iter, &s, L',');
+  XWSmallstr token;
+  int count = 0;
 
-    while (x_wsmallstr_token_iter_next(&iter, &token))
-    {
-        count++;
-        ASSERT_TRUE(token.length > 0);
-    }
-    ASSERT_TRUE(count == 3);
-    return 0;
+  while (x_wsmallstr_token_iter_next(&iter, &token))
+  {
+    count++;
+    ASSERT_TRUE(token.length > 0);
+  }
+  ASSERT_TRUE(count == 3);
+  return 0;
 }
 
 int test_cstr_wcstr_conversions(void)
@@ -301,17 +303,145 @@ int test_wsmallstr_functions(void)
   XWSmallstr ws;
   x_wsmallstr_from_wcstr(&ws, L"  שלום  ");
   x_wsmallstr_trim(&ws);
-  ASSERT_TRUE(ws.length == 4);
-  ASSERT_TRUE(wcsncmp(ws.buf, L"שלום", 4) == 0);
+  size_t len = wcslen(ws.buf);
+  ASSERT_TRUE(x_wsmallstr_len(&ws) == len);
+  ASSERT_TRUE(x_wsmallstr_len(&ws) == 4);
+  ASSERT_TRUE(wcslen(ws.buf) == 4);
+  ASSERT_TRUE(x_wsmallstr_cmp_cstr(&ws, L"שלום") == 0);
+  return 0;
+}
+
+int test_x_strview_utf8_find_cp()
+{
+  const char* data = "🌍";
+  const char* ptr = data;
+  const char* end = data + strlen(data);
+  size_t len = 0;
+
+  uint32_t cp = x_utf8_decode(ptr, end, &len);
+  ASSERT_TRUE(cp == 0x1F30D);
+  ASSERT_TRUE(len == x_utf8_strlen(data));
+
+  XStrview sv = x_strview("a🌍b🌍c");
+  ASSERT_TRUE(x_utf8_strlen(sv.data) == 5);            // 5 UTf-8 characters
+  ASSERT_TRUE(x_strview_utf8_find(sv, 0x1F30D) == 1);  // first 🌍
+  ASSERT_TRUE(x_strview_utf8_rfind(sv, 0x1F30D) == 6); // second 🌍
+  ASSERT_TRUE(x_strview_utf8_find(sv, 'b') == 5);      // ASCII still works via its codepoint
+  ASSERT_TRUE(x_strview_utf8_find(sv, 'z') == -1);     // not found
+  return 0;
+}
+
+int test_x_strview_utf8_rfind()
+{
+  XStrview sv = x_strview("hélllo");
+  ASSERT_TRUE(x_strview_utf8_rfind(sv, 'l') == 5);
+  ASSERT_TRUE(x_strview_utf8_rfind(sv, 'x') == -1);
+  return 0;
+}
+
+int test_x_strview_utf8_split_at()
+{
+  {
+    XStrview sv = x_strview("a✓b✓c");
+    XStrview left, right;
+
+    ASSERT_TRUE(x_strview_utf8_split_at(sv, 0x2713, &left, &right));
+    ASSERT_TRUE(x_strview_eq_cstr(left, "a"));
+    ASSERT_TRUE(x_strview_eq_cstr(right, "b✓c"));
+  }
+
+  {
+    XStrview sv = x_strview("a✓b✓c");
+    XStrview tok;
+    const char* expected[] = {"a", "b", "c"};
+    const char** e = expected;
+    while (x_strview_utf8_next_token(&sv, 0x2713, &tok))
+    {
+      // expect "a", "b", "c"
+      ASSERT_TRUE(x_strview_eq_cstr(tok, *e++));
+
+    }
+  }
+
+  {
+    XStrview sv = x_strview("héllo,world");
+    XStrview left, right;
+    bool ok = x_strview_utf8_split_at(sv, ',', &left, &right);
+
+    ASSERT_TRUE(ok);
+    ASSERT_TRUE(x_strview_eq_cstr(left, "héllo"));
+    ASSERT_TRUE(x_strview_eq_cstr(right, "world"));
+  }
+
+  return 0;
+}
+
+int test_x_smallstr_utf8_tokenizer()
+{
+  XSmallstr s;
+  x_smallstr_from_cstr(&s, "a✓b✓c");
+  XSmallstrTokenIterator iter;
+  XSmallstr tok;
+
+  x_smallstr_utf8_token_iter_init(&iter, &s, 0x2713);  // U+2713 = ✓
+
+  const char* expected[] = {"a", "b", "c"};
+  const char** e = expected;
+  while (x_smallstr_utf8_token_iter_next(&iter, &tok))
+  {
+    ASSERT_TRUE(x_strview_eq_cstr(x_strview_init(tok.buf, tok.length), *e++));
+  }
+
+  return 0;
+}
+
+int test_x_strview_utf8_next_token()
+{
+  XStrview input = x_strview("uno,dos,tres");
+  XStrview token;
+
+  ASSERT_TRUE(x_strview_utf8_next_token(&input, ',', &token));
+  ASSERT_TRUE(x_strview_eq(token, x_strview("uno")));
+  ASSERT_TRUE(x_strview_utf8_next_token(&input, ',', &token));
+  ASSERT_TRUE(x_strview_eq(token, x_strview("dos")));
+  ASSERT_TRUE(x_strview_utf8_next_token(&input, ',', &token));
+  ASSERT_TRUE(x_strview_eq(token, x_strview("tres")));
+  ASSERT_TRUE(!x_strview_utf8_next_token(&input, ',', &token));
+  return 0;
+}
+
+int test_x_strview_utf8_starts_with_cstr()
+{
+  XStrview sv = x_strview("héllo 🌍");
+  ASSERT_TRUE(x_strview_utf8_starts_with_cstr(sv, "hé"));
+  ASSERT_TRUE(!x_strview_utf8_starts_with_cstr(sv, "🌍"));
+  return 0;
+}
+
+int test_x_strview_utf8_ends_with_cstr()
+{
+  XStrview sv = x_strview("héllo 🌍");
+  ASSERT_TRUE(x_strview_utf8_ends_with_cstr(sv, "🌍"));
+  ASSERT_TRUE(x_strview_utf8_ends_with_cstr(sv, "o 🌍"));
+  ASSERT_TRUE(!x_strview_utf8_ends_with_cstr(sv, "héllo"));
   return 0;
 }
 
 int main()
 {
+
   x_utf8_set_locale();
 
   STDXTestCase tests[] =
   {
+    STDX_TEST(test_x_strview_utf8_ends_with_cstr),
+    STDX_TEST(test_x_strview_utf8_starts_with_cstr),
+    STDX_TEST(test_x_strview_utf8_next_token),
+    STDX_TEST(test_x_strview_utf8_find_cp),
+    STDX_TEST(test_x_strview_utf8_rfind),
+    STDX_TEST(test_x_strview_utf8_split_at),
+    STDX_TEST(test_x_smallstr_utf8_tokenizer),
+
     STDX_TEST(test_wsmallstr_functions),
     STDX_TEST(test_xwstrview_basic),
     STDX_TEST(test_xwstrview_trim),
@@ -342,6 +472,7 @@ int main()
     STDX_TEST(test_x_strview_find_and_rfind),
     STDX_TEST(test_x_strview_split_at),
     STDX_TEST(test_xwsmallstr_tokenize)
+
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

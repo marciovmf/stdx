@@ -22,6 +22,7 @@
  * License: MIT
  * Usage: #include "stdx_string.h"
  */
+
 #ifndef STDX_STRING_H
 #define STDX_STRING_H
 
@@ -38,7 +39,7 @@ extern "C"
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <stdio.h>
+#include <stdarg.h>
 
 #ifndef STDX_SMALLSTR_MAX_LENGTH
 #define STDX_SMALLSTR_MAX_LENGTH 256
@@ -46,7 +47,7 @@ extern "C"
 
   typedef struct 
   {
-    const int8_t* data;
+    const char* data;
     size_t length;
   } XStrview;
 
@@ -58,7 +59,7 @@ extern "C"
 
   typedef struct 
   {
-    int8_t buf[STDX_SMALLSTR_MAX_LENGTH + 1];
+    char buf[STDX_SMALLSTR_MAX_LENGTH + 1];
     size_t length;
   } XSmallstr;
 
@@ -72,7 +73,7 @@ extern "C"
   {
     const XSmallstr* s;
     size_t pos;
-    int8_t delimiter;
+    uint32_t delimiter;  // Unicode codepoint or ascii character
   } XSmallstrTokenIterator;
 
   typedef struct
@@ -82,126 +83,131 @@ extern "C"
     wchar_t delimiter;
   } XWSmallstrTokenIterator;
 
+  // C-string (null-terminated char) functions
+  uint32_t  x_cstr_hash(const char* str);
+  char*     x_cstr_str(const char *haystack, const char *needle);
+  bool      x_cstr_ends_with(const char* str, const char* suffix);
+  bool      x_cstr_starts_with(const char* str, const char* prefix);
+  bool      x_cstr_ends_with_ci(const char* str, const char* suffix);
+  bool      x_cstr_starts_with_ci(const char* str, const char* prefix);
 
-  // ---------------------------------------------------------------------------
-  // C string utilities
-  // ---------------------------------------------------------------------------
-
-  int8_t*     x_cstr_contains_str(const int8_t *haystack, const int8_t *needle);
-  bool      x_cstr_ends_with(const int8_t* str, const int8_t* suffix);
-  bool      x_cstr_starts_with(const int8_t* str, const int8_t* prefix);
-  bool      x_cstr_ends_with_ci(const int8_t* str, const int8_t* suffix);
-  bool      x_cstr_starts_with_ci(const int8_t* str, const int8_t* prefix);
-
+  // Wide C-string (wchar_t) functions
   bool      x_wcstr_starts_with(const wchar_t* str, const wchar_t* prefix);
   bool      x_wcstr_ends_with(const wchar_t* str, const wchar_t* suffix);
   bool      x_wcstr_starts_with_ci(const wchar_t* str, const wchar_t* prefix);
   bool      x_wcstr_ends_with_ci(const wchar_t* str, const wchar_t* suffix);
-  int       x_wcstr_casecmp(const wchar_t* a, const wchar_t* b);
+  int32_t   x_wcstr_casecmp(const wchar_t* a, const wchar_t* b);
 
-  size_t    x_cstr_to_wcstr(const int8_t* src, wchar_t* dest, size_t max);
-  size_t    x_wcstr_to_utf8(const wchar_t* wide, int8_t* utf8, size_t max);
-  size_t    x_wcstr_to_cstr(const wchar_t* src, int8_t* dest, size_t max);
-  size_t    x_utf8_to_wcstr(const int8_t* utf8, wchar_t* wide, size_t max);
+  // UTF-8 and wide string conversions and utility functions
+  size_t    x_cstr_to_wcstr(const char* src, wchar_t* dest, size_t max);
+  size_t    x_wcstr_to_utf8(const wchar_t* wide, char* utf8, size_t max);
+  size_t    x_wcstr_to_cstr(const wchar_t* src, char* dest, size_t max);
+  size_t    x_utf8_to_wcstr(const char* utf8, wchar_t* wide, size_t max);
 
-  size_t    x_utf8_strlen(const int8_t* utf8);
-  int       x_utf8_strcmp(const int8_t* a, const int8_t* b);
-  int8_t*     x_utf8_tolower(int8_t* dest, const int8_t* src);
-  int8_t*     x_utf8_toupper(int8_t* dest, const int8_t* src);
+  //UTF-8 string manipulation
+  size_t    x_utf8_strlen(const char* utf8);
+  int32_t   x_utf8_strcmp(const char* a, const char* b);
+  char*     x_utf8_tolower(char* dest, const char* src);
+  char*     x_utf8_toupper(char* dest, const char* src);
+  bool      x_utf8_is_single_char(const char* s);
+  int32_t   x_utf8_decode(const char* ptr, const char* end, size_t* out_len);
+  int32_t   x_utf8_codepoint_length(unsigned char first_byte);
 
 
-  // ---------------------------------------------------------------------------
-  // XSmallstr
-  // ---------------------------------------------------------------------------
-
-  int       x_smallstr_init(XSmallstr* s, const int8_t* str);
-  size_t    x_smallstr_format(XSmallstr* s, const int8_t* fmt, ...);
-  size_t    x_smallstr_from_cstr(XSmallstr* s, const int8_t* cstr);
+  //XSmallstr - A small fixed-size string abstraction with various utility functions.
+  int32_t   x_smallstr_init(XSmallstr* s, const char* str);
+  size_t    x_smallstr_format(XSmallstr* s, const char* fmt, ...);
+  size_t    x_smallstr_from_cstr(XSmallstr* s, const char* cstr);
   size_t    x_smallstr_from_strview(XStrview sv, XSmallstr* out);
   XStrview  x_smallstr_to_strview(const XSmallstr* s);
   size_t    x_smallstr_length(const XSmallstr* s);
   void      x_smallstr_clear(XSmallstr* s);
-  size_t    x_smallstr_append_cstr(XSmallstr* s, const int8_t* cstr);
-  size_t    x_smallstr_append_char(XSmallstr* s, int8_t c);
+  size_t    x_smallstr_append_cstr(XSmallstr* s, const char* cstr);
+  size_t    x_smallstr_append_char(XSmallstr* s, char c);
   size_t    x_smallstr_substring(const XSmallstr* s, size_t start, size_t len, XSmallstr* out);
-  int       x_smallstr_find(const XSmallstr* s, int8_t c);
-  int       x_smallstr_rfind(const XSmallstr* s, int8_t c);
-  int       x_smallstr_split_at(const XSmallstr* s, int8_t delim, XSmallstr* left, XSmallstr* right);
-  int       x_smallstr_next_token(XSmallstr* input, int8_t delim, XSmallstr* token);
+  int32_t   x_smallstr_find(const XSmallstr* s, char c);
+  int32_t   x_smallstr_rfind(const XSmallstr* s, char c);
+  int32_t   x_smallstr_split_at(const XSmallstr* s, char delim, XSmallstr* left, XSmallstr* right);
+  int32_t   x_smallstr_next_token(XSmallstr* input, char delim, XSmallstr* token);
   void      x_smallstr_trim_left(XSmallstr* s);
   void      x_smallstr_trim_right(XSmallstr* s);
   void      x_smallstr_trim(XSmallstr* s);
-  int       x_smallstr_compare_case_insensitive(const XSmallstr* a, const XSmallstr* b);
-  int       x_smallstr_replace_all(XSmallstr* s, const int8_t* find, const int8_t* replace);
-  void      x_smallstr_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, int8_t delimiter);
-  int       x_smallstr_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token);
+  int32_t   x_smallstr_compare_case_insensitive(const XSmallstr* a, const XSmallstr* b);
+  int32_t   x_smallstr_replace_all(XSmallstr* s, const char* find, const char* replace);
+  void      x_smallstr_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, char delimiter);
+  int32_t   x_smallstr_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token);
   size_t    x_smallstr_utf8_len(const XSmallstr* s);
-  int       x_smallstr_cmp(const XSmallstr* a, const XSmallstr* b);
-  int       x_smallstr_cmp_cstr(const XSmallstr* a, const int8_t* b);
-  const int8_t* x_smallstr_cstr(const XSmallstr* s);
-
-  int       x_smallstr_utf8_substring(const XSmallstr* s, size_t start_cp, size_t len_cp, XSmallstr* out);
+  int32_t   x_smallstr_cmp(const XSmallstr* a, const XSmallstr* b);
+  int32_t   x_smallstr_cmp_cstr(const XSmallstr* a, const char* b);
+  const char* x_smallstr_cstr(const XSmallstr* s);
+  int32_t   x_smallstr_utf8_substring(const XSmallstr* s, size_t start_cp, size_t len_cp, XSmallstr* out);
   void      x_smallstr_utf8_trim_left(XSmallstr* s);
   void      x_smallstr_utf8_trim_right(XSmallstr* s);
   void      x_smallstr_utf8_trim(XSmallstr* s);
-  int       x_wsmallstr_from_wcstr(XWSmallstr* s, const wchar_t* src);
-  int       x_wsmallstr_cmp(const XWSmallstr* a, const XWSmallstr* b);
-  int       x_wsmallstr_casecmp(const XWSmallstr* a, const XWSmallstr* b);
+
+  // XWSmallstr
+  // Wide-char version of small string abstraction.
+
+  int32_t   x_wsmallstr_from_wcstr(XWSmallstr* s, const wchar_t* src);
+  int32_t   x_wsmallstr_cmp(const XWSmallstr* a, const XWSmallstr* b);
+  int32_t   x_wsmallstr_cmp_cstr(const XWSmallstr* a, const wchar_t* b);
+  int32_t   x_wsmallstr_casecmp(const XWSmallstr* a, const XWSmallstr* b);
   size_t    x_wsmallstr_len(const XWSmallstr* s);
   void      x_wsmallstr_clear(XWSmallstr* s);
-  int       x_wsmallstr_append(XWSmallstr* s, const wchar_t* tail);
-  int       x_wsmallstr_substring(const XWSmallstr* s, size_t start, size_t len, XWSmallstr* out);
+  int32_t   x_wsmallstr_append(XWSmallstr* s, const wchar_t* tail);
+  int32_t   x_wsmallstr_substring(const XWSmallstr* s, size_t start, size_t len, XWSmallstr* out);
   void      x_wsmallstr_trim(XWSmallstr* s);
   void      x_wsmallstr_token_iter_init(XWSmallstrTokenIterator* iter, const XWSmallstr* s, wchar_t delimiter);
-  int       x_wsmallstr_token_iter_next(XWSmallstrTokenIterator* iter, XWSmallstr* token);
+  int32_t   x_wsmallstr_token_iter_next(XWSmallstrTokenIterator* iter, XWSmallstr* token);
 
-int         x_smallstr_find_cstr(const XSmallstr* s, const char* substr);
-int         x_smallstr_find_strview(const XSmallstr* s, XStrview sub);
-int         x_strview_find_cstr(XStrview sv, const char* substr);
-int         x_strview_find_strview(XStrview sv, XStrview sub);
-int         x_cstr_find_cstr(const char* haystack, const char* needle);
-int         x_cstr_find_strview(const char* haystack, XStrview needle);
+  // XStrview (string views on char)*
+  // Non-owning string views and operations.
 
-  bool      x_smallstr_starts_with_cstr(const XSmallstr* s, const char* prefix);
-  bool      x_smallstr_ends_with_cstr(const XSmallstr* s, const char* suffix);
-
-  // ---------------------------------------------------------------------------
-  // Stringview
-  // ---------------------------------------------------------------------------
-
-#define     x_strview(cstr) ((XStrview){ .data = (cstr), .length = strlen(cstr) })
+#define     x_strview_init(cstr, len) ((XStrview){ .data = (cstr), .length = (len) })
+#define     x_strview(cstr)           (x_strview_init( (cstr), strlen(cstr) ))
 
   bool      x_strview_empty(XStrview sv);
   bool      x_strview_eq(XStrview a, XStrview b);
-  bool      x_strview_eq_cstr(XStrview a, const int8_t* b);
-  int       x_strview_cmp(XStrview a, XStrview b);
+  bool      x_strview_eq_cstr(XStrview a, const char* b);
+  int32_t   x_strview_cmp(XStrview a, XStrview b);
   bool      x_strview_case_eq(XStrview a, XStrview b);
-  int       x_strview_case_cmp(XStrview a, XStrview b);
+  int32_t   x_strview_case_cmp(XStrview a, XStrview b);
   XStrview  x_strview_substr(XStrview sv, size_t start, size_t len);
   XStrview  x_strview_trim_left(XStrview sv);
   XStrview  x_strview_trim_right(XStrview sv);
   XStrview  x_strview_trim(XStrview sv);
-  int       x_strview_find(XStrview sv, int8_t c);
-  int       x_strview_rfind(XStrview sv, int8_t c);
-  bool      x_strview_split_at(XStrview sv, int8_t delim, XStrview* left, XStrview* right);
-  bool      x_strview_next_token(XStrview* input, int8_t delim, XStrview* token);
-  bool      x_strview_starts_with(XStrview sv, const char* prefix);
-  bool      x_strview_ends_with(XStrview sv, const char* prefix);
+  int32_t   x_strview_find(XStrview sv, char c);
+  int32_t   x_strview_rfind(XStrview sv, char c);
+  bool      x_strview_split_at(XStrview sv, char delim, XStrview* left, XStrview* right);
+  bool      x_strview_next_token(XStrview* input, char delim, XStrview* token);
+  bool      x_strview_starts_with_cstr(XStrview sv, const char* prefix);
+  bool      x_strview_ends_with_cstr(XStrview sv, const char* prefix);
 
-#define     x_wstrview(wcs) ((XWStrview){ .data = (wcs), .length = wcslen(wcs) })
-
-  // Basics
-  bool      x_wstrview_empty(XWStrview sv);
-  bool      x_wstrview_eq(XWStrview a, XWStrview b);
-  int       x_wstrview_cmp(XWStrview a, XWStrview b);
-  XWStrview x_wstrview_substr(XWStrview sv, size_t start, size_t len);
-  XWStrview x_wstrview_trim_left(XWStrview sv);
-  XWStrview x_wstrview_trim_right(XWStrview sv);
-  XWStrview x_wstrview_trim(XWStrview sv);
   XStrview  x_strview_utf8_substr(XStrview sv, size_t char_start, size_t char_len);
   XStrview  x_strview_utf8_trim_left(XStrview sv);
   XStrview  x_strview_utf8_trim_right(XStrview sv);
   XStrview  x_strview_utf8_trim(XStrview sv);
+  int32_t   x_strview_utf8_find(XStrview sv, uint32_t codepoint);
+  int32_t   x_strview_utf8_rfind(XStrview sv, uint32_t codepoint);
+  bool      x_strview_utf8_split_at(XStrview sv, uint32_t delim, XStrview* left, XStrview* right);
+  bool      x_strview_utf8_next_token(XStrview* input, uint32_t codepoint, XStrview* token);
+  bool      x_strview_utf8_starts_with_cstr(XStrview sv, const char* prefix);
+  bool      x_strview_utf8_ends_with_cstr(XStrview sv, const char* prefix);
+  void      x_smallstr_utf8_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, uint32_t delimiter);
+  int32_t   x_smallstr_utf8_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token);
+
+
+
+  // XWStrview (string views on wchar_t)*
+  // Non-owning wide string views and operations.
+#define   x_wstrview(wcs) ((XWStrview){ .data = (wcs), .length = wcslen(wcs) })
+  bool      x_wstrview_empty(XWStrview sv);
+  bool      x_wstrview_eq(XWStrview a, XWStrview b);
+  int32_t   x_wstrview_cmp(XWStrview a, XWStrview b);
+  XWStrview x_wstrview_substr(XWStrview sv, size_t start, size_t len);
+  XWStrview x_wstrview_trim_left(XWStrview sv);
+  XWStrview x_wstrview_trim_right(XWStrview sv);
+  XWStrview x_wstrview_trim(XWStrview sv);
 
 #ifdef STDX_IMPLEMENTATION_STRING
 
@@ -215,6 +221,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
 #include <wchar.h>
 #include <locale.h>
 #include <errno.h>
+#include <stdio.h>
 
 #ifdef _WIN32
 #define strncasecmp _strnicmp
@@ -228,34 +235,42 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
         cp == 0x2028 || cp == 0x2029 || cp == 0x202F || cp == 0x205F || cp == 0x3000);
   }
 
-  static uint32_t utf8_decode(const char** s, const int8_t* end)
+  static int32_t utf8_decode(const char** ptr, const char* end)
   {
-    const uint8_t* p = (const uint8_t*)(*s);
-    if (p >= (const unsigned char*)end) return 0;
+    if (*ptr >= end) return -1;  // no input left
+    const unsigned char* s = (const unsigned char*)(*ptr);
 
-    uint32_t cp = 0;
-    if (*p < 0x80)
-    {
-      cp = *p++;
-    } else if ((*p & 0xE0) == 0xC0) {
-      cp = ((*p & 0x1F) << 6) | (p[1] & 0x3F); p += 2;
-    } else if ((*p & 0xF0) == 0xE0) {
-      cp = ((*p & 0x0F) << 12) | ((p[1] & 0x3F) << 6) | (p[2] & 0x3F); p += 3;
-    } else if ((*p & 0xF8) == 0xF0) {
-      cp = ((*p & 0x07) << 18) | ((p[1] & 0x3F) << 12) | ((p[2] & 0x3F) << 6) | (p[3] & 0x3F); p += 4;
+    uint32_t cp;
+    if (s[0] < 0x80) {
+      cp = s[0];
+      *ptr += 1;
+    } else if ((s[0] & 0xE0) == 0xC0 && s + 1 < (const unsigned char*)end &&
+        (s[1] & 0xC0) == 0x80) {
+      cp = ((s[0] & 0x1F) << 6) | (s[1] & 0x3F);
+      *ptr += 2;
+    } else if ((s[0] & 0xF0) == 0xE0 && s + 2 < (const unsigned char*)end &&
+        (s[1] & 0xC0) == 0x80 && (s[2] & 0xC0) == 0x80) {
+      cp = ((s[0] & 0x0F) << 12) | ((s[1] & 0x3F) << 6) | (s[2] & 0x3F);
+      *ptr += 3;
+    } else if ((s[0] & 0xF8) == 0xF0 && s + 3 < (const unsigned char*)end &&
+        (s[1] & 0xC0) == 0x80 && (s[2] & 0xC0) == 0x80 &&
+        (s[3] & 0xC0) == 0x80) {
+      cp = ((s[0] & 0x07) << 18) | ((s[1] & 0x3F) << 12) |
+        ((s[2] & 0x3F) << 6) | (s[3] & 0x3F);
+      *ptr += 4;
     } else {
-      p++; // Invalid byte, skip
+      *ptr += 1;
+      return 0xFFFD; // Unicode replacement character
     }
-    *s = (const char*)p;
     return cp;
   }
 
-  static size_t utf8_advance(const int8_t* s, size_t len, size_t chars)
+  static size_t utf8_advance(const char* s, size_t len, size_t chars)
   {
     size_t i = 0, count = 0;
     while (i < len && count < chars)
     {
-      uint8_t c = (uint8_t)s[i];
+      char c = (char)s[i];
       if ((c & 0x80) == 0x00) i += 1;
       else if ((c & 0xE0) == 0xC0) i += 2;
       else if ((c & 0xF0) == 0xE0) i += 3;
@@ -266,32 +281,31 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return i;
   }
 
-  int8_t* x_cstr_contains_str(const int8_t *haystack, const int8_t *needle)
+  char* x_cstr_str(const char *haystack, const char *needle)
   {
     if (!*needle)
-      return (int8_t *)haystack;
+      return (char *)haystack;
 
     for (; *haystack; haystack++)
     {
-      const int8_t *h = haystack;
-      const int8_t *n = needle;
+      const char *h = haystack;
+      const char *n = needle;
 
       while (*h && *n && tolower((unsigned char)*h) == tolower((unsigned char)*n))
-
       {
         h++;
         n++;
       }
 
       if (!*n)  // Reached end of needle => match
-        return (int8_t *)haystack;
+        return (char *)haystack;
     }
     return NULL;
   }
 
-  bool x_cstr_ends_with(const int8_t* str, const int8_t* suffix)
+  bool x_cstr_ends_with(const char* str, const char* suffix)
   {
-    const int8_t* found = strstr(str, suffix);
+    const char* found = strstr(str, suffix);
     if (found == NULL || found + strlen(suffix) != str + strlen(str))
 
 
@@ -301,9 +315,9 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return true;
   }
 
-  bool x_cstr_starts_with(const int8_t* str, const int8_t* prefix)
+  bool x_cstr_starts_with(const char* str, const char* prefix)
   {
-    const int8_t* found = strstr(str, prefix);
+    const char* found = strstr(str, prefix);
     bool match = (found == str);
     if (match && prefix[0] == 0 && str[0] != 0)
       match = false;
@@ -311,9 +325,9 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return match;
   }
 
-  bool x_cstr_starts_with_ci(const int8_t* str, const int8_t* prefix)
+  bool x_cstr_starts_with_ci(const char* str, const char* prefix)
   {
-    const int8_t* found = x_cstr_contains_str(str, prefix);
+    const char* found = x_cstr_str(str, prefix);
     bool match = (found == str);
     if (match && prefix[0] == 0 && str[0] != 0)
       match = false;
@@ -338,7 +352,6 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
   bool x_wcstr_starts_with_ci(const wchar_t* str, const wchar_t* prefix)
   {
     while (*prefix && *str)
-
     {
       if (towlower(*str++) != towlower(*prefix++))
         return false;
@@ -354,7 +367,6 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
 
     const wchar_t* str_tail = str + slen - suflen;
     while (*suffix)
-
     {
       if (towlower(*str_tail++) != towlower(*suffix++))
         return false;
@@ -362,10 +374,9 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return true;
   }
 
-  int x_wcstr_casecmp(const wchar_t* a, const wchar_t* b)
+  int32_t  x_wcstr_casecmp(const wchar_t* a, const wchar_t* b)
   {
     while (*a && *b)
-
     {
       wint_t ca = towlower(*a++);
       wint_t cb = towlower(*b++);
@@ -375,14 +386,13 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
   }
 
   // Ensure locale is set before using this
-  size_t x_cstr_to_wcstr(const int8_t* src, wchar_t* dest, size_t max)
+  size_t x_cstr_to_wcstr(const char* src, wchar_t* dest, size_t max)
   {
     if (!src || !dest || max == 0) return 0;
     mbstate_t state =
     {0};
     size_t len = mbsrtowcs(dest, &src, max - 1, &state);
     if (len == (size_t)-1)
-
     {
       dest[0] = L'\0';
       return 0;
@@ -391,21 +401,20 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return len;
   }
 
-  size_t x_wcstr_to_utf8(const wchar_t* wide, int8_t* utf8, size_t max)
+  size_t x_wcstr_to_utf8(const wchar_t* wide, char* utf8, size_t max)
   {
     mbstate_t ps =
     {0};
     return wcsrtombs(utf8, (const wchar_t**)&wide, max, &ps);
   }
 
-  size_t x_wcstr_to_cstr(const wchar_t* src, int8_t* dest, size_t max)
+  size_t x_wcstr_to_cstr(const wchar_t* src, char* dest, size_t max)
   {
     if (!src || !dest || max == 0) return 0;
     mbstate_t state =
     {0};
     size_t len = wcsrtombs(dest, &src, max - 1, &state);
     if (len == (size_t)-1)
-
     {
       dest[0] = '\0';
       return 0;
@@ -414,11 +423,10 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return len;
   }
 
-  bool x_cstr_ends_with_ci(const int8_t* str, const int8_t* suffix)
+  bool x_cstr_ends_with_ci(const char* str, const char* suffix)
   {
-    const int8_t* found = x_cstr_contains_str(str, suffix);
+    const char* found = x_cstr_str(str, suffix);
     if (found == NULL || found + strlen(suffix) != str + strlen(str))
-
     {
       return false;
     }
@@ -431,12 +439,12 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     setlocale(LC_ALL, "");
   }
 
-  size_t x_utf8_strlen(const int8_t* utf8)
+  size_t x_utf8_strlen(const char* utf8)
   {
     size_t count = 0;
     while (*utf8)
     {
-      uint8_t c = (uint8_t)*utf8;
+      char c = (char)*utf8;
       if ((c & 0x80) == 0x00) utf8 += 1;
       else if ((c & 0xE0) == 0xC0) utf8 += 2;
       else if ((c & 0xF0) == 0xE0) utf8 += 3;
@@ -447,13 +455,13 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return count;
   }
 
-  int x_utf8_strcmp(const int8_t* a, const int8_t* b)
+  int32_t  x_utf8_strcmp(const char* a, const char* b)
   {
     if (setlocale(LC_ALL, NULL) != NULL) return strcoll(a, b);
     return strcmp(a, b); // no locale set, fallback to pure ascii comparisons
   }
 
-  int8_t* x_utf8_tolower(int8_t* dest, const int8_t* src)
+  char* x_utf8_tolower(char* dest, const char* src)
   {
     wchar_t wbuf[512];
     x_utf8_to_wcstr(src, wbuf, 512);
@@ -463,7 +471,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return dest;
   }
 
-  int8_t* x_utf8_toupper(int8_t* dest, const int8_t* src)
+  char* x_utf8_toupper(char* dest, const char* src)
   {
     wchar_t wbuf[512];
     x_utf8_to_wcstr(src, wbuf, 512);
@@ -473,25 +481,48 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return dest;
   }
 
-  size_t x_utf8_to_wcstr(const int8_t* utf8, wchar_t* wide, size_t max)
+  int32_t x_utf8_codepoint_length(unsigned char first_byte)
   {
-    mbstate_t ps =
-    {0};
+    if (first_byte < 0x80)                return 1;
+    else if ((first_byte & 0xE0) == 0xC0) return 2;
+    else if ((first_byte & 0xF0) == 0xE0) return 3;
+    else if ((first_byte & 0xF8) == 0xF0) return 4;
+    else return -1; // Invalid UTF-8 start byte
+  }
+
+  size_t x_utf8_to_wcstr(const char* utf8, wchar_t* wide, size_t max)
+  {
+    mbstate_t ps = {0};
     return mbsrtowcs(wide, &utf8, max, &ps);
   }
 
-  size_t x_wide_to_utf8(const wchar_t* wide, int8_t* utf8, size_t max)
+  int32_t x_utf8_decode(const char* ptr, const char* end, size_t* out_len)
+  {
+    int32_t codepoint = utf8_decode(&ptr, end);
+    if (codepoint && out_len)
+      *out_len = x_utf8_codepoint_length(codepoint);
+    return codepoint;
+  }
+
+  bool x_utf8_is_single_char(const char* s)
+  {
+    const char* end = s + strlen(s);
+    const char* p = s;
+    uint32_t cp = utf8_decode(&p, end);
+    return *p == '\0' && cp != 0;
+  }
+
+  size_t x_wide_to_utf8(const wchar_t* wide, char* utf8, size_t max)
   {
     mbstate_t ps =
     {0};
     return wcsrtombs(utf8, (const wchar_t**)&wide, max, &ps);
   }
 
-  unsigned int str_hash(const int8_t* str)
+  uint32_t x_cstr_hash(const char* str)
   {
-    unsigned int hash = 2166136261u; // FNV offset basis
+    uint32_t hash = 2166136261u; // FNV offset basis
     while (*str)
-
     {
       hash ^= (unsigned int) *str++;
       hash *= 16777619u; // FNV prime
@@ -499,25 +530,24 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return hash;
   }
 
-  size_t smallstr(XSmallstr* smallString, const int8_t* str)
+  size_t smallstr(XSmallstr* smallString, const char* str)
   {
     size_t length = strlen(str);
 #if defined(_DEBUG) || defined(DEBUG)
 #if defined(STDX_x_smallstr_ENABLE_DBG_MESSAGES)
     if (length >= STDX_SMALLSTR_MAX_LENGTH)
-
     {
       log_print_debug("The string length (%d) exceeds the maximum size of a XSmallstr (%d)", length, STDX_SMALLSTR_MAX_LENGTH);
     }
 #endif
 #endif
-    strncpy((int8_t *) &smallString->buf, str, STDX_SMALLSTR_MAX_LENGTH - 1);
+    strncpy((char *) &smallString->buf, str, STDX_SMALLSTR_MAX_LENGTH - 1);
     smallString->buf[STDX_SMALLSTR_MAX_LENGTH - 1] = 0;
     smallString->length = strlen(smallString->buf);
     return smallString->length;
   }
 
-  size_t x_smallstr_format(XSmallstr* smallString, const int8_t* fmt, ...)
+  size_t x_smallstr_format(XSmallstr* smallString, const char* fmt, ...)
   {
     va_list argList;
     va_start(argList, fmt);
@@ -528,7 +558,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return success;
   }
 
-  size_t x_smallstr_from_cstr(XSmallstr* s, const int8_t* cstr)
+  size_t x_smallstr_from_cstr(XSmallstr* s, const char* cstr)
   {
     size_t len = strlen(cstr);
     if (len > STDX_SMALLSTR_MAX_LENGTH)
@@ -539,7 +569,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return len;
   }
 
-  const int8_t* x_smallstr_cstr(const XSmallstr* s)
+  const char* x_smallstr_cstr(const XSmallstr* s)
   {
     ((char*)s->buf)[s->length] = '\0';
     return (const char*)s->buf;
@@ -556,7 +586,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     smallString->length = 0;
   }
 
-  size_t x_smallstr_append_cstr(XSmallstr* s, const int8_t* cstr)
+  size_t x_smallstr_append_cstr(XSmallstr* s, const char* cstr)
   {
     size_t len = strlen(cstr);
     if (s->length + len > STDX_SMALLSTR_MAX_LENGTH) return -1;
@@ -566,10 +596,10 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return s->length;
   }
 
-  size_t x_smallstr_append_char(XSmallstr* s, int8_t c)
+  size_t x_smallstr_append_char(XSmallstr* s, char c)
   {
     if (s->length + 1 > STDX_SMALLSTR_MAX_LENGTH) return -1;
-    s->buf[s->length++] = (uint8_t)c;
+    s->buf[s->length++] = (char)c;
     s->buf[s->length] = '\0';
     return s->length;
   }
@@ -588,7 +618,6 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     size_t i = 0;
     while (i < s->length && isspace(s->buf[i])) i++;
     if (i > 0)
-
     {
       memmove(s->buf, &s->buf[i], s->length - i);
       s->length -= i;
@@ -599,7 +628,6 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
   void x_smallstr_trim_right(XSmallstr* s)
   {
     while (s->length > 0 && isspace(s->buf[s->length - 1]))
-
     {
       s->length--;
     }
@@ -612,18 +640,17 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     x_smallstr_trim_left(s);
   }
 
-  int x_smallstr_compare_case_insensitive(const XSmallstr* a, const XSmallstr* b)
+  int32_t x_smallstr_compare_case_insensitive(const XSmallstr* a, const XSmallstr* b)
   {
     if (a->length != b->length) return 0;
     for (size_t i = 0; i < a->length; i++)
-
     {
       if (tolower(a->buf[i]) != tolower(b->buf[i])) return 0;
     }
     return 1;
   }
 
-  int x_smallstr_replace_all(XSmallstr* s, const int8_t* find, const int8_t* replace)
+  int32_t x_smallstr_replace_all(XSmallstr* s, const char* find, const char* replace)
   {
     XSmallstr result;
     x_smallstr_clear(&result);
@@ -633,17 +660,15 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     size_t i = 0;
 
     while (i < s->length)
-
     {
       if (i + find_len <= s->length && memcmp(&s->buf[i], find, find_len) == 0)
-
       {
         if (result.length + replace_len > STDX_SMALLSTR_MAX_LENGTH) return -1;
         memcpy(&result.buf[result.length], replace, replace_len);
         result.length += replace_len;
         i += find_len;
-      } else
-
+      }
+      else
       {
         if (result.length + 1 > STDX_SMALLSTR_MAX_LENGTH) return -1;
         result.buf[result.length++] = s->buf[i++];
@@ -655,20 +680,19 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return 0;
   }
 
-  void x_smallstr_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, int8_t delimiter)
+  void x_smallstr_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, char delimiter)
   {
     iter->s = s;
     iter->pos = 0;
     iter->delimiter = delimiter;
   }
 
-  int x_smallstr_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token)
+  int32_t x_smallstr_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token)
   {
     if (iter->pos >= iter->s->length) return 0;
 
     size_t start = iter->pos;
-    while (iter->pos < iter->s->length && iter->s->buf[iter->pos] != (uint8_t)iter->delimiter)
-
+    while (iter->pos < iter->s->length && iter->s->buf[iter->pos] != (char)iter->delimiter)
     {
       iter->pos++;
     }
@@ -684,9 +708,8 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
   {
     size_t count = 0;
     for (size_t i = 0; i < s->length;)
-
     {
-      uint8_t c = s->buf[i];
+      char c = s->buf[i];
       if ((c & 0x80) == 0x00) i += 1;
       else if ((c & 0xE0) == 0xC0) i += 2;
       else if ((c & 0xF0) == 0xE0) i += 3;
@@ -707,52 +730,49 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return out->length;
   }
 
-  int x_smallstr_cmp(const XSmallstr* a, const XSmallstr* b)
+  int32_t x_smallstr_cmp(const XSmallstr* a, const XSmallstr* b)
   {
     return strncmp(a->buf, b->buf, b->length);
   }
 
-  int x_smallstr_cmp_cstr(const XSmallstr* a, const int8_t* b)
+  int32_t x_smallstr_cmp_cstr(const XSmallstr* a, const char* b)
   {
     return strncmp(a->buf, b, a->length);
   }
 
-  int x_smallstr_find(const XSmallstr* s, int8_t c)
+  int32_t x_smallstr_find(const XSmallstr* s, char c)
   {
     for (size_t i = 0; i < s->length; ++i)
-
     {
       if (s->buf[i] == c) return (int)i;
     }
     return -1;
   }
 
-  int x_smallstr_rfind(const XSmallstr* s, int8_t c)
+  int32_t x_smallstr_rfind(const XSmallstr* s, char c)
   {
     for (size_t i = s->length; i > 0; --i)
-
     {
       if (s->buf[i - 1] == c) return (int)(i - 1);
     }
     return -1;
   }
 
-  int x_smallstr_split_at(const XSmallstr* s, int8_t delim, XSmallstr* left, XSmallstr* right)
+  int32_t x_smallstr_split_at(const XSmallstr* s, char delim, XSmallstr* left, XSmallstr* right)
   {
-    int pos = x_smallstr_find(s, delim);
+    int32_t pos = x_smallstr_find(s, delim);
     if (pos < 0) return 0;
     x_smallstr_substring(s, 0, pos, left);
     x_smallstr_substring(s, pos + 1, s->length - pos - 1, right);
     return 1;
   }
 
-  int x_smallstr_next_token(XSmallstr* input, int8_t delim, XSmallstr* token)
+  int32_t x_smallstr_next_token(XSmallstr* input, char delim, XSmallstr* token)
   {
     XSmallstr temp;
-    int found = 0;
-    int pos = x_smallstr_find(input, delim);
+    int32_t found = 0;
+    int32_t pos = x_smallstr_find(input, delim);
     if (pos >= 0)
-
     {
       x_smallstr_substring(input, 0, pos, token);
       x_smallstr_substring(input, pos + 1, input->length - pos - 1, &temp);
@@ -760,7 +780,6 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
       found = 1;
     }
     else if (input->length > 0)
-
     {
       *token = *input;
       x_smallstr_clear(input);
@@ -771,10 +790,10 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
 
   XStrview x_smallstr_to_strview(const XSmallstr* s)
   {
-    return (XStrview){ s->buf, s->length };
+    return x_strview_init(s->buf, s->length);
   }
 
-  int x_smallstr_utf8_substring(const XSmallstr* s, size_t start_cp, size_t len_cp, XSmallstr* out)
+  int32_t x_smallstr_utf8_substring(const XSmallstr* s, size_t start_cp, size_t len_cp, XSmallstr* out)
   {
     size_t start = utf8_advance(s->buf, s->length, start_cp);
     size_t len = utf8_advance(s->buf + start, s->length - start, len_cp);
@@ -788,12 +807,12 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
 
   void x_smallstr_utf8_trim_left(XSmallstr* s)
   {
-    const int8_t* start = s->buf;
-    const int8_t* end = s->buf + s->length;
+    const char* start = s->buf;
+    const char* end = s->buf + s->length;
 
     while (start < end)
     {
-      const int8_t* prev = start;
+      const char* prev = start;
       uint32_t cp = utf8_decode(&start, end);
       if (!is_unicode_whitespace(cp))
       {
@@ -809,15 +828,15 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
 
   void x_smallstr_utf8_trim_right(XSmallstr* s)
   {
-    const int8_t* start = s->buf;
-    const int8_t* end = s->buf + s->length;
-    const int8_t* p = end;
+    const char* start = s->buf;
+    const char* end = s->buf + s->length;
+    const char* p = end;
 
     while (p > start)
     {
-      const int8_t* prev = p;
+      const char* prev = p;
       do { --p; } while (p > start && ((*p & 0xC0) == 0x80));
-      const int8_t* decode_from = p;
+      const char* decode_from = p;
       uint32_t cp = utf8_decode(&decode_from, end);
       if (!is_unicode_whitespace(cp))
       {
@@ -836,7 +855,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     x_smallstr_utf8_trim_left(s);
   }
 
-  int x_wsmallstr_from_wcstr(XWSmallstr* s, const wchar_t* src)
+  int32_t x_wsmallstr_from_wcstr(XWSmallstr* s, const wchar_t* src)
   {
     size_t len = wcslen(src);
     if (len > STDX_SMALLSTR_MAX_LENGTH) return -1;
@@ -846,12 +865,17 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return 0;
   }
 
-  int x_wsmallstr_cmp(const XWSmallstr* a, const XWSmallstr* b)
+  int32_t x_wsmallstr_cmp(const XWSmallstr* a, const XWSmallstr* b)
   {
     return wcsncmp(a->buf, b->buf, a->length);
   }
 
-  int x_wsmallstr_casecmp(const XWSmallstr* a, const XWSmallstr* b)
+  int32_t x_wsmallstr_cmp_cstr(const XWSmallstr* a, const wchar_t* b)
+  {
+    return wcsncmp(a->buf, b, wcslen(b));
+  }
+
+  int32_t x_wsmallstr_casecmp(const XWSmallstr* a, const XWSmallstr* b)
   {
     if (a->length != b->length) return 1;
     for (size_t i = 0; i < a->length; ++i)
@@ -860,7 +884,6 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     }
     return 0;
   }
-
 
   size_t x_wsmallstr_len(const XWSmallstr* s)
   {
@@ -873,7 +896,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     s->buf[0] = L'\0';
   }
 
-  int x_wsmallstr_append(XWSmallstr* s, const wchar_t* tail)
+  int32_t x_wsmallstr_append(XWSmallstr* s, const wchar_t* tail)
   {
     size_t tail_len = wcslen(tail);
     if (s->length + tail_len > STDX_SMALLSTR_MAX_LENGTH)
@@ -885,7 +908,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return 0;
   }
 
-  int x_wsmallstr_substring(const XWSmallstr* s, size_t start, size_t len, XWSmallstr* out)
+  int32_t x_wsmallstr_substring(const XWSmallstr* s, size_t start, size_t len, XWSmallstr* out)
   {
     if (start > s->length || (start + len) > s->length)
       return -1;
@@ -898,24 +921,24 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
 
   void x_wsmallstr_trim(XWSmallstr* s)
   {
-    // Left trim
-    size_t i = 0;
-    while (i < s->length && iswspace(s->buf[i]))
-      i++;
+    size_t start = 0;
+    size_t end = s->length;
 
-    if (i > 0)
-    {
-      size_t new_len = s->length - i;
-      wmemmove(s->buf, &s->buf[i], new_len);
-      s->length = new_len;
-      s->buf[s->length] = L'\0';
-    }
+    // Find first non-space
+    while (start < end && iswspace(s->buf[start]))
+      start++;
 
-    // Right trim
-    while (s->length > 0 && iswspace(s->buf[s->length - 1]))
-      s->length--;
+    // Find last non-space
+    while (end > start && iswspace(s->buf[end - 1]))
+      end--;
 
-    s->buf[s->length] = L'\0';
+    size_t new_len = end - start;
+
+    if (start > 0 && new_len > 0)
+      wmemmove(s->buf, s->buf + start, new_len);
+
+    s->length = new_len;
+    s->buf[new_len] = L'\0';
   }
 
   void x_wsmallstr_token_iter_init(XWSmallstrTokenIterator* iter, const XWSmallstr* s, wchar_t delimiter)
@@ -925,7 +948,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     iter->delimiter = delimiter;
   }
 
-  int x_wsmallstr_token_iter_next(XWSmallstrTokenIterator* iter, XWSmallstr* token)
+  int32_t x_wsmallstr_token_iter_next(XWSmallstrTokenIterator* iter, XWSmallstr* token)
   {
     if (iter->pos >= iter->s->length)
       return 0;
@@ -943,74 +966,6 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return 1;
   }
 
-  int x_smallstr_find_cstr(const XSmallstr* s, const char* substr)
-  {
-    return x_strview_find_cstr((XStrview){ s->buf, s->length }, substr);
-  }
-
-  int x_smallstr_find_strview(const XSmallstr* s, XStrview sub)
-  {
-    return x_strview_find_strview((XStrview){ s->buf, s->length }, sub);
-  }
-
-  int x_strview_find_cstr(XStrview sv, const char* substr)
-  {
-    size_t len = strlen(substr);
-    if (len == 0 || len > sv.length) return -1;
-
-    for (size_t i = 0; i <= sv.length - len; ++i)
-    {
-      if (strncmp(&sv.data[i], substr, len) == 0)
-        return (int)i;
-    }
-    return -1;
-  }
-
-  int x_strview_find_strview(XStrview sv, XStrview sub)
-  {
-    if (sub.length == 0 || sub.length > sv.length) return -1;
-
-    for (size_t i = 0; i <= sv.length - sub.length; ++i)
-    {
-      if (strncmp(&sv.data[i], sub.data, sub.length) == 0)
-        return (int)i;
-    }
-    return -1;
-  }
-
-  int x_cstr_find_cstr(const char* haystack, const char* needle)
-  {
-    const char* found = strstr(haystack, needle);
-    return found ? (int)(found - haystack) : -1;
-  }
-
-  int x_cstr_find_strview(const char* haystack, XStrview needle)
-  {
-    size_t len = strlen(haystack);
-    if (needle.length == 0 || needle.length > len) return -1;
-
-    for (size_t i = 0; i <= len - needle.length; ++i)
-    {
-      if (strncmp(&haystack[i], needle.data, needle.length) == 0)
-        return (int)i;
-    }
-    return -1;
-  }
-
-  bool x_smallstr_starts_with_cstr(const XSmallstr* s, const char* prefix)
-  {
-    size_t len = strlen(prefix);
-    if (s->length < len) return false;
-    return strncmp(s->buf, prefix, len) == 0;
-  }
-
-  bool x_smallstr_ends_with_cstr(const XSmallstr* s, const char* suffix)
-  {
-    size_t len = strlen(suffix);
-    if (s->length < len) return false;
-    return strncmp(s->buf + s->length - len, suffix, len) == 0;
-  }
-
   inline bool x_strview_empty(XStrview sv)
   {
     return sv.length == 0;
@@ -1021,15 +976,15 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return a.length == b.length && (memcmp(a.data, b.data, a.length) == 0);
   }
 
-  bool x_strview_eq_cstr(XStrview a, const int8_t* b)
+  bool x_strview_eq_cstr(XStrview a, const char* b)
   {
     return x_strview_eq(a, x_strview(b));
   }
 
-  int x_strview_cmp(XStrview a, XStrview b)
+  int32_t x_strview_cmp(XStrview a, XStrview b)
   {
     size_t min_len = a.length < b.length ? a.length : b.length;
-    int r = memcmp(a.data, b.data, min_len);
+    int32_t r = memcmp(a.data, b.data, min_len);
     if (r != 0) return r;
     return (int)(a.length - b.length);
   }
@@ -1038,8 +993,6 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
   {
     if (a.length != b.length) return 0;
     for (size_t i = 0; i < a.length; i++)
-
-
     {
       if (tolower((unsigned char)a.data[i]) != tolower((unsigned char)b.data[i]))
         return false;
@@ -1047,15 +1000,13 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return true;
   }
 
-  int x_strview_case_cmp(XStrview a, XStrview b)
+  int32_t x_strview_case_cmp(XStrview a, XStrview b)
   {
     size_t min_len = a.length < b.length ? a.length : b.length;
     for (size_t i = 0; i < min_len; i++)
-
-
     {
-      int ca = tolower((unsigned char)a.data[i]);
-      int cb = tolower((unsigned char)b.data[i]);
+      int32_t ca = tolower((unsigned char)a.data[i]);
+      int32_t cb = tolower((unsigned char)b.data[i]);
       if (ca != cb) return ca - cb;
     }
     return (int)(a.length - b.length);
@@ -1065,7 +1016,7 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
   {
     if (start > sv.length) start = sv.length;
     if (start + len > sv.length) len = sv.length - start;
-    return (XStrview){ sv.data + start, len };
+    return x_strview_init(sv.data + start, len);
   }
 
   XStrview x_strview_trim_left(XStrview sv)
@@ -1087,47 +1038,42 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return x_strview_trim_right(x_strview_trim_left(sv));
   }
 
-  int x_strview_find(XStrview sv, int8_t c)
+  int32_t x_strview_find(XStrview sv, char c)
   {
     for (size_t i = 0; i < sv.length; i++)
-
     {
       if (sv.data[i] == c) return (int)i;
     }
     return -1;
   }
 
-  int x_strview_rfind(XStrview sv, int8_t c)
+  int32_t x_strview_rfind(XStrview sv, char c)
   {
     for (size_t i = sv.length; i > 0; i--)
-
     {
       if (sv.data[i - 1] == c) return (int)(i - 1);
     }
     return -1;
   }
 
-  bool x_strview_split_at(XStrview sv, int8_t delim, XStrview* left, XStrview* right)
+  bool x_strview_split_at(XStrview sv, char delim, XStrview* left, XStrview* right)
   {
-    int pos = x_strview_find(sv, delim);
+    int32_t pos = x_strview_find(sv, delim);
     if (pos < 0) return false;
     *left = x_strview_substr(sv, 0, pos);
     *right = x_strview_substr(sv, pos + 1, sv.length - pos - 1);
     return true;
   }
 
-  // Yields the next token before `delim` and advances input
-  bool x_strview_next_token(XStrview* input, int8_t delim, XStrview* token)
+  bool x_strview_next_token(XStrview* input, char delim, XStrview* token)
   {
     XStrview rest;
     if (x_strview_split_at(*input, delim, token, &rest))
-
     {
       *input = rest;
       return true;
     }
     else if (input->length > 0)
-
     {
       *token = *input;
       *input = (XStrview){0};
@@ -1136,18 +1082,26 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return false;
   }
 
-  bool x_strview_starts_with(XStrview sv, const char* prefix)
+  bool x_strview_starts_with_cstr(XStrview sv, const char* prefix)
   {
-    size_t len = strlen(prefix);
-    if (sv.length < len) return false;
-    return strncmp(sv.data, prefix, len) == 0;
+    if (prefix == NULL || sv.length == 0 || sv.data == NULL)
+      return false;
+    size_t prefix_len = strlen(prefix);
+    if (prefix_len > sv.length)
+      return false;
+
+    return strncmp(sv.data, prefix, prefix_len) == 0;
   }
 
-  bool x_strview_ends_with(XStrview sv, const char* suffix)
+  bool x_strview_ends_with_cstr(XStrview sv, const char* suffix)
   {
-    size_t len = strlen(suffix);
-    if (sv.length < len) return false;
-    return strncmp(sv.data + sv.length - len, suffix, len) == 0;
+    if (suffix == NULL || sv.length == 0 || sv.data == NULL)
+      return false;
+    size_t suffix_len = strlen(suffix);
+    if (suffix_len > sv.length)
+      return false;
+
+    return strncmp(sv.data + sv.length - suffix_len, suffix, suffix_len) == 0;
   }
 
   bool x_wstrview_empty(XWStrview sv)
@@ -1160,10 +1114,10 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
     return a.length == b.length && wcsncmp(a.data, b.data, a.length) == 0;
   }
 
-  int x_wstrview_cmp(XWStrview a, XWStrview b)
+  int32_t x_wstrview_cmp(XWStrview a, XWStrview b)
   {
     size_t min = a.length < b.length ? a.length : b.length;
-    int result = wcsncmp(a.data, b.data, min);
+    int32_t result = wcsncmp(a.data, b.data, min);
     return result != 0 ? result : (int)(a.length - b.length);
   }
 
@@ -1197,52 +1151,181 @@ int         x_cstr_find_strview(const char* haystack, XStrview needle);
   {
     size_t byte_start = utf8_advance(sv.data, sv.length, char_start);
     size_t byte_end = utf8_advance(sv.data + byte_start, sv.length - byte_start, char_len);
-    return (XStrview){
-      .data = sv.data + byte_start,
-        .length = byte_end
-    };
+    return x_strview_init(sv.data + byte_start, byte_end );
   }
 
   XStrview x_strview_utf8_trim_left(XStrview sv)
   {
-    const int8_t* start = sv.data;
-    const int8_t* end = sv.data + sv.length;
+    const char* start = sv.data;
+    const char* end = sv.data + sv.length;
     while (start < end)
     {
-      const int8_t* prev = start;
+      const char* prev = start;
       uint32_t cp = utf8_decode(&start, end);
       if (!is_unicode_whitespace(cp))
       {
         return (XStrview){ prev, (size_t)(end - prev) };
       }
     }
-    return (XStrview){ end, 0 }; // All whitespace
+    return x_strview_init(end, 0);
   }
 
   XStrview x_strview_utf8_trim_right(XStrview sv)
   {
-    const int8_t* start = sv.data;
-    const int8_t* end = sv.data + sv.length;
-    const int8_t* p = end;
+    const char* start = sv.data;
+    const char* end = sv.data + sv.length;
+    const char* p = end;
     while (p > start)
     {
-      const int8_t* prev = p;
+      const char* prev = p;
       // Step back 1 byte to guess start of char
       do { --p; } while (p > start && ((*p & 0xC0) == 0x80));
-      const int8_t* decode_from = p;
+      const char* decode_from = p;
       uint32_t cp = utf8_decode(&decode_from, end);
       if (!is_unicode_whitespace(cp))
       {
-        return (XStrview){ sv.data, (size_t)(prev - sv.data) };
+        return x_strview_init(sv.data, (size_t)(prev - sv.data));
       }
     }
-    return (XStrview){ sv.data + sv.length, 0 };
+    return x_strview_init(sv.data + sv.length, 0 );
   }
 
   XStrview x_strview_utf8_trim(XStrview sv)
   {
     return x_strview_utf8_trim_right(x_strview_utf8_trim_left(sv));
   }
+
+  int32_t x_strview_utf8_find(XStrview sv, uint32_t codepoint)
+  {
+    const char* ptr = sv.data;
+    const char* end = sv.data + sv.length;
+
+    while (ptr < end)
+    {
+      const char* start = ptr;
+      uint32_t cp = utf8_decode(&ptr, end);
+      if (cp == codepoint)
+        return (int)(start - sv.data);
+    }
+    return -1;
+  }
+
+  int32_t x_strview_utf8_rfind(XStrview sv, uint32_t codepoint)
+  {
+    const char* ptr = sv.data;
+    const char* end = sv.data + sv.length;
+    const char* last_match = NULL;
+
+    while (ptr < end)
+    {
+      const char* current = ptr;
+      uint32_t cp = utf8_decode(&ptr, end);
+      if (cp == codepoint)
+        last_match = current;
+    }
+
+    return last_match ? (int)(last_match - sv.data) : -1;
+  }
+
+  bool x_strview_utf8_split_at(XStrview sv, uint32_t delim, XStrview* left, XStrview* right)
+  {
+    const char* ptr = sv.data;
+    const char* end = sv.data + sv.length;
+
+    while (ptr < end) {
+      const char* codepoint_start = ptr;
+      int32_t cp = utf8_decode(&ptr, end);
+
+      if (cp == (int32_t)delim) {
+        size_t left_len = codepoint_start - sv.data;
+        size_t right_len = end - ptr;
+        *left  = x_strview_init(sv.data, left_len);
+        *right = x_strview_init(ptr, right_len);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool x_strview_utf8_next_token(XStrview* input, uint32_t delim, XStrview* token)
+  {
+    XStrview rest;
+    if (x_strview_utf8_split_at(*input, delim, token, &rest)) {
+      *input = rest;
+      return true;
+    }
+    if (input->length > 0) {
+      *token = *input;
+      *input = (XStrview){0};
+      return true;
+    }
+    return false;
+  }
+
+  bool x_strview_utf8_starts_with_cstr(XStrview sv, const char* prefix)
+  {
+    if (!sv.data || !prefix) return false;
+    size_t prefix_len = strlen(prefix);
+    if (prefix_len > sv.length) return false;
+    return memcmp(sv.data, prefix, prefix_len) == 0;
+  }
+
+  bool x_strview_utf8_ends_with_cstr(XStrview sv, const char* suffix)
+  {
+    if (!sv.data || !suffix) return false;
+    size_t suffix_len = strlen(suffix);
+    if (suffix_len > sv.length) return false;
+    return memcmp(sv.data + sv.length - suffix_len, suffix, suffix_len) == 0;
+  }
+
+  void x_smallstr_utf8_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, uint32_t delimiter)
+  {
+    iter->s = s;
+    iter->pos = 0;
+    iter->delimiter = delimiter;
+  }
+
+int32_t x_smallstr_utf8_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token)
+{
+  const char* buf = iter->s->buf;
+  size_t len = iter->s->length;
+
+  if (iter->pos >= len)
+    return 0; // no more tokens
+
+  const char* start = buf + iter->pos;
+  const char* p = start;
+  const char* end = buf + len;
+
+  while (p < end)
+  {
+    const char* cp_start = p;
+    int32_t cp = utf8_decode(&p, end);  // this advances p
+
+    if (cp == (int32_t)iter->delimiter)
+    {
+      size_t token_len = cp_start - start;
+      if (token_len >= STDX_SMALLSTR_MAX_LENGTH) return -1;
+      memcpy(token->buf, start, token_len);
+      token->buf[token_len] = '\0';
+      token->length = token_len;
+
+      iter->pos = p - buf;  // update position to next byte after delimiter
+      return 1;
+    }
+  }
+
+  // No more delimiters, return remainder
+  size_t token_len = end - start;
+  if (token_len >= STDX_SMALLSTR_MAX_LENGTH) return -1;
+  memcpy(token->buf, start, token_len);
+  token->buf[token_len] = '\0';
+  token->length = token_len;
+
+  iter->pos = len;  // done
+  return 1;
+}
 
 #endif // STDX_IMPLEMENTATION_STRING
 
