@@ -69,19 +69,6 @@ extern "C"
     size_t length; // In wide characters
   } XWSmallstr;
 
-  typedef struct 
-  {
-    const XSmallstr* s;
-    size_t pos;
-    uint32_t delimiter;  // Unicode codepoint or ascii character
-  } XSmallstrTokenIterator;
-
-  typedef struct
-  {
-    const XWSmallstr* s;
-    size_t pos;
-    wchar_t delimiter;
-  } XWSmallstrTokenIterator;
 
   // C-string (null-terminated char) functions
   uint32_t  x_cstr_hash(const char* str);
@@ -94,8 +81,8 @@ extern "C"
   // Wide C-string (wchar_t) functions
   bool      x_wcstr_starts_with(const wchar_t* str, const wchar_t* prefix);
   bool      x_wcstr_ends_with(const wchar_t* str, const wchar_t* suffix);
-  bool      x_wcstr_starts_with_ci(const wchar_t* str, const wchar_t* prefix);
-  bool      x_wcstr_ends_with_ci(const wchar_t* str, const wchar_t* suffix);
+  bool      x_wcstr_starts_with_case(const wchar_t* str, const wchar_t* prefix);
+  bool      x_wcstr_ends_with_case(const wchar_t* str, const wchar_t* suffix);
   int32_t   x_wcstr_casecmp(const wchar_t* a, const wchar_t* b);
 
   // UTF-8 and wide string conversions and utility functions
@@ -112,7 +99,6 @@ extern "C"
   bool      x_utf8_is_single_char(const char* s);
   int32_t   x_utf8_decode(const char* ptr, const char* end, size_t* out_len);
   int32_t   x_utf8_codepoint_length(unsigned char first_byte);
-
 
   //XSmallstr - A small fixed-size string abstraction with various utility functions.
   int32_t   x_smallstr_init(XSmallstr* s, const char* str);
@@ -132,10 +118,8 @@ extern "C"
   void      x_smallstr_trim_left(XSmallstr* s);
   void      x_smallstr_trim_right(XSmallstr* s);
   void      x_smallstr_trim(XSmallstr* s);
-  int32_t   x_smallstr_compare_case_insensitive(const XSmallstr* a, const XSmallstr* b);
+  int32_t   x_smallstr_cmp_case(const XSmallstr* a, const XSmallstr* b);
   int32_t   x_smallstr_replace_all(XSmallstr* s, const char* find, const char* replace);
-  void      x_smallstr_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, char delimiter);
-  int32_t   x_smallstr_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token);
   size_t    x_smallstr_utf8_len(const XSmallstr* s);
   int32_t   x_smallstr_cmp(const XSmallstr* a, const XSmallstr* b);
   int32_t   x_smallstr_cmp_cstr(const XSmallstr* a, const char* b);
@@ -151,14 +135,12 @@ extern "C"
   int32_t   x_wsmallstr_from_wcstr(XWSmallstr* s, const wchar_t* src);
   int32_t   x_wsmallstr_cmp(const XWSmallstr* a, const XWSmallstr* b);
   int32_t   x_wsmallstr_cmp_cstr(const XWSmallstr* a, const wchar_t* b);
-  int32_t   x_wsmallstr_casecmp(const XWSmallstr* a, const XWSmallstr* b);
+  int32_t   x_wsmallstr_cmp_case(const XWSmallstr* a, const XWSmallstr* b);
   size_t    x_wsmallstr_len(const XWSmallstr* s);
   void      x_wsmallstr_clear(XWSmallstr* s);
   int32_t   x_wsmallstr_append(XWSmallstr* s, const wchar_t* tail);
   int32_t   x_wsmallstr_substring(const XWSmallstr* s, size_t start, size_t len, XWSmallstr* out);
   void      x_wsmallstr_trim(XWSmallstr* s);
-  void      x_wsmallstr_token_iter_init(XWSmallstrTokenIterator* iter, const XWSmallstr* s, wchar_t delimiter);
-  int32_t   x_wsmallstr_token_iter_next(XWSmallstrTokenIterator* iter, XWSmallstr* token);
 
   // XStrview (string views on char)*
   // Non-owning string views and operations.
@@ -169,9 +151,9 @@ extern "C"
   bool      x_strview_empty(XStrview sv);
   bool      x_strview_eq(XStrview a, XStrview b);
   bool      x_strview_eq_cstr(XStrview a, const char* b);
+  bool      x_strview_eq_case(XStrview a, XStrview b);
   int32_t   x_strview_cmp(XStrview a, XStrview b);
-  bool      x_strview_case_eq(XStrview a, XStrview b);
-  int32_t   x_strview_case_cmp(XStrview a, XStrview b);
+  int32_t   x_strview_cmp_case(XStrview a, XStrview b);
   XStrview  x_strview_substr(XStrview sv, size_t start, size_t len);
   XStrview  x_strview_trim_left(XStrview sv);
   XStrview  x_strview_trim_right(XStrview sv);
@@ -193,14 +175,13 @@ extern "C"
   bool      x_strview_utf8_next_token(XStrview* input, uint32_t codepoint, XStrview* token);
   bool      x_strview_utf8_starts_with_cstr(XStrview sv, const char* prefix);
   bool      x_strview_utf8_ends_with_cstr(XStrview sv, const char* prefix);
-  void      x_smallstr_utf8_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, uint32_t delimiter);
-  int32_t   x_smallstr_utf8_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token);
-
-
 
   // XWStrview (string views on wchar_t)*
   // Non-owning wide string views and operations.
-#define   x_wstrview(wcs) ((XWStrview){ .data = (wcs), .length = wcslen(wcs) })
+
+#define     x_wstrview_init(cstr, len) ((XWStrview){ .data = (cstr), .length = (len) })
+#define     x_wstrview(cstr)           (x_wstrview_init( (cstr), wcslen(cstr) ))
+
   bool      x_wstrview_empty(XWStrview sv);
   bool      x_wstrview_eq(XWStrview a, XWStrview b);
   int32_t   x_wstrview_cmp(XWStrview a, XWStrview b);
@@ -349,7 +330,7 @@ extern "C"
     return wcscmp(str + slen - suf_len, suffix) == 0;
   }
 
-  bool x_wcstr_starts_with_ci(const wchar_t* str, const wchar_t* prefix)
+  bool x_wcstr_starts_with_case(const wchar_t* str, const wchar_t* prefix)
   {
     while (*prefix && *str)
     {
@@ -359,7 +340,7 @@ extern "C"
     return *prefix == 0;
   }
 
-  bool x_wcstr_ends_with_ci(const wchar_t* str, const wchar_t* suffix)
+  bool x_wcstr_ends_with_case(const wchar_t* str, const wchar_t* suffix)
   {
     size_t slen = wcslen(str);
     size_t suflen = wcslen(suffix);
@@ -640,7 +621,7 @@ extern "C"
     x_smallstr_trim_left(s);
   }
 
-  int32_t x_smallstr_compare_case_insensitive(const XSmallstr* a, const XSmallstr* b)
+  int32_t x_smallstr_cmp_case(const XSmallstr* a, const XSmallstr* b)
   {
     if (a->length != b->length) return 0;
     for (size_t i = 0; i < a->length; i++)
@@ -678,30 +659,6 @@ extern "C"
     result.buf[result.length] = '\0';
     *s = result;
     return 0;
-  }
-
-  void x_smallstr_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, char delimiter)
-  {
-    iter->s = s;
-    iter->pos = 0;
-    iter->delimiter = delimiter;
-  }
-
-  int32_t x_smallstr_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token)
-  {
-    if (iter->pos >= iter->s->length) return 0;
-
-    size_t start = iter->pos;
-    while (iter->pos < iter->s->length && iter->s->buf[iter->pos] != (char)iter->delimiter)
-    {
-      iter->pos++;
-    }
-
-    x_smallstr_substring(iter->s, start, iter->pos - start, token);
-
-    if (iter->pos < iter->s->length) iter->pos++; // Skip delimiter
-
-    return 1;
   }
 
   size_t x_smallstr_utf8_len(const XSmallstr* s)
@@ -875,7 +832,7 @@ extern "C"
     return wcsncmp(a->buf, b, wcslen(b));
   }
 
-  int32_t x_wsmallstr_casecmp(const XWSmallstr* a, const XWSmallstr* b)
+  int32_t x_wsmallstr_cmp_case(const XWSmallstr* a, const XWSmallstr* b)
   {
     if (a->length != b->length) return 1;
     for (size_t i = 0; i < a->length; ++i)
@@ -941,31 +898,6 @@ extern "C"
     s->buf[new_len] = L'\0';
   }
 
-  void x_wsmallstr_token_iter_init(XWSmallstrTokenIterator* iter, const XWSmallstr* s, wchar_t delimiter)
-  {
-    iter->s = s;
-    iter->pos = 0;
-    iter->delimiter = delimiter;
-  }
-
-  int32_t x_wsmallstr_token_iter_next(XWSmallstrTokenIterator* iter, XWSmallstr* token)
-  {
-    if (iter->pos >= iter->s->length)
-      return 0;
-
-    size_t start = iter->pos;
-    while (iter->pos < iter->s->length && iter->s->buf[iter->pos] != iter->delimiter)
-      iter->pos++;
-
-    size_t len = iter->pos - start;
-    x_wsmallstr_substring(iter->s, start, len, token);
-
-    if (iter->pos < iter->s->length)
-      iter->pos++; // Skip delimiter
-
-    return 1;
-  }
-
   inline bool x_strview_empty(XStrview sv)
   {
     return sv.length == 0;
@@ -989,7 +921,7 @@ extern "C"
     return (int)(a.length - b.length);
   }
 
-  bool x_strview_case_eq(XStrview a, XStrview b)
+  bool x_strview_eq_case(XStrview a, XStrview b)
   {
     if (a.length != b.length) return 0;
     for (size_t i = 0; i < a.length; i++)
@@ -1000,7 +932,7 @@ extern "C"
     return true;
   }
 
-  int32_t x_strview_case_cmp(XStrview a, XStrview b)
+  int32_t x_strview_cmp_case(XStrview a, XStrview b)
   {
     size_t min_len = a.length < b.length ? a.length : b.length;
     for (size_t i = 0; i < min_len; i++)
@@ -1279,53 +1211,6 @@ extern "C"
     return memcmp(sv.data + sv.length - suffix_len, suffix, suffix_len) == 0;
   }
 
-  void x_smallstr_utf8_token_iter_init(XSmallstrTokenIterator* iter, const XSmallstr* s, uint32_t delimiter)
-  {
-    iter->s = s;
-    iter->pos = 0;
-    iter->delimiter = delimiter;
-  }
-
-int32_t x_smallstr_utf8_token_iter_next(XSmallstrTokenIterator* iter, XSmallstr* token)
-{
-  const char* buf = iter->s->buf;
-  size_t len = iter->s->length;
-
-  if (iter->pos >= len)
-    return 0; // no more tokens
-
-  const char* start = buf + iter->pos;
-  const char* p = start;
-  const char* end = buf + len;
-
-  while (p < end)
-  {
-    const char* cp_start = p;
-    int32_t cp = utf8_decode(&p, end);  // this advances p
-
-    if (cp == (int32_t)iter->delimiter)
-    {
-      size_t token_len = cp_start - start;
-      if (token_len >= STDX_SMALLSTR_MAX_LENGTH) return -1;
-      memcpy(token->buf, start, token_len);
-      token->buf[token_len] = '\0';
-      token->length = token_len;
-
-      iter->pos = p - buf;  // update position to next byte after delimiter
-      return 1;
-    }
-  }
-
-  // No more delimiters, return remainder
-  size_t token_len = end - start;
-  if (token_len >= STDX_SMALLSTR_MAX_LENGTH) return -1;
-  memcpy(token->buf, start, token_len);
-  token->buf[token_len] = '\0';
-  token->length = token_len;
-
-  iter->pos = len;  // done
-  return 1;
-}
 
 #endif // STDX_IMPLEMENTATION_STRING
 
