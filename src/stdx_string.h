@@ -70,6 +70,8 @@ extern "C"
   } XWSmallstr;
 
 
+
+  void      x_set_locale(const char* locale);
   // C-string (null-terminated char) functions
   uint32_t  x_cstr_hash(const char* str);
   char*     x_cstr_str(const char *haystack, const char *needle);
@@ -111,10 +113,6 @@ extern "C"
   size_t    x_smallstr_append_cstr(XSmallstr* s, const char* cstr);
   size_t    x_smallstr_append_char(XSmallstr* s, char c);
   size_t    x_smallstr_substring(const XSmallstr* s, size_t start, size_t len, XSmallstr* out);
-  int32_t   x_smallstr_find(const XSmallstr* s, char c);
-  int32_t   x_smallstr_rfind(const XSmallstr* s, char c);
-  int32_t   x_smallstr_split_at(const XSmallstr* s, char delim, XSmallstr* left, XSmallstr* right);
-  int32_t   x_smallstr_next_token(XSmallstr* input, char delim, XSmallstr* token);
   void      x_smallstr_trim_left(XSmallstr* s);
   void      x_smallstr_trim_right(XSmallstr* s);
   void      x_smallstr_trim(XSmallstr* s);
@@ -132,15 +130,17 @@ extern "C"
   // XWSmallstr
   // Wide-char version of small string abstraction.
 
-  int32_t   x_wsmallstr_from_wcstr(XWSmallstr* s, const wchar_t* src);
+  int32_t   x_wsmallstr_init(XWSmallstr* s, const wchar_t* src);
   int32_t   x_wsmallstr_cmp(const XWSmallstr* a, const XWSmallstr* b);
   int32_t   x_wsmallstr_cmp_cstr(const XWSmallstr* a, const wchar_t* b);
   int32_t   x_wsmallstr_cmp_case(const XWSmallstr* a, const XWSmallstr* b);
-  size_t    x_wsmallstr_len(const XWSmallstr* s);
+  size_t    x_wsmallstr_length(const XWSmallstr* s);
   void      x_wsmallstr_clear(XWSmallstr* s);
   int32_t   x_wsmallstr_append(XWSmallstr* s, const wchar_t* tail);
   int32_t   x_wsmallstr_substring(const XWSmallstr* s, size_t start, size_t len, XWSmallstr* out);
   void      x_wsmallstr_trim(XWSmallstr* s);
+  int32_t   x_wsmallstr_find(const XWSmallstr* s, wchar_t c);
+
 
   // XStrview (string views on char)*
   // Non-owning string views and operations.
@@ -189,6 +189,9 @@ extern "C"
   XWStrview x_wstrview_trim_left(XWStrview sv);
   XWStrview x_wstrview_trim_right(XWStrview sv);
   XWStrview x_wstrview_trim(XWStrview sv);
+  bool      x_wstrview_split_at(XWStrview sv, uint32_t delim, XWStrview* left, XWStrview* right);
+  bool      x_wstrview_next_token(XWStrview* input, wchar_t delim, XWStrview* token);
+
 
 #ifdef STDX_IMPLEMENTATION_STRING
 
@@ -207,6 +210,7 @@ extern "C"
 #ifdef _WIN32
 #define strncasecmp _strnicmp
 #endif
+
 
   static bool is_unicode_whitespace(uint32_t cp)
   {
@@ -414,10 +418,9 @@ extern "C"
     return true;
   }
 
-  void x_utf8_set_locale(void)
+  void x_set_locale(const char* locale)
   {
-    // Set locale once at startup (user responsibility)
-    setlocale(LC_ALL, "");
+    setlocale(LC_ALL, locale ? locale : "");
   }
 
   size_t x_utf8_strlen(const char* utf8)
@@ -706,6 +709,7 @@ extern "C"
     return -1;
   }
 
+
   int32_t x_smallstr_rfind(const XSmallstr* s, char c)
   {
     for (size_t i = s->length; i > 0; --i)
@@ -722,27 +726,6 @@ extern "C"
     x_smallstr_substring(s, 0, pos, left);
     x_smallstr_substring(s, pos + 1, s->length - pos - 1, right);
     return 1;
-  }
-
-  int32_t x_smallstr_next_token(XSmallstr* input, char delim, XSmallstr* token)
-  {
-    XSmallstr temp;
-    int32_t found = 0;
-    int32_t pos = x_smallstr_find(input, delim);
-    if (pos >= 0)
-    {
-      x_smallstr_substring(input, 0, pos, token);
-      x_smallstr_substring(input, pos + 1, input->length - pos - 1, &temp);
-      *input = temp;
-      found = 1;
-    }
-    else if (input->length > 0)
-    {
-      *token = *input;
-      x_smallstr_clear(input);
-      found = 1;
-    }
-    return found;
   }
 
   XStrview x_smallstr_to_strview(const XSmallstr* s)
@@ -842,7 +825,7 @@ extern "C"
     return 0;
   }
 
-  size_t x_wsmallstr_len(const XWSmallstr* s)
+  size_t x_wsmallstr_length(const XWSmallstr* s)
   {
     return s->length;
   }
@@ -897,6 +880,39 @@ extern "C"
     s->length = new_len;
     s->buf[new_len] = L'\0';
   }
+
+
+  int32_t x_wsmallstr_find(const XWSmallstr* s, wchar_t c)
+  {
+    for (size_t i = 0; i < s->length; ++i)
+    {
+      if (s->buf[i] == c)
+        return (int32_t)i;
+    }
+    return -1;
+  }
+
+  int32_t x_wsmallstr_next_token(XWSmallstr* input, wchar_t delim, XWSmallstr* token)
+  {
+    XWSmallstr temp;
+    int32_t found = 0;
+    int32_t pos = x_wsmallstr_find(input, delim);
+    if (pos >= 0)
+    {
+      x_wsmallstr_substring(input, 0, pos, token);
+      x_wsmallstr_substring(input, pos + 1, input->length - pos - 1, &temp);
+      *input = temp;
+      found = 1;
+    }
+    else if (input->length > 0)
+    {
+      *token = *input;
+      x_wsmallstr_clear(input);
+      found = 1;
+    }
+    return found;
+  }
+
 
   inline bool x_strview_empty(XStrview sv)
   {
@@ -1077,6 +1093,46 @@ extern "C"
   XWStrview x_wstrview_trim(XWStrview sv)
   {
     return x_wstrview_trim_right(x_wstrview_trim_left(sv));
+  }
+
+  bool x_wstrview_split_at(XWStrview sv, uint32_t delim, XWStrview* left, XWStrview* right)
+  {
+    for (size_t i = 0; i < sv.length; ++i)
+    {
+      if ((uint32_t)sv.data[i] == delim)
+      {
+        if (left) {
+          left->data = sv.data;
+          left->length = i;
+        }
+        if (right)
+        {
+          right->data = sv.data + i + 1;
+          right->length = sv.length - i - 1;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool x_wstrview_next_token(XWStrview* input, wchar_t delim, XWStrview* token)
+  {
+    XWStrview left, right;
+    if (x_wstrview_split_at(*input, (uint32_t)delim, &left, &right))
+    {
+      *token = left;
+      *input = right;
+      return true;
+    }
+    else if (input->length > 0)
+    {
+      *token = *input;
+      input->data += input->length;
+      input->length = 0;
+      return true;
+    }
+    return false;
   }
 
   XStrview x_strview_utf8_substr(XStrview sv, size_t char_start, size_t char_len)

@@ -169,20 +169,39 @@ int test_x_strview_split_at(void)
   return 0;
 }
 
-int test_xwsmallstr_tokenize(void)
+int test_x_wstrview_next_token(void)
 {
-  //XWSmallstr s;
-  //x_wsmallstr_from_wcstr(&s, L"אחד,שתיים,שלוש");
-  //XWSmallstr token;
-  //int count = 0;
+  {
+    x_set_locale("Hebrew");
+    XWStrview s = x_wstrview( L"אחד,שתיים,שלוש");
+    XWStrview token;
+    int count = 0;
 
-  //while(x_wsallstr_next_token(&iter, &s, L','))
-  //{
-  //  ASSERT_TRUE(token.length > 0);
-  //}
-  //ASSERT_TRUE(count == 3);
+    while(x_wstrview_next_token(&s, L',', &token))
+    {
+      ASSERT_TRUE(token.length > 0);
+      count++;
+    }
+    ASSERT_TRUE(count == 3);
+  }
+
+  {
+    x_set_locale(NULL);
+    XWStrview input = x_wstrview( L"foo,bar,baz");
+    XWStrview token;
+    int count = 0;
+
+    while (x_wstrview_next_token(&input, L',', &token))
+    {
+      count++;
+    }
+    ASSERT_TRUE(count == 3);
+  }
+
   return 0;
 }
+
+
 
 int test_cstr_wcstr_conversions(void)
 {
@@ -301,8 +320,8 @@ int test_wsmallstr_functions(void)
   x_wsmallstr_from_wcstr(&ws, L"  שלום  ");
   x_wsmallstr_trim(&ws);
   size_t len = wcslen(ws.buf);
-  ASSERT_TRUE(x_wsmallstr_len(&ws) == len);
-  ASSERT_TRUE(x_wsmallstr_len(&ws) == 4);
+  ASSERT_TRUE(x_wsmallstr_length(&ws) == len);
+  ASSERT_TRUE(x_wsmallstr_length(&ws) == 4);
   ASSERT_TRUE(wcslen(ws.buf) == 4);
   ASSERT_TRUE(x_wsmallstr_cmp_cstr(&ws, L"שלום") == 0);
   return 0;
@@ -373,22 +392,6 @@ int test_x_strview_utf8_split_at()
   return 0;
 }
 
-int test_x_smallstr_utf8_tokenizer()
-{
-  //  XSmallstr s;
-  //  x_smallstr_from_cstr(&s, "a✓b✓c");
-  //  XSmallstr tok;
-  //
-  //  const char* expected[] = {"a", "b", "c"};
-  //  const char** e = expected;
-  //  //while (x_smallstr_utf8_token_iter_next(&iter, &tok))
-  //  while(x_smallstr_next_token(&s, 0x2713, &tok))
-  //  {
-  //    ASSERT_TRUE(x_strview_eq_cstr(x_strview_init(tok.buf, tok.length), *e++));
-  //  }
-  //
-  return 0;
-}
 
 int test_x_strview_utf8_next_token()
 {
@@ -424,8 +427,7 @@ int test_x_strview_utf8_ends_with_cstr()
 
 int main()
 {
-
-  x_utf8_set_locale();
+  x_set_locale(NULL);
 
   STDXTestCase tests[] =
   {
@@ -435,7 +437,6 @@ int main()
     STDX_TEST(test_x_strview_utf8_find_cp),
     STDX_TEST(test_x_strview_utf8_rfind),
     STDX_TEST(test_x_strview_utf8_split_at),
-    STDX_TEST(test_x_smallstr_utf8_tokenizer),
 
     STDX_TEST(test_wsmallstr_functions),
     STDX_TEST(test_xwstrview_basic),
@@ -466,7 +467,7 @@ int main()
     STDX_TEST(test_x_strview_trim),
     STDX_TEST(test_x_strview_find_and_rfind),
     STDX_TEST(test_x_strview_split_at),
-    STDX_TEST(test_xwsmallstr_tokenize)
+    STDX_TEST(test_x_wstrview_next_token)
 
   };
 
