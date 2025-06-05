@@ -107,7 +107,7 @@ typedef int32_t (*STDXTestFunction)();
 
 typedef struct
 {
-  const int8_t *name;
+  const char *name;
   STDXTestFunction func;
 } STDXTestCase;
 
@@ -119,15 +119,15 @@ typedef struct
 #include <signal.h>
 static void x_test_internalOnSignal(int signal)
 {
-  const int8_t* signalName = "Unknown signal";
+  const char* signalName = "Unknown signal";
   switch(signal)
   {
-    case SIGABRT: signalName = (const int8_t*) "SIGABRT"; break;
-    case SIGFPE:  signalName = (const int8_t*) "SIGFPE"; break;
-    case SIGILL:  signalName = (const int8_t*) "SIGILL"; break;
-    case SIGINT:  signalName = (const int8_t*) "SIGINT"; break;
-    case SIGSEGV: signalName = (const int8_t*) "SIGSEGV"; break;
-    case SIGTERM: signalName = (const int8_t*) "SIGTERM"; break;
+    case SIGABRT: signalName = (const char*) "SIGABRT"; break;
+    case SIGFPE:  signalName = (const char*) "SIGFPE"; break;
+    case SIGILL:  signalName = (const char*) "SIGILL"; break;
+    case SIGINT:  signalName = (const char*) "SIGINT"; break;
+    case SIGSEGV: signalName = (const char*) "SIGSEGV"; break;
+    case SIGTERM: signalName = (const char*) "SIGTERM"; break;
   }
 
   fflush(stderr);

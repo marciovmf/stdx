@@ -41,14 +41,14 @@ extern "C"
 
   typedef struct XFile_t XFile;
 
-  XFile *x_io_open(const int8_t *filename, const int8_t *mode, XAllocator *alloc);// Open a file with mode ("r", "rb", "w", etc.)
+  XFile *x_io_open(const char *filename, const char *mode, XAllocator *alloc);// Open a file with mode ("r", "rb", "w", etc.)
   void x_io_close(XFile *file); // Close a file and free internal memory
   size_t x_io_read(XFile *file, void *buffer, size_t size); // Read up to `size` bytes into buffer. Returns bytes read.
-  int8_t *x_io_read_all(XFile *file, size_t *out_size, XAllocator *alloc); // Read the entire file into a buffer allocated with `alloc` (or malloc). Returns buffer (null-terminated, but not for text safety). Caller must free.
-  int8_t *x_io_read_text(const int8_t *filename, XAllocator *alloc); // Convenience: open, read, close. Returns null-terminated text.
+  char *x_io_read_all(XFile *file, size_t *out_size, XAllocator *alloc); // Read the entire file into a buffer allocated with `alloc` (or malloc). Returns buffer (null-terminated, but not for text safety). Caller must free.
+  char *x_io_read_text(const char *filename, XAllocator *alloc); // Convenience: open, read, close. Returns null-terminated text.
   size_t x_io_write(XFile *file, const void *data, size_t size); // Write `size` bytes to file. Returns number of bytes written.
-  bool x_io_write_text(const int8_t *filename, const int8_t *text); // Write null-terminated text to a file (overwrite).
-  bool x_io_append_text(const int8_t *filename, const int8_t *text); // Append null-terminated text to file.
+  bool x_io_write_text(const char *filename, const char *text); // Write null-terminated text to a file (overwrite).
+  bool x_io_append_text(const char *filename, const char *text); // Append null-terminated text to file.
   bool x_io_seek(XFile *file, long offset, int32_t origin); // Seek within file.
   long x_io_tell(XFile *file); // Return current file position.
   bool x_io_rewind(XFile *file); // Rewind file to beginning.
@@ -84,7 +84,7 @@ extern "C"
     else free(ptr);
   }
 
-  XFile *x_io_open(const int8_t *filename, const int8_t *mode, XAllocator *alloc) 
+  XFile *x_io_open(const char *filename, const char *mode, XAllocator *alloc) 
   {
     FILE *fp = fopen(filename, mode);
     if (!fp) return NULL;
@@ -120,7 +120,7 @@ extern "C"
     return fwrite(data, 1, size, file->fp);
   }
 
-  int8_t *x_io_read_all(XFile *file, size_t *out_size, XAllocator *alloc) 
+  char *x_io_read_all(XFile *file, size_t *out_size, XAllocator *alloc) 
   {
     if (!file) return NULL;
 
@@ -130,7 +130,7 @@ extern "C"
 
     if (!x_io_rewind(file)) return NULL;
 
-    int8_t *buf = (int8_t *)x_io_alloc(alloc, (size_t)len + 1);
+    char *buf = (char *)x_io_alloc(alloc, (size_t)len + 1);
     if (!buf) return NULL;
 
     size_t read = x_io_read(file, buf, (size_t)len);
@@ -140,16 +140,16 @@ extern "C"
     return buf;
   }
 
-  int8_t *x_io_read_text(const int8_t *filename, XAllocator *alloc) 
+  char *x_io_read_text(const char *filename, XAllocator *alloc) 
   {
     XFile *f = x_io_open(filename, "rb", alloc);
     if (!f) return NULL;
-    int8_t *text = x_io_read_all(f, NULL, alloc);
+    char *text = x_io_read_all(f, NULL, alloc);
     x_io_close(f);
     return text;
   }
 
-  bool x_io_write_text(const int8_t *filename, const int8_t *text) 
+  bool x_io_write_text(const char *filename, const char *text) 
   {
     XFile *f = x_io_open(filename, "wb", NULL);
     if (!f) return false;
@@ -159,7 +159,7 @@ extern "C"
     return written == len;
   }
 
-  bool x_io_append_text(const int8_t *filename, const int8_t *text) 
+  bool x_io_append_text(const char *filename, const char *text) 
   {
     XFile *f = x_io_open(filename, "ab", NULL);
     if (!f) return false;
