@@ -16,11 +16,6 @@ int test_str_starts_with(void)
   return STDX_TEST_SUCCESS;
 }
 
-/**
- * Does the normal ascii function handle
- * שָׁלוֹם;  utf8 in the comments ?
- *
- */
 int test_str_ends_with(void)
 {
   ASSERT_TRUE(x_cstr_ends_with("hello world", "world"));
