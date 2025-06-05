@@ -56,6 +56,16 @@ extern "C" {
   #endif
 #endif
 #include <stdx_log.h>
+
+#ifdef STDX_IMPLEMENTATION_TEST
+  #ifndef STDX_IMPLEMENTATION_TIME
+    #define STDX_INTERNAL_TIME_IMPLEMENTATION
+    #define STDX_IMPLEMENTATION_TIME
+  #endif
+#endif
+#include <stdx_time.h>
+
+
 #include <stdint.h>
 #include <math.h>
 
@@ -69,7 +79,7 @@ extern "C" {
 
 #define XLOG_GREEN(msg, ...)  x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_GREEN, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
 #define XLOG_WHITE(msg, ...)  x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
-#define XLOG_RED(msg, ...)    x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
+#define XLOG_RED(msg, ...)    x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_RED, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
 
 // Original macros without message and format string support
 #define ASSERT_TRUE(expr) do { \
@@ -117,6 +127,14 @@ typedef struct
 
 #include <stdio.h>
 #include <signal.h>
+
+
+#ifdef _WIN32
+#  include <windows.h>
+#else
+#  include <time.h>
+#endif
+
 static void x_test_internalOnSignal(int signal)
 {
   const char* signalName = "Unknown signal";
@@ -145,33 +163,48 @@ int stdx_run_tests(STDXTestCase* tests, int32_t num_tests)
   signal(SIGTERM, x_test_internalOnSignal);
 
   int32_t passed = 0; 
+  double total_time = 0;
   for (int32_t i = 0; i < num_tests; ++i)
   {
     fflush(stdout);
 
+    XTimer timer;
+    x_timer_start(&timer);
     int32_t result = tests[i].func();
+    XTime elapsed = x_timer_elapsed(&timer);
+    const double milliseconds = x_time_milliseconds(elapsed);
+    total_time += milliseconds;
+
     if (result == 0)
     {
       XLOG_WHITE(" [", 0);
       XLOG_GREEN("PASS", 0);
-      XLOG_WHITE("]  %d/%d\t-> %s\n", i+1, num_tests, tests[i].name);
+      XLOG_WHITE("]  %d/%d\t %f ms -> %s\n", i+1, num_tests, milliseconds, tests[i].name);
       passed++;
     }
     else
     {
       XLOG_WHITE(" [", 0);
       XLOG_RED("FAIL", 0);
-      XLOG_WHITE("]  %d/%d\t-> %s\n", i+1, num_tests, tests[i].name);
+      XLOG_WHITE("]  %d/%d\t %f ms -> %s\n", i+1, num_tests, milliseconds, tests[i].name);
     }
   }
+
   if (passed == num_tests)
-    XLOG_GREEN(" Tests passed: %d / %d\n", passed, num_tests);
+    XLOG_GREEN(" Tests passed: %d / %d  - total time %f ms\n", passed, num_tests, total_time);
   else
-    XLOG_RED(" Tests failed: %d / %d\n", num_tests - passed, num_tests);
+    XLOG_RED(" Tests failed: %d / %d - total time %f ms\n", num_tests - passed, num_tests, total_time);
 
   return passed != num_tests;
 }
 #endif  // STDX_IMPLEMENTATION_TEST
+
+
+#ifdef STDX_INTERNAL_TIME_IMPLEMENTATION
+  #undef STDX_IMPLEMENTATION_TIME
+  #undef STDX_INTERNAL_TIME_IMPLEMENTATION
+#endif
+
 
 #ifdef STDX_INTERNAL_LOGGER_IMPLEMENTATION
   #undef STDX_IMPLEMENTATION_LOG
