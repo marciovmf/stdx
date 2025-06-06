@@ -15,7 +15,7 @@ int completed_tasks = 0;
 
 void print_task(void* arg)
 {
-  UNUSED(arg);
+  X_UNUSED(arg);
 #if !SUPPRESS_OUTPUT
   log_info("Task %d running in thread\n", n);
 #endif
