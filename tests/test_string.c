@@ -1,4 +1,4 @@
-#include "stdx_common.h"
+#include <stdx_common.h>
 #include <stdint.h>
 #include <wchar.h>
 #define STDX_IMPLEMENTATION_TEST

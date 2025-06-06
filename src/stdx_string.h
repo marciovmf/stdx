@@ -388,8 +388,7 @@ extern "C"
 
   size_t x_wcstr_to_utf8(const wchar_t* wide, char* utf8, size_t max)
   {
-    mbstate_t ps =
-    {0};
+    mbstate_t ps = {0};
     return wcsrtombs(utf8, (const wchar_t**)&wide, max, &ps);
   }
 
