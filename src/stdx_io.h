@@ -45,7 +45,7 @@ extern "C"
   void x_io_close(XFile *file); // Close a file and free internal memory
   size_t x_io_read(XFile *file, void *buffer, size_t size); // Read up to `size` bytes into buffer. Returns bytes read.
   char *x_io_read_all(XFile *file, size_t *out_size, XAllocator *alloc); // Read the entire file into a buffer allocated with `alloc` (or malloc). Returns buffer (null-terminated, but not for text safety). Caller must free.
-  char *x_io_read_text(const char *filename, XAllocator *alloc); // Convenience: open, read, close. Returns null-terminated text.
+  char *x_io_read_text(const char *filename, size_t* out_size, XAllocator *alloc); // Convenience: open, read, close. Returns null-terminated text.
   size_t x_io_write(XFile *file, const void *data, size_t size); // Write `size` bytes to file. Returns number of bytes written.
   bool x_io_write_text(const char *filename, const char *text); // Write null-terminated text to a file (overwrite).
   bool x_io_append_text(const char *filename, const char *text); // Append null-terminated text to file.
@@ -140,11 +140,12 @@ extern "C"
     return buf;
   }
 
-  char *x_io_read_text(const char *filename, XAllocator *alloc) 
+  char *x_io_read_text(const char *filename, size_t* out_size, XAllocator *alloc) 
   {
+    size_t size = 0;
     XFile *f = x_io_open(filename, "rb", alloc);
     if (!f) return NULL;
-    char *text = x_io_read_all(f, NULL, alloc);
+    char *text = x_io_read_all(f, out_size, alloc);
     x_io_close(f);
     return text;
   }

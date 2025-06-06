@@ -12,7 +12,7 @@
 int test_write_and_read_text()
 {
   ASSERT_TRUE(x_io_write_text(TEMP_FILE, STR1));
-  char *text = x_io_read_text(TEMP_FILE, NULL);
+  char *text = x_io_read_text(TEMP_FILE, NULL, NULL);
   ASSERT_TRUE(text);
   ASSERT_TRUE(strcmp(text, STR1) == 0);
   free(text);
@@ -23,7 +23,7 @@ int test_append_text()
 {
   ASSERT_TRUE(x_io_append_text(TEMP_FILE, STR2));
 
-  char *text = x_io_read_text(TEMP_FILE, NULL);
+  char *text = x_io_read_text(TEMP_FILE, NULL, NULL);
   ASSERT_TRUE(text);
   ASSERT_TRUE(strcmp(text, STR1 STR2) == 0);
   free(text);
