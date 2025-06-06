@@ -33,32 +33,44 @@ extern "C" {
 
 #define STDX_ARRAY_VERSION (STDX_ARRAY_VERSION_MAJOR * 10000 + STDX_ARRAY_VERSION_MINOR * 100 + STDX_ARRAY_VERSION_PATCH)
 
+#include <stdx_common.h>
 #include <stdint.h>
 #include <stdbool.h>
 
+  typedef enum
+  {
+    XARRAY_OK                         = 0,
+    XARRAY_INVALID_RANGE              = 1,
+    XARRAY_MEMORY_ALLOCATION_FAILED   = 2,
+    XARRAY_INDEX_OUT_OF_BOUNDS        = 3,
+    XARRAY_EMPTY                      = 4
+
+  } XArrayError;
+
   typedef struct XArray_t XArray;
 
-  XArray*   x_array_create(size_t elementSize, size_t capacity);
-  void*     x_array_get(XArray* arr, size_t index);
-  void*     x_array_getdata(XArray* arr);
-  void      x_array_add(XArray* arr, void* data);
-  void      x_array_insert(XArray* arr, void* data, size_t index);
-  void      x_array_delete_range(XArray* arr, size_t start, size_t end);
-  void      x_array_clear(XArray* arr);
-  void      x_array_delete_at(XArray* arr, size_t index);
-  void      x_array_destroy(XArray* arr);  
-  uint32_t x_array_count(XArray* arr);
-  uint32_t x_array_capacity(XArray* arr);
-
-  void      x_array_push(XArray* array, void* value);
-  void      x_array_pop(XArray* array);
-  void*     x_array_top(XArray* array);
-  bool      x_array_is_empty(XArray* array);
+  XArray*       x_array_create(size_t elementSize, size_t capacity);
+  XPtr          x_array_get(XArray* arr, size_t index);
+  XPtr          x_array_getdata(XArray* arr);
+  XArrayError   x_array_add(XArray* arr, void* data);
+  XArrayError   x_array_insert(XArray* arr, void* data, size_t index);
+  XArrayError   x_array_delete_range(XArray* arr, size_t start, size_t end);
+  void          x_array_clear(XArray* arr);
+  void          x_array_delete_at(XArray* arr, size_t index);
+  void          x_array_destroy(XArray* arr);  
+  uint32_t      x_array_count(XArray* arr);
+  uint32_t      x_array_capacity(XArray* arr);
+  void          x_array_push(XArray* array, void* value);
+  void          x_array_pop(XArray* array);
+  XPtr          x_array_top(XArray* array);
+  bool          x_array_is_empty(XArray* array);
 
 
 #ifdef STDX_IMPLEMENTATION_ARRAY
 
-#include <stdx_common.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
   struct XArray_t
   {
@@ -81,14 +93,14 @@ extern "C" {
     arr->capacity = capacity;
     arr->elementSize = elementSize;
 
-    ASSERT(capacity > 0);
+    X_ASSERT(capacity > 0);
     return arr;
   }
 
-  void x_array_add(XArray* arr, void* data)
+  XArrayError x_array_add(XArray* arr, void* data)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
 
     if (arr->size >= arr->capacity)
     {
@@ -96,7 +108,7 @@ extern "C" {
       arr->array = realloc(arr->array, arr->capacity * arr->elementSize);
       if (!arr->array)
       {
-        x_log_error("Memory allocation failed");
+        return XARRAY_MEMORY_ALLOCATION_FAILED;
       }
     }
 
@@ -104,17 +116,17 @@ extern "C" {
       memcpy((uint8_t*)arr->array + (arr->size * arr->elementSize), data, arr->elementSize);
 
     arr->size++;
+    return XARRAY_OK;
   }
 
-  void x_array_insert(XArray* arr, void* data, size_t index)
+  XArrayError x_array_insert(XArray* arr, void* data, size_t index)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
 
     if (index > arr->size)
     {
-      x_log_error("Index out of bounds");
-      return;
+      return XARRAY_INDEX_OUT_OF_BOUNDS;
     }
 
     if (arr->size >= arr->capacity)
@@ -123,7 +135,7 @@ extern "C" {
       arr->array = realloc(arr->array, arr->capacity * arr->elementSize);
       if (!arr->array)
       {
-        return;
+        return XARRAY_MEMORY_ALLOCATION_FAILED;
       }
     }
 
@@ -132,39 +144,38 @@ extern "C" {
         (arr->size - index) * arr->elementSize);
     memcpy((uint8_t*)arr->array + (index * arr->elementSize), data, arr->elementSize);
     arr->size++;
+    return XARRAY_OK;
   }
 
-  void* x_array_get(XArray* arr, size_t index)
+  XPtr x_array_get(XArray* arr, size_t index)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
     if (index >= arr->size)
     {
-      x_log_error("Index out of bounds");
-      return NULL;
+      return X_PTR_ERR(XARRAY_INDEX_OUT_OF_BOUNDS);
     }
 
-    return (uint8_t*)arr->array + (index * arr->elementSize);
+    return X_PTR_OK((uint8_t*)arr->array + (index * arr->elementSize));
   }
 
   void x_array_destroy(XArray* arr)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
 
     free(arr->array);
     free(arr);
   }
 
-  void x_array_delete_range(XArray* arr, size_t start, size_t end)
+  XArrayError x_array_delete_range(XArray* arr, size_t start, size_t end)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
 
     if (start >= arr->size || end >= arr->size || start > end)
     {
-      x_log_error("Invalid range %d - %d on array of size %d", start, end, arr->size);
-      return;
+      return XARRAY_INVALID_RANGE;
     }
 
     size_t deleteCount = end - start + 1;
@@ -173,41 +184,42 @@ extern "C" {
         (uint8_t*)arr->array + ((end + 1) * arr->elementSize),   // Source
         (arr->size - end - 1) * arr->elementSize);            // Size
     arr->size -= deleteCount;
+    return XARRAY_OK;
   }
 
   void x_array_clear(XArray* arr)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
     arr->size = 0;
   }
 
   uint32_t x_array_count(XArray* arr)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
     return (uint32_t) arr->size;
   }
 
   uint32_t x_array_capacity(XArray* arr)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
     return (uint32_t) arr->capacity;
   }
 
   void x_array_delete_at(XArray* arr, size_t index)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
     x_array_delete_range(arr, index, index);
   }
 
-  void* x_array_getdata(XArray* arr)
+  XPtr x_array_getdata(XArray* arr)
   {
-    ASSERT(arr->array != NULL);
-    ASSERT(arr->capacity > 0);
-    return arr->array;
+    X_ASSERT(arr->array != NULL);
+    X_ASSERT(arr->capacity > 0);
+    return X_PTR_OK(arr->array);
   }
 
   void x_array_push(XArray* array, void* value)
@@ -223,10 +235,10 @@ extern "C" {
     }
   }
 
-  void* x_array_top(XArray* array)
+  XPtr x_array_top(XArray* array)
   {
     uint32_t count = x_array_count(array);
-    if (count == 0) return NULL;
+    if (count == 0) return X_PTR_ERR(XARRAY_EMPTY);
     return x_array_get(array, count - 1);
   }
 
