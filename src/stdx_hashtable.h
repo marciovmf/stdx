@@ -47,32 +47,6 @@ extern "C"
 #include <stddef.h>
 #include <stdbool.h>
 
-  /**
-   * VALUE_PTR(type, val)
-   *
-   * Wraps a value of a primitive type (e.g., int, float, etc.) in a temporary
-   * compound literal and returns a pointer to it, cast as (const void*).
-   *
-   * This macro is primarily intended to facilitate the use of value types with
-   * generic hashtable interfaces such as:
-   *
-   *     bool x_hashtable_set(XHashtable* table, const void* key, const void* value);
-   *
-   * Example usage:
-   *
-   *     x_hashtable_set(table, "health", VALUE_PTR(int8_t, 100));
-   *     x_hashtable_set(table, "pi", VALUE_PTR(float, 3.14f));
-   *
-   * The compound literal ensures the value persists for the duration of the
-   * full expression, making the resulting pointer safe to use within the
-   * x_hashtable_set call.
-   *
-   * NOTE:
-   * - Requires C99 or later (for compound literals).
-   * - The pointer must not be stored or used after the function call.
-   */
-#define VALUE_PTR(type, val) ((const void*)&(type){ (val) })
-
   typedef size_t (*HashFn)(const void* key);
   typedef bool   (*EqualsFn)(const void* a, const void* b);
 

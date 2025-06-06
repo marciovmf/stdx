@@ -1,3 +1,4 @@
+#include <stdx_common.h>
 #define STDX_IMPLEMENTATION_TEST
 #include <stdx_test.h>
 #define STDX_IMPLEMENTATION_HASHTABLE
@@ -10,7 +11,7 @@ int test_x_hashtable_basic_malloc()
   XHashtable* ht = x_hashtable_create(sizeof(char*), sizeof(int), stdx_hash_str, stdx_str_eq);
 
   const char* key = "answer";
-  x_hashtable_set(ht, &key, VALUE_PTR(int,42));
+  x_hashtable_set(ht, &key, X_VALUE_PTR(int,42));
 
   ASSERT_TRUE(x_hashtable_has(ht, &key));
   ASSERT_TRUE(x_hashtable_count(ht) == 1);
@@ -62,7 +63,7 @@ int test_x_hashtable_with_arena()
   XHashtable* ht = x_hashtable_create_ex(sizeof(char*), sizeof(int), stdx_hash_str, stdx_str_eq, &a);
 
   const char* key = "fruit";
-  x_hashtable_set(ht, &key, VALUE_PTR(int, 17));
+  x_hashtable_set(ht, &key, X_VALUE_PTR(int, 17));
   ASSERT_TRUE(x_hashtable_count(ht) == 1);
 
   int out = 0;
