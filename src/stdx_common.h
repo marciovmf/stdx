@@ -11,7 +11,7 @@
  *
  * Author: marciovmf
  * License: MIT
- * Usage: #include "stdx_common.h"
+ * Usage: #include <stdx_common.h>
  */
 
 #ifndef STDX_COMMON_H
@@ -34,72 +34,75 @@ extern "C" {
   // -----------------------------------------------------------------------------
 
 #if defined(__GNUC__) || defined(__GNUG__)
-#define COMPILER_NAME "GCC"
-#define COMPILER_VERSION __VERSION__
-#define COMPILER_GCC
+#define X_COMPILER_NAME "GCC"
+#define X_COMPILER_VERSION __VERSION__
+#define X_COMPILER_GCC
 #elif defined(_MSC_VER)
-#define COMPILER_NAME "Microsoft Visual C/C++ Compiler"
-#define COMPILER_VERSION _MSC_FULL_VER
-#define COMPILER_MSVC
+#define X_COMPILER_NAME "Microsoft Visual C/C++ Compiler"
+#define X_COMPILER_VERSION _MSC_FULL_VER
+#define X_COMPILER_MSVC
 #elif defined(__clang__)
-#define COMPILER_NAME "Clang"
-#define COMPILER_VERSION __clang_version__
-#define COMPILER_CLANG
+#define X_COMPILER_NAME "Clang"
+#define X_COMPILER_VERSION __clang_version__
+#define X_COMPILER_CLANG
 #else
-#define COMPILER_NAME "Unknown"
-#define COMPILER_VERSION "Unknown"
-#define COMPILER_UNKNOWN
+#define X_COMPILER_NAME "Unknown"
+#define X_COMPILER_VERSION "Unknown"
+#define X_COMPILER_UNKNOWN
 #endif
 
   // -----------------------------------------------------------------------------
   //  Compiler ATTRIBUTES / INLINE / ALIGN
   // -----------------------------------------------------------------------------
-  //
+
 #if defined(COMPILER_MSVC)
-#define INLINE      __inline
-#define FORCEINLINE __forceinline
-#define NOINLINE    __declspec(noinline)
-#define NORETURN    __declspec(noreturn)
-#define ALIGN(n)    __declspec(align(n))
-#elif defined(COMPILER_GCC) || defined(COMPILER_CLANG)
-#define INLINE      inline
-#define FORCEINLINE inline __attribute__((always_inline))
-#define NOINLINE    __attribute__((noinline))
-#define NORETURN    __attribute__((noreturn))
-#define ALIGN(n)    __attribute__((aligned(n)))
+#define X_INLINE      __inline
+#define X_FORCEINLINE __forceinline
+#define X_NOINLINE    __declspec(noinline)
+#define X_NORETURN    __declspec(noreturn)
+#define X_ALIGN(n)    __declspec(align(n))
+#elif defined(X_COMPILER_GCC) || defined(X_COMPILER_CLANG)
+#define X_INLINE      inline
+#define X_FORCEINLINE inline __attribute__((always_inline))
+#define X_NOINLINE    __attribute__((noinline))
+#define X_NORETURN    __attribute__((noreturn))
+#define X_ALIGN(n)    __attribute__((aligned(n)))
 #else
-#define INLINE
-#define FORCEINLINE
-#define NOINLINE
-#define NORETURN
-#define ALIGN(n)
+#define X_INLINE
+#define X_FORCEINLINE
+#define X_NOINLINE
+#define X_NORETURN
+#define X_ALIGN(n)
 #endif
+
 
   // ----------------------------------------------------------------------------
   // Branch prediction
   // ----------------------------------------------------------------------------
-#if defined(PLAT_COMPILER_GCC) || defined(PLAT_COMPILER_CLANG)
-#define PLAT_LIKELY(x)   __builtin_expect(!!(x), 1)
-#define PLAT_UNLIKELY(x) __builtin_expect(!!(x), 0)
+
+#if defined(X_PLAT_COMPILER_GCC) || defined(X_PLAT_COMPILER_CLANG)
+#define X_LIKELY(x)   __builtin_expect(!!(x), 1)
+#define X_UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else
-#define PLAT_LIKELY(x)   (x)
-#define PLAT_UNLIKELY(x) (x)
+#define X_LIKELY(x)   (x)
+#define X_UNLIKELY(x) (x)
 #endif
 
 
   // ----------------------------------------------------------------------------
   // Architecture detection
   // ----------------------------------------------------------------------------
+
 #if defined(_M_X64) || defined(__x86_64__)
-#define PLAT_ARCH_X64 1
+#define X_ARCH_X64 1
 #elif defined(_M_IX86) || defined(__i386__)
-#define PLAT_ARCH_X86 1
+#define X_ARCH_X86 1
 #elif defined(__aarch64__)
-#define PLAT_ARCH_ARM64 1
+#define X_ARCH_ARM64 1
 #elif defined(__arm__)
-#define PLAT_ARCH_ARM32 1
+#define X_ARCH_ARM32 1
 #else
-#define PLAT_ARCH_UNKNOWN 1
+#define X_ARCH_UNKNOWN 1
 #endif
 
 
@@ -108,19 +111,20 @@ extern "C" {
   // -----------------------------------------------------------------------------
 
 #if defined(_WIN32) || defined(_WIN64)
-#define OS_WINDOWS 1
+#define X_OS_WINDOWS 1
 #elif defined(__linux__)
-#define OS_LINUX
+#define X_OS_LINUX
 #elif defined(__APPLE__) && defined(__MACH__)
-#define OS_OSX
+#define X_OS_OSX
 #else
-#define OS_UNKNOWN
+#define X_OS_UNKNOWN
 #endif
 
 
   // ----------------------------------------------------------------------------
   // DLL import/export
   // ----------------------------------------------------------------------------
+
 #if defined(PLAT_OS_WINDOWS)
 #define PLAT_EXPORT __declspec(dllexport)
 #define PLAT_IMPORT __declspec(dllimport)
@@ -141,12 +145,11 @@ extern "C" {
   // Assertion macros
   // ----------------------------------------------------------------------------
 
-#define STATIC_ASSERT(cond, msg) \
-  typedef char static_assert_##msg[(cond) ? 1 : -1]
+#define X_STATIC_ASSERT(cond, msg) typedef char static_assert_##msg[(cond) ? 1 : -1]
 
 
 #ifdef DEBUG
-#define ASSERT(expr) \
+#define X_ASSERT(expr) \
   do { \
     if (!(expr)) { \
       fprintf(stderr, "Assertion failed: %s, file %s, line %d\n", #expr, __FILE__, __LINE__); \
@@ -154,54 +157,95 @@ extern "C" {
     } \
   } while(0)
 #else
-#define ASSERT(expr) ((void)0)
+#define X_ASSERT(expr) ((void)0)
 #endif
 
   // ----------------------------------------------------------------------------
   // Endianness
   // ----------------------------------------------------------------------------
+
 #if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-#define PLAT_IS_BIG_ENDIAN 1
+#define X_BIG_ENDIAN 1
 #else
-#define PLAT_IS_LITTLE_ENDIAN 1
+#define X_LITTLE_ENDIAN 1
 #endif
 
   // ----------------------------------------------------------------------------
   // Path separator
   // ----------------------------------------------------------------------------
-#if defined(PLAT_OS_WINDOWS)
-#define PLAT_PATH_SEPARATOR '\\'
+
+#if defined(X_OS_WINDOWS)
+#define X_PATH_SEPARATOR              '\\'
+#define X_PATH_SEPARATOR_ALTERNATIVE  '/'
 #else
-#define PLAT_PATH_SEPARATOR '/'
+#define X_PATH_SEPARATOR              '/'
+#define X_PATH_SEPARATOR_ALTERNATIVE  '\\'
 #endif
 
 
   // -----------------------------------------------------------------------------
   // Bit manipulation macros
   // -----------------------------------------------------------------------------
-#define STDMIN_BIT_SET(var, bit)    ((var) |=  (1U << (bit)))
-#define STDMIN_BIT_CLEAR(var, bit)  ((var) &= ~(1U << (bit)))
-#define STDMIN_BIT_TOGGLE(var, bit) ((var) ^=  (1U << (bit)))
-#define STDMIN_BIT_CHECK(var, bit)  (((var) &  (1U << (bit))) != 0)
+
+#define X_BIT_SET(var, bit)    ((var) |=  (1U << (bit)))
+#define X_BIT_CLEAR(var, bit)  ((var) &= ~(1U << (bit)))
+#define X_BIT_TOGGLE(var, bit) ((var) ^=  (1U << (bit)))
+#define X_BIT_CHECK(var, bit)  (((var) &  (1U << (bit))) != 0)
+#define X_UNUSED(x) (void)(x) // mark a function argument as unused
 
 
-#define UNUSED(x) (void)(x) // mark a function argument as unused
+  // -----------------------------------------------------------------------------
+  // Wraps a value of a primitive type (e.g., int, float, etc.) in a temporary
+  // compound literal and returns a pointer to it.
+  //  - Requires C99 or later (for compound literals).
+  //  - The pointer must not be stored or used after the function call.
+  // -----------------------------------------------------------------------------
+
+#define X_VALUE_PTR(type, val) ((const void*)&(type){ (val) })
+#define X_VALUE_TYPE_PTR(type, val) ((const type*)&(type){ (val) })
+
+
+  // -----------------------------------------------------------------------------
+  // A XPtr holds either a valid pointer or an error code.
+  // Used for functions that return a pointers but may fail.
+  // -----------------------------------------------------------------------------
+  
+  typedef struct XPtr_t XPtr;
+  struct XPtr_t
+  {
+    int is_error;
+    union
+    {
+      void *ptr;
+      int error;
+    };
+  };
+
+#define X_PTR_OK(p)      ((XPtr){ .is_error = 0, .ptr = (p) })
+#define X_PTR_ERR(e)     ((XPtr){ .is_error = 1, .error = (e) })
+#define X_PTR_IS_ERR(r)  ((r).is_error)
+#define X_PTR_IS_OK(r)   (!(r).is_error)
+#define X_PTR_GET_PTR(r) ((r).is_error ? NULL : (r).ptr)
+#define X_PTR_GET_ERR(r) ((r).error)
+#define X_PTR_CAST(r, T) ((r).is_error ? NULL : (T)(r).ptr)
+
 
   // -----------------------------------------------------------------------------
   // Common types
   // -----------------------------------------------------------------------------
 
-#if defined(OS_WINDOWS)
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif 
+#if defined(X_OS_WINDOWS)
 
 #ifndef _CRT_SECURE_NO_WARNINGS 
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#endif
+#endif 
+
+#endif // X_OS_WINDOWS
 
 #include <stdint.h>
 
@@ -214,8 +258,6 @@ extern "C" {
   typedef uint32_t  u32;
   typedef int64_t   i64;
   typedef uint64_t  u64;
-
-  /* File reading */
 
 #ifdef __cplusplus
 }
