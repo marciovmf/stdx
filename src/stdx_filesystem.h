@@ -70,7 +70,7 @@ extern "C"
 
   struct XFSDireEntry_t
   {
-    int8_t name[X_FS_PAHT_MAX_LENGTH]; 
+    char name[X_FS_PAHT_MAX_LENGTH]; 
     size_t size;
     time_t last_modified;
     int32_t is_directory;
@@ -89,7 +89,7 @@ extern "C"
   typedef struct
   {
     XFSWatchEventType action;
-    const int8_t* filename; // Valid until next poll
+    const char* filename; // Valid until next poll
   } XFSWatchEvent;
 
 
@@ -97,16 +97,16 @@ extern "C"
   // Filesystem operations
   // ---------------------------------------------------------------------------
 
-  XFSDireHandle* x_fs_find_first_file(const int8_t* path, XFSDireEntry* entry);
-  bool        x_fs_directory_create(const int8_t* path);
-  bool        x_fs_directory_create_recursive(const int8_t* path);
-  bool        x_fs_directory_delete(const int8_t* directory);
-  bool        x_fs_file_copy(const int8_t* file, const int8_t* newFile);
-  bool        x_fs_file_rename(const int8_t* file, const int8_t* newFile);
+  XFSDireHandle* x_fs_find_first_file(const char* path, XFSDireEntry* entry);
+  bool        x_fs_directory_create(const char* path);
+  bool        x_fs_directory_create_recursive(const char* path);
+  bool        x_fs_directory_delete(const char* directory);
+  bool        x_fs_file_copy(const char* file, const char* newFile);
+  bool        x_fs_file_rename(const char* file, const char* newFile);
   bool        x_fs_find_next_file(XFSDireHandle* dirHandle, XFSDireEntry* entry);
   size_t      x_fs_get_temp_folder(XFSPath* out);
   size_t      x_fs_cwd_get(XFSPath* path);
-  size_t      x_fs_cwd_set(const int8_t* path);
+  size_t      x_fs_cwd_set(const char* path);
   size_t      x_fs_cwd_set_from_executable_path(void);
   void        x_fs_find_close(XFSDireHandle* dirHandle);
 
@@ -115,9 +115,9 @@ extern "C"
   // Filesystem Monitoring
   // ---------------------------------------------------------------------------
 
-  XFSWatch*   x_fs_watch_open(const int8_t* path);
+  XFSWatch*   x_fs_watch_open(const char* path);
   void        x_fs_watch_close(XFSWatch* fw);
-  int32_t         x_fs_watch_poll(XFSWatch* fw, XFSWatchEvent* out_events,int32_t max_events);
+  int32_t     x_fs_watch_poll(XFSWatch* fw, XFSWatchEvent* out_events,int32_t max_events);
 
 
   // ---------------------------------------------------------------------------
@@ -128,36 +128,37 @@ extern "C"
 #define       x_fs_path_join(path, ...) x_fs_path_join_(path, __VA_ARGS__, 0)
 
   XFSPath*    x_fs_path_normalize(XFSPath* input);
-  XStrview    x_fs_path_basename(const int8_t* input);
-  XStrview    x_fs_path_dirname(const int8_t* input);
+  XStrview    x_fs_path_basename(const char* input);
+  XStrview    x_fs_path_dirname(const char* input);
   bool        x_fs_path_(XFSPath* out, ...);
   bool        x_fs_path_exists(const XFSPath* path);
-  bool        x_fs_path_exists_cstr(const int8_t* path);
+  bool        x_fs_path_exists_cstr(const char* path);
   bool        x_fs_path_exists_quick(const XFSPath* path); // Sligthly faster
-  bool        x_fs_path_exists_quick_cstr(const int8_t* path); // Sligthly faster
+  bool        x_fs_path_exists_quick_cstr(const char* path); // Sligthly faster
   bool        x_fs_path_is_absolute(const XFSPath* path);
-  bool        x_fs_path_is_absolute_cstr(const int8_t* path);
+  bool        x_fs_path_is_absolute_cstr(const char* path);
   bool        x_fs_path_is_absolute_native(const XFSPath* path);
-  bool        x_fs_path_is_absolute_native_cstr(const int8_t* path);
+  bool        x_fs_path_is_absolute_native_cstr(const char* path);
   bool        x_fs_path_is_directory(const XFSPath* path);
-  bool        x_fs_path_is_directory_cstr(const int8_t* path);
+  bool        x_fs_path_is_directory_cstr(const char* path);
   bool        x_fs_path_is_file(const XFSPath* path);
-  bool        x_fs_path_is_file_cstr(const int8_t* path);
+  bool        x_fs_path_is_file_cstr(const char* path);
   bool        x_fs_path_is_relative(const XFSPath* path);
-  bool        x_fs_path_is_relative_cstr(const int8_t* path);
-  const int8_t* x_fs_path_cstr(const XFSPath* p);
-  size_t      x_fs_path_append(XFSPath* p, const int8_t* comp);
-  size_t      x_fs_path_change_extension(XFSPath* path, const int8_t* new_ext);
-  int32_t         x_fs_path_compare(const XFSPath* a, const XFSPath* b); // ignores separator type
-  int32_t         x_fs_path_compare_cstr(const XFSPath* a, const int8_t* cstr); // ignores separator type
+  bool        x_fs_path_is_relative_cstr(const char* path);
+  const char* x_fs_path_cstr(const XFSPath* p);
+  size_t      x_fs_path_append(XFSPath* p, const char* comp);
+  size_t      x_fs_path_change_extension(XFSPath* path, const char* new_ext);
+  int32_t     x_fs_path_compare(const XFSPath* a, const XFSPath* b); // ignores separator type
+  int32_t     x_fs_path_compare_cstr(const XFSPath* a, const char* cstr); // ignores separator type
   bool        x_fs_path_eq(const XFSPath* a, const XSmallstr* b);
-  bool        x_fs_path_eq_cstr(const XFSPath* a, const int8_t* b);
-  XStrview    x_fs_path_extension(const int8_t* input);
+  bool        x_fs_path_eq_cstr(const XFSPath* a, const char* b);
+  XStrview    x_fs_path_extension(const char* input);
   size_t      x_fs_path_from_strview(XStrview sv, XFSPath* out);
   size_t      x_fs_path_join_(XFSPath* path, ...);
-  size_t      x_fs_path_relative_cstr(const int8_t* from_path, const int8_t* to_path, XFSPath* out_path);
-  size_t      x_fs_path_set(XFSPath* p, const int8_t* cstr);
-  bool        x_fs_path_split(const int8_t* input, XFSPath* out_components, size_t max_components, size_t* out_count);
+  size_t      x_fs_path_relative_to_cstr(const char* from_path, const char* to_path, XFSPath* out_path);
+  size_t      x_fs_path_common_prefix (const char* from_path, const char* to_path, XFSPath* out_path);
+  size_t      x_fs_path_set(XFSPath* p, const char* cstr);
+  bool        x_fs_path_split(const char* input, XFSPath* out_components, size_t max_components, size_t* out_count);
   size_t      x_fs_path_from_executable(XFSPath* out);
 
 
@@ -176,29 +177,29 @@ extern "C"
 
 
   // Retrieve file or directory metadata. Returns 0 on success.
-  bool x_fs_file_stat(const int8_t* path, FSFileStat* out_stat);
+  bool x_fs_file_stat(const char* path, FSFileStat* out_stat);
 
   // Get last modification time. Returns 0 on success.
-  bool x_fs_file_modification_time(const int8_t* path, time_t* out_time);
+  bool x_fs_file_modification_time(const char* path, time_t* out_time);
 
   // Get creation time. Returns 0 on success.
-  bool x_fs_file_creation_time(const int8_t* path, time_t* out_time);
+  bool x_fs_file_creation_time(const char* path, time_t* out_time);
 
   // Get file permissions.
-  bool x_fs_file_permissions(const int8_t* path, uint32_t* out_permissions);
+  bool x_fs_file_permissions(const char* path, uint32_t* out_permissions);
 
   // Set file permissions.
-  bool x_fs_file_set_permissions(const int8_t* path, uint32_t permissions);
+  bool x_fs_file_set_permissions(const char* path, uint32_t permissions);
 
   // Utility
-  bool x_fs_is_file(const int8_t* path);
-  bool x_fs_is_directory(const int8_t* path);
-  bool x_fs_is_symlink(const int8_t* path);
-  bool x_fs_read_symlink(const int8_t* path, XFSPath* out_path);
+  bool x_fs_is_file(const char* path);
+  bool x_fs_is_directory(const char* path);
+  bool x_fs_is_symlink(const char* path);
+  bool x_fs_read_symlink(const char* path, XFSPath* out_path);
 
   // Temp files and dirs
-  bool x_fs_make_temp_file(const int8_t* prefix, XFSPath* out_path);
-  bool x_fs_make_temp_directory(const int8_t* prefix, XFSPath* out_path); 
+  bool x_fs_make_temp_file(const char* prefix, XFSPath* out_path);
+  bool x_fs_make_temp_directory(const char* prefix, XFSPath* out_path); 
 
 
 #ifdef STDX_IMPLEMENTATION_FILESYSTEM
@@ -249,13 +250,13 @@ extern "C"
 #ifdef _WIN32
     HANDLE dir;
     OVERLAPPED overlapped;
-    int8_t buffer[4096];
+    char buffer[4096];
     DWORD last_bytes;
     int32_t ready;
 #elif defined(__linux__)
     int32_t fd;
     int32_t wd;
-    int8_t buffer[4096];
+    char buffer[4096];
     int32_t offset, len;
 #endif
   };
@@ -263,7 +264,7 @@ extern "C"
 
 
 
-  int32_t x_fs_path_join_one(XFSPath* out, const int8_t* segment)
+  int32_t x_fs_path_join_one(XFSPath* out, const char* segment)
   {
     if (!out || !segment) return false;
 
@@ -272,7 +273,8 @@ extern "C"
 
     bool needs_sep = false;
 
-    if (out->length > 0 && out->buf[out->length - 1] != PATH_SEPARATOR) {
+    if (out->length > 0 && out->buf[out->length - 1] != PATH_SEPARATOR)
+    {
       needs_sep = true;
     }
 
@@ -302,8 +304,8 @@ extern "C"
     out->buf[0] = '\0';
     out->length = 0;
 
-    const int8_t* segment = NULL;
-    while ((segment = va_arg(args, const int8_t*)) != NULL)
+    const char* segment = NULL;
+    while ((segment = va_arg(args, const char*)) != NULL)
     {
       size_t length = x_fs_path_join_one(out, segment);
       if (length >= X_FS_PAHT_MAX_LENGTH)
@@ -320,12 +322,12 @@ extern "C"
     DWORD size = GetCurrentDirectory(X_FS_PAHT_MAX_LENGTH, path->buf);
     return (size_t)size;
 #else
-    int8_t* result = getcwd(path->buf, X_FS_PAHT_MAX_LENGTH);
+    char* result = getcwd(path->buf, X_FS_PAHT_MAX_LENGTH);
     return result ? strlen(path->buf) : 0;
 #endif
   }
 
-  size_t x_fs_cwd_set(const int8_t* path)
+  size_t x_fs_cwd_set(const char* path)
   {
 #ifdef _WIN32
     return SetCurrentDirectory(path) != 0;
@@ -361,7 +363,7 @@ extern "C"
     return bytesCopied;
   }
 
-  bool x_fs_file_copy(const int8_t* file, const int8_t* newFile)
+  bool x_fs_file_copy(const char* file, const char* newFile)
   {
 #ifdef _WIN32
     return CopyFile(file, newFile, FALSE) != 0;
@@ -372,7 +374,7 @@ extern "C"
     if (!dst)
     { fclose(src); return false; }
 
-    int8_t buf[4096];
+    char buf[4096];
     size_t n;
     while ((n = fread(buf, 1, sizeof(buf), src)) > 0)
     {
@@ -386,7 +388,7 @@ extern "C"
 #endif
   }
 
-  bool x_fs_file_rename(const int8_t* file, const int8_t* newFile)
+  bool x_fs_file_rename(const char* file, const char* newFile)
   {
 #ifdef _WIN32
     return MoveFile(file, newFile) != 0;
@@ -395,7 +397,7 @@ extern "C"
 #endif
   }
 
-  bool x_fs_directory_create(const int8_t* path)
+  bool x_fs_directory_create(const char* path)
   {
 #ifdef _WIN32
     return CreateDirectory(path, NULL) != 0 || GetLastError() == ERROR_ALREADY_EXISTS;
@@ -404,7 +406,7 @@ extern "C"
 #endif
   }
 
-  bool x_fs_directory_create_recursive(const int8_t* path)
+  bool x_fs_directory_create_recursive(const char* path)
   {
     size_t length = strlen(path);
     if (length >= X_FS_PAHT_MAX_LENGTH)
@@ -412,11 +414,11 @@ extern "C"
       return false;
     }
 
-    int8_t temp_path[X_FS_PAHT_MAX_LENGTH];
+    char temp_path[X_FS_PAHT_MAX_LENGTH];
     strncpy(temp_path, path, length);
     temp_path[length] = 0;
 
-    int8_t* p = temp_path;
+    char* p = temp_path;
 #ifdef _WIN32
     if (p[1] == ':')
     { p += 2; }
@@ -426,7 +428,7 @@ extern "C"
     {
       if (*p == '/' || *p == '\\')
       {
-        int8_t old = *p;
+        char old = *p;
         *p = 0;
         x_fs_directory_create(temp_path);
         *p = old;
@@ -436,7 +438,7 @@ extern "C"
     return x_fs_directory_create(temp_path);
   }
 
-  bool x_fs_directory_delete(const int8_t* directory)
+  bool x_fs_directory_delete(const char* directory)
   {
 #ifdef _WIN32
     return RemoveDirectory(directory) != 0;
@@ -451,7 +453,7 @@ extern "C"
   }
 
 
-  bool x_fs_path_is_file_cstr(const int8_t* path)
+  bool x_fs_path_is_file_cstr(const char* path)
   {
 #ifdef _WIN32
     DWORD attributes = GetFileAttributes(path);
@@ -462,7 +464,7 @@ extern "C"
 #endif
   }
 
-  bool x_fs_path_is_directory_cstr(const int8_t* path)
+  bool x_fs_path_is_directory_cstr(const char* path)
   {
 #ifdef _WIN32
     DWORD attributes = GetFileAttributes(path);
@@ -483,18 +485,17 @@ extern "C"
     memcpy(out, path, sizeof(XFSPath));
   }
 
-  XFSDireHandle* x_fs_find_first_file(const int8_t* path, XFSDireEntry* entry)
+  XFSDireHandle* x_fs_find_first_file(const char* path, XFSDireEntry* entry)
   {
     XFSDireHandle* dir_handle = malloc(sizeof(XFSDireHandle));
     if (!dir_handle) return NULL;
 
 #ifdef _WIN32
-    int8_t searchPath[MAX_PATH];
+    char searchPath[MAX_PATH];
     snprintf(searchPath, sizeof(searchPath), "%s\\*", path);
 
     dir_handle->handle = FindFirstFile(searchPath, &dir_handle->findData);
     if (dir_handle->handle == INVALID_HANDLE_VALUE)
-
     {
       free(dir_handle);
       return NULL;
@@ -509,7 +510,6 @@ extern "C"
 #else
     dir_handle->dir = opendir(path);
     if (!dir_handle->dir)
-
     {
       free(dir_handle);
       return NULL;
@@ -518,12 +518,11 @@ extern "C"
     // Read the first entry and fill DirectoryEntry
     dir_handle->entry = readdir(dir_handle->dir);
     if (dir_handle->entry)
-
     {
       snprintf(entry->name, MAX_PATH, "%s", dir_handle->entry->d_name);
 
       // Get file stats to fill size and last modified time
-      int8_t fullPath[MAX_PATH];
+      char fullPath[MAX_PATH];
       snprintf(fullPath, sizeof(fullPath), "%s/%s", path, entry->name);
       stat(fullPath, &dir_handle->fileStat);
       entry->size = dir_handle->fileStat.st_size;
@@ -553,7 +552,7 @@ extern "C"
       snprintf(entry->name, MAX_PATH, "%s", dir_handle->entry->d_name);
 
       // Get file stats to fill size and last modified time
-      int8_t fullPath[MAX_PATH];
+      char fullPath[MAX_PATH];
       snprintf(fullPath, sizeof(fullPath), "%s/%s", dir_handle->entry->d_name, entry->name);
       stat(fullPath, &dir_handle->fileStat);
       entry->size = dir_handle->fileStat.st_size;
@@ -575,7 +574,7 @@ extern "C"
     free(dir_handle);
   }
 
-  XFSWatch* x_fs_watch_open(const int8_t* path)
+  XFSWatch* x_fs_watch_open(const char* path)
   {
     if (!path) return NULL;
 
@@ -657,7 +656,7 @@ extern "C"
 
     BYTE* ptr = (BYTE*)fw->buffer;
     FILE_NOTIFY_INFORMATION* fni = NULL;
-    int8_t filename[MAX_PATH];
+    char filename[MAX_PATH];
 
     while (fw->last_bytes && count < max_events) {
       fni = (FILE_NOTIFY_INFORMATION*)ptr;
@@ -730,14 +729,13 @@ extern "C"
     out->length = path_len;
 #else
     // On Unix-based systems, check environment variables for temporary folder path
-    const int8_t *tmp_dir = getenv("TMPDIR");
+    const char *tmp_dir = getenv("TMPDIR");
     if (!tmp_dir) tmp_dir = getenv("TEMP");
     if (!tmp_dir) tmp_dir = getenv("TMP");
     if (!tmp_dir) tmp_dir = "/tmp"; // Default to /tmp if no environment variable is set
 
     // Copy the temporary folder path to buffer
     if (strlen(tmp_dir) >= X_FS_PAHT_MAX_LENGTH)
-
     {
       return -1;
     }
@@ -752,27 +750,27 @@ extern "C"
     return (c == ALT_SEPARATOR || c == PATH_SEPARATOR);
   }
 
-  static inline int32_t pathchar_eq(char a, int8_t b)
+  static inline int32_t pathchar_eq(char a, char b)
   {
     if (a == ALT_SEPARATOR) a = PATH_SEPARATOR;
     if (b == ALT_SEPARATOR) b = PATH_SEPARATOR;
     return a == b;
   }
 
-  static const int8_t* find_last_path_separator(const int8_t* path)
+  static const char* find_last_path_separator(const char* path)
   {
-    const int8_t* last_slash = strrchr(path, '/');
-    const int8_t* last_backslash = strrchr(path, '\\');
+    const char* last_slash = strrchr(path, '/');
+    const char* last_backslash = strrchr(path, '\\');
     return (last_slash > last_backslash) ? last_slash : last_backslash;
   }
 
-  static inline int8_t normalized_path_char(char c)
+  static inline char normalized_path_char(char c)
   {
     return (c == ALT_SEPARATOR) ? PATH_SEPARATOR : c;
   }
 
   // Helper: trim trailing separators (does not modify original)
-  static size_t trim_trailing_separators(const uint8_t* buf, size_t len)
+  static size_t trim_trailing_separators(const unsigned char* buf, size_t len)
   {
     while (len > 0 && (buf[len - 1] == '/' || buf[len - 1] == '\\'))
     {
@@ -786,11 +784,11 @@ extern "C"
     x_smallstr_clear(p);
   }
 
-  static bool x_fs_utf8_validate(const int8_t* str, size_t len)
+  static bool x_fs_utf8_validate(const char* str, size_t len)
   {
     size_t i = 0;
     while (i < len) {
-      uint8_t c = (uint8_t)str[i];
+      unsigned char c = (unsigned char)str[i];
       size_t remaining = len - i;
 
       if (c <= 0x7F) { // 1-byte ASCII
@@ -803,7 +801,7 @@ extern "C"
         if (remaining < 3 || 
             (str[i + 1] & 0xC0) != 0x80 || 
             (str[i + 2] & 0xC0) != 0x80) return false;
-        uint8_t c1 = str[i + 1];
+        unsigned char c1 = str[i + 1];
         if (c == 0xE0 && (c1 & 0xE0) == 0x80) return false; // overlong
         if (c == 0xED && c1 >= 0xA0) return false; // UTF-16 surrogate
         i += 3;
@@ -812,7 +810,7 @@ extern "C"
             (str[i + 1] & 0xC0) != 0x80 || 
             (str[i + 2] & 0xC0) != 0x80 || 
             (str[i + 3] & 0xC0) != 0x80) return false;
-        uint8_t c1 = str[i + 1];
+        unsigned char c1 = str[i + 1];
         if (c == 0xF0 && (c1 & 0xF0) == 0x80) return false; // overlong
         if (c == 0xF4 && c1 > 0x8F) return false; // > U+10FFFF
         if (c > 0xF4) return false;
@@ -824,14 +822,14 @@ extern "C"
     return true;
   }
 
-  size_t x_fs_path_set(XFSPath* p, const int8_t* cstr)
+  size_t x_fs_path_set(XFSPath* p, const char* cstr)
   {
     size_t len = strlen(cstr);
     if (!x_fs_utf8_validate(cstr, len)) return -1;
     return x_smallstr_from_cstr(p, cstr);
   }
 
-  size_t x_fs_path_append(XFSPath* p, const int8_t* comp)
+  size_t x_fs_path_append(XFSPath* p, const char* comp)
   {
     if (p->length > 0 && p->buf[p->length - 1] != PATH_SEPARATOR)
     {
@@ -840,7 +838,7 @@ extern "C"
     return x_smallstr_append_cstr(p, comp);
   }
 
-  const int8_t* x_fs_path_cstr(const XFSPath* p)
+  const char* x_fs_path_cstr(const XFSPath* p)
   {
     return x_smallstr_cstr(p);
   }
@@ -855,8 +853,8 @@ extern "C"
 
     bool join_success = true;
 
-    const int8_t* segment = NULL;
-    while (join_success && (segment = va_arg(args, const int8_t*)) != NULL)
+    const char* segment = NULL;
+    while (join_success && (segment = va_arg(args, const char*)) != NULL)
     {
       join_success &= x_fs_path_join_one(path, segment);
     }
@@ -877,7 +875,6 @@ extern "C"
 
     // Normalize separators in the input XSmallstr buffer (in place)
     for (size_t i = 0; i < input->length; ++i)
-
     {
       if (input->buf[i] == ALT_SEPARATOR)
         input->buf[i] = PATH_SEPARATOR;
@@ -889,13 +886,11 @@ extern "C"
     // Handle Windows drive prefix (e.g., C:\)
     if (in_len >= 2 && input->buf[1] == ':' && 
         (input->buf[2] == PATH_SEPARATOR || input->buf[2] == '\0'))
-
     {
       x_smallstr_append_char(&temp, input->buf[0]);
       x_smallstr_append_char(&temp, ':');
       i = 2;
     } else if (in_len > 0 && input->buf[0] == PATH_SEPARATOR)
-
     {
       x_smallstr_append_char(&temp, PATH_SEPARATOR);
       i = 1;
@@ -905,7 +900,6 @@ extern "C"
     size_t depth = 0;
 
     while (i <= in_len)
-
     {
       size_t start = i;
       while (i < in_len && input->buf[i] != PATH_SEPARATOR) ++i;
@@ -913,30 +907,24 @@ extern "C"
       size_t len = i - start;
 
       if (len == 0 || (len == 1 && input->buf[start] == '.'))
-
       {
         // skip empty or "."
       } else if (len == 2 && input->buf[start] == '.' && input->buf[start + 1] == '.')
-
       {
         // ".." — pop last component if any
         if (depth > 0)
-
         {
           temp.length = component_starts[--depth];
           temp.buf[temp.length] = '\0';
         }
       } else
-
       {
         if (temp.length > 0 && temp.buf[temp.length - 1] != PATH_SEPARATOR)
-
         {
           x_smallstr_append_char(&temp, PATH_SEPARATOR);
         }
         component_starts[depth++] = temp.length;
         for (size_t j = 0; j < len; ++j)
-
         {
           x_smallstr_append_char(&temp, input->buf[start + j]);
         }
@@ -957,17 +945,17 @@ extern "C"
     return input;
   }
 
-  XStrview x_fs_path_basename(const int8_t* input)
+  XStrview x_fs_path_basename(const char* input)
   {
     XStrview empty = {0};
     if (!input)
       return empty;
 
-    const int8_t* last_sep = find_last_path_separator(input);
+    const char* last_sep = find_last_path_separator(input);
     return x_strview(last_sep ? last_sep + 1 : input);
   }
 
-  XStrview x_fs_path_dirname(const int8_t* input)
+  XStrview x_fs_path_dirname(const char* input)
   {
     XStrview empty =
     {0};
@@ -978,17 +966,16 @@ extern "C"
       return empty;
 
     // Find the last slash or backslash
-    const int8_t* last_sep = find_last_path_separator(input);
+    const char* last_sep = find_last_path_separator(input);
     if (!last_sep)
       return empty;
 
     size_t len = (size_t)(last_sep - input);
 
     if (len == 0)
-
     {
       // Root case: "/file" → "/"
-      int8_t root[2] =
+      char root[2] =
       { *last_sep, '\0' };
       return (XStrview){.data = root, .length = 1 };
     }
@@ -996,28 +983,27 @@ extern "C"
     return (XStrview){.data = input, .length = len };
   }
 
-  XStrview x_fs_path_extension(const int8_t* input)
+  XStrview x_fs_path_extension(const char* input)
   {
-    const int8_t* dot = strrchr(input, '.');
+    const char* dot = strrchr(input, '.');
     if (!dot || strrchr(input, PATH_SEPARATOR) > dot)
       return x_strview("");
 
     return x_strview(dot + 1);
   }
 
-  size_t x_fs_path_change_extension(XFSPath* path, const int8_t* new_ext)
+  size_t x_fs_path_change_extension(XFSPath* path, const char* new_ext)
   {
     if (!path || !new_ext) return -1;
 
-    const int8_t* path_str = x_smallstr_cstr(path);
-    const int8_t* last_dot = NULL;
-    const int8_t* last_sep = NULL;
+    const char* path_str = x_smallstr_cstr(path);
+    const char* last_dot = NULL;
+    const char* last_sep = NULL;
 
     // Scan from the end to locate '.' and path separator
     for (ptrdiff_t i = (ptrdiff_t)(path->length - 1); i >= 0; --i)
-
     {
-      int8_t c = path_str[i];
+      char c = path_str[i];
       if (!last_dot && c == '.')
       {
         last_dot = path_str + i;
@@ -1047,10 +1033,10 @@ extern "C"
     return x_smallstr_append_cstr(path, new_ext);
   }
 
-  bool x_fs_path_is_absolute_native_cstr(const int8_t* path)
+  bool x_fs_path_is_absolute_native_cstr(const char* path)
   {
 #ifdef _WIN32
-    const int8_t* p = path;
+    const char* p = path;
     size_t length = strlen(path);
     if (length >= 3)
       return (isalpha(p[0]) && p[1] == ':' && (p[2] == '\\' || p[2] == '/')) || (p[0] == '\\' && p[1] == '\\');
@@ -1066,15 +1052,15 @@ extern "C"
     return x_fs_path_is_absolute_native_cstr(x_fs_path_cstr(path));
   }
 
-  static inline bool x_fs_path_eq_cstr_cstr(const int8_t* a, const int8_t* b)
+  static inline bool x_fs_path_eq_cstr_cstr(const char* a, const char* b)
   {
     if (!a || !b)
       return false;
 
     while (*a && *b)
     {
-      int8_t ca = is_path_separator(*a) ? '/' : *a;
-      int8_t cb = is_path_separator(*b) ? '/' : *b;
+      char ca = is_path_separator(*a) ? '/' : *a;
+      char cb = is_path_separator(*b) ? '/' : *b;
       if (ca != cb)
         break;
       ++a;
@@ -1096,26 +1082,31 @@ extern "C"
     if (path_a->length == 0 && path_b->length == 0)
       return false;
 
-    const int8_t* a = &path_a->buf[0];
-    const int8_t* b = &path_b->buf[0];
+    const char* a = &path_a->buf[0];
+    const char* b = &path_b->buf[0];
     return x_fs_path_eq_cstr_cstr(a, b);
   }
 
-  bool x_fs_path_eq_cstr(const XFSPath* path_a, const int8_t* path_b)
+  bool x_fs_path_eq_cstr(const XFSPath* path_a, const char* path_b)
   {
     if (path_a->buf == NULL && path_b == NULL)
       return false;
 
-    const int8_t* a = &(path_a->buf[0]);
+    const char* a = &(path_a->buf[0]);
     return x_fs_path_eq_cstr_cstr(a, path_b);
   }
 
-  bool x_fs_path_is_relative_cstr(const int8_t* path)
+  bool x_fs_path_is_relative(const XFSPath* path)
+  {
+    return !x_fs_path_is_absolute_cstr(path->buf);
+  }
+
+  bool x_fs_path_is_relative_cstr(const char* path)
   {
     return !x_fs_path_is_absolute_cstr(path);
   }
 
-  bool x_fs_path_is_absolute_cstr(const int8_t* path)
+  bool x_fs_path_is_absolute_cstr(const char* path)
   {
     if (!path || !*path) return false;
 
@@ -1137,7 +1128,7 @@ extern "C"
     return x_fs_path_is_absolute_cstr(x_fs_path_cstr(path));
   }
 
-  size_t x_fs_path_relative(const int8_t* from_path, const int8_t* to_path, XFSPath* out_path)
+  size_t x_fs_path_common_prefix(const char* from_path, const char* to_path, XFSPath* out_path)
   {
     if (!from_path || !to_path || !out_path) return -1;
 
@@ -1165,7 +1156,7 @@ extern "C"
 
     if (to_len >= prefix_len)
     {
-      if (strncmp((const int8_t*)from_copy.buf, to_path, prefix_len) == 0)
+      if (strncmp((const char*)from_copy.buf, to_path, prefix_len) == 0)
       {
         if (to_len == prefix_len)
         {
@@ -1177,7 +1168,7 @@ extern "C"
         if (is_path_separator(to_path[prefix_len]))
         {
           // Return suffix after prefix + separator
-          const int8_t* suffix = to_path + prefix_len + 1;
+          const char* suffix = to_path + prefix_len + 1;
           x_fs_path_init(out_path);
           x_smallstr_from_cstr(out_path, suffix);
           return 0;
@@ -1185,12 +1176,12 @@ extern "C"
       }
     }
 
-    // No prefix match, return to_path as is
-    return x_smallstr_from_cstr(out_path, to_path);
+    // No prefix match
+    return 1;
   }
 
   // Input must be normalized
-  bool x_fs_path_split(const int8_t* input, XFSPath* out_components, size_t max_components, size_t* out_count)
+  bool x_fs_path_split(const char* input, XFSPath* out_components, size_t max_components, size_t* out_count)
   {
     if (!input || !out_components || !out_count) return false;
 
@@ -1212,7 +1203,7 @@ extern "C"
           strncpy((char*)tmp.buf, input + start, tmp.length);
           tmp.buf[tmp.length] = '\0';
 
-          x_smallstr_from_cstr(&out_components[count], (const int8_t*)tmp.buf);
+          x_smallstr_from_cstr(&out_components[count], (const char*)tmp.buf);
           count++;
         }
         start = i + 1;
@@ -1233,15 +1224,15 @@ extern "C"
 
     for (size_t i = 0; i < min_len; ++i)
     {
-      int8_t ca = normalized_path_char(a->buf[i]);
-      int8_t cb = normalized_path_char(b->buf[i]);
-      if (ca != cb) return (uint8_t)ca - (uint8_t)cb;
+      char ca = normalized_path_char(a->buf[i]);
+      char cb = normalized_path_char(b->buf[i]);
+      if (ca != cb) return (unsigned char)ca - (unsigned char)cb;
     }
 
     return (int)(alen - blen);
   }
 
-  int32_t x_fs_path_compare_cstr(const XFSPath* a, const int8_t* cstr)
+  int32_t x_fs_path_compare_cstr(const XFSPath* a, const char* cstr)
   {
     if (!a || !cstr) return -1;
 
@@ -1256,15 +1247,15 @@ extern "C"
 
     for (size_t i = 0; i < min_len; ++i)
     {
-      int8_t ca = normalized_path_char(a->buf[i]);
-      int8_t cb = normalized_path_char(cstr[i]);
-      if (ca != cb) return (uint8_t)ca - (uint8_t)cb;
+      char ca = normalized_path_char(a->buf[i]);
+      char cb = normalized_path_char(cstr[i]);
+      if (ca != cb) return (unsigned char)ca - (unsigned char)cb;
     }
 
     return (int)(alen - clen);
   }
 
-  bool x_fs_path_exists_cstr(const int8_t* path)
+  bool x_fs_path_exists_cstr(const char* path)
   {
 #if defined(_WIN32) || defined(_WIN64)
 #define x_fs_access _access
@@ -1281,7 +1272,7 @@ extern "C"
     return x_fs_path_exists_cstr(x_fs_path_cstr(path));
   }
 
-  bool x_fs_path_exists_quick_cstr(const int8_t* path)
+  bool x_fs_path_exists_quick_cstr(const char* path)
   {
 #ifdef _WIN32
     DWORD attributes = GetFileAttributes(path);
@@ -1301,7 +1292,7 @@ extern "C"
     return x_smallstr_from_strview(sv, out);
   }
 
-  bool x_fs_file_stat(const int8_t* path, FSFileStat* out_stat)
+  bool x_fs_file_stat(const char* path, FSFileStat* out_stat)
   {
     if (!path || !out_stat) return false;
 
@@ -1336,7 +1327,7 @@ extern "C"
     return true;
   }
 
-  bool x_fs_file_modification_time(const int8_t* path, time_t* out_time)
+  bool x_fs_file_modification_time(const char* path, time_t* out_time)
   {
     FSFileStat stat;
     if (x_fs_file_stat(path, &stat) != 0) return false;
@@ -1344,7 +1335,7 @@ extern "C"
     return true;
   }
 
-  bool x_fs_file_creation_time(const int8_t* path, time_t* out_time)
+  bool x_fs_file_creation_time(const char* path, time_t* out_time)
   {
     FSFileStat stat;
     if (x_fs_file_stat(path, &stat) != 0) return false;
@@ -1352,7 +1343,7 @@ extern "C"
     return true;
   }
 
-  bool x_fs_file_permissions(const int8_t* path, uint32_t* out_permissions)
+  bool x_fs_file_permissions(const char* path, uint32_t* out_permissions)
   {
     FSFileStat stat;
     if (x_fs_file_stat(path, &stat) != 0) return false;
@@ -1360,7 +1351,7 @@ extern "C"
     return true;
   }
 
-  bool x_fs_file_set_permissions(const int8_t* path, uint32_t permissions)
+  bool x_fs_file_set_permissions(const char* path, uint32_t permissions)
   {
 #ifdef _WIN32
     return SetFileAttributesA(path, permissions);
@@ -1369,7 +1360,7 @@ extern "C"
 #endif
   }
 
-  bool x_fs_is_file(const int8_t* path)
+  bool x_fs_is_file(const char* path)
   {
 #ifdef _WIN32
     DWORD attr = GetFileAttributesA(path);
@@ -1380,7 +1371,7 @@ extern "C"
 #endif
   }
 
-  bool x_fs_is_directory(const int8_t* path)
+  bool x_fs_is_directory(const char* path)
   {
 #ifdef _WIN32
     DWORD attr = GetFileAttributesA(path);
@@ -1391,7 +1382,7 @@ extern "C"
 #endif
   }
 
-  bool x_fs_is_symlink(const int8_t* path)
+  bool x_fs_is_symlink(const char* path)
   {
 #ifdef _WIN32
     DWORD attr = GetFileAttributesA(path);
@@ -1402,7 +1393,7 @@ extern "C"
 #endif
   }
 
-  bool x_fs_read_symlink(const int8_t* path, XFSPath* out_path)
+  bool x_fs_read_symlink(const char* path, XFSPath* out_path)
   {
 #ifdef _WIN32
     // No direct equivalent in Win32 API; require fallback with GetFinalPathNameByHandle or similar
@@ -1410,13 +1401,13 @@ extern "C"
         NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
     if (hFile == INVALID_HANDLE_VALUE) return false;
 
-    int8_t buf[MAX_PATH];
+    char buf[MAX_PATH];
     DWORD len = GetFinalPathNameByHandleA(hFile, buf, MAX_PATH, FILE_NAME_NORMALIZED);
     CloseHandle(hFile);
     if (len == 0 || len >= MAX_PATH) return false;
     return x_smallstr_from_cstr(out_path, buf);
 #else
-    int8_t buf[PATH_MAX];
+    char buf[PATH_MAX];
     ssize_t len = readlink(path, buf, sizeof(buf) - 1);
     if (len == -1) return false;
     buf[len] = '\0';
@@ -1424,17 +1415,17 @@ extern "C"
 #endif
   }
 
-  bool x_fs_make_temp_file(const int8_t* prefix, XFSPath* out_path)
+  bool x_fs_make_temp_file(const char* prefix, XFSPath* out_path)
   {
 #ifdef _WIN32
-    int8_t tmpPath[MAX_PATH];
+    char tmpPath[MAX_PATH];
     if (!GetTempPathA(MAX_PATH, tmpPath)) return false;
 
-    int8_t tmpFile[MAX_PATH];
+    char tmpFile[MAX_PATH];
     if (!GetTempFileNameA(tmpPath, prefix, 0, tmpFile)) return false;
     return x_smallstr_from_cstr(out_path, tmpFile);
 #else
-    int8_t tmpl[PATH_MAX];
+    char tmpl[PATH_MAX];
     snprintf(tmpl, sizeof(tmpl), "/tmp/%sXXXXXX", prefix);
     int32_t fd = mkstemp(tmpl);
     if (fd == -1) return false;
@@ -1443,13 +1434,13 @@ extern "C"
 #endif
   }
 
-  bool x_fs_make_temp_directory(const int8_t* prefix, XFSPath* out_path)
+  bool x_fs_make_temp_directory(const char* prefix, XFSPath* out_path)
   {
 #ifdef _WIN32
-    int8_t tmpPath[MAX_PATH];
+    char tmpPath[MAX_PATH];
     if (!GetTempPathA(MAX_PATH, tmpPath)) return false;
 
-    int8_t dirPath[MAX_PATH];
+    char dirPath[MAX_PATH];
     for (int i = 0; i < 100; ++i)
     {
       snprintf(dirPath, sizeof(dirPath), "%s%s%d", tmpPath, prefix, i);
@@ -1460,7 +1451,7 @@ extern "C"
     }
     return false;
 #else
-    int8_t tmpl[PATH_MAX];
+    char tmpl[PATH_MAX];
     snprintf(tmpl, sizeof(tmpl), "/tmp/%sXXXXXX", prefix);
     if (!mkdtemp(tmpl)) return -1;
     return x_smallstr_from_cstr(out_path, tmpl) > 0;

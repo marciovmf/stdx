@@ -102,7 +102,7 @@ int test_x_fs_path_relative(void)
 {
   // Relative
   XFSPath rel;
-  ASSERT_TRUE(x_fs_path_relative("/usr/local/", "/usr/local/bin/gcc", &rel) == 0);
+  ASSERT_TRUE(x_fs_path_common_prefix("/usr/local/", "/usr/local/bin/gcc", &rel) == 0);
   ASSERT_TRUE(x_fs_path_compare_cstr(&rel, "bin/gcc") == 0);
   return 0;
 }

@@ -108,12 +108,17 @@ extern "C"
   void logger_log(XLogLevel level, XLogColor fg, XLogColor bg, XLogComponent components, const char* file, int line, const char* func, const char* fmt,  ...);
   void logger_print(XLogLevel level, const char* fmt, ...);
 
+#ifndef X_LOG_BREAK
+#define X_LOG_BREAK() ((void)0)
+#endif
+
+
 #define x_log_raw(level, fg, bg, components, fmt, ...)  logger_log(level, fg, bg, components, __FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
 #define x_log_debug(fmt, ...)      logger_log(XLOG_LEVEL_DEBUG,     XLOG_COLOR_BLUE,    XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
 #define x_log_info(fmt, ...)       logger_log(XLOG_LEVEL_INFO,      XLOG_COLOR_WHITE,   XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
 #define x_log_warning(fmt, ...)    logger_log(XLOG_LEVEL_WARNING,   XLOG_COLOR_YELLOW,  XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
 #define x_log_error(fmt, ...)      logger_log(XLOG_LEVEL_ERROR,     XLOG_COLOR_RED,     XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
-#define x_log_fatal(fmt, ...)      do{ logger_log(XLOG_LEVEL_FATAL, XLOG_COLOR_WHITE,   XLOG_COLOR_RED,   XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__); ASSERT_BREAK();} while(0);
+#define x_log_fatal(fmt, ...)      do{ logger_log(XLOG_LEVEL_FATAL, XLOG_COLOR_WHITE,   XLOG_COLOR_RED,   XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__); X_LOG_BREAK();} while(0);
 
 #ifdef STDX_IMPLEMENTATION_LOG
 

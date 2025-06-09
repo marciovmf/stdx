@@ -235,9 +235,10 @@ extern "C" {
   // -----------------------------------------------------------------------------
 
 #if defined(X_OS_WINDOWS)
-
+#if defined (X_COMPILER_MSVC)
 #ifndef _CRT_SECURE_NO_WARNINGS 
 #define _CRT_SECURE_NO_WARNINGS 1
+#endif
 #endif
 
 #ifndef WIN32_LEAN_AND_MEAN
