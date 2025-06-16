@@ -126,6 +126,7 @@ extern "C"
 
 #define       x_fs_path(out, ...) x_fs_path_(out, __VA_ARGS__, 0)
 #define       x_fs_path_join(path, ...) x_fs_path_join_(path, __VA_ARGS__, 0)
+#define       x_fs_path_join_strview(path, ...) x_fs_path_join_strview_(path, __VA_ARGS__, 0)
 
   XFSPath*    x_fs_path_normalize(XFSPath* input);
   XStrview    x_fs_path_basename(const char* input);
@@ -261,7 +262,36 @@ extern "C"
 #endif
   };
 
+  int32_t x_fs_path_join_one_strview(XFSPath* out, const XStrview segment)
+  {
+    if (!out || !segment.data) return false;
 
+    size_t seg_len = segment.length;
+    if (seg_len == 0) return true;
+
+    bool needs_sep = false;
+
+    if (out->length > 0 && out->buf[out->length - 1] != PATH_SEPARATOR)
+    {
+      needs_sep = true;
+    }
+
+    size_t total_needed = out->length + (needs_sep ? 1 : 0) + seg_len;
+
+    // enought space ?
+    if (total_needed > STDX_SMALLSTR_MAX_LENGTH) return false;
+
+    // Add separator if needed
+    if (needs_sep) out->buf[out->length++] = PATH_SEPARATOR;
+
+    // Append segment
+    memcpy(&out->buf[out->length], segment.data, seg_len);
+    out->length += seg_len;
+
+    // Null-terminate
+    out->buf[out->length] = '\0';
+    return (int) out->length;
+  }
 
 
   int32_t x_fs_path_join_one(XFSPath* out, const char* segment)
@@ -857,6 +887,28 @@ extern "C"
     while (join_success && (segment = va_arg(args, const char*)) != NULL)
     {
       join_success &= x_fs_path_join_one(path, segment);
+    }
+    va_end(args);
+
+    if (!join_success)
+      return -1;
+    return (int) path->length;
+  }
+
+  size_t x_fs_path_join_strview_(XFSPath* path, ...)
+  {
+    va_list args;
+    va_start(args, path);
+
+    if (path == NULL)
+      return -1;
+
+    bool join_success = true;
+
+    const XStrview* segment = NULL;
+    while (join_success && (segment = va_arg(args, const XStrview*)) != NULL)
+    {
+      join_success &= x_fs_path_join_one_strview(path, *segment);
     }
     va_end(args);
 
