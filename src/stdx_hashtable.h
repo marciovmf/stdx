@@ -35,26 +35,30 @@ extern "C"
 
 #define STDX_HASHTABLE_VERSION (STDX_HASHTABLE_VERSION_MAJOR * 10000 + STDX_HASHTABLE_VERSION_MINOR * 100 + STDX_HASHTABLE_VERSION_PATCH)
 
+#define X_HASHTABLE_INITIAL_CAPACITY 16
+#define X_HASHTABLE_LOAD_FACTOR 0.75
 
-#ifdef STDX_IMPLEMENTATION_HASHTABLE
-#ifndef STDX_IMPLEMENTATION_ARENA
-#define STDX_INTERNAL_ARENA_IMPLEMENTATION
-#define STDX_IMPLEMENTATION_ARENA
-#endif
-#endif
-#include <stdx_arena.h>
 
+#include <stdx_common.h>
 #include <stddef.h>
 #include <stdbool.h>
+#include <string.h>
 
-  typedef size_t (*HashFn)(const void* key);
-  typedef bool   (*EqualsFn)(const void* a, const void* b);
+  typedef size_t  (*XHashFnHash)(const void* key, size_t);
+  typedef bool    (*XHashFnCompare)(const void* a, const void* b);
+  typedef void    (*XHashFnClone)(void* dst, const void* src);
+  typedef void    (*XHashFnDestroy)(void* ptr);
 
   typedef struct
   {
     void* key;
     void* value;
-    bool occupied;
+    enum XEntryState
+    {
+      X_HASH_ENTRY_FREE,
+      X_HASH_ENTRY_OCCUPIED,
+      X_HASH_ENTRY_DELETED,
+    } state;
   } XHashEntry;
 
   typedef struct
@@ -63,177 +67,376 @@ extern "C"
     size_t value_size;
     size_t count;
     size_t capacity;
-    XHashEntry* entries;
-    HashFn hash_fn;
-    EqualsFn eq_fn;
-    XAllocator* allocator;
+    XHashEntry* entries;    // parallel to keys and values
+    void* keys;             // array of keys (capacity * key_size)
+    void* values;           // array of values (capacity * value_size)
+
+    bool key_is_pointer;
+    bool value_is_pointer;
+    bool key_is_null_terminated;
+    bool value_is_null_terminated;
+
+    // callbacks
+    XHashFnHash       fn_key_hash;
+    XHashFnCompare    fn_key_compare;
+    XHashFnClone      fn_key_copy;
+    XHashFnDestroy    fn_key_free;
+    XHashFnClone      fn_value_copy;
+    XHashFnDestroy    fn_value_free;
   } XHashtable;
 
-#define x_hashtable_create(ks, vs, hf, eqf) x_hashtable_create_ex(ks, vs, hf, eqf, NULL)
 
-  XHashtable* x_hashtable_create_ex(size_t key_size, size_t value_size, HashFn hash_fn, EqualsFn eq_fn, XAllocator* allocator);
-  void x_hashtable_destroy(XHashtable* table);
+#define X_STR(s) #s
+#define X_TOSTR(s) X_STR(s)
+#define X_TYPE_NAME(t) X_TOSTR(t)
+
+#define x_hashtable_create(tk, tv) x_hashtable_create_(  \
+    sizeof(tk), strcmp( X_TYPE_NAME(tk), "char*") == 0, strchr(X_TYPE_NAME(tk), '*') != 0, \
+    sizeof(tv), strcmp( X_TYPE_NAME(tv), "char*") == 0, strchr(X_TYPE_NAME(tv), '*') != 0)
+
+  static XHashtable* x_hashtable_create_(size_t key_size, bool key_null_terminated, bool key_is_pointer,
+      size_t value_size, bool value_null_terminated, bool value_is_pointer);
+
+  XHashtable* x_hashtable_create_full(
+      size_t          key_size,
+      size_t          value_size,
+      XHashFnHash     fn_key_hash,
+      XHashFnCompare  fn_key_compare,
+      XHashFnClone    fn_key_copy,
+      XHashFnDestroy  fn_key_free,
+      XHashFnClone    fn_value_copy,
+      XHashFnDestroy  fn_value_free);
+
   bool x_hashtable_set(XHashtable* table, const void* key, const void* value);
   bool x_hashtable_get(XHashtable* table, const void* key, void* out_value);
+  void x_hashtable_destroy(XHashtable* table);
+  size_t x_hashtable_count(const XHashtable* table);
+  bool stdx_str_eq(const void* a, const void* b);
   bool x_hashtable_has(XHashtable* table, const void* key);
   bool x_hashtable_remove(XHashtable* table, const void* key);
-  size_t x_hashtable_count(const XHashtable* table);
 
-  //---------------------------------------------------------------------------------
-  // Iterator
-  //---------------------------------------------------------------------------------
-  typedef struct {
-    const XHashtable* table;
-    size_t index;
-  } XHashIter;
+  // public utilities
+  size_t x_hashtable_hash_bytes(const void* ptr, size_t size);
+  size_t x_hashtable_hash_cstr(const void* ptr, size_t size);
 
-  void x_hashtable_iter_init(XHashIter* iter, const XHashtable* table);
-  bool x_hashtable_iter_next(XHashIter* iter, void** out_key, void** out_value);
+  void x_hashtable_clone_cstr(void* dest, const void* src);
+  bool x_hashtable_compare_cstr(const void* a, const void* b);
+  void x_hashtable_free_cstr(void* a);
 
+#if defined(STDX_IMPLEMENTATION_HASHTABLE) || defined(STDX_DEV_LOCAL)
 
-  //---------------------------------------------------------------------------------
-  // Helpers
-  //---------------------------------------------------------------------------------
-  size_t stdx_hash_str(const void* str);
-  bool stdx_str_eq(const void* a, const void* b);
-
-#ifdef STDX_IMPLEMENTATION_HASHTABLE
-
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <stdint.h>
 
-#define STDX_HASHTABLE_INITIAL_CAPACITY 16
-#define STDX_HASHTABLE_LOAD_FACTOR 0.75
-
-  static void x_hashtable_rehash(XHashtable* table);
-
-  XHashtable* x_hashtable_create_ex(size_t key_size, size_t value_size, HashFn hash_fn, EqualsFn eq_fn, XAllocator* allocator)
+  // Helpers for pointer arithmetic on keys/values arrays
+  static inline void* key_at(XHashtable* t, size_t i)
   {
-    XHashtable* t = (XHashtable*) stdx_alloc(allocator, sizeof(XHashtable));
-    if (!t) return NULL;
-
-    t->key_size = key_size;
-    t->value_size = value_size;
-    t->count = 0;
-    t->capacity = STDX_HASHTABLE_INITIAL_CAPACITY;
-    t->hash_fn = hash_fn;
-    t->eq_fn = eq_fn;
-    t->allocator = allocator;
-
-    t->entries = (XHashEntry*) stdx_alloc(allocator, STDX_HASHTABLE_INITIAL_CAPACITY * sizeof(XHashEntry));
-    memset(t->entries, 0, STDX_HASHTABLE_INITIAL_CAPACITY * sizeof(XHashEntry));
-    return t;
+    return (char*)t->keys + i * t->key_size;
   }
 
-  void x_hashtable_destroy(XHashtable* table)
+  static inline void* value_at(XHashtable* t, size_t i)
   {
-    if (!table) return;
-    XAllocator* a = table->allocator;
-    for (size_t i = 0; i < table->capacity; ++i)
+    return (char*)t->values + i * t->value_size;
+  }
+
+  size_t x_hashtable_hash_bytes(const void* key, size_t size)
+  {
+    // djb2 hash
+    const unsigned char* data = (const unsigned char*)key;
+    size_t hash = 5381;
+    for (size_t i = 0; i < size; i++)
+      hash = ((hash << 5) + hash) + data[i];  // hash * 33 + data[i]
+    return hash;
+  }
+
+  size_t x_hashtable_hash_cstr(const void* key, size_t _)
+  {
+    X_UNUSED(_);
+    const char* str = (const char*)key;
+    size_t len = strlen(str);
+    return x_hashtable_hash_bytes(str, len);
+  }
+
+  bool x_hashtable_compare_cstr(const void* a, const void* b)
+  {
+    const char* str_a = *(const char**)a;
+    const char* str_b = *(const char**)b;
+    return strcmp(str_a, str_b) == 0;
+  }
+
+  void x_hashtable_free_cstr(void* a)
+  {
+    free(*(char**)a);
+  }
+
+  void x_hashtable_clone_cstr(void* dest, const void* src)
+  {
+    char* mem =  
+#if defined(_MSC_VER)
+      _strdup((const char*) src);
+#else
+    strdup((const char*) src);
+#endif
+    *(char**)dest = mem;
+  }
+
+  // Forward declarations
+  static bool x_hashtable_resize(XHashtable* table, size_t new_capacity);
+
+  static XHashtable* x_hashtable_create_(size_t key_size, bool key_null_terminated, bool key_is_pointer,
+      size_t value_size, bool value_null_terminated, bool value_is_pointer)
+  {
+    XHashtable* ht = x_hashtable_create_full(
+        key_size,
+        value_size,
+        key_null_terminated   ? x_hashtable_hash_cstr     : x_hashtable_hash_bytes,
+        key_null_terminated   ? x_hashtable_compare_cstr  : NULL,
+        key_null_terminated   ? x_hashtable_clone_cstr    : NULL,
+        key_null_terminated   ? x_hashtable_free_cstr     : NULL,
+        value_null_terminated ? x_hashtable_clone_cstr    : NULL,
+        value_null_terminated ? x_hashtable_free_cstr     : NULL);
+
+    ht->key_is_pointer = key_is_pointer;
+    ht->key_is_null_terminated = key_null_terminated;
+    ht->value_is_pointer = value_is_pointer;
+    ht->value_is_null_terminated = value_null_terminated;
+    return ht;
+  }
+
+  XHashtable* x_hashtable_create_full(
+      size_t          key_size,
+      size_t          value_size,
+      XHashFnHash     fn_key_hash,
+      XHashFnCompare  fn_key_compare,
+      XHashFnClone    fn_key_copy,
+      XHashFnDestroy  fn_key_free,
+      XHashFnClone    fn_value_copy,
+      XHashFnDestroy  fn_value_free
+      )
+  {
+    XHashtable* table = (XHashtable*)malloc(sizeof(XHashtable));
+    if (!table) return NULL;
+
+    size_t capacity = X_HASHTABLE_INITIAL_CAPACITY;
+    table->entries = (XHashEntry*)calloc(capacity, sizeof(XHashEntry));
+    table->keys = malloc(key_size * capacity);
+    table->values = malloc(value_size * capacity);
+
+    if (!table->entries || !table->keys || !table->values)
     {
-      if (table->entries[i].occupied)
-      {
-        stdx_free(a, table->entries[i].key);
-        stdx_free(a, table->entries[i].value);
-      }
+      free(table->entries);
+      free(table->keys);
+      free(table->values);
+      free(table);
+      return NULL;
     }
-    stdx_free(a, table->entries);
-    stdx_free(a, table);
+
+    table->key_size = key_size;
+    table->value_size = value_size;
+    table->count = 0;
+    table->capacity = capacity;
+
+    table->fn_key_hash = fn_key_hash;
+    table->fn_key_compare = fn_key_compare;
+    table->fn_key_copy = fn_key_copy;
+    table->fn_key_free = fn_key_free;
+    table->fn_value_copy = fn_value_copy;
+    table->fn_value_free = fn_value_free;
+
+    // all entries are free by calloc
+    return table;
   }
 
-  static size_t probe_index(XHashtable* table, const void* key, bool* found)
+  static size_t probe_index(XHashtable* table, const void* key, size_t *out_index_found, bool *found)
   {
-    size_t idx = table->hash_fn(key) % table->capacity;
-    size_t start = idx;
+    size_t capacity = table->capacity;
+    size_t hash = table->fn_key_hash(key, table->key_size);
+    size_t index = hash % capacity;
 
-    while (table->entries[idx].occupied)
+    size_t first_deleted = (size_t)-1;
+
+    for (size_t i = 0; i < capacity; i++)
     {
-      if (table->eq_fn(key, table->entries[idx].key))
+      size_t idx = (index + i) % capacity;
+      XHashEntry* entry = &table->entries[idx];
+
+      if (entry->state == X_HASH_ENTRY_FREE)
       {
-        *found = true;
+        if (first_deleted != (size_t)-1)
+          *out_index_found = first_deleted;
+        else
+          *out_index_found = idx;
+
+        *found = false;
         return idx;
       }
-      idx = (idx + 1) % table->capacity;
-      if (idx == start) break;
+      else if (entry->state == X_HASH_ENTRY_DELETED)
+      {
+        if (first_deleted == (size_t)-1)
+          first_deleted = idx;
+      }
+      else if (entry->state == X_HASH_ENTRY_OCCUPIED)
+      {
+        void* key_at_idx = key_at(table, idx);
+        bool keys_match = table->fn_key_compare ?
+          table->fn_key_compare(key_at_idx, &key) :
+          memcmp(key_at_idx, key, table->key_size) == 0;
+
+        if (keys_match)
+        {
+          *out_index_found = idx;
+          *found = true;
+          return idx;
+        }
+      }
     }
+
+    // table full but should never happen if resized properly
+    *out_index_found = (size_t)-1;
     *found = false;
-    return idx;
+    return (size_t)-1;
   }
 
   bool x_hashtable_set(XHashtable* table, const void* key, const void* value)
   {
-    if (!table) return false;
+    if (!table || !key) return false;
 
-    if ((double)table->count / table->capacity >= STDX_HASHTABLE_LOAD_FACTOR)
-      x_hashtable_rehash(table);
-
-    bool found;
-    size_t idx = probe_index(table, key, &found);
-    XAllocator* a = table->allocator;
-
-    if (!found)
+    // resize if load factor exceeded
+    if ((double)(table->count + 1) / table->capacity > X_HASHTABLE_LOAD_FACTOR)
     {
-      table->entries[idx].key = stdx_alloc(a, table->key_size);
-      memcpy(table->entries[idx].key, key, table->key_size);
-      table->entries[idx].value = stdx_alloc(a, table->value_size);
-      table->entries[idx].occupied = true;
+      if (!x_hashtable_resize(table, table->capacity * 2))
+        return false;
+    }
+
+    size_t idx;
+    bool found;
+
+    probe_index(table,
+        (table->key_is_pointer && !table->key_is_null_terminated) ? &key : key,
+        &idx, &found);
+    if (idx == (size_t)-1)
+      return false; // table full
+
+    XHashEntry* entry = &table->entries[idx];
+
+    if (found)
+    {
+      // Replace existing value
+      void* value_ptr = value_at(table, idx);
+      if (table->fn_value_free)
+        table->fn_value_free(value_ptr);
+      if (table->fn_value_copy)
+        table->fn_value_copy(value_ptr, value);
+      else
+        memcpy(value_ptr,
+            (table->value_is_pointer && !table->value_is_null_terminated) ? &value : value,
+            table->value_size);
+    }
+    else
+    {
+      // Insert new entry
+      if (table->fn_key_copy)
+        table->fn_key_copy(key_at(table, idx), key);
+      else
+        memcpy(key_at(table, idx), 
+            (table->key_is_pointer && !table->key_is_null_terminated) ? &key : key,
+            table->key_size);
+
+      if (table->fn_value_copy)
+        table->fn_value_copy(value_at(table, idx), value);
+      else
+        memcpy(value_at(table, idx),
+            (table->value_is_pointer && !table->value_is_null_terminated) ? &value : value,
+            table->value_size);
+
+      entry->state = X_HASH_ENTRY_OCCUPIED;
       table->count++;
     }
 
-    memcpy(table->entries[idx].value, value, table->value_size);
     return true;
   }
 
   bool x_hashtable_get(XHashtable* table, const void* key, void* out_value)
   {
-    if (!table) return false;
+    if (!table || !key || !out_value) return false;
+
+    size_t idx;
     bool found;
-    size_t idx = probe_index(table, key, &found);
-    if (!found) return false;
-    memcpy(out_value, table->entries[idx].value, table->value_size);
-    return true;
+    probe_index(table,
+        (table->key_is_pointer && !table->key_is_null_terminated) ? &key : key,
+        &idx, &found);
+
+    if (found)
+    {
+      void* value_ptr = value_at(table, idx);
+      //memcpy(out_value, value_ptr, table->value_size);
+      memcpy(out_value,
+          (table->value_is_pointer && !table->value_is_null_terminated) ? &value_ptr : value_ptr,
+          table->value_size);
+      return true;
+    }
+    return false;
   }
 
   bool x_hashtable_has(XHashtable* table, const void* key)
   {
+    if (!table || !key) return false;
+
+    size_t idx;
     bool found;
-    probe_index(table, key, &found);
+    probe_index(table, key, &idx, &found);
     return found;
   }
 
   bool x_hashtable_remove(XHashtable* table, const void* key)
   {
+    if (!table || !key) return false;
+
+    size_t idx;
     bool found;
-    size_t idx = probe_index(table, key, &found);
+    probe_index(table, key, &idx, &found);
     if (!found) return false;
 
-    XAllocator* a = table->allocator;
-    stdx_free(a, table->entries[idx].key);
-    stdx_free(a, table->entries[idx].value);
-    table->entries[idx] = (XHashEntry){0};
+    XHashEntry* entry = &table->entries[idx];
+    void* key_ptr = key_at(table, idx);
+    void* value_ptr = value_at(table, idx);
+
+    if (table->fn_key_free)
+      table->fn_key_free(key_ptr);
+    if (table->fn_value_free)
+      table->fn_value_free(value_ptr);
+
+    entry->state = X_HASH_ENTRY_DELETED;
     table->count--;
     return true;
   }
 
-  static void x_hashtable_rehash(XHashtable* table)
+  void x_hashtable_destroy(XHashtable* table)
   {
-    size_t old_cap = table->capacity;
-    XHashEntry* old_entries = table->entries;
-    XAllocator* a = table->allocator;
+    if (!table) return;
 
-    table->capacity *= 2;
-    table->entries = (XHashEntry*) stdx_alloc(a, table->capacity * sizeof(XHashEntry));
-    memset(table->entries, 0, table->capacity * sizeof(XHashEntry));
-    table->count = 0;
-
-    for (size_t i = 0; i < old_cap; ++i)
+    // free keys and values if needed
+    for (size_t i = 0; i < table->capacity; i++)
     {
-      if (!old_entries[i].occupied) continue;
-      x_hashtable_set(table, old_entries[i].key, old_entries[i].value);
-      stdx_free(a, old_entries[i].key);
-      stdx_free(a, old_entries[i].value);
+      if (table->entries[i].state == X_HASH_ENTRY_OCCUPIED)
+      {
+        void* key_ptr = key_at(table, i);
+        void* value_ptr = value_at(table, i);
+
+        if (table->fn_key_free)
+          table->fn_key_free(key_ptr);
+        if (table->fn_value_free)
+          table->fn_value_free(value_ptr);
+      }
     }
-    stdx_free(a, old_entries);
+
+    free(table->entries);
+    free(table->keys);
+    free(table->values);
+    free(table);
   }
 
   size_t x_hashtable_count(const XHashtable* table)
@@ -241,45 +444,61 @@ extern "C"
     return table ? table->count : 0;
   }
 
-  // Helper: string hash & compare
-  size_t stdx_hash_str(const void* ptr)
+  static bool x_hashtable_resize(XHashtable* table, size_t new_capacity)
   {
-    const int8_t* str = (const int8_t*) ptr;
-    size_t hash = 5381;
-    while (*str) hash = ((hash << 5) + hash) + (uint8_t)(*str++);
-    return hash;
-  }
+    if (!table || new_capacity <= table->capacity) return false;
 
-  bool stdx_str_eq(const void* a, const void* b)
-  {
-    return strcmp((const int8_t*)a, (const int8_t*)b) == 0;
-  }
+    XHashEntry* new_entries = (XHashEntry*)calloc(new_capacity, sizeof(XHashEntry));
+    void* new_keys = malloc(table->key_size * new_capacity);
+    void* new_values = malloc(table->value_size * new_capacity);
 
-  void x_hashtable_iter_init(XHashIter* iter, const XHashtable* table)
-  {
-    iter->table = table;
-    iter->index = 0;
-  }
+    if (!new_entries || !new_keys || !new_values)
+    {
+      free(new_entries);
+      free(new_keys);
+      free(new_values);
+      return false;
+    }
 
-  bool x_hashtable_iter_next(XHashIter* iter, void** out_key, void** out_value)
-  {
-    while (iter->index < iter->table->capacity) {
-      XHashEntry* entry = &iter->table->entries[iter->index++];
-      if (entry->occupied) {
-        if (out_key)   *out_key   = entry->key;
-        if (out_value) *out_value = entry->value;
-        return true;
+    // Save old arrays
+    XHashEntry* old_entries = table->entries;
+    void* old_keys = table->keys;
+    void* old_values = table->values;
+    size_t old_capacity = table->capacity;
+
+    table->entries = new_entries;
+    table->keys = new_keys;
+    table->values = new_values;
+    table->capacity = new_capacity;
+    table->count = 0;
+
+    // Rehash all old entries
+    for (size_t i = 0; i < old_capacity; i++)
+    {
+      if (old_entries[i].state == X_HASH_ENTRY_OCCUPIED)
+      {
+        void* key_ptr = (char*)old_keys + i * table->key_size;
+        void* value_ptr = (char*)old_values + i * table->value_size;
+
+        x_hashtable_set(table,
+            table->key_is_null_terminated ? *(void**)key_ptr : key_ptr, 
+            table->value_is_null_terminated ? *(void**)value_ptr : value_ptr);
+
+        // Free old keys and values if user callbacks exist
+        if (table->fn_key_free)
+          table->fn_key_free(key_ptr);
+        if (table->fn_value_free)
+          table->fn_value_free(value_ptr);
       }
     }
-    return false;
+
+    free(old_entries);
+    free(old_keys);
+    free(old_values);
+
+    return true;
   }
-
 #endif // STDX_IMPLEMENTATION_HASHTABLE
-
-#ifdef STDX_INTERNAL_ARENA_IMPLEMENTATION
-#undef STDX_IMPLEMENTATION_ARENA
-#undef STDX_INTERNAL_ARENA_IMPLEMENTATION
-#endif
 
 #ifdef __cplusplus
 }
