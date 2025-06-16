@@ -1024,8 +1024,11 @@ extern "C"
     {
       *token = *input;
       *input = (XStrview){0};
-      return 1;
+      return true;
     }
+
+    token->data = NULL;
+    token->length = 0;
     return false;
   }
 
@@ -1131,6 +1134,9 @@ extern "C"
       input->length = 0;
       return true;
     }
+
+    token->data = NULL;
+    token->length = 0;
     return false;
   }
 
@@ -1247,6 +1253,9 @@ extern "C"
       *input = (XStrview){0};
       return true;
     }
+
+    token->data = NULL;
+    token->length = 0;
     return false;
   }
 
