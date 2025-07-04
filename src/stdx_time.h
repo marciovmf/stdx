@@ -7,7 +7,7 @@
  *   - Time based comparisson, measurement and Arithmetic operations
  *
  * Designed to abstract platform-specific APIs (e.g., pthreads, Win32)
- * behind a consistent and lightweight int32_terface.
+ * behind a consistent and lightweight int32_t interface.
  *
  * To compile the implementation, define:
  *     #define STDX_IMPLEMENTATION_TIME
