@@ -145,10 +145,11 @@ extern "C"
   // XStrview (string views on char)*
   // Non-owning string views and operations.
 
+#define     x_strview_empty() ((XStrview){ .data = 0, .length = 0 })
+#define     x_strview_is_empty(sv) ((sv).length == 0)
 #define     x_strview_init(cstr, len) ((XStrview){ .data = (cstr), .length = (len) })
 #define     x_strview(cstr)           (x_strview_init( (cstr), strlen(cstr) ))
 
-  bool      x_strview_empty(XStrview sv);
   bool      x_strview_eq(XStrview a, XStrview b);
   bool      x_strview_eq_cstr(XStrview a, const char* b);
   bool      x_strview_eq_case(XStrview a, XStrview b);
@@ -910,12 +911,6 @@ extern "C"
       found = 1;
     }
     return found;
-  }
-
-
-  inline bool x_strview_empty(XStrview sv)
-  {
-    return sv.length == 0;
   }
 
   bool x_strview_eq(XStrview a, XStrview b)
