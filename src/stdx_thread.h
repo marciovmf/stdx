@@ -37,9 +37,9 @@ extern "C" {
 
 #include <stdint.h>
 
-  typedef struct XXThread XThread;
-  typedef struct XXMutex XMutex;
-  typedef struct XXCondVar XCondVar;
+  typedef struct XThread_t XThread;
+  typedef struct XMutex_t XMutex;
+  typedef struct XCondVar_t XCondVar;
   typedef struct XThreadPool_t XThreadPool;
   typedef struct XTask_t XTask;
   typedef void (*XThreadTask_fn)(void* arg);
@@ -49,25 +49,25 @@ extern "C" {
   // Basic thread operations
   // ---------------------------------------------------------------------------
 
-  int32_t   x_thread_create(XThread** t, x_thread_func_t func, void* arg);
-  void  x_thread_join(XThread* t);
-  void  x_thread_destroy(XThread* t);
+  int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg);
+  void    x_thread_join(XThread* t);
+  void    x_thread_destroy(XThread* t);
 
   // ---------------------------------------------------------------------------
   // Thread Synchronization
   // ---------------------------------------------------------------------------
 
-  int32_t   x_thread_mutex_init(XMutex** m);
-  void  x_thread_mutex_lock(XMutex* m);
-  void  x_thread_mutex_unlock(XMutex* m);
-  void  x_thread_mutex_destroy(XMutex* m);
-  int32_t   x_thread_condvar_init(XCondVar** cv);
-  void  x_thread_condvar_wait(XCondVar* cv, XMutex* m);
-  void  x_thread_condvar_signal(XCondVar* cv);
-  void  x_thread_condvar_broadcast(XCondVar* cv);
-  void  x_thread_condvar_destroy(XCondVar* cv);
-  void  x_thread_sleep_ms(int ms);
-  void  x_thread_yield();
+  int32_t x_thread_mutex_init(XMutex** m);
+  void    x_thread_mutex_lock(XMutex* m);
+  void    x_thread_mutex_unlock(XMutex* m);
+  void    x_thread_mutex_destroy(XMutex* m);
+  int32_t x_thread_condvar_init(XCondVar** cv);
+  void    x_thread_condvar_wait(XCondVar* cv, XMutex* m);
+  void    x_thread_condvar_signal(XCondVar* cv);
+  void    x_thread_condvar_broadcast(XCondVar* cv);
+  void    x_thread_condvar_destroy(XCondVar* cv);
+  void    x_thread_sleep_ms(int ms);
+  void    x_thread_yield();
 
 
   // ---------------------------------------------------------------------------
@@ -89,9 +89,9 @@ extern "C" {
 
 #include <windows.h>
 
-  struct XXThread { HANDLE handle; };
-  struct XXMutex  { CRITICAL_SECTION cs; };
-  struct XXCondVar { CONDITION_VARIABLE cv; };
+  struct XThread_t { HANDLE handle; };
+  struct XMutex_t  { CRITICAL_SECTION cs; };
+  struct XCondVar_t { CONDITION_VARIABLE cv; };
 
   struct XThreadWrapper
   {
@@ -283,9 +283,6 @@ extern "C" {
   }
 
 #endif
-
-
-
 
 #define THREADPOOL_MAGIC 0xDEADBEEF
 
