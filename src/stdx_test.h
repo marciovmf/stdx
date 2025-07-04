@@ -123,6 +123,10 @@ typedef struct
 
 #define STDX_TEST(name) {#name, name}
 
+#ifdef __cplusplus
+}
+#endif
+
 #ifdef STDX_IMPLEMENTATION_TEST
 
 #include <stdio.h>
@@ -210,10 +214,4 @@ int stdx_run_tests(STDXTestCase* tests, int32_t num_tests)
   #undef STDX_IMPLEMENTATION_LOG
   #undef STDX_INTERNAL_LOG_IMPLEMENTATION
 #endif
-
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif // STDX_TEST_H

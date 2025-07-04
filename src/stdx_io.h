@@ -58,6 +58,10 @@ extern "C"
   void x_io_clearerr(XFile *file); // Clear file error and EOF flags.
   int32_t x_io_fileno(XFile *file); // Return underlying file descriptor.
 
+#ifdef __cplusplus
+}
+#endif
+
 #ifdef STDX_IMPLEMENTATION_IO
 
 #include "stdx_io.h"
@@ -223,9 +227,4 @@ extern "C"
 #undef STDX_IMPLEMENTATION_ALLOCATOR
 #undef STDX_INTERNAL_ALLOCATOR_IMPLEMENTATION
 #endif
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif // STDX_IO_H

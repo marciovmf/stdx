@@ -58,6 +58,10 @@ extern "C"
   XAllocator x_arena_allocator(XArena* arena);
   XAllocator x_arena_allocator(XArena* arena);
 
+#ifdef __cplusplus
+}
+#endif
+
 #ifdef STDX_IMPLEMENTATION_ARENA
 
 #include <stddef.h>
@@ -174,9 +178,5 @@ extern "C"
 #ifdef STDX_INTERNAL_ALLOCATOR_IMPLEMENTATION
 #undef STDX_IMPLEMENTATION_ALLOCATOR
 #undef STDX_INTERNAL_ALLOCATOR_IMPLEMENTATION
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 #endif // STDX_ARENA_H

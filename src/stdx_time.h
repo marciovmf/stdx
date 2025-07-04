@@ -66,6 +66,10 @@ extern "C" {
   void    x_time_sleep(XTime t); // Cross-platform sleep
   XTime   x_time_now(); // Wall-clock time since Unix epoch
 
+#ifdef __cplusplus
+}
+#endif
+
 #ifdef STDX_IMPLEMENTATION_TIME
 
   // Start the timer
@@ -170,10 +174,5 @@ extern "C" {
 #endif
   }
 
-#endif //STDX_IMPLEMENTATION_TIME
-
-#ifdef __cplusplus
-}
-#endif
-
+#endif  // STDX_IMPLEMENTATION_TIME
 #endif  // STDX_TIME_H

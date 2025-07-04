@@ -120,6 +120,11 @@ extern "C"
 #define x_log_error(fmt, ...)      logger_log(XLOG_LEVEL_ERROR,     XLOG_COLOR_RED,     XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
 #define x_log_fatal(fmt, ...)      do{ logger_log(XLOG_LEVEL_FATAL, XLOG_COLOR_WHITE,   XLOG_COLOR_RED,   XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__); X_LOG_BREAK();} while(0);
 
+
+#ifdef __cplusplus
+}
+#endif
+
 #ifdef STDX_IMPLEMENTATION_LOG
 
 #include <stdlib.h>
@@ -409,11 +414,6 @@ extern "C"
   }
 
 
-#endif //STDX_IMPLEMENTATION_LOG
-
-#ifdef __cplusplus
-}
-#endif
-
+#endif // STDX_IMPLEMENTATION_LOG
 #endif // STDX_LOG_H
 

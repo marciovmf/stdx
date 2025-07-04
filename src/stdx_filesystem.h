@@ -202,6 +202,10 @@ extern "C"
   bool x_fs_make_temp_file(const char* prefix, XFSPath* out_path);
   bool x_fs_make_temp_directory(const char* prefix, XFSPath* out_path); 
 
+#ifdef __cplusplus
+}
+#endif
+
 
 #ifdef STDX_IMPLEMENTATION_FILESYSTEM
 
@@ -1516,9 +1520,4 @@ extern "C"
 #undef STDX_IMPLEMENTATION_STRING
 #undef STDX_INTERNAL_STRING_IMPLEMENTATION
 #endif
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif  // STDX_FILESYSTEM_H

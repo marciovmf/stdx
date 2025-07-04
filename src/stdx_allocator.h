@@ -44,6 +44,10 @@ extern XAllocator stdx_default_allocator;
 void* stdx_alloc(XAllocator* a, size_t size);
 void  stdx_free(XAllocator* a, void* ptr);
 
+#ifdef __cplusplus
+}
+#endif
+
 #ifdef STDX_IMPLEMENTATION_ALLOCATOR
 
 #include <stdlib.h>
@@ -74,8 +78,4 @@ void stdx_free(XAllocator* a, void* ptr) {
 }
 
 #endif // STDX_IMPLEMENTATION_ALLOCATOR
-
-#ifdef __cplusplus
-}
-#endif
 #endif // STDX_ALLOCATOR_H

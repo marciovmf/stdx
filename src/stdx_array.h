@@ -65,6 +65,9 @@ extern "C" {
   XPtr          x_array_top(XArray* array);
   bool          x_array_is_empty(XArray* array);
 
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef STDX_IMPLEMENTATION_ARRAY
 
@@ -248,9 +251,4 @@ extern "C" {
   }
 
 #endif // STDX_IMPLEMENTATION_ARRAY
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif // STDX_ARRAY_H

@@ -123,7 +123,11 @@ extern "C"
   bool x_hashtable_compare_cstr(const void* a, const void* b);
   void x_hashtable_free_cstr(void* a);
 
-#if defined(STDX_IMPLEMENTATION_HASHTABLE) || defined(STDX_DEV_LOCAL)
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef STDX_IMPLEMENTATION_HASHTABLE
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -499,9 +503,4 @@ extern "C"
     return true;
   }
 #endif // STDX_IMPLEMENTATION_HASHTABLE
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif // STDX_HASHTABLE_H

@@ -62,6 +62,10 @@ extern "C"
   wchar_t*      x_wstrbuilder_to_string(const XWStrBuilder* sb);
   size_t        x_wstrbuilder_length(const XWStrBuilder* sb);
 
+#ifdef __cplusplus
+}
+#endif
+
 #ifdef STDX_IMPLEMENTATION_STRINGBUILDER
 
 #include <stdlib.h>
@@ -299,9 +303,5 @@ extern "C"
   }
 
 #endif // STDX_IMPLEMENTATION_STRINGBUILDER
-
-#ifdef __cplusplus
-}
-#endif
 #endif // STDX_STRINGBUILDER_H
 

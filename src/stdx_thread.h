@@ -78,6 +78,9 @@ extern "C" {
   int32_t threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
   void threadpool_destroy(XThreadPool* pool);
 
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef STDX_IMPLEMENTATION_THREAD
 
@@ -419,9 +422,4 @@ extern "C" {
 
 
 #endif  // STDX_IMPLEMENTATION_THREAD
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // STDX_THREAD_H
+#endif  // STDX_THREAD_H

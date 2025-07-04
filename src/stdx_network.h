@@ -25,8 +25,8 @@
  * Usage: #include "stdx_network.h"
  */
 
-#ifndef XNET_H
-#define XNET_H
+#ifndef STDX_NETWORK_H
+#define STDX_NETWORK_H
 
 #ifdef __cplusplus
 extern "C"
@@ -164,6 +164,9 @@ extern "C"
   int32_t   x_net_get_last_error(void); // Returns the last network error code for the current thread/process. On Windows, this returns WSAGetLastError(). On POSIX, it returns errno.
   int32_t   x_net_get_last_error_message(char* buf, int32_t buf_len);   // Writes a human-readable error message for the last network error into `buf`. Returns 0 on success, or -1 on failure (e.g., buffer too small).
 
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef STDX_IMPLEMENTATION_NETWORK
 
@@ -981,9 +984,4 @@ extern "C"
   }
 
 #endif // STDX_IMPLEMENTATION_NETWORK
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif // XNET_H
+#endif // STDX_NETWORK_H

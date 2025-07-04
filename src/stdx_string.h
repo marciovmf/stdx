@@ -193,6 +193,9 @@ extern "C"
   bool      x_wstrview_split_at(XWStrview sv, uint32_t delim, XWStrview* left, XWStrview* right);
   bool      x_wstrview_next_token(XWStrview* input, wchar_t delim, XWStrview* token);
 
+#ifdef __cplusplus
+}
+#endif
 
 #ifdef STDX_IMPLEMENTATION_STRING
 
@@ -1272,10 +1275,5 @@ extern "C"
 
 
 #endif // STDX_IMPLEMENTATION_STRING
-
-#ifdef __cplusplus
-}
-#endif
-
 #endif // STDX_STRING_H
 
