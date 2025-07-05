@@ -148,6 +148,7 @@ extern "C" {
 #define X_STATIC_ASSERT(cond, msg) typedef char static_assert_##msg[(cond) ? 1 : -1]
 
 
+
 #ifdef DEBUG
 #define X_ASSERT(expr) \
   do { \
@@ -249,6 +250,9 @@ extern "C" {
 #endif // X_OS_WINDOWS
 
 #include <stdint.h>
+#ifdef DEBUG
+#include <stdio.h>
+#endif
 
   typedef int8_t    i8;
   typedef uint8_t   u8;

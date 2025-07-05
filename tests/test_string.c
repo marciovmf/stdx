@@ -77,8 +77,8 @@ int test_str_hash(void)
 
 int test_x_strview_empty(void)
 {
-  ASSERT_TRUE(x_strview_empty(x_strview("")));
-  ASSERT_FALSE(x_strview_empty(x_strview("a")));
+  ASSERT_TRUE(x_strview_is_empty(x_strview("")));
+  ASSERT_FALSE(x_strview_is_empty(x_strview("a")));
   return 0;
 }
 

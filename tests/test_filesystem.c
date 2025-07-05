@@ -73,7 +73,7 @@ int test_x_fs_path_dirname(void)
 int test_x_fs_path_extension(void)
 {
   XStrview ext = x_fs_path_extension("/foo/bar/biz/bald/foo.tar.gz");
-  ASSERT_FALSE(x_strview_empty(ext));
+  ASSERT_FALSE(x_strview_is_empty(ext));
   ASSERT_TRUE(x_strview_eq_cstr(ext, "gz"));
   return 0;
 }
