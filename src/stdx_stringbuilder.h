@@ -1,5 +1,5 @@
 /*
- * XStrBuilder - Dynamic String Builder for C
+ * STDX - Dynamic String Builder for C
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
  *
