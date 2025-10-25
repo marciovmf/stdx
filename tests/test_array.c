@@ -1,7 +1,7 @@
 #include <stdx_common.h>
-#define STDX_IMPLEMENTATION_ARRAY
+#define X_IMPL_ARRAY
 #include <stdx_array.h>
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
 
 int test_x_array_create()
@@ -227,20 +227,20 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_x_array_create),
-    STDX_TEST(test_x_array_add),
-    STDX_TEST(test_x_array_insert),
-    STDX_TEST(test_x_array_get),
-    STDX_TEST(test_x_array_get_data),
-    STDX_TEST(test_x_array_count),
-    STDX_TEST(test_x_array_capacity),
-    STDX_TEST(test_x_array_delete_range),
-    STDX_TEST(test_x_array_clear),
-    STDX_TEST(test_x_array_delete_at),
-    STDX_TEST(test_x_array_push_and_top),
-    STDX_TEST(test_x_array_push_multiple),
-    STDX_TEST(test_x_array_pop),
-    STDX_TEST(test_x_array_is_empty),
+    X_TEST(test_x_array_create),
+    X_TEST(test_x_array_add),
+    X_TEST(test_x_array_insert),
+    X_TEST(test_x_array_get),
+    X_TEST(test_x_array_get_data),
+    X_TEST(test_x_array_count),
+    X_TEST(test_x_array_capacity),
+    X_TEST(test_x_array_delete_range),
+    X_TEST(test_x_array_clear),
+    X_TEST(test_x_array_delete_at),
+    X_TEST(test_x_array_push_and_top),
+    X_TEST(test_x_array_push_multiple),
+    X_TEST(test_x_array_pop),
+    X_TEST(test_x_array_is_empty),
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

@@ -1,13 +1,11 @@
 #include <stdx_common.h>
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_HASHTABLE
+#define X_IMPL_HASHTABLE
 #include <stdx_hashtable.h>
-#include <stdx_allocator.h>
 #include <stdx_arena.h>
 #include <stdint.h>
 #include <string.h>
-
 
 #define ref_i(a) X_VALUE_PTR(int32_t, (a))
 #define ref_f(a) X_VALUE_PTR(float, (a))
@@ -317,14 +315,14 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_pointers_as_keys),
-    STDX_TEST(test_str_key_str_val),
-    STDX_TEST(test_str_key_copy_val),
-    STDX_TEST(test_copy_key_str_val),
-    STDX_TEST(test_copy_key_copy_val),
-    STDX_TEST(test_int_key_struct_value),
-    STDX_TEST(test_x_hashtable_rehash_string),
-    STDX_TEST(test_x_hashtable_rehash_ints)
+    X_TEST(test_pointers_as_keys),
+    X_TEST(test_str_key_str_val),
+    X_TEST(test_str_key_copy_val),
+    X_TEST(test_copy_key_str_val),
+    X_TEST(test_copy_key_copy_val),
+    X_TEST(test_int_key_struct_value),
+    X_TEST(test_x_hashtable_rehash_string),
+    X_TEST(test_x_hashtable_rehash_ints)
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

@@ -16,13 +16,17 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY  "${OUTPUT_DIR}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  "${OUTPUT_DIR}")
 set(STDX_INCLUDE_DIR                "${CMAKE_CURRENT_LIST_DIR}/src/")
 
-
 #------------------------------------------------------------------------------------
 # Demos
 #------------------------------------------------------------------------------------
 
+# Webserver
 add_executable(webserver demo/webserver.c)
 target_include_directories(webserver PUBLIC ${STDX_INCLUDE_DIR})
+
+# Doxter
+ add_executable(doxter demo/doxter.c)
+ target_include_directories(doxter PUBLIC ${STDX_INCLUDE_DIR})
 
 #------------------------------------------------------------------------------------
 # create_test(TARGET <name> SOURCES <src1> [src2 ...] [LIBRARIES <lib1> [lib2 ...]])
@@ -65,12 +69,6 @@ function(create_test)
   list(APPEND _all_tests ${test_target})
   set_property(GLOBAL PROPERTY STDX_ALL_TESTS "${_all_tests}")
 endfunction()
-
-#------------------------------------------------------------------------------------
-# Doxter
-#------------------------------------------------------------------------------------
-# add_executable(doxter src/doxter/main.c)
-# target_include_directories(doxter PUBLIC ${STDX_INCLUDE_DIR})
 
 #------------------------------------------------------------------------------------
 # Tests

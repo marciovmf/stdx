@@ -1,6 +1,6 @@
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_STRINGBUILDER
+#define X_IMPL_STRINGBUILDER
 #include <stdx_stringbuilder.h>
 
 int test_strbuilder_append_and_to_string()
@@ -127,15 +127,15 @@ int test_x_wstrbuilder_format(void)
 int main()
 {
   STDXTestCase tests[] = {
-    STDX_TEST(test_strbuilder_append_and_to_string),
-    STDX_TEST(test_strbuilder_append_char),
-    STDX_TEST(test_strbuilder_append_format),
-    STDX_TEST(test_strbuilder_append_substring),
-    STDX_TEST(test_strbuilder_clear_and_length),
-    STDX_TEST(test_strbuilder_append_utf8_substring_middle),
-    STDX_TEST(test_strbuilder_utf8_charlen_emoji),
-    STDX_TEST(test_x_wstrbuilder_format),
-    STDX_TEST(test_x_wstrbuilder_basic),
+    X_TEST(test_strbuilder_append_and_to_string),
+    X_TEST(test_strbuilder_append_char),
+    X_TEST(test_strbuilder_append_format),
+    X_TEST(test_strbuilder_append_substring),
+    X_TEST(test_strbuilder_clear_and_length),
+    X_TEST(test_strbuilder_append_utf8_substring_middle),
+    X_TEST(test_strbuilder_utf8_charlen_emoji),
+    X_TEST(test_x_wstrbuilder_format),
+    X_TEST(test_x_wstrbuilder_basic),
   };
 
   return stdx_run_tests(tests, sizeof(tests) / sizeof(tests[0]));

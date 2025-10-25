@@ -1,9 +1,9 @@
 #include <stdx_common.h>
 #include <stdint.h>
 #include <wchar.h>
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_STRING
+#define X_IMPL_STRING
 #include <stdx_string.h>
 #include <stdx_log.h>
 
@@ -13,7 +13,7 @@ int test_str_starts_with(void)
   ASSERT_FALSE(x_cstr_starts_with("hello world", "world"));
   ASSERT_TRUE(x_cstr_starts_with("", ""));
   ASSERT_FALSE(x_cstr_starts_with("abc", ""));
-  return STDX_TEST_SUCCESS;
+  return X_TEST_SUCCESS;
 }
 
 int test_str_ends_with(void)
@@ -22,7 +22,7 @@ int test_str_ends_with(void)
   ASSERT_FALSE(x_cstr_ends_with("hello world", "hello"));
   ASSERT_TRUE(x_cstr_ends_with("", ""));
   ASSERT_FALSE(x_cstr_ends_with("abc", ""));
-  return STDX_TEST_SUCCESS;
+  return X_TEST_SUCCESS;
 }
 
 int test_x_smallstr_basic(void)
@@ -31,7 +31,7 @@ int test_x_smallstr_basic(void)
   size_t len = smallstr(&s, "test123");
   ASSERT_EQ(len, 7);
   ASSERT_EQ(x_smallstr_length(&s), 7);
-  return STDX_TEST_SUCCESS;
+  return X_TEST_SUCCESS;
 }
 
 int test_x_smallstr_truncation(void)
@@ -41,9 +41,9 @@ int test_x_smallstr_truncation(void)
   memset(long_str, 'a', sizeof(long_str) - 1);
   long_str[sizeof(long_str) - 1] = '\0';
   size_t len = smallstr(&s, long_str);
-  ASSERT_TRUE(len <= STDX_SMALLSTR_MAX_LENGTH);
+  ASSERT_TRUE(len <= X_SMALLSTR_MAX_LENGTH);
   ASSERT_EQ(x_smallstr_length(&s), len);
-  return STDX_TEST_SUCCESS;
+  return X_TEST_SUCCESS;
 }
 
 int test_x_smallstr_format(void)
@@ -53,7 +53,7 @@ int test_x_smallstr_format(void)
   ASSERT_TRUE(strncmp(x_smallstr_cstr(&s), "val: 42", 7) == 0);
   ASSERT_TRUE(len > 0);
   ASSERT_TRUE(x_cstr_starts_with(s.buf, "val: 42"));
-  return STDX_TEST_SUCCESS;
+  return X_TEST_SUCCESS;
 }
 
 int test_x_smallstr_clear(void)
@@ -62,7 +62,7 @@ int test_x_smallstr_clear(void)
   smallstr(&s, "clear me");
   x_smallstr_clear(&s);
   ASSERT_EQ(x_smallstr_length(&s), 0);
-  return STDX_TEST_SUCCESS;
+  return X_TEST_SUCCESS;
 }
 
 int test_str_hash(void)
@@ -72,7 +72,7 @@ int test_str_hash(void)
   uint32_t hash3 = x_cstr_hash("different");
   ASSERT_EQ(hash1, hash2);
   ASSERT_NEQ(hash1, hash3);
-  return STDX_TEST_SUCCESS;
+  return X_TEST_SUCCESS;
 }
 
 int test_x_strview_empty(void)
@@ -431,43 +431,43 @@ int main()
 
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_x_strview_utf8_ends_with_cstr),
-    STDX_TEST(test_x_strview_utf8_starts_with_cstr),
-    STDX_TEST(test_x_strview_utf8_next_token),
-    STDX_TEST(test_x_strview_utf8_find_cp),
-    STDX_TEST(test_x_strview_utf8_rfind),
-    STDX_TEST(test_x_strview_utf8_split_at),
+    X_TEST(test_x_strview_utf8_ends_with_cstr),
+    X_TEST(test_x_strview_utf8_starts_with_cstr),
+    X_TEST(test_x_strview_utf8_next_token),
+    X_TEST(test_x_strview_utf8_find_cp),
+    X_TEST(test_x_strview_utf8_rfind),
+    X_TEST(test_x_strview_utf8_split_at),
 
-    STDX_TEST(test_wsmallstr_functions),
-    STDX_TEST(test_xwstrview_basic),
-    STDX_TEST(test_xwstrview_trim),
-    STDX_TEST(test_xwstrview_substr),
+    X_TEST(test_wsmallstr_functions),
+    X_TEST(test_xwstrview_basic),
+    X_TEST(test_xwstrview_trim),
+    X_TEST(test_xwstrview_substr),
 
-    STDX_TEST(test_chinese_wcstr),
-    STDX_TEST(test_arabic_wcstr),
-    STDX_TEST(test_conversion_utf8_and_back),
+    X_TEST(test_chinese_wcstr),
+    X_TEST(test_arabic_wcstr),
+    X_TEST(test_conversion_utf8_and_back),
 
-    STDX_TEST(test_cstr_wcstr_conversions),
-    STDX_TEST(test_wcstr_starts_ends_with),
-    STDX_TEST(test_wcstr_casecmp),
-    STDX_TEST(test_wcstr_starts_ends_with_ci),
+    X_TEST(test_cstr_wcstr_conversions),
+    X_TEST(test_wcstr_starts_ends_with),
+    X_TEST(test_wcstr_casecmp),
+    X_TEST(test_wcstr_starts_ends_with_ci),
 
-    STDX_TEST(test_str_starts_with),
-    STDX_TEST(test_str_ends_with),
-    STDX_TEST(test_x_smallstr_basic),
-    STDX_TEST(test_x_smallstr_truncation),
-    STDX_TEST(test_x_smallstr_format),
-    STDX_TEST(test_x_smallstr_clear),
-    STDX_TEST(test_str_hash),
+    X_TEST(test_str_starts_with),
+    X_TEST(test_str_ends_with),
+    X_TEST(test_x_smallstr_basic),
+    X_TEST(test_x_smallstr_truncation),
+    X_TEST(test_x_smallstr_format),
+    X_TEST(test_x_smallstr_clear),
+    X_TEST(test_str_hash),
 
-    STDX_TEST(test_x_strview_empty),
-    STDX_TEST(test_x_strview_eq_and_cmp),
-    STDX_TEST(test_x_strview_case_eq_and_cmp),
-    STDX_TEST(test_x_strview_substr),
-    STDX_TEST(test_x_strview_trim),
-    STDX_TEST(test_x_strview_find_and_rfind),
-    STDX_TEST(test_x_strview_split_at),
-    STDX_TEST(test_x_wstrview_next_token)
+    X_TEST(test_x_strview_empty),
+    X_TEST(test_x_strview_eq_and_cmp),
+    X_TEST(test_x_strview_case_eq_and_cmp),
+    X_TEST(test_x_strview_substr),
+    X_TEST(test_x_strview_trim),
+    X_TEST(test_x_strview_find_and_rfind),
+    X_TEST(test_x_strview_split_at),
+    X_TEST(test_x_wstrview_next_token)
 
   };
 

@@ -1,6 +1,6 @@
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_ARENA
+#define X_IMPL_ARENA
 #include <stdx_arena.h>
 
 #include <stdio.h>
@@ -98,13 +98,13 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_x_arena_create_destroy),
-    STDX_TEST(test_x_arena_simple_alloc),
-    STDX_TEST(test_x_arena_multi_alloc_same_chunk),
-    STDX_TEST(test_x_arena_alloc_triggers_new_chunk),
-    STDX_TEST(test_x_arena_alloc_large_block),
-    STDX_TEST(test_x_arena_reset_allows_reuse),
-    STDX_TEST(test_x_arena_null_and_zero_alloc)
+    X_TEST(test_x_arena_create_destroy),
+    X_TEST(test_x_arena_simple_alloc),
+    X_TEST(test_x_arena_multi_alloc_same_chunk),
+    X_TEST(test_x_arena_alloc_triggers_new_chunk),
+    X_TEST(test_x_arena_alloc_large_block),
+    X_TEST(test_x_arena_reset_allows_reuse),
+    X_TEST(test_x_arena_null_and_zero_alloc)
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

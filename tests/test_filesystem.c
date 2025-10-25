@@ -1,6 +1,6 @@
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_FILESYSTEM
+#define X_IMPL_FILESYSTEM
 #include <stdx_filesystem.h>
 #include <stdx_string.h>
 
@@ -273,27 +273,27 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_x_fs_path_executable_path),
-    STDX_TEST(test_x_fs_path_init_and_set),
-    STDX_TEST(test_x_fs_path_normalize),
-    STDX_TEST(test_x_fs_path_basename),
-    STDX_TEST(test_x_fs_path_dirname),
-    STDX_TEST(test_x_fs_path_extension),
-    STDX_TEST(test_x_fs_path_extension_change),
-    STDX_TEST(test_x_fs_path_is_absolute),
-    STDX_TEST(test_x_fs_path_relative),
-    STDX_TEST(test_x_fs_path_split),
-    STDX_TEST(test_x_fs_path_exists),
+    X_TEST(test_x_fs_path_executable_path),
+    X_TEST(test_x_fs_path_init_and_set),
+    X_TEST(test_x_fs_path_normalize),
+    X_TEST(test_x_fs_path_basename),
+    X_TEST(test_x_fs_path_dirname),
+    X_TEST(test_x_fs_path_extension),
+    X_TEST(test_x_fs_path_extension_change),
+    X_TEST(test_x_fs_path_is_absolute),
+    X_TEST(test_x_fs_path_relative),
+    X_TEST(test_x_fs_path_split),
+    X_TEST(test_x_fs_path_exists),
 
-    STDX_TEST(test_x_fs_path_equality),
-    STDX_TEST(test_x_fs_path_functions),
-    STDX_TEST(test_x_fs_file_operations),
-    STDX_TEST(test_x_fs_directory_operations),
-    STDX_TEST(test_x_fs_cwd_functions),
-    STDX_TEST(test_x_fs_directory_traversal),
-    STDX_TEST(test_x_fs_temp_folder),
+    X_TEST(test_x_fs_path_equality),
+    X_TEST(test_x_fs_path_functions),
+    X_TEST(test_x_fs_file_operations),
+    X_TEST(test_x_fs_directory_operations),
+    X_TEST(test_x_fs_cwd_functions),
+    X_TEST(test_x_fs_directory_traversal),
+    X_TEST(test_x_fs_temp_folder),
 
-    STDX_TEST(test_x_fs_watch_empty),
+    X_TEST(test_x_fs_watch_empty),
 
   };
 

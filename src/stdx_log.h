@@ -13,7 +13,7 @@
  * Designed for easy integration and customizable runtime logging control.
  *
  * To compile the implementation, define:
- *     #define STDX_IMPLEMENTATION_LOG
+ *     #define X_IMPL_LOG
  * in **one** source file before including this header.
  *
  * Author: marciovmf
@@ -21,19 +21,13 @@
  * Usage: #include "stdx_log.h"
  */
 
-#ifndef STDX_LOG_H
-#define STDX_LOG_H
+#ifndef X_LOG_H
+#define X_LOG_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#define STDX_LOG_VERSION_MAJOR 1
-#define STDX_LOG_VERSION_MINOR 0
-#define STDX_LOG_VERSION_PATCH 0
-
-#define STDX_LOG_VERSION (STDX_LOG_VERSION_MAJOR * 10000 + STDX_LOG_VERSION_MINOR * 100 + STDX_LOG_VERSION_PATCH)
+#define X_LOG_VERSION_MAJOR 1
+#define X_LOG_VERSION_MINOR 0
+#define X_LOG_VERSION_PATCH 0
+#define X_LOG_VERSION (X_LOG_VERSION_MAJOR * 10000 + X_LOG_VERSION_MINOR * 100 + X_LOG_VERSION_PATCH)
 
 #ifdef _WIN32
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -45,6 +39,11 @@ extern "C"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
   typedef enum
   {
@@ -125,12 +124,27 @@ extern "C"
 }
 #endif
 
-#ifdef STDX_IMPLEMENTATION_LOG
+#ifdef X_IMPL_LOG
 
+#ifndef _CRT_SECURE_NO_WARNINGS 
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdlib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif 
+#include <windows.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
   static XLogger g_logger =
   {
     .file = NULL,
@@ -167,20 +181,6 @@ extern "C"
       default:                   return 39 + ANSI_BACKGROUND; // reset to default
     }
   }
-
-#ifdef _WIN32
-
-#if _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif 
-
-#ifndef _CRT_SECURE_NO_WARNINGS 
-#define _CRT_SECURE_NO_WARNINGS 1
-#endif
-
-#include <windows.h>
-#endif
 
   /* Enable VT processing on Windows 10+ */
   static inline void enable_windows_vt(void)
@@ -413,7 +413,10 @@ extern "C"
     }
   }
 
+#ifdef __cplusplus
+}
+#endif
 
-#endif // STDX_IMPLEMENTATION_LOG
-#endif // STDX_LOG_H
+#endif // X_IMPL_LOG
+#endif // X_LOG_H
 

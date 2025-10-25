@@ -1,6 +1,6 @@
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_THREAD
+#define X_IMPL_THREAD
 #include <stdx_thread.h>
 
 // Threading globals
@@ -60,7 +60,7 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_producer_consumer),
+    X_TEST(test_producer_consumer),
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

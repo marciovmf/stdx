@@ -10,7 +10,7 @@
  *   - Clear or destroy the builder when done
  *
  * To compile the implementation, define:
- *     #define STDX_IMPLEMENTATION_STRINGBUILDER
+ *     #define X_IMPL_STRINGBUILDER
  * in **one** source file before including this header.
  *
  * Author: marciovmf
@@ -18,69 +18,79 @@
  * Usage: #include "strbuilder.h"
  */
 
-#ifndef STDX_STRINGBUILDER_H
-#define STDX_STRINGBUILDER_H
+#ifndef X_STRINGBUILDER_H
+#define X_STRINGBUILDER_H
+
+#define X_STRINGBUILDER_VERSION_MAJOR 1
+#define X_STRINGBUILDER_VERSION_MINOR 0
+#define X_STRINGBUILDER_VERSION_PATCH 0
+#define X_STRINGBUILDER_VERSION (X_STRINGBUILDER_VERSION_MAJOR * 10000 + X_STRINGBUILDER_VERSION_MINOR * 100 + X_STRINGBUILDER_VERSION_PATCH)
+
+#ifndef STRBUILDER_STACK_BUFFER_SIZE
+#define STRBUILDER_STACK_BUFFER_SIZE 255
+#endif
+
+#include <wchar.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-#define STDX_STRINGBUILDER_VERSION_MAJOR 1
-#define STDX_STRINGBUILDER_VERSION_MINOR 0
-#define STDX_STRINGBUILDER_VERSION_PATCH 0
+  typedef struct XStrBuilder XStrBuilder;
+  typedef struct XWStrBuilder XWStrBuilder;
 
-#define STDX_STRINGBUILDER_VERSION (STDX_STRINGBUILDER_VERSION_MAJOR * 10000 + STDX_STRINGBUILDER_VERSION_MINOR * 100 + STDX_STRINGBUILDER_VERSION_PATCH)
-
-#ifndef STRBUILDER_STACK_BUFFER_SIZE
-#define STRBUILDER_STACK_BUFFER_SIZE 255
-#endif
-
-  typedef struct XStrBuilder_t XStrBuilder;
-  typedef struct XWStrBuilder_t XWStrBuilder;
-
-#include <wchar.h>
-
-  XStrBuilder*x_strbuilder_create();
-  void         x_strbuilder_append(XStrBuilder *sb, const char *str);
-  void         x_strbuilder_append_char(XStrBuilder* sb, char c);
-  void         x_strbuilder_append_format(XStrBuilder *sb, const char *format, ...);
-  void         x_strbuilder_append_substring(XStrBuilder *sb, const char *start, size_t length);
-  char*        x_strbuilder_to_string(const XStrBuilder *sb);
-  void         x_strbuilder_destroy(XStrBuilder *sb);
-  void         x_strbuilder_clear(XStrBuilder *sb);
-  size_t       x_strbuilder_length(XStrBuilder *sb);
-  void         x_strbuilder_append_utf8_substring(XStrBuilder* sb, const char* utf8, size_t start_cp, size_t len_cp); // UTF-8-aware append
-  size_t       x_strbuilder_utf8_charlen(const XStrBuilder* sb); // UTF-8 aware length
+  XStrBuilder*  x_strbuilder_create();
+  void   x_strbuilder_append(XStrBuilder *sb, const char *str);
+  void   x_strbuilder_append_char(XStrBuilder* sb, char c);
+  void   x_strbuilder_append_format(XStrBuilder *sb, const char *format, ...);
+  void   x_strbuilder_append_substring(XStrBuilder *sb, const char *start, size_t length);
+  char*  x_strbuilder_to_string(const XStrBuilder *sb);
+  void   x_strbuilder_destroy(XStrBuilder *sb);
+  void   x_strbuilder_clear(XStrBuilder *sb);
+  size_t x_strbuilder_length(XStrBuilder *sb);
+  void   x_strbuilder_append_utf8_substring(XStrBuilder* sb, const char* utf8, size_t start_cp, size_t len_cp); // UTF-8-aware append
+  size_t x_strbuilder_utf8_charlen(const XStrBuilder* sb); // UTF-8 aware length
 
   XWStrBuilder* x_wstrbuilder_create();
-  void          x_wstrbuilder_append(XWStrBuilder* sb, const wchar_t* str);
-  void          x_wstrbuilder_append_char(XWStrBuilder* sb, wchar_t c);
-  void          x_wstrbuilder_append_format(XWStrBuilder* sb, const wchar_t* format, ...);
-  void          x_wstrbuilder_clear(XWStrBuilder* sb);
-  void          x_wstrbuilder_destroy(XWStrBuilder* sb);
-  wchar_t*      x_wstrbuilder_to_string(const XWStrBuilder* sb);
-  size_t        x_wstrbuilder_length(const XWStrBuilder* sb);
+  void   x_wstrbuilder_append(XWStrBuilder* sb, const wchar_t* str);
+  void   x_wstrbuilder_append_char(XWStrBuilder* sb, wchar_t c);
+  void   x_wstrbuilder_append_format(XWStrBuilder* sb, const wchar_t* format, ...);
+  void   x_wstrbuilder_clear(XWStrBuilder* sb);
+  void   x_wstrbuilder_destroy(XWStrBuilder* sb);
+  wchar_t* x_wstrbuilder_to_string(const XWStrBuilder* sb);
+  size_t x_wstrbuilder_length(const XWStrBuilder* sb);
 
 #ifdef __cplusplus
 }
 #endif
 
-#ifdef STDX_IMPLEMENTATION_STRINGBUILDER
+#ifdef X_IMPL_STRINGBUILDER
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
 
-  struct XStrBuilder_t
+#ifndef X_STRINGBUILDER_ALLOC
+#define X_STRINGBUILDER_ALLOC(sz)        malloc(sz)
+#define X_STRINGBUILDER_REALLOC(p,sz)    realloc((p),(sz))
+#define X_STRINGBUILDER_FREE(p)          free(p)
+#endif
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+  struct XStrBuilder
   {
     char *data;
     size_t capacity;
     size_t length;
   };
 
-  struct XWStrBuilder_t
+  struct XWStrBuilder
   {
     wchar_t* data;
     size_t capacity;
@@ -105,9 +115,9 @@ extern "C"
 
   XStrBuilder* x_strbuilder_create()
   {
-    XStrBuilder* sb = (XStrBuilder*)  malloc(sizeof(XStrBuilder));
+    XStrBuilder* sb = (XStrBuilder*)  X_STRINGBUILDER_ALLOC(sizeof(XStrBuilder));
     sb->capacity = 16; // Initial capacity
-    sb->data = (char *) malloc(sb->capacity * sizeof(char));
+    sb->data = (char *) X_STRINGBUILDER_ALLOC(sb->capacity * sizeof(char));
     sb->length = 0;
     sb->data[0] = '\0'; // Null-terminate the string
     return sb;
@@ -124,7 +134,7 @@ extern "C"
       {
         sb->capacity *= 2; // Double the capacity
       }
-      sb->data = (char *)realloc(sb->data, sb->capacity * sizeof(char));
+      sb->data = (char *)X_STRINGBUILDER_REALLOC(sb->data, sb->capacity * sizeof(char));
     }
 
     strcat(sb->data, str);
@@ -151,7 +161,7 @@ extern "C"
     else
     {
       // Allocate memory for the formatted string
-      char *formatted_str = (char *)malloc((needed + 1) * sizeof(char));
+      char *formatted_str = (char *)X_STRINGBUILDER_ALLOC((needed + 1) * sizeof(char));
 
       // Format the string
       vsnprintf(formatted_str, needed + 1, format, args);
@@ -160,7 +170,7 @@ extern "C"
       x_strbuilder_append(sb, formatted_str);
 
       // Free memory
-      free(formatted_str);
+      X_STRINGBUILDER_FREE(formatted_str);
     }
 
     va_end(args);
@@ -185,11 +195,11 @@ extern "C"
 
   void x_strbuilder_destroy(XStrBuilder *sb)
   {
-    free(sb->data);
+    X_STRINGBUILDER_FREE(sb->data);
     sb->data = NULL;
     sb->capacity = 0;
     sb->length = 0;
-    free(sb);
+    X_STRINGBUILDER_FREE(sb);
   }
 
   void x_strbuilder_clear(XStrBuilder *sb)
@@ -233,10 +243,10 @@ extern "C"
 
   XWStrBuilder* x_wstrbuilder_create()
   {
-    XWStrBuilder* sb = (XWStrBuilder*)malloc(sizeof(XWStrBuilder));
+    XWStrBuilder* sb = (XWStrBuilder*)X_STRINGBUILDER_ALLOC(sizeof(XWStrBuilder));
     sb->capacity = 16;
     sb->length = 0;
-    sb->data = (wchar_t*)malloc(sb->capacity * sizeof(wchar_t));
+    sb->data = (wchar_t*)X_STRINGBUILDER_ALLOC(sb->capacity * sizeof(wchar_t));
     sb->data[0] = L'\0';
     return sb;
   }
@@ -249,7 +259,7 @@ extern "C"
       {
         sb->capacity *= 2;
       }
-      sb->data = (wchar_t*)realloc(sb->data, sb->capacity * sizeof(wchar_t));
+      sb->data = (wchar_t*)X_STRINGBUILDER_REALLOC(sb->data, sb->capacity * sizeof(wchar_t));
     }
   }
 
@@ -288,8 +298,8 @@ extern "C"
 
   void x_wstrbuilder_destroy(XWStrBuilder* sb)
   {
-    free(sb->data);
-    free(sb);
+    X_STRINGBUILDER_FREE(sb->data);
+    X_STRINGBUILDER_FREE(sb);
   }
 
   wchar_t* x_wstrbuilder_to_string(const XWStrBuilder* sb)
@@ -302,6 +312,10 @@ extern "C"
     return sb->length;
   }
 
-#endif // STDX_IMPLEMENTATION_STRINGBUILDER
-#endif // STDX_STRINGBUILDER_H
+#ifdef __cplusplus
+}
+#endif
+
+#endif // X_IMPL_STRINGBUILDER
+#endif // X_STRINGBUILDER_H
 

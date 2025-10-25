@@ -15,7 +15,7 @@
  * Designed to unify and simplify filesystem operations across platforms.
  *
  * To compile the implementation, define:
- *     #define STDX_IMPLEMENTATION_FILESYSTEM
+ *     #define X_IMPL_FILESYSTEM
  * in **one** source file before including this header.
  *
  * Author: marciovmf
@@ -24,32 +24,24 @@
  * Usage: #include "stdx_filesystem.h"
  */
 
-#ifndef STDX_FILESYSTEM_H
-#define STDX_FILESYSTEM_H
+#ifndef X_FILESYSTEM_H
+#define X_FILESYSTEM_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#define STDX_FILESYSTEM_VERSION_MAJOR 1
-#define STDX_FILESYSTEM_VERSION_MINOR 0
-#define STDX_FILESYSTEM_VERSION_PATCH 0
-
-#define STDX_FILESYSTEM_VERSION (STDX_FILESYSTEM_VERSION_MAJOR * 10000 + STDX_FILESYSTEM_VERSION_MINOR * 100 + STDX_FILESYSTEM_VERSION_PATCH)
-
-#ifdef STDX_IMPLEMENTATION_FILESYSTEM
-#ifndef STDX_IMPLEMENTATION_STRING
-#define STDX_INTERNAL_STRING_IMPLEMENTATION
-#define STDX_IMPLEMENTATION_STRING
+#ifdef X_IMPL_FILESYSTEM
+#ifndef X_IMPL_STRING
+#define X_INTERNAL_STRING_IMPL
+#define X_IMPL_STRING
 #endif
 #endif
 #include <stdx_string.h>
-
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+
+#define X_FILESYSTEM_VERSION_MAJOR 1
+#define X_FILESYSTEM_VERSION_MINOR 0
+#define X_FILESYSTEM_VERSION_PATCH 0
+#define X_FILESYSTEM_VERSION (X_FILESYSTEM_VERSION_MAJOR * 10000 + X_FILESYSTEM_VERSION_MINOR * 100 + X_FILESYSTEM_VERSION_PATCH)
 
 #ifndef X_FS_PAHT_MAX_LENGTH
 # define X_FS_PAHT_MAX_LENGTH 512
@@ -61,6 +53,10 @@ extern "C"
 #else
 #define PATH_SEPARATOR '/'
 #define ALT_SEPARATOR '\\'
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
   typedef XSmallstr XFSPath;
@@ -92,11 +88,7 @@ extern "C"
     const char* filename; // Valid until next poll
   } XFSWatchEvent;
 
-
-  // ---------------------------------------------------------------------------
   // Filesystem operations
-  // ---------------------------------------------------------------------------
-
   XFSDireHandle* x_fs_find_first_file(const char* path, XFSDireEntry* entry);
   bool        x_fs_directory_create(const char* path);
   bool        x_fs_directory_create_recursive(const char* path);
@@ -109,25 +101,14 @@ extern "C"
   size_t      x_fs_cwd_set(const char* path);
   size_t      x_fs_cwd_set_from_executable_path(void);
   void        x_fs_find_close(XFSDireHandle* dirHandle);
-
-
-  // ---------------------------------------------------------------------------
   // Filesystem Monitoring
-  // ---------------------------------------------------------------------------
-
   XFSWatch*   x_fs_watch_open(const char* path);
   void        x_fs_watch_close(XFSWatch* fw);
   int32_t     x_fs_watch_poll(XFSWatch* fw, XFSWatchEvent* out_events,int32_t max_events);
-
-
-  // ---------------------------------------------------------------------------
   // Path manipulation
-  // ---------------------------------------------------------------------------
-
 #define       x_fs_path(out, ...) x_fs_path_(out, __VA_ARGS__, 0)
 #define       x_fs_path_join(path, ...) x_fs_path_join_(path, __VA_ARGS__, 0)
 #define       x_fs_path_join_strview(path, ...) x_fs_path_join_strview_(path, __VA_ARGS__, 0)
-
   XFSPath*    x_fs_path_normalize(XFSPath* input);
   XStrview    x_fs_path_basename(const char* input);
   XStrview    x_fs_path_dirname(const char* input);
@@ -162,12 +143,7 @@ extern "C"
   bool        x_fs_path_split(const char* input, XFSPath* out_components, size_t max_components, size_t* out_count);
   size_t      x_fs_path_from_executable(XFSPath* out);
 
-
-  // ---------------------------------------------------------------------------
   // Path manipulation
-  // ---------------------------------------------------------------------------
-
-#include <stddef.h>
   typedef struct
   {
     size_t size;
@@ -176,28 +152,16 @@ extern "C"
     uint32_t permissions; // Platform dependent
   } FSFileStat;
 
-
-  // Retrieve file or directory metadata. Returns 0 on success.
-  bool x_fs_file_stat(const char* path, FSFileStat* out_stat);
-
-  // Get last modification time. Returns 0 on success.
-  bool x_fs_file_modification_time(const char* path, time_t* out_time);
-
-  // Get creation time. Returns 0 on success.
-  bool x_fs_file_creation_time(const char* path, time_t* out_time);
-
-  // Get file permissions.
-  bool x_fs_file_permissions(const char* path, uint32_t* out_permissions);
-
-  // Set file permissions.
-  bool x_fs_file_set_permissions(const char* path, uint32_t permissions);
-
+  bool x_fs_file_stat(const char* path, FSFileStat* out_stat); // Retrieve file or directory metadata. Returns 0 on success.
+  bool x_fs_file_modification_time(const char* path, time_t* out_time); // Get last modification time. Returns 0 on success.
+  bool x_fs_file_creation_time(const char* path, time_t* out_time); // Get creation time. Returns 0 on success.
+  bool x_fs_file_permissions(const char* path, uint32_t* out_permissions); // Get file permissions.
+  bool x_fs_file_set_permissions(const char* path, uint32_t permissions); // Set file permissions.
   // Utility
   bool x_fs_is_file(const char* path);
   bool x_fs_is_directory(const char* path);
   bool x_fs_is_symlink(const char* path);
   bool x_fs_read_symlink(const char* path, XFSPath* out_path);
-
   // Temp files and dirs
   bool x_fs_make_temp_file(const char* prefix, XFSPath* out_path);
   bool x_fs_make_temp_directory(const char* prefix, XFSPath* out_path); 
@@ -207,7 +171,7 @@ extern "C"
 #endif
 
 
-#ifdef STDX_IMPLEMENTATION_FILESYSTEM
+#ifdef X_IMPL_FILESYSTEM
 
 #include <string.h>
 #include <stdio.h>
@@ -237,6 +201,18 @@ extern "C"
 #endif
 
 #include <time.h>
+
+#ifndef X_FILESYSTEM_ALLOC
+#define X_FILESYSTEM_ALLOC(sz)        malloc(sz)
+#define X_FILESYSTEM_CALLOC(n,sz)     calloc((n),(sz))
+#define X_FILESYSTEM_FREE(p)          free(p)
+#endif
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
   struct XFSDireHandle_t
   {
@@ -283,7 +259,7 @@ extern "C"
     size_t total_needed = out->length + (needs_sep ? 1 : 0) + seg_len;
 
     // enought space ?
-    if (total_needed > STDX_SMALLSTR_MAX_LENGTH) return false;
+    if (total_needed > X_SMALLSTR_MAX_LENGTH) return false;
 
     // Add separator if needed
     if (needs_sep) out->buf[out->length++] = PATH_SEPARATOR;
@@ -314,7 +290,7 @@ extern "C"
 
     size_t total_needed = out->length + (needs_sep ? 1 : 0) + seg_len;
 
-    if (total_needed > STDX_SMALLSTR_MAX_LENGTH) return false; // Not enough space
+    if (total_needed > X_SMALLSTR_MAX_LENGTH) return false; // Not enough space
 
     // Add separator if needed
     if (needs_sep) {
@@ -486,7 +462,6 @@ extern "C"
     return x_fs_path_is_file_cstr(x_fs_path_cstr(path));
   }
 
-
   bool x_fs_path_is_file_cstr(const char* path)
   {
 #ifdef _WIN32
@@ -521,7 +496,7 @@ extern "C"
 
   XFSDireHandle* x_fs_find_first_file(const char* path, XFSDireEntry* entry)
   {
-    XFSDireHandle* dir_handle = malloc(sizeof(XFSDireHandle));
+    XFSDireHandle* dir_handle = X_FILESYSTEM_ALLOC(sizeof(XFSDireHandle));
     if (!dir_handle) return NULL;
 
 #ifdef _WIN32
@@ -531,7 +506,7 @@ extern "C"
     dir_handle->handle = FindFirstFile(searchPath, &dir_handle->findData);
     if (dir_handle->handle == INVALID_HANDLE_VALUE)
     {
-      free(dir_handle);
+      X_FILESYSTEM_FREE(dir_handle);
       return NULL;
     }
 
@@ -545,7 +520,7 @@ extern "C"
     dir_handle->dir = opendir(path);
     if (!dir_handle->dir)
     {
-      free(dir_handle);
+      X_FILESYSTEM_FREE(dir_handle);
       return NULL;
     }
 
@@ -605,14 +580,14 @@ extern "C"
 #else
     closedir(dir_handle->dir);
 #endif
-    free(dir_handle);
+    X_FILESYSTEM_FREE(dir_handle);
   }
 
   XFSWatch* x_fs_watch_open(const char* path)
   {
     if (!path) return NULL;
 
-    XFSWatch* fw = calloc(1, sizeof(XFSWatch));
+    XFSWatch* fw = X_FILESYSTEM_CALLOC(1, sizeof(XFSWatch));
     if (!fw) return NULL;
 
 #ifdef _WIN32
@@ -625,7 +600,7 @@ extern "C"
         FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL);
 
     if (fw->dir == INVALID_HANDLE_VALUE) {
-      free(fw);
+      X_FILESYSTEM_FREE(fw);
       return NULL;
     }
 
@@ -637,7 +612,7 @@ extern "C"
 #elif defined(__linux__)
     fw->fd = inotify_init1(IN_NONBLOCK);
     if (fw->fd < 0) {
-      free(fw);
+      X_FILESYSTEM_FREE(fw);
       return NULL;
     }
 
@@ -646,7 +621,7 @@ extern "C"
 
     if (fw->wd < 0) {
       close(fw->fd);
-      free(fw);
+      X_FILESYSTEM_FREE(fw);
       return NULL;
     }
 
@@ -670,7 +645,7 @@ extern "C"
     close(fw->fd);
 #endif
 
-    free(fw);
+    X_FILESYSTEM_FREE(fw);
   }
 
   int32_t x_fs_watch_poll(XFSWatch* fw, XFSWatchEvent* out_events,int32_t max_events)
@@ -991,7 +966,7 @@ extern "C"
     }
 
     // I assume normalized paths are always smaller than non-normalized paths
-    // if (temp.length > STDX_x_smallstr_MAX_LENGTH)
+    // if (temp.length > X_x_smallstr_MAX_LENGTH)
     //  return -1;
 
     input->length = temp.length;
@@ -1192,8 +1167,8 @@ extern "C"
     x_fs_path_init(&from_copy);
 
     size_t from_len = strlen(from_path);
-    if (from_len > STDX_SMALLSTR_MAX_LENGTH)
-      from_len = STDX_SMALLSTR_MAX_LENGTH;
+    if (from_len > X_SMALLSTR_MAX_LENGTH)
+      from_len = X_SMALLSTR_MAX_LENGTH;
 
     // We copy from_path to get rid of trailing path separators
     strncpy((char*)from_copy.buf, from_path, from_len);
@@ -1255,7 +1230,7 @@ extern "C"
 
           size_t part_len = i - start;
           XSmallstr tmp;
-          tmp.length = (part_len > STDX_SMALLSTR_MAX_LENGTH) ? STDX_SMALLSTR_MAX_LENGTH : part_len;
+          tmp.length = (part_len > X_SMALLSTR_MAX_LENGTH) ? X_SMALLSTR_MAX_LENGTH : part_len;
           strncpy((char*)tmp.buf, input + start, tmp.length);
           tmp.buf[tmp.length] = '\0';
 
@@ -1514,10 +1489,14 @@ extern "C"
 #endif
   }
 
-#endif  // STDX_IMPLEMENTATION_FILESYSTEM
-
-#ifdef STDX_INTERNAL_STRING_IMPLEMENTATION
-#undef STDX_IMPLEMENTATION_STRING
-#undef STDX_INTERNAL_STRING_IMPLEMENTATION
+#ifdef __cplusplus
+}
 #endif
-#endif  // STDX_FILESYSTEM_H
+
+#endif  // X_IMPL_FILESYSTEM
+
+#ifdef X_INTERNAL_STRING_IMPL
+#undef X_IMPL_STRING
+#undef X_INTERNAL_STRING_IMPL
+#endif
+#endif  // X_FILESYSTEM_H
