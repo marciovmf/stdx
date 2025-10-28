@@ -2,8 +2,13 @@
  * STDX - Lightweight String Utilities
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * This module provides efficient string handling tools for C:
+ * To compile the implementation define X_IMPL_STRING
+ * in **one** source file before including this header.
+ *
+ * Notes:
+ *  This header provides:
  *   - C string helpers: case-insensitive prefix/suffix matching
  *   - XSmallstr: fixed-capacity, stack-allocated strings
  *   - XStrview: immutable, non-owning views into C strings
@@ -11,16 +16,6 @@
  *   - UTF-8-aware string length calculation
  *   - Fast substring and search operations
  *   - Case-sensitive and case-insensitive comparisons
- *
- * Useful for environments where dynamic memory is avoided.
- *
- * To compile the implementation, define:
- *     #define X_IMPL_STRING
- * in **one** source file before including this header.
- *
- * Author: marciovmf
- * License: MIT
- * Usage: #include "stdx_string.h"
  */
 
 #ifndef X_STRING_H
@@ -44,8 +39,7 @@
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   typedef struct 
@@ -218,8 +212,7 @@ extern "C"
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   static bool s_is_unicode_whitespace(uint32_t cp)

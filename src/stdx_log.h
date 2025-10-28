@@ -2,23 +2,18 @@
  * STDX - Logging Utilities
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
+ * To compile the implementation define X_IMPL_LOG
+ * in **one** source file before including this header.
+ *
+ * Notes:
  * Provides a flexible logging system with support for:
  *   - Logger initialization and cleanup
  *   - Log levels with color-coded output
  *   - Source location tagging (file, line, function)
  *   - Multiple log output targets selectable via flags
  *   - Convenience macros for common log levels (debug, info, warning, error, fatal)
- *
- * Designed for easy integration and customizable runtime logging control.
- *
- * To compile the implementation, define:
- *     #define X_IMPL_LOG
- * in **one** source file before including this header.
- *
- * Author: marciovmf
- * License: MIT
- * Usage: #include "stdx_log.h"
  */
 
 #ifndef X_LOG_H
@@ -41,8 +36,7 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   typedef enum
@@ -142,9 +136,9 @@ extern "C"
 #include <windows.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
+
   static XLogger g_logger =
   {
     .file = NULL,

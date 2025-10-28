@@ -1,63 +1,18 @@
-/**
- * STDX - INI (nested paths)
+/*
+ * STDX - Minimal INI parser
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
- *
- * Usage:
- *   #define X_IMPL_INI
- *   #include "stdx_ini.h"
- *
- * Author:  marciovmf
  * License: MIT
  *
- * ------------------------------------------------------------------------
- * FILE FORMAT OVERVIEW
- * ------------------------------------------------------------------------
+ * To compile the implementation, define X_IMPL_INI
+ * in **one** source file before including this header.
  *
- * This format is a simplified, hierarchical INI. It supports nested sections,
- * typed values, and scalar arrays with minimal syntax.
+ * To customize how this module allocates memory, define
+ * X_INI_ALLOC / X_INI_REALLOC / X_INI_FREE before including.
  *
- *   # Comments start with '#'
- *   # Sections end with ':' and can be nested using '/'
- *
- *   level/tutorial:
- *     enabled = true
- *     seed    = 934784
- *     description = """
- *       Multi line strings are
- *       also supported!
- *       """
- *
- *   level/tutorial/objects/sphere:
- *     position = 1.0, 2.0, 0.0
- *     scale    = 1.0, 1.0, 1.0
- *     weights  = 10, 20, 40, 103,
- *                99, 71, 44, -1
- *
- *   level/tutorial/objects/tree:
- *     position = 7.0, 0.0, 0.0
- *     scale    = 1.0, 1.0, 1.0
- *
- * FEATURES:
- * - Section paths use '/' to define hierarchy (like directories).
- * - Keys use standard `key = value` syntax.
- * - Values can be:
- *      • bool:   true / false
- *      • int:    42, -10
- *      • float:  3.14, 1e-3
- *      • string: "quoted" or """multi-line"""
- *      • arrays: comma-separated values, may span lines if ending with ','
- * - Whitespace and indentation are ignored.
- * - The format avoids {}, [], and indentation-based scoping.
- *
- * Example API usage:
- *     XIni *ini = NULL;
- *     x_ini_open_from_memory(buf, len, 0, &ini);
- *     XIniCursor lvl;
- *     x_ini_get_section(ini, x_ini_root(ini), "level/tutorial", &lvl);
- *     int enabled = 0;
- *     x_ini_get_bool(ini, lvl, "enabled", &enabled);
- *
+ * Notes:
+ *   One flat string pool owns all normalized C strings (section names, keys, values).
+ *   Sections and entries are indexed by arrays for direct and iterative access.
  */
 
 #ifndef X_INI_H
@@ -71,1599 +26,663 @@
 #define X_INI_API
 #endif
 
-/* Version */
 #define X_INI_VERSION_MAJOR 1
-#define X_INI_VERSION_MINOR 0
+#define X_INI_VERSION_MINOR 1
 #define X_INI_VERSION_PATCH 0
 #define X_INI_VERSION (X_INI_VERSION_MAJOR*10000 + X_INI_VERSION_MINOR*100 + X_INI_VERSION_PATCH)
+
+/* Tuning */
+#define X_INI_DEFAULT_SECTIONS_CAP  16
+#define X_INI_DEFAULT_ENTRIES_CAP   64
+#define X_INI_MAX_LINE              4096
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-  /* ===== Public Types ===== */
+typedef enum XIniErrorCode
+{
+  XINI_OK = 0,
+  XINI_ERR_IO,
+  XINI_ERR_MEMORY,
+  XINI_ERR_SYNTAX,
+  XINI_ERR_EXPECT_EQUALS,
+  XINI_ERR_EXPECT_RBRACKET,
+  XINI_ERR_UNTERMINATED_STRING
+} XIniErrorCode;
 
-  typedef struct XIni XIni;
+typedef struct XIniError
+{
+  XIniErrorCode code;  /* error kind */
+  int line;            /* 1-based line number where error was detected */
+  int column;          /* 1-based column of the offending character/token */
+  const char *message; /* short, static message string */
+} XIniError;
 
-  typedef struct XIniCursor
-  {
-    int node;
-  } XIniCursor;
+typedef struct XIniSection
+{
+  const char *name;   /* section name or "" for the global section */
+  int first_entry;    /* index of first entry for this section, or -1 if none */
+} XIniSection;
 
-  typedef enum XIniValKind
-  {
-    XINI_V_NONE = 0,
-    XINI_V_STR  = 1,
-    XINI_V_I64  = 2,
-    XINI_V_F64  = 3,
-    XINI_V_BOOL = 4,
-    XINI_V_ARR  = 5
-  } XIniValKind;
+typedef struct XIniEntry
+{
+  int section;        /* section index this entry belongs to */
+  const char *key;    /* normalized key */
+  const char *value;  /* normalized value (may be empty string) */
+} XIniEntry;
 
-  typedef struct XIniStrSlice
-  {
-    const char *ptr;
-    uint32_t    len;
-  } XIniStrSlice;
+typedef struct XIni
+{
+  /* string pool */
+  char  *pool;
+  size_t pool_size;
+  size_t pool_cap;
+  /* sections and entries */
+  XIniSection *sections;
+  int          sections_count;
+  int          sections_cap;
+  XIniEntry   *entries;
+  int          entries_count;
+  int          entries_cap;
+  /* bookkeeping */
+  int          global_section; // index of the synthetic global section ("")
+} XIni;
 
-  /* ===== Open / Close ===== */
+/* Loading / lifetime */
+X_INI_API bool        x_ini_load_file(const char *path, XIni *out_ini, XIniError *err);
+/* data is copied/normalized; err may be NULL */
+X_INI_API bool        x_ini_load_mem(const void *data, size_t size, XIni *out_ini, XIniError *err);
+X_INI_API void        x_ini_free(XIni *ini);
 
-  enum
-  {
-    XINI_OPEN_DEFAULT = 0u
-  };
+/* Error string (static, thread-safe) */
+X_INI_API const char* x_ini_err_str(XIniErrorCode code);
 
- /**
- * Parses an INI-like text buffer directly from memory using **one allocation**.
- *
- * - Performs a fast prescan to estimate required arena size.
- * - Allocates a single memory block that holds all internal arrays.
- * - Builds a tree of sections and key/value entries that reference the
- *   original text buffer (no string copies).
- * - Detects value types automatically: bool, int, float, string, or array.
- * - Parses arrays once at load time and stores typed slices (int64, double,
- *   or string) for O(1) access later.
- *
- * The resulting `XIni*` can be queried directly or explored progressively:
- *
- *     XIni *ini = NULL;
- *     x_ini_open_from_memory(buf, size, 0, &ini);
- *     XIniCursor cur;
- *     x_ini_get_section(ini, x_ini_root(ini), "level/tutorial", &cur);
- *
- * Lifetime:
- *     The structure references the caller's text buffer and one internal arena.
- *     Free all resources with `x_ini_close(ini)`.
- */
-  X_INI_API int  x_ini_open_from_memory(const char *buf, uint32_t size, uint32_t flags, XIni **out_ini);
-  X_INI_API void x_ini_close(XIni *ini);
+/* Queries */
+X_INI_API const char* x_ini_get(const XIni *ini, const char *section, const char *key, const char *def_value);
+X_INI_API int32_t     x_ini_get_i32(const XIni *ini, const char *section, const char *key, int32_t def_value);
+X_INI_API float       x_ini_get_f32(const XIni *ini, const char *section, const char *key, float def_value);
+X_INI_API bool        x_ini_get_bool(const XIni *ini, const char *section, const char *key, bool def_value);
 
-  /* ===== Section navigation ===== */
-
-  static inline XIniCursor x_ini_root(XIni *ini)
-  {
-    XIniCursor c;
-    (void)ini;
-    c.node = -1;
-    return c;
-  }
-
-  X_INI_API int x_ini_get_section(XIni *ini, XIniCursor parent, const char *path, XIniCursor *out);
-  X_INI_API int x_ini_child_count(XIni *ini, XIniCursor cur, uint32_t *out_count);
-  X_INI_API int x_ini_child_at(XIni *ini, XIniCursor cur, uint32_t index, XIniCursor *out_child);
-  X_INI_API int x_ini_find_child(XIni *ini, XIniCursor cur, const char *name, uint32_t name_len, XIniCursor *out_child);
-  X_INI_API int x_ini_section_name(XIni *ini, XIniCursor cur, const char **out_name, uint32_t *out_len);
-
-  /* ===== Section entries ===== */
-
-  X_INI_API int x_ini_entry_count(XIni *ini, XIniCursor cur, uint32_t *out_count);
-  X_INI_API int x_ini_entry_key_at(XIni *ini, XIniCursor cur, uint32_t index, const char **out_key, uint32_t *out_key_len);
-
-  X_INI_API int x_ini_get_bool(XIni *ini, XIniCursor cur, const char *key, int *out_bool);
-  X_INI_API int x_ini_get_i64 (XIni *ini, XIniCursor cur, const char *key, int64_t *out_i64);
-  X_INI_API int x_ini_get_f64 (XIni *ini, XIniCursor cur, const char *key, double *out_f64);
-  X_INI_API int x_ini_get_str (XIni *ini, XIniCursor cur, const char *key, const char **out_str, uint32_t *out_len);
-
-  /* Scalar arrays: numbers and strings */
-  X_INI_API int x_ini_get_array_len (XIni *ini, XIniCursor cur, const char *key, uint32_t *out_len);
-  X_INI_API int x_ini_get_array_f64(XIni *ini, XIniCursor cur, const char *key, const double **out_vals, uint32_t *out_len);
-  X_INI_API int x_ini_get_array_i64(XIni *ini, XIniCursor cur, const char *key, const int64_t **out_vals, uint32_t *out_len);
-  X_INI_API int x_ini_get_array_str(XIni *ini, XIniCursor cur, const char *key, const XIniStrSlice **out_vals, uint32_t *out_len);
-
-
-  /* ===== Inline helpers ===== */
-
-  static inline int x_ini_has_key(XIni *ini, XIniCursor cur, const char *key)
-  {
-    const char *s = NULL;
-    uint32_t slen = 0u;
-    if (x_ini_get_str(ini, cur, key, &s, &slen) != 0)
-    {
-      return 1;
-    }
-    double f = 0.0;
-    if (x_ini_get_f64(ini, cur, key, &f) != 0)
-    {
-      return 1;
-    }
-    int64_t i = 0;
-    if (x_ini_get_i64(ini, cur, key, &i) != 0)
-    {
-      return 1;
-    }
-    int b = 0;
-    if (x_ini_get_bool(ini, cur, key, &b) != 0)
-    {
-      return 1;
-    }
-    uint32_t n = 0u;
-    if (x_ini_get_array_len(ini, cur, key, &n) != 0)
-    {
-      return 1;
-    }
-    return 0;
-  }
+/* Iteration helpers */
+X_INI_API int         x_ini_section_count(const XIni *ini);
+X_INI_API const char* x_ini_section_name(const XIni *ini, int section_index);
+X_INI_API int         x_ini_key_count(const XIni *ini, int section_index);
+X_INI_API const char* x_ini_key_name(const XIni *ini, int section_index, int key_index);
+X_INI_API const char* x_ini_value_at(const XIni *ini, int section_index, int key_index);
 
 #ifdef __cplusplus
-} /* extern "C" */
+} // extern "C"
 #endif
 
-/* Implementation */
+
 #ifdef X_IMPL_INI
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include <ctype.h>
 
-/* Internals */
+/* Allocator override */
+#ifndef X_INI_ALLOC
+#define X_INI_ALLOC(sz)        malloc(sz)
+#define X_INI_REALLOC(p,sz)    realloc((p),(sz))
+#define X_INI_FREE(p)          free(p)
+#endif
 
-typedef struct XIniValue
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* ---------------- internal helpers ---------------- */
+
+static void s_x_set_err(XIniError *err, XIniErrorCode code, int line, int column, const char *msg)
 {
-  XIniValKind kind;
-  uint32_t    off;
-  uint32_t    len;
-  int64_t     i64;
-  double      f64;
-  int         boolean;
-  uint32_t    arr_start;
-  uint32_t    arr_count;
-  uint32_t    arr_is_f64;
-  uint32_t    arr_is_i64;
-  uint32_t    arr_is_str;
-} XIniValue;
-
-typedef struct XIniKV
-{
-  uint32_t key_off;
-  uint32_t key_len;
-  XIniValue val;
-} XIniKV;
-
-typedef struct XIniNode
-{
-  uint32_t name_off;
-  uint32_t name_len;
-  uint32_t name_hash;     /* 32-bit hash of the section name */
-  int32_t  parent;
-  int32_t  first_child;
-  int32_t  next_sibling;
-  uint32_t kv_start;
-  uint32_t kv_count;
-} XIniNode;
-
-struct XIni
-{
-  const char *text;
-  uint32_t    text_len;
-
-  /* single arena */
-  void      *arena;
-  uint32_t   arena_size;
-
-  XIniNode  *nodes;
-  uint32_t   node_count;
-
-  XIniKV    *kvs;
-  uint32_t   kv_count;
-
-  double    *nums_f64;
-  uint32_t   nums_f64_count;
-
-  int64_t   *nums_i64;
-  uint32_t   nums_i64_count;
-
-  XIniStrSlice *str_slices;
-  uint32_t      str_slice_count;
-};
-
-/* Utilities */
-
-static void *s_ini_arena_alloc(void *base, uint32_t *offset, uint32_t need, uint32_t total)
-{
-  if (*offset + need > total)
+  if (err)
   {
-    return NULL;
-  }
-  char *b = (char *)base;
-  void *ptr = b + *offset;
-  *offset = *offset + need;
-  return ptr;
-}
-
-/* Simple 32-bit hash (FNV-1a) for section names */
-static uint32_t s_ini_hash32(const char *s, uint32_t len)
-{
-  uint32_t h = 2166136261u;
-  for (uint32_t i = 0; i < len; ++i)
-  {
-    h ^= (uint8_t)s[i];
-    h *= 16777619u;
-  }
-  return h ? h : 1u; /* avoid zero to keep "unset" distinguishable if needed */
-}
-
-static int s_ini_is_header_line(const char *line, uint32_t len)
-{
-  /* valid header: ^[A-Za-z0-9_./-]+: at column 0 */
-  if (len == 0)
-  {
-    return 0;
-  }
-  uint32_t i = 0u;
-  while (i < len)
-  {
-    char c = line[i];
-    if (c == ':')
-    {
-      return 1;
-    }
-    if (c == '#')
-    {
-      return 0;
-    }
-    if (c == ' ' || c == '\t' || c == '\r')
-    {
-      return 0;
-    }
-    if (isalnum((unsigned char)c) == 0 && c != '_' && c != '.' && c != '/' && c != '-')
-    {
-      return 0;
-    }
-    i = i + 1u;
-  }
-  return 0;
-}
-
-static uint32_t s_ini_trim_right_len(const char *s, uint32_t len)
-{
-  while (len > 0u)
-  {
-    char c = s[len - 1u];
-    if (c == ' ' || c == '\t' || c == '\r')
-    {
-      len = len - 1u;
-      continue;
-    }
-    break;
-  }
-  return len;
-}
-
-static void s_ini_split_key_value(const char *line, uint32_t len, uint32_t *eq_pos)
-{
-  uint32_t i = 0u;
-  *eq_pos = UINT32_MAX;
-  int in_str = 0;
-  int triple = 0;
-  while (i < len)
-  {
-    char c = line[i];
-    if (c == '"' && triple == 0)
-    {
-      in_str = !in_str;
-    }
-    if (i + 2u < len && line[i] == '"' && line[i + 1u] == '"' && line[i + 2u] == '"')
-    {
-      triple = !triple;
-      i = i + 2u;
-    }
-    else if (c == '=' && in_str == 0 && triple == 0)
-    {
-      *eq_pos = i;
-      return;
-    }
-    i = i + 1u;
+    err->code = code;
+    err->line = line;
+    err->column = column;
+    err->message = msg;
   }
 }
 
-static int s_ini_str_equal(const char *a, uint32_t alen, const char *b, uint32_t blen)
+static const char *s_x_err_msg(XIniErrorCode code)
 {
-  if (alen != blen)
+  switch (code)
   {
-    return 0;
+    case XINI_OK:                  return "ok";
+    case XINI_ERR_IO:              return "i/o error";
+    case XINI_ERR_MEMORY:          return "out of memory";
+    case XINI_ERR_SYNTAX:          return "syntax error";
+    case XINI_ERR_EXPECT_EQUALS:   return "expected '='";
+    case XINI_ERR_EXPECT_RBRACKET: return "expected ']'";
+    case XINI_ERR_UNTERMINATED_STRING: return "unterminated string";
+    default:                       return "unknown error";
   }
-  if (alen == 0u)
-  {
-    return 1;
-  }
-  return memcmp(a, b, alen) == 0 ? 1 : 0;
 }
 
-static uint32_t s_ini_split_path(const char *path, uint32_t len, uint32_t *seg_off, uint32_t *seg_len, uint32_t max_seg)
+static void *s_x_realloc_grow(void *ptr, size_t elem_size, int current, int *cap)
 {
-  uint32_t n = 0u;
-  uint32_t i = 0u;
-  uint32_t start = 0u;
-  while (i <= len)
-  {
-    char c = (i < len) ? path[i] : '/';
-    if (c == '/')
-    {
-      if (i > start && n < max_seg)
-      {
-        seg_off[n] = start;
-        seg_len[n] = i - start;
-        n = n + 1u;
-      }
-      start = i + 1u;
-    }
-    i = i + 1u;
-  }
-  return n;
+  int new_cap = (*cap > 0) ? (*cap * 2) : 8;
+  size_t bytes = (size_t)new_cap * elem_size;
+  void *np = X_INI_REALLOC(ptr, bytes);
+  if (!np) return NULL;
+  *cap = new_cap;
+  return np;
 }
 
-static int s_ini_find_child_linear(XIni *ini, int parent_idx, const char *name, uint32_t len)
+static bool s_x_pool_init(XIni *ini, size_t cap)
 {
-  uint32_t target_hash = s_ini_hash32(name, len);
+  ini->pool = (char *)X_INI_ALLOC(cap);
+  if (!ini->pool) return false;
+  ini->pool_size = 0;
+  ini->pool_cap = cap;
+  return true;
+}
 
-  int idx = -1;
-  int32_t it = -1;
-  if (parent_idx < 0)
+static const char *s_x_pool_add(XIni *ini, const char *src, size_t len)
+{
+  if (ini->pool_size + len + 1 > ini->pool_cap)
   {
-    it = -2;
+    size_t ncap = ini->pool_cap ? ini->pool_cap * 2 : 1024;
+    while (ini->pool_size + len + 1 > ncap) ncap *= 2;
+    char *np = (char *)X_INI_REALLOC(ini->pool, ncap);
+    if (!np) return NULL;
+    ini->pool = np;
+    ini->pool_cap = ncap;
   }
-  if (parent_idx >= 0)
-  {
-    it = ini->nodes[parent_idx].first_child;
-  }
+  char *dst = ini->pool + ini->pool_size;
+  memcpy(dst, src, len);
+  dst[len] = '\0';
+  ini->pool_size += len + 1;
+  return dst;
+}
 
-  while (1)
+static const char *s_x_pool_add_cstr(XIni *ini, const char *s)
+{
+  return s_x_pool_add(ini, s, strlen(s));
+}
+
+static char *s_x_trim_inplace(char *s)
+/* trims leading/trailing ASCII whitespace; returns pointer to first non-space */
+{
+  if (!s) return s;
+  char *start = s;
+  while (*start && isspace((unsigned char)*start)) { ++start; }
+
+  if (*start == '\0') return start;
+
+  char *end = start + strlen(start) - 1;
+  while (end >= start && isspace((unsigned char)*end)) { *end-- = '\0'; }
+  return start;
+}
+
+/* remove inline comments ';' or '#' found outside quotes */
+static void s_x_chomp_inline_comment_unquoted(char *s)
+{
+  bool in_quote = false;
+  for (char *p = s; *p; ++p)
   {
-    if (parent_idx < 0)
+    if (*p == '\"')
     {
-      for (uint32_t i = 0u; i < ini->node_count; i = i + 1u)
-      {
-        if (ini->nodes[i].parent == -1)
-        {
-          /* Hash pre-check before string compare */
-          if (ini->nodes[i].name_hash != target_hash)
-            continue;
-
-          const char *nm = ini->text + ini->nodes[i].name_off;
-          uint32_t nml = ini->nodes[i].name_len;
-          if (s_ini_str_equal(nm, nml, name, len) != 0)
-          {
-            return (int)i;
-          }
-        }
-      }
-      return -1;
+      /* toggle only if not escaped */
+      bool escaped = (p > s && p[-1] == '\\');
+      if (!escaped) in_quote = !in_quote;
     }
-
-    if (it < 0)
+    if (!in_quote && (*p == ';' || *p == '#'))
     {
+      *p = '\0';
       break;
     }
+  }
+}
 
-    /* Hash pre-check before string compare */
-    if (ini->nodes[it].name_hash == target_hash)
+static int s_x_find_section(const XIni *ini, const char *section)
+{
+  for (int i = 0; i < ini->sections_count; ++i)
+  {
+    if (strcmp(ini->sections[i].name, section) == 0) return i;
+  }
+  return -1;
+}
+
+static int s_x_count_keys_in_section(const XIni *ini, int section_index)
+{
+  int c = 0;
+  for (int i = 0; i < ini->entries_count; ++i)
+  {
+    if (ini->entries[i].section == section_index) ++c;
+  }
+  return c;
+}
+
+static int s_x_stricmp(const char *a, const char *b)
+{
+  unsigned char ca, cb;
+  while (*a && *b)
+  {
+    ca = (unsigned char)tolower((unsigned char)*a);
+    cb = (unsigned char)tolower((unsigned char)*b);
+    if (ca != cb) return (int)ca - (int)cb;
+    ++a; ++b;
+  }
+  return (int)(unsigned char)tolower((unsigned char)*a)
+       - (int)(unsigned char)tolower((unsigned char)*b);
+}
+
+/* decode a quoted string: handles \t \n \\ \" ; returns pointer in pool (no quotes) */
+static const char *s_x_decode_quoted_into_pool(XIni *ini, const char *start_quote,
+                                               int *out_error_col, bool *ok)
+{
+  *ok = false;
+  const char *s = start_quote;
+  if (*s != '\"') return NULL;
+  ++s; /* skip opening quote */
+
+  /* temporary dynamic buffer */
+  size_t cap = 64, len = 0;
+  char *tmp = (char *)X_INI_ALLOC(cap);
+  if (!tmp) return NULL;
+
+  int col = 1; /* relative column inside the quoted payload */
+
+  while (*s)
+  {
+    char c = *s++;
+    if (c == '\"')
     {
-      const char *nm = ini->text + ini->nodes[it].name_off;
-      uint32_t nml = ini->nodes[it].name_len;
-      if (s_ini_str_equal(nm, nml, name, len) != 0)
+      /* end of string (unescaped quote) */
+      const char *pooled = s_x_pool_add(ini, tmp, len);
+      X_INI_FREE(tmp);
+      *ok = (pooled != NULL);
+      return pooled;
+    }
+    if (c == '\\')
+    {
+      char n = *s++;
+      if (n == '\0') { *out_error_col = col; X_INI_FREE(tmp); return NULL; }
+      switch (n)
       {
-        idx = it;
-        break;
+        case 'n':  c = '\n'; break;
+        case 't':  c = '\t'; break;
+        case '\\': c = '\\'; break;
+        case '\"': c = '\"'; break;
+        default:   c = n;    break; /* pass-through unknown escapes */
       }
+      /* fallthrough with translated c */
     }
-
-    it = ini->nodes[it].next_sibling;
+    /* push c */
+    if (len + 1 >= cap)
+    {
+      size_t ncap = cap * 2;
+      char *np = (char *)X_INI_REALLOC(tmp, ncap);
+      if (!np) { X_INI_FREE(tmp); return NULL; }
+      tmp = np; cap = ncap;
+    }
+    tmp[len++] = c;
+    ++col;
   }
 
-  return idx;
+  /* if we got here, string was unterminated */
+  *out_error_col = col;
+  X_INI_FREE(tmp);
+  return NULL;
 }
 
-/* Create a child node and link as last sibling */
-static int s_ini_add_child(XIni *ini, int parent_idx, uint32_t off, uint32_t len, uint32_t *next_free_node)
+/* ---------------- public implementation ---------------- */
+
+X_INI_API const char* x_ini_err_str(XIniErrorCode code)
 {
-  int idx = (int)(*next_free_node);
-  *next_free_node = *next_free_node + 1u;
+  return s_x_err_msg(code);
+}
 
-  XIniNode *n = &ini->nodes[idx];
-  n->name_off = off;
-  n->name_len = len;
-  n->name_hash = s_ini_hash32(ini->text + off, len); /* compute hash once */
-  n->parent = parent_idx;
-  n->first_child = -1;
-  n->next_sibling = -1;
-  n->kv_start = 0u;
-  n->kv_count = 0u;
+X_INI_API bool x_ini_load_mem(const void *data, size_t size, XIni *out_ini, XIniError *err)
+{
+  if (err) { err->code = XINI_OK; err->line = 0; err->column = 0; err->message = s_x_err_msg(XINI_OK); }
+  if (!out_ini) { s_x_set_err(err, XINI_ERR_SYNTAX, 0, 0, "null output ini"); return false; }
 
-  if (parent_idx >= 0)
+  memset(out_ini, 0, sizeof(*out_ini));
+  if (!s_x_pool_init(out_ini, size > 0 ? (size * 2) : 1024))
   {
-    if (ini->nodes[parent_idx].first_child < 0)
+    s_x_set_err(err, XINI_ERR_MEMORY, 0, 0, s_x_err_msg(XINI_ERR_MEMORY));
+    return false;
+  }
+
+  out_ini->sections = (XIniSection *)X_INI_ALLOC(sizeof(XIniSection) * X_INI_DEFAULT_SECTIONS_CAP);
+  out_ini->entries  = (XIniEntry   *)X_INI_ALLOC(sizeof(XIniEntry)   * X_INI_DEFAULT_ENTRIES_CAP);
+  if (!out_ini->sections || !out_ini->entries)
+  {
+    s_x_set_err(err, XINI_ERR_MEMORY, 0, 0, s_x_err_msg(XINI_ERR_MEMORY));
+    x_ini_free(out_ini);
+    return false;
+  }
+  out_ini->sections_cap = X_INI_DEFAULT_SECTIONS_CAP;
+  out_ini->entries_cap  = X_INI_DEFAULT_ENTRIES_CAP;
+
+  /* global section ("") */
+  const char *gs = s_x_pool_add_cstr(out_ini, "");
+  if (!gs) { s_x_set_err(err, XINI_ERR_MEMORY, 0, 0, s_x_err_msg(XINI_ERR_MEMORY)); x_ini_free(out_ini); return false; }
+  out_ini->sections[0].name = gs;
+  out_ini->sections[0].first_entry = -1;
+  out_ini->sections_count = 1;
+  out_ini->global_section = 0;
+
+  /* copy data to a working buffer so we can slice lines easily */
+  char *buf = (char *)X_INI_ALLOC(size + 1);
+  if (!buf) { s_x_set_err(err, XINI_ERR_MEMORY, 0, 0, s_x_err_msg(XINI_ERR_MEMORY)); x_ini_free(out_ini); return false; }
+  memcpy(buf, data, size);
+  buf[size] = '\0';
+
+  int current_section = out_ini->global_section;
+
+  /* parse line by line */
+  char *cursor = buf;
+  int line_no = 0;
+
+  while (*cursor)
+  {
+    char *line = cursor;
+    /* advance to next line */
+    while (*cursor && *cursor != '\n' && *cursor != '\r') { ++cursor; }
+    if (*cursor == '\r') { *cursor++ = '\0'; if (*cursor == '\n') { ++cursor; } }
+    else if (*cursor == '\n') { *cursor++ = '\0'; }
+    ++line_no;
+
+    s_x_chomp_inline_comment_unquoted(line);
+    char *raw = line;
+    char *trim = s_x_trim_inplace(raw);
+    if (*trim == '\0') continue; /* empty */
+    if (*trim == ';' || *trim == '#') continue; /* full-line comment */
+
+    if (*trim == '[')
     {
-      ini->nodes[parent_idx].first_child = idx;
-    }
-    else
-    {
-      int32_t it = ini->nodes[parent_idx].first_child;
-      while (ini->nodes[it].next_sibling >= 0)
+      /* section line: [name] */
+      char *rbr = strchr(trim, ']');
+      if (!rbr)
       {
-        it = ini->nodes[it].next_sibling;
+        s_x_set_err(err, XINI_ERR_EXPECT_RBRACKET, line_no, (int)(strlen(trim) + 1), s_x_err_msg(XINI_ERR_EXPECT_RBRACKET));
+        X_INI_FREE(buf);
+        x_ini_free(out_ini);
+        return false;
       }
-      ini->nodes[it].next_sibling = idx;
-    }
-  }
-
-  return idx;
-}
-
-/* Triple-quoted helpers */
-
-/* Find the closing delimiter of a triple-quoted string (""" ... """). */
-static int s_ini_find_triple_end(const char *text, uint32_t size, uint32_t start_off, uint32_t *out_end_off)
-{
-  if (text == NULL || start_off + 2u >= size)
-  {
-    return 0;
-  }
-  uint32_t i = start_off;
-  while (i + 2u < size)
-  {
-    if (text[i] == '"' && text[i + 1u] == '"' && text[i + 2u] == '"')
-    {
-      *out_end_off = i;
-      return 1;
-    }
-    i = i + 1u;
-  }
-  return 0;
-}
-
-/* Advance to the beginning of the next line after 'off' (or EOF). */
-static uint32_t s_ini_advance_to_next_line_after(uint32_t off, const char *buf, uint32_t size)
-{
-  uint32_t i = off;
-  while (i < size && buf[i] != '\n')
-  {
-    i = i + 1u;
-  }
-  if (i < size && buf[i] == '\n')
-  {
-    i = i + 1u;
-  }
-  return i;
-}
-
-/* Prescan to size arena */
-
-typedef struct s_ini_counts
-{
-  uint32_t headers;
-  uint32_t kvs;
-  uint32_t comma_tokens;
-  uint32_t triple_blocks;
-} s_ini_counts;
-
-static void s_ini_prescan(const char *buf, uint32_t len, s_ini_counts *out)
-{
-  out->headers = 0u;
-  out->kvs = 0u;
-  out->comma_tokens = 0u;
-  out->triple_blocks = 0u;
-
-  uint32_t i = 0u;
-  int in_triple = 0;
-
-  while (i < len)
-  {
-    const char *line = buf + i;
-    uint32_t l = 0u;
-    while (i + l < len && buf[i + l] != '\n')
-    {
-      l = l + 1u;
-    }
-
-    uint32_t tl = l;
-    tl = s_ini_trim_right_len(line, tl);
-
-    if (in_triple == 0)
-    {
-      if (tl > 0u && s_ini_is_header_line(line, tl) != 0)
+      *rbr = '\0';
+      char *name = s_x_trim_inplace(trim + 1);
+      name = s_x_trim_inplace(name);
+      const char *sname = s_x_pool_add_cstr(out_ini, name);
+      if (!sname)
       {
-        out->headers = out->headers + 1u;
+        s_x_set_err(err, XINI_ERR_MEMORY, line_no, 1, s_x_err_msg(XINI_ERR_MEMORY));
+        X_INI_FREE(buf);
+        x_ini_free(out_ini);
+        return false;
       }
-      else
+
+      if (out_ini->sections_count == out_ini->sections_cap)
       {
-        uint32_t eq = UINT32_MAX;
-        s_ini_split_key_value(line, tl, &eq);
-        if (eq != UINT32_MAX)
+        void *np = s_x_realloc_grow(out_ini->sections, sizeof(XIniSection),
+                                    out_ini->sections_count, &out_ini->sections_cap);
+        if (!np)
         {
-          out->kvs = out->kvs + 1u;
-          for (uint32_t k = eq + 1u; k < tl; k = k + 1u)
-          {
-            char c = line[k];
-            if (c == ',')
-            {
-              out->comma_tokens = out->comma_tokens + 1u;
-            }
-          }
-          if (tl > 0u && line[tl - 1u] == ',')
-          {
-            uint32_t j = i + l + ((i + l) < len ? 1u : 0u);
-            while (j < len)
-            {
-              const char *ln = buf + j;
-              uint32_t ll = 0u;
-              while (j + ll < len && buf[j + ll] != '\n')
-              {
-                ll = ll + 1u;
-              }
-              uint32_t tll = s_ini_trim_right_len(ln, ll);
-              for (uint32_t k = 0u; k < tll; k = k + 1u)
-              {
-                if (ln[k] == ',')
-                {
-                  out->comma_tokens = out->comma_tokens + 1u;
-                }
-              }
-              if (tll == 0u)
-              {
-                break;
-              }
-              if (ln[tll - 1u] != ',')
-              {
-                break;
-              }
-              j = j + ll + ((j + ll) < len ? 1u : 0u);
-            }
-          }
+          s_x_set_err(err, XINI_ERR_MEMORY, line_no, 1, s_x_err_msg(XINI_ERR_MEMORY));
+          X_INI_FREE(buf);
+          x_ini_free(out_ini);
+          return false;
         }
+        out_ini->sections = (XIniSection *)np;
       }
-
-      for (uint32_t k = 0u; k + 2u < tl; k = k + 1u)
-      {
-        if (line[k] == '"' && line[k + 1u] == '"' && line[k + 2u] == '"')
-        {
-          in_triple = 1;
-          out->triple_blocks = out->triple_blocks + 1u;
-          break;
-        }
-      }
-    }
-    else
-    {
-      for (uint32_t k = 0u; k + 2u < tl; k = k + 1u)
-      {
-        if (line[k] == '"' && line[k + 1u] == '"' && line[k + 2u] == '"')
-        {
-          in_triple = 0;
-          break;
-        }
-      }
-    }
-
-    i = i + l + ((i + l) < len ? 1u : 0u);
-  }
-}
-
-/* Parser */
-
-X_INI_API int x_ini_open_from_memory(const char *buf, uint32_t size, uint32_t flags, XIni **out_ini)
-{
-  (void)flags;
-  if (buf == NULL || out_ini == NULL || size == 0u)
-  {
-    return 0;
-  }
-
-  s_ini_counts cnt;
-  s_ini_prescan(buf, size, &cnt);
-
-  uint32_t max_segments = 8u;
-  uint32_t max_nodes = cnt.headers * max_segments + 8u;
-  uint32_t max_kvs = cnt.kvs + 8u;
-  uint32_t max_nums = cnt.comma_tokens + cnt.kvs + 8u;
-  uint32_t max_str_slices = cnt.comma_tokens + 8u;
-
-  uint32_t arena_bytes = 0u;
-  arena_bytes = arena_bytes + (uint32_t)sizeof(XIni);
-  arena_bytes = arena_bytes + max_nodes * (uint32_t)sizeof(XIniNode);
-  arena_bytes = arena_bytes + max_kvs   * (uint32_t)sizeof(XIniKV);
-  arena_bytes = arena_bytes + max_nums  * (uint32_t)sizeof(double);
-  arena_bytes = arena_bytes + max_nums  * (uint32_t)sizeof(int64_t);
-  arena_bytes = arena_bytes + max_str_slices * (uint32_t)sizeof(XIniStrSlice);
-
-  void *arena = (void *)malloc(arena_bytes);
-  if (arena == NULL)
-  {
-    return 0;
-  }
-  uint32_t off = 0u;
-
-  XIni *ini = (XIni *)s_ini_arena_alloc(arena, &off, (uint32_t)sizeof(XIni), arena_bytes);
-  ini->arena = arena;
-  ini->arena_size = arena_bytes;
-
-  ini->text = buf;
-  ini->text_len = size;
-
-  ini->nodes = (XIniNode *)s_ini_arena_alloc(arena, &off, max_nodes * (uint32_t)sizeof(XIniNode), arena_bytes);
-  ini->node_count = 0u;
-
-  ini->kvs = (XIniKV *)s_ini_arena_alloc(arena, &off, max_kvs * (uint32_t)sizeof(XIniKV), arena_bytes);
-  ini->kv_count = 0u;
-
-  ini->nums_f64 = (double *)s_ini_arena_alloc(arena, &off, max_nums * (uint32_t)sizeof(double), arena_bytes);
-  ini->nums_f64_count = 0u;
-
-  ini->nums_i64 = (int64_t *)s_ini_arena_alloc(arena, &off, max_nums * (uint32_t)sizeof(int64_t), arena_bytes);
-  ini->nums_i64_count = 0u;
-
-  ini->str_slices = (XIniStrSlice *)s_ini_arena_alloc(arena, &off, max_str_slices * (uint32_t)sizeof(XIniStrSlice), arena_bytes);
-  ini->str_slice_count = 0u;
-
-  int cur_node = -1;
-  uint32_t next_free_node = 0u;
-
-  uint32_t i = 0u;
-
-  while (i < size)
-  {
-    const char *line = buf + i;
-    uint32_t l = 0u;
-    while (i + l < size && buf[i + l] != '\n')
-    {
-      l = l + 1u;
-    }
-
-    uint32_t tl = s_ini_trim_right_len(line, l);
-    const char *trim = line;
-    uint32_t pos = 0u;
-    while (pos < tl && (trim[pos] == ' ' || trim[pos] == '\t'))
-    {
-      pos = pos + 1u;
-    }
-
-    if (tl == 0u)
-    {
-      i = i + l + ((i + l) < size ? 1u : 0u);
+      current_section = out_ini->sections_count;
+      out_ini->sections[current_section].name = sname;
+      out_ini->sections[current_section].first_entry = -1;
+      out_ini->sections_count += 1;
       continue;
     }
 
-    if (line[0] == '#')
+    /* key = value */
+    char *eq = strchr(trim, '=');
+    if (!eq)
     {
-      i = i + l + ((i + l) < size ? 1u : 0u);
-      continue;
+      /* report column at first non-space char */
+      int col = (int)(trim - raw) + 1;
+      s_x_set_err(err, XINI_ERR_EXPECT_EQUALS, line_no, col, s_x_err_msg(XINI_ERR_EXPECT_EQUALS));
+      X_INI_FREE(buf);
+      x_ini_free(out_ini);
+      return false;
     }
+    *eq = '\0';
+    char *k = s_x_trim_inplace(trim);
+    char *v = s_x_trim_inplace(eq + 1);
 
-    if (s_ini_is_header_line(line, tl) != 0 && pos == 0u)
+    /* value normalization:
+       - if quoted: decode escapes and drop quotes
+       - else: chomp inline comments, then trim again
+    */
+    const char *vv = NULL;
+    if (*v == '\"')
     {
-      uint32_t seg_off[16];
-      uint32_t seg_len[16];
-      uint32_t nseg = s_ini_split_path(line, tl - 1u, seg_off, seg_len, 16u);
-      int parent = -1;
-
-      for (uint32_t s = 0u; s < nseg; s = s + 1u)
+      int err_col = 1;
+      bool ok = false;
+      vv = s_x_decode_quoted_into_pool(out_ini, v, &err_col, &ok);
+      if (!ok || !vv)
       {
-        int child = s_ini_find_child_linear(ini, parent, line + seg_off[s], seg_len[s]);
-        if (child < 0)
-        {
-          child = s_ini_add_child(ini, parent, (uint32_t)((line + seg_off[s]) - ini->text), seg_len[s], &next_free_node);
-          ini->node_count = next_free_node;
-        }
-        parent = child;
+        s_x_set_err(err, XINI_ERR_UNTERMINATED_STRING, line_no, (int)(v - raw) + err_col + 1, s_x_err_msg(XINI_ERR_UNTERMINATED_STRING));
+        X_INI_FREE(buf);
+        x_ini_free(out_ini);
+        return false;
       }
-      cur_node = parent;
-
-      i = i + l + ((i + l) < size ? 1u : 0u);
-      continue;
-    }
-
-    {
-      uint32_t eq = UINT32_MAX;
-      s_ini_split_key_value(line, tl, &eq);
-      if (eq != UINT32_MAX && cur_node >= 0)
-      {
-        uint32_t k_off = 0u;
-        uint32_t k_len = s_ini_trim_right_len(line, eq);
-        while (k_off < k_len && (line[k_off] == ' ' || line[k_off] == '\t'))
-        {
-          k_off = k_off + 1u;
-        }
-
-        const char *valp = line + eq + 1u;
-        uint32_t v_len = tl - (eq + 1u);
-        while (v_len > 0u && (valp[0] == ' ' || valp[0] == '\t'))
-        {
-          valp = valp + 1u;
-          v_len = v_len - 1u;
-        }
-
-        uint32_t raw_off = (uint32_t)(valp - ini->text);
-        uint32_t raw_len = v_len;
-
-        /* Handle triple-quoted immediately */
-        if (raw_len >= 3u &&
-            ini->text[raw_off + 0u] == '"' &&
-            ini->text[raw_off + 1u] == '"' &&
-            ini->text[raw_off + 2u] == '"')
-        {
-          uint32_t end_off = 0u;
-          int closed = s_ini_find_triple_end(ini->text, ini->text_len, raw_off + 3u, &end_off);
-
-          XIniKV *kv = &ini->kvs[ini->kv_count];
-          kv->key_off = (uint32_t)((line + k_off) - ini->text);
-          kv->key_len = k_len - k_off;
-          kv->val.kind = XINI_V_STR;
-          kv->val.off  = raw_off + 3u;
-
-          if (closed != 0 && end_off >= kv->val.off)
-          {
-            kv->val.len = end_off - kv->val.off;
-            i = s_ini_advance_to_next_line_after(end_off, buf, size);
-          }
-          else
-          {
-            kv->val.len = ini->text_len - kv->val.off; /* tolerant: until EOF */
-            i = size;
-          }
-
-          if (ini->nodes[cur_node].kv_count == 0u)
-          {
-            ini->nodes[cur_node].kv_start = ini->kv_count;
-          }
-          ini->kv_count = ini->kv_count + 1u;
-          ini->nodes[cur_node].kv_count = ini->nodes[cur_node].kv_count + 1u;
-
-          continue;
-        }
-
-        /* Multi-line scalar arrays by hanging comma */
-        if (v_len > 0u && valp[v_len - 1u] == ',')
-        {
-          uint32_t j = i + l + ((i + l) < size ? 1u : 0u);
-          while (j < size)
-          {
-            const char *ln = buf + j;
-            uint32_t ll = 0u;
-            while (j + ll < size && buf[j + ll] != '\n')
-            {
-              ll = ll + 1u;
-            }
-            uint32_t tll = s_ini_trim_right_len(ln, ll);
-            raw_len = (uint32_t)((ln + tll) - (ini->text + raw_off));
-            if (tll == 0u)
-            {
-              j = j + ll + ((j + ll) < size ? 1u : 0u);
-              break;
-            }
-            if (ln[tll - 1u] != ',')
-            {
-              j = j + ll + ((j + ll) < size ? 1u : 0u);
-              break;
-            }
-            j = j + ll + ((j + ll) < size ? 1u : 0u);
-          }
-        }
-
-        XIniKV *kv = &ini->kvs[ini->kv_count];
-        kv->key_off = (uint32_t)((line + k_off) - ini->text);
-        kv->key_len = k_len - k_off;
-        kv->val.kind = XINI_V_STR;
-        kv->val.off = raw_off;
-        kv->val.len = raw_len;
-        kv->val.i64 = 0;
-        kv->val.f64 = 0.0;
-        kv->val.boolean = 0;
-        kv->val.arr_start = 0u;
-        kv->val.arr_count = 0u;
-        kv->val.arr_is_f64 = 0u;
-        kv->val.arr_is_i64 = 0u;
-        kv->val.arr_is_str = 0u;
-
-        const char *vp = ini->text + raw_off;
-        uint32_t vl = raw_len;
-
-        int has_comma = 0;
-        int in_str_q = 0;
-        for (uint32_t t = 0u; t < vl; t = t + 1u)
-        {
-          char c = vp[t];
-          if (c == '"') { in_str_q = !in_str_q; }
-          if (c == ',' && in_str_q == 0) { has_comma = 1; break; }
-        }
-
-        uint32_t vl2 = vl;
-        const char *vp2 = vp;
-        while (vl2 > 0u && (vp2[0] == ' ' || vp2[0] == '\t'))
-        {
-          vp2 = vp2 + 1u;
-          vl2 = vl2 - 1u;
-        }
-        while (vl2 > 0u &&
-               (vp2[vl2 - 1u] == ' ' || vp2[vl2 - 1u] == '\t' || vp2[vl2 - 1u] == '\r'))
-        {
-          vl2 = vl2 - 1u;
-        }
-
-        if (has_comma != 0)
-        {
-          uint32_t start = 0u;
-          int mode_f64 = 1;
-          int mode_i64 = 1;
-          int mode_str = 0;
-
-          /* NEW: capture pool indices before tokenizing */
-          uint32_t f64_before = ini->nums_f64_count;
-          uint32_t i64_before = ini->nums_i64_count;
-          uint32_t str_before = ini->str_slice_count;
-
-          while (start <= vl2)
-          {
-            uint32_t end = start;
-            int inq = 0;
-            while (end < vl2)
-            {
-              char c = vp2[end];
-              if (c == '"') { inq = !inq; }
-              if (c == ',' && inq == 0) { break; }
-              end = end + 1u;
-            }
-
-            const char *ep = vp2 + start;
-            uint32_t el = end - start;
-            while (el > 0u && (ep[0] == ' ' || ep[0] == '\t')) { ep = ep + 1u; el = el - 1u; }
-            while (el > 0u && (ep[el - 1u] == ' ' || ep[el - 1u] == '\t')) { el = el - 1u; }
-
-            if (el > 0u)
-            {
-              if (ep[0] == '"' && el >= 2u && ep[el - 1u] == '"')
-              {
-                mode_i64 = 0; mode_f64 = 0; mode_str = 1;
-                ini->str_slices[ini->str_slice_count].ptr = ep + 1u;
-                ini->str_slices[ini->str_slice_count].len = el - 2u;
-                ini->str_slice_count = ini->str_slice_count + 1u;
-              }
-              else
-              {
-                /* Integer fast-path before strtod */
-                int is_int = 1;
-                for (uint32_t q = 0u; q < el; q = q + 1u)
-                {
-                  char c2 = ep[q];
-                  if (c2 == '.' || c2 == 'e' || c2 == 'E') { is_int = 0; break; }
-                }
-                if (is_int)
-                {
-                  long long iv = strtoll(ep, NULL, 10);
-                  ini->nums_i64[ini->nums_i64_count] = (int64_t)iv;
-                  ini->nums_i64_count = ini->nums_i64_count + 1u;
-                  mode_f64 = 0;
-                }
-                else
-                {
-                  char *endp = NULL;
-                  double dv = strtod(ep, &endp);
-                  if (endp == ep + (ptrdiff_t)el)
-                  {
-                    ini->nums_f64[ini->nums_f64_count] = dv;
-                    ini->nums_f64_count = ini->nums_f64_count + 1u;
-                    mode_i64 = 0;
-                  }
-                  else
-                  {
-                    mode_i64 = 0; mode_f64 = 0; mode_str = 1;
-                    ini->str_slices[ini->str_slice_count].ptr = ep;
-                    ini->str_slices[ini->str_slice_count].len = el;
-                    ini->str_slice_count = ini->str_slice_count + 1u;
-                  }
-                }
-              }
-            }
-
-            if (end >= vl2) { start = vl2 + 1u; }
-            else { start = end + 1u; }
-          }
-
-          kv->val.kind = XINI_V_ARR;
-
-          /* NEW: set arr_start and arr_count using the deltas */
-          if (mode_str != 0)
-          {
-            kv->val.arr_is_str = 1u;
-            kv->val.arr_start  = str_before;
-            kv->val.arr_count  = ini->str_slice_count - str_before;
-          }
-          else if (mode_i64 != 0)
-          {
-            kv->val.arr_is_i64 = 1u;
-            kv->val.arr_start  = i64_before;
-            kv->val.arr_count  = ini->nums_i64_count - i64_before;
-          }
-          else
-          {
-            kv->val.arr_is_f64 = 1u;
-            kv->val.arr_start  = f64_before;
-            kv->val.arr_count  = ini->nums_f64_count - f64_before;
-          }
-        }
-        else
-        {
-          /* booleans (trimmed, exact case) */
-          if ((vl2 == 4u && memcmp(vp2, "true", 4) == 0) ||
-              (vl2 == 5u && memcmp(vp2, "false", 5) == 0))
-          {
-            kv->val.kind    = XINI_V_BOOL;
-            kv->val.boolean = (vl2 == 4u) ? 1 : 0;
-
-            if (ini->nodes[cur_node].kv_count == 0u)
-            {
-              ini->nodes[cur_node].kv_start = ini->kv_count;
-            }
-            ini->kv_count = ini->kv_count + 1u;
-            ini->nodes[cur_node].kv_count = ini->nodes[cur_node].kv_count + 1u;
-
-            i = i + l + ((i + l) < size ? 1u : 0u);
-            continue;
-          }
-
-          /* Integer fast-path before strtod (scalar) */
-          int is_int = 1;
-          for (uint32_t q = 0u; q < vl2; q = q + 1u)
-          {
-            char c = vp2[q];
-            if (c == '.' || c == 'e' || c == 'E') { is_int = 0; break; }
-          }
-          if (is_int)
-          {
-            long long iv = strtoll(vp2, NULL, 10);
-            kv->val.kind = XINI_V_I64;
-            kv->val.i64  = (int64_t)iv;
-          }
-          else
-          {
-            char *endp = NULL;
-            double dv = strtod(vp2, &endp);
-            if (endp == vp2 + (ptrdiff_t)vl2)
-            {
-              kv->val.kind = XINI_V_F64;
-              kv->val.f64 = dv;
-            }
-            else
-            {
-              if (vl2 >= 2u && vp2[0] == '"' && vp2[vl2 - 1u] == '"')
-              {
-                kv->val.kind = XINI_V_STR;
-                kv->val.off = (uint32_t)((vp2 + 1u) - ini->text);
-                kv->val.len = vl2 - 2u;
-              }
-              else
-              {
-                kv->val.kind = XINI_V_STR;
-                kv->val.off = (uint32_t)(vp2 - ini->text);
-                kv->val.len = vl2;
-              }
-            }
-          }
-        }
-
-        if (ini->nodes[cur_node].kv_count == 0u)
-        {
-          ini->nodes[cur_node].kv_start = ini->kv_count;
-        }
-        ini->kv_count = ini->kv_count + 1u;
-        ini->nodes[cur_node].kv_count = ini->nodes[cur_node].kv_count + 1u;
-
-        i = i + l + ((i + l) < size ? 1u : 0u);
-        continue;
-      }
-    }
-
-    i = i + l + ((i + l) < size ? 1u : 0u);
-  }
-
-  *out_ini = ini;
-  return 1;
-}
-
-X_INI_API void x_ini_close(XIni *ini)
-{
-  if (ini == NULL)
-  {
-    return;
-  }
-  void *arena = ini->arena;
-  free(arena);
-}
-
-/* Navigation */
-
-X_INI_API int x_ini_section_name(XIni *ini, XIniCursor cur, const char **out_name, uint32_t *out_len)
-{
-  if (ini == NULL || out_name == NULL || out_len == NULL)
-  {
-    return 0;
-  }
-  if (cur.node < 0)
-  {
-    return 0;
-  }
-  const XIniNode *n = &ini->nodes[cur.node];
-  *out_name = ini->text + n->name_off;
-  *out_len = n->name_len;
-  return 1;
-}
-
-X_INI_API int x_ini_child_count(XIni *ini, XIniCursor cur, uint32_t *out_count)
-{
-  if (ini == NULL || out_count == NULL)
-  {
-    return 0;
-  }
-  uint32_t count = 0u;
-  if (cur.node < 0)
-  {
-    for (uint32_t i = 0u; i < ini->node_count; i = i + 1u)
-    {
-      if (ini->nodes[i].parent == -1)
-      {
-        count = count + 1u;
-      }
-    }
-    *out_count = count;
-    return 1;
-  }
-
-  int32_t it = ini->nodes[cur.node].first_child;
-  while (it >= 0)
-  {
-    count = count + 1u;
-    it = ini->nodes[it].next_sibling;
-  }
-  *out_count = count;
-  return 1;
-}
-
-X_INI_API int x_ini_child_at(XIni *ini, XIniCursor cur, uint32_t index, XIniCursor *out_child)
-{
-  if (ini == NULL || out_child == NULL)
-  {
-    return 0;
-  }
-  if (cur.node < 0)
-  {
-    uint32_t count = 0u;
-    for (uint32_t i = 0u; i < ini->node_count; i = i + 1u)
-    {
-      if (ini->nodes[i].parent == -1)
-      {
-        if (count == index)
-        {
-          out_child->node = (int)i;
-          return 1;
-        }
-        count = count + 1u;
-      }
-    }
-    return 0;
-  }
-
-  int32_t it = ini->nodes[cur.node].first_child;
-  uint32_t k = 0u;
-  while (it >= 0)
-  {
-    if (k == index)
-    {
-      out_child->node = it;
-      return 1;
-    }
-    k = k + 1u;
-    it = ini->nodes[it].next_sibling;
-  }
-  return 0;
-}
-
-X_INI_API int x_ini_find_child(XIni *ini, XIniCursor cur, const char *name, uint32_t name_len, XIniCursor *out_child)
-{
-  if (ini == NULL || name == NULL || out_child == NULL)
-  {
-    return 0;
-  }
-
-  int idx = s_ini_find_child_linear(ini, cur.node, name, name_len);
-  if (idx < 0)
-  {
-    return 0;
-  }
-  out_child->node = idx;
-  return 1;
-}
-
-X_INI_API int x_ini_get_section(XIni *ini, XIniCursor parent, const char *path, XIniCursor *out)
-{
-  if (ini == NULL || path == NULL || out == NULL)
-  {
-    return 0;
-  }
-
-  uint32_t plen = (uint32_t)strlen(path);
-  uint32_t offv[32];
-  uint32_t lenv[32];
-  uint32_t n = s_ini_split_path(path, plen, offv, lenv, 32u);
-  int cur = parent.node;
-
-  for (uint32_t i = 0u; i < n; i = i + 1u)
-  {
-    int child = s_ini_find_child_linear(ini, cur, path + offv[i], lenv[i]);
-    if (child < 0)
-    {
-      return 0;
-    }
-    cur = child;
-  }
-
-  out->node = cur;
-  return 1;
-}
-
-/* Entries */
-
-static int s_ini_find_kv(const XIni *ini, int node, const char *key, uint32_t *out_idx)
-{
-  if (node < 0)
-  {
-    return 0;
-  }
-  const XIniNode *nd = &ini->nodes[node];
-  uint32_t start = nd->kv_start;
-  uint32_t end = nd->kv_start + nd->kv_count;
-
-  uint32_t klen = (uint32_t)strlen(key);
-
-  for (uint32_t i = start; i < end; i = i + 1u)
-  {
-    const XIniKV *kv = &ini->kvs[i];
-    const char *kk = ini->text + kv->key_off;
-    if (s_ini_str_equal(kk, kv->key_len, key, klen) != 0)
-    {
-      *out_idx = i;
-      return 1;
-    }
-  }
-  return 0;
-}
-
-X_INI_API int x_ini_entry_count(XIni *ini, XIniCursor cur, uint32_t *out_count)
-{
-  if (ini == NULL || out_count == NULL)
-  {
-    return 0;
-  }
-  if (cur.node < 0)
-  {
-    *out_count = 0u;
-    return 1;
-  }
-  *out_count = ini->nodes[cur.node].kv_count;
-  return 1;
-}
-
-X_INI_API int x_ini_entry_key_at(XIni *ini, XIniCursor cur, uint32_t index, const char **out_key, uint32_t *out_key_len)
-{
-  if (ini == NULL || out_key == NULL || out_key_len == NULL)
-  {
-    return 0;
-  }
-  if (cur.node < 0)
-  {
-    return 0;
-  }
-
-  const XIniNode *nd = &ini->nodes[cur.node];
-  if (index >= nd->kv_count)
-  {
-    return 0;
-  }
-  const XIniKV *kv = &ini->kvs[nd->kv_start + index];
-  *out_key = ini->text + kv->key_off;
-  *out_key_len = kv->key_len;
-  return 1;
-}
-
-X_INI_API int x_ini_get_bool(XIni *ini, XIniCursor cur, const char *key, int *out_bool)
-{
-  if (ini == NULL || key == NULL || out_bool == NULL)
-  {
-    return 0;
-  }
-  uint32_t idx = 0u;
-  if (s_ini_find_kv(ini, cur.node, key, &idx) == 0)
-  {
-    return 0;
-  }
-  const XIniKV *kv = &ini->kvs[idx];
-  if (kv->val.kind != XINI_V_BOOL)
-  {
-    return 0;
-  }
-  *out_bool = kv->val.boolean;
-  return 1;
-}
-
-X_INI_API int x_ini_get_i64(XIni *ini, XIniCursor cur, const char *key, int64_t *out_i64)
-{
-  if (ini == NULL || key == NULL || out_i64 == NULL)
-  {
-    return 0;
-  }
-  uint32_t idx = 0u;
-  if (s_ini_find_kv(ini, cur.node, key, &idx) == 0)
-  {
-    return 0;
-  }
-  const XIniKV *kv = &ini->kvs[idx];
-  if (kv->val.kind == XINI_V_I64)
-  {
-    *out_i64 = kv->val.i64;
-    return 1;
-  }
-  if (kv->val.kind == XINI_V_F64)
-  {
-    *out_i64 = (int64_t)kv->val.f64;
-    return 1;
-  }
-  return 0;
-}
-
-X_INI_API int x_ini_get_f64(XIni *ini, XIniCursor cur, const char *key, double *out_f64)
-{
-  if (ini == NULL || key == NULL || out_f64 == NULL)
-  {
-    return 0;
-  }
-  uint32_t idx = 0u;
-  if (s_ini_find_kv(ini, cur.node, key, &idx) == 0)
-  {
-    return 0;
-  }
-  const XIniKV *kv = &ini->kvs[idx];
-  if (kv->val.kind == XINI_V_F64)
-  {
-    *out_f64 = kv->val.f64;
-    return 1;
-  }
-  if (kv->val.kind == XINI_V_I64)
-  {
-    *out_f64 = (double)kv->val.i64;
-    return 1;
-  }
-  return 0;
-}
-
-X_INI_API int x_ini_get_str(XIni *ini, XIniCursor cur, const char *key, const char **out_str, uint32_t *out_len)
-{
-  if (ini == NULL || key == NULL || out_str == NULL || out_len == NULL)
-  {
-    return 0;
-  }
-  uint32_t idx = 0u;
-  if (s_ini_find_kv(ini, cur.node, key, &idx) == 0)
-  {
-    return 0;
-  }
-  const XIniKV *kv = &ini->kvs[idx];
-  if (kv->val.kind != XINI_V_STR)
-  {
-    return 0;
-  }
-  *out_str = ini->text + kv->val.off;
-  *out_len = kv->val.len;
-  return 1;
-}
-
-/* Arrays: now return already-tokenized slices if available. */
-
-static int s_ini_collect_array(XIni *ini, const XIniKV *kv,
-    const double **out_f64, uint32_t *out_nf64,
-    const int64_t **out_i64, uint32_t *out_ni64,
-    const XIniStrSlice **out_str, uint32_t *out_ns)
-{
-  if (kv->val.kind != XINI_V_ARR)
-  {
-    return 0;
-  }
-
-  /* Fast path: parsed once during load, just slice the pool. */
-  if (kv->val.arr_count > 0)
-  {
-    if (kv->val.arr_is_f64 && out_f64 && out_nf64)
-    {
-      *out_f64  = ini->nums_f64 + kv->val.arr_start;
-      *out_nf64 = kv->val.arr_count;
-      if (out_i64) *out_i64 = NULL; if (out_ni64) *out_ni64 = 0;
-      if (out_str) *out_str = NULL; if (out_ns)   *out_ns   = 0;
-      return 1;
-    }
-    if (kv->val.arr_is_i64 && out_i64 && out_ni64)
-    {
-      *out_i64  = ini->nums_i64 + kv->val.arr_start;
-      *out_ni64 = kv->val.arr_count;
-      if (out_f64) *out_f64 = NULL; if (out_nf64) *out_nf64 = 0;
-      if (out_str) *out_str = NULL; if (out_ns)   *out_ns   = 0;
-      return 1;
-    }
-    if (kv->val.arr_is_str && out_str && out_ns)
-    {
-      *out_str = ini->str_slices + kv->val.arr_start;
-      *out_ns  = kv->val.arr_count;
-      if (out_f64) *out_f64 = NULL; if (out_nf64) *out_nf64 = 0;
-      if (out_i64) *out_i64 = NULL; if (out_ni64) *out_ni64 = 0;
-      return 1;
-    }
-    /* If types don't match the requested output, fall through to legacy parse and return 0 below. */
-  }
-
-  /* Legacy slow path (should be rare now): re-tokenize on demand. */
-  const char *vp = ini->text + kv->val.off;
-  uint32_t vl = kv->val.len;
-
-  uint32_t nf64_before = ini->nums_f64_count;
-  uint32_t ni64_before = ini->nums_i64_count;
-  uint32_t ns_before = ini->str_slice_count;
-
-  uint32_t start = 0u;
-  int inq = 0;
-  while (start <= vl)
-  {
-    uint32_t end = start;
-    inq = 0;
-    while (end < vl)
-    {
-      char c = vp[end];
-      if (c == '"')
-      {
-        inq = !inq;
-      }
-      if (c == ',' && inq == 0)
-      {
-        break;
-      }
-      end = end + 1u;
-    }
-
-    const char *ep = vp + start;
-    uint32_t el = end - start;
-    while (el > 0u && (ep[0] == ' ' || ep[0] == '\t'))
-    {
-      ep = ep + 1u;
-      el = el - 1u;
-    }
-    while (el > 0u && (ep[el - 1u] == ' ' || ep[el - 1u] == '\t' || ep[el - 1u] == '\r'))
-    {
-      el = el - 1u;
-    }
-
-    if (el > 0u)
-    {
-      if (ep[0] == '"' && el >= 2u && ep[el - 1u] == '"')
-      {
-        ini->str_slices[ini->str_slice_count].ptr = ep + 1u;
-        ini->str_slices[ini->str_slice_count].len = el - 2u;
-        ini->str_slice_count = ini->str_slice_count + 1u;
-      }
-      else
-      {
-        /* Integer fast-path before strtod (array element) */
-        int is_int = 1;
-        for (uint32_t q = 0u; q < el; q = q + 1u)
-        {
-          char c2 = ep[q];
-          if (c2 == '.' || c2 == 'e' || c2 == 'E') { is_int = 0; break; }
-        }
-        if (is_int)
-        {
-          long long iv = strtoll(ep, NULL, 10);
-          ini->nums_i64[ini->nums_i64_count] = (int64_t)iv;
-          ini->nums_i64_count = ini->nums_i64_count + 1u;
-        }
-        else
-        {
-          char *endp = NULL;
-          double dv = strtod(ep, &endp);
-          if (endp == ep + (ptrdiff_t)el)
-          {
-            ini->nums_f64[ini->nums_f64_count] = dv;
-            ini->nums_f64_count = ini->nums_f64_count + 1u;
-          }
-          else
-          {
-            ini->str_slices[ini->str_slice_count].ptr = ep;
-            ini->str_slices[ini->str_slice_count].len = el;
-            ini->str_slice_count = ini->str_slice_count + 1u;
-          }
-        }
-      }
-    }
-
-    if (end >= vl)
-    {
-      start = vl + 1u;
     }
     else
     {
-      start = end + 1u;
+      s_x_chomp_inline_comment_unquoted(v);
+      v = s_x_trim_inplace(v);
+      vv = s_x_pool_add_cstr(out_ini, v);
+      if (!vv)
+      {
+        s_x_set_err(err, XINI_ERR_MEMORY, line_no, 1, s_x_err_msg(XINI_ERR_MEMORY));
+        X_INI_FREE(buf);
+        x_ini_free(out_ini);
+        return false;
+      }
+    }
+
+    const char *kk = s_x_pool_add_cstr(out_ini, k);
+    if (!kk)
+    {
+      s_x_set_err(err, XINI_ERR_MEMORY, line_no, 1, s_x_err_msg(XINI_ERR_MEMORY));
+      X_INI_FREE(buf);
+      x_ini_free(out_ini);
+      return false;
+    }
+
+    if (out_ini->entries_count == out_ini->entries_cap)
+    {
+      void *np = s_x_realloc_grow(out_ini->entries, sizeof(XIniEntry),
+                                  out_ini->entries_count, &out_ini->entries_cap);
+      if (!np)
+      {
+        s_x_set_err(err, XINI_ERR_MEMORY, line_no, 1, s_x_err_msg(XINI_ERR_MEMORY));
+        X_INI_FREE(buf);
+        x_ini_free(out_ini);
+        return false;
+      }
+      out_ini->entries = (XIniEntry *)np;
+    }
+
+    int idx = out_ini->entries_count++;
+    out_ini->entries[idx].section = current_section;
+    out_ini->entries[idx].key = kk;
+    out_ini->entries[idx].value = vv;
+
+    if (out_ini->sections[current_section].first_entry < 0)
+    {
+      out_ini->sections[current_section].first_entry = idx;
     }
   }
 
-  if (out_f64 != NULL && out_nf64 != NULL)
-  {
-    *out_f64 = ini->nums_f64 + nf64_before;
-    *out_nf64 = ini->nums_f64_count - nf64_before;
-  }
-  if (out_i64 != NULL && out_ni64 != NULL)
-  {
-    *out_i64 = ini->nums_i64 + ni64_before;
-    *out_ni64 = ini->nums_i64_count - ni64_before;
-  }
-  if (out_str != NULL && out_ns != NULL)
-  {
-    *out_str = ini->str_slices + ns_before;
-    *out_ns = ini->str_slice_count - ns_before;
-  }
-  return 1;
+  X_INI_FREE(buf);
+  return true;
 }
 
-X_INI_API int x_ini_get_array_len(XIni *ini, XIniCursor cur, const char *key, uint32_t *out_len)
+X_INI_API bool x_ini_load_file(const char *path, XIni *out_ini, XIniError *err)
 {
-  if (ini == NULL || key == NULL || out_len == NULL)
-  {
-    return 0;
-  }
-  uint32_t idx = 0u;
-  if (s_ini_find_kv(ini, cur.node, key, &idx) == 0)
-  {
-    return 0;
-  }
-  const XIniKV *kv = &ini->kvs[idx];
-  if (kv->val.kind != XINI_V_ARR)
-  {
-    return 0;
-  }
+  if (err) { err->code = XINI_OK; err->line = 0; err->column = 0; err->message = s_x_err_msg(XINI_OK); }
+  if (!path || !out_ini) { s_x_set_err(err, XINI_ERR_SYNTAX, 0, 0, "null argument"); return false; }
 
-  const double *f = NULL;
-  const int64_t *i64 = NULL;
-  const XIniStrSlice *ss = NULL;
-  uint32_t nf = 0u;
-  uint32_t ni = 0u;
-  uint32_t ns = 0u;
-  if (s_ini_collect_array(ini, kv, &f, &nf, &i64, &ni, &ss, &ns) == 0)
+  FILE *f = fopen(path, "rb");
+  if (!f) { s_x_set_err(err, XINI_ERR_IO, 0, 0, s_x_err_msg(XINI_ERR_IO)); return false; }
+
+  if (fseek(f, 0, SEEK_END) != 0) { fclose(f); s_x_set_err(err, XINI_ERR_IO, 0, 0, s_x_err_msg(XINI_ERR_IO)); return false; }
+  long len = ftell(f);
+  if (len < 0) { fclose(f); s_x_set_err(err, XINI_ERR_IO, 0, 0, s_x_err_msg(XINI_ERR_IO)); return false; }
+  rewind(f);
+
+  char *buf = (char *)X_INI_ALLOC((size_t)len + 1);
+  if (!buf) { fclose(f); s_x_set_err(err, XINI_ERR_MEMORY, 0, 0, s_x_err_msg(XINI_ERR_MEMORY)); return false; }
+
+  size_t rd = fread(buf, 1, (size_t)len, f);
+  fclose(f);
+  if (rd != (size_t)len)
   {
-    return 0;
+    X_INI_FREE(buf);
+    s_x_set_err(err, XINI_ERR_IO, 0, 0, s_x_err_msg(XINI_ERR_IO));
+    return false;
   }
-  *out_len = nf + ni + ns;
-  return 1;
+  buf[len] = '\0';
+
+  bool ok = x_ini_load_mem(buf, (size_t)len, out_ini, err);
+  X_INI_FREE(buf);
+  return ok;
 }
 
-X_INI_API int x_ini_get_array_f64(XIni *ini, XIniCursor cur, const char *key, const double **out_vals, uint32_t *out_len)
+X_INI_API void x_ini_free(XIni *ini)
 {
-  if (ini == NULL || key == NULL || out_vals == NULL || out_len == NULL)
-  {
-    return 0;
-  }
-  uint32_t idx = 0u;
-  if (s_ini_find_kv(ini, cur.node, key, &idx) == 0)
-  {
-    return 0;
-  }
-  const XIniKV *kv = &ini->kvs[idx];
-  if (kv->val.kind != XINI_V_ARR)
-  {
-    return 0;
-  }
+  if (!ini) return;
 
-  const double *f = NULL;
-  const int64_t *i64 = NULL;
-  const XIniStrSlice *ss = NULL;
-  uint32_t nf = 0u;
-  uint32_t ni = 0u;
-  uint32_t ns = 0u;
-  if (s_ini_collect_array(ini, kv, &f, &nf, &i64, &ni, &ss, &ns) == 0)
-  {
-    return 0;
-  }
-  if (nf == 0u)
-  {
-    return 0;
-  }
-  *out_vals = f;
-  *out_len = nf;
-  return 1;
+  X_INI_FREE(ini->pool);
+  X_INI_FREE(ini->sections);
+  X_INI_FREE(ini->entries);
+
+  memset(ini, 0, sizeof(*ini));
+  ini->global_section = -1;
 }
 
-X_INI_API int x_ini_get_array_i64(XIni *ini, XIniCursor cur, const char *key, const int64_t **out_vals, uint32_t *out_len)
+X_INI_API const char *x_ini_get(const XIni *ini, const char *section, const char *key, const char *def_value)
 {
-  if (ini == NULL || key == NULL || out_vals == NULL || out_len == NULL)
-  {
-    return 0;
-  }
-  uint32_t idx = 0u;
-  if (s_ini_find_kv(ini, cur.node, key, &idx) == 0)
-  {
-    return 0;
-  }
-  const XIniKV *kv = &ini->kvs[idx];
-  if (kv->val.kind != XINI_V_ARR)
-  {
-    return 0;
-  }
+  if (!ini || !key) return def_value;
 
-  const double *f = NULL;
-  const int64_t *i64 = NULL;
-  const XIniStrSlice *ss = NULL;
-  uint32_t nf = 0u;
-  uint32_t ni = 0u;
-  uint32_t ns = 0u;
-  if (s_ini_collect_array(ini, kv, &f, &nf, &i64, &ni, &ss, &ns) == 0)
+  const char *secname = section ? section : "";
+  int sidx = s_x_find_section(ini, secname);
+  if (sidx < 0) return def_value;
+
+  /* last definition wins -> iterate from the end */
+  for (int i = ini->entries_count - 1; i >= 0; --i)
   {
-    return 0;
+    const XIniEntry *e = &ini->entries[i];
+    if (e->section == sidx && strcmp(e->key, key) == 0) return e->value;
   }
-  if (ni == 0u)
-  {
-    return 0;
-  }
-  *out_vals = i64;
-  *out_len = ni;
-  return 1;
+  return def_value;
 }
 
-X_INI_API int x_ini_get_array_str(XIni *ini, XIniCursor cur, const char *key, const XIniStrSlice **out_vals, uint32_t *out_len)
+X_INI_API int32_t x_ini_get_i32(const XIni *ini, const char *section, const char *key, int32_t def_value)
 {
-  if (ini == NULL || key == NULL || out_vals == NULL || out_len == NULL)
-  {
-    return 0;
-  }
-  uint32_t idx = 0u;
-  if (s_ini_find_kv(ini, cur.node, key, &idx) == 0)
-  {
-    return 0;
-  }
-  const XIniKV *kv = &ini->kvs[idx];
-  if (kv->val.kind != XINI_V_ARR)
-  {
-    return 0;
-  }
-
-  const double *f = NULL;
-  const int64_t *i64 = NULL;
-  const XIniStrSlice *ss = NULL;
-  uint32_t nf = 0u;
-  uint32_t ni = 0u;
-  uint32_t ns = 0u;
-  if (s_ini_collect_array(ini, kv, &f, &nf, &i64, &ni, &ss, &ns) == 0)
-  {
-    return 0;
-  }
-  if (ns == 0u)
-  {
-    return 0;
-  }
-  *out_vals = ss;
-  *out_len = ns;
-  return 1;
+  const char *s = x_ini_get(ini, section, key, NULL);
+  if (!s) return def_value;
+  char *end = NULL;
+  long v = strtol(s, &end, 0);
+  if (end == s) return def_value;
+  return (int32_t)v;
 }
 
+X_INI_API float x_ini_get_f32(const XIni *ini, const char *section, const char *key, float def_value)
+{
+  const char *s = x_ini_get(ini, section, key, NULL);
+  if (!s) return def_value;
+  char *end = NULL;
+  float v = (float)strtod(s, &end);
+  if (end == s) return def_value;
+  return v;
+}
 
-#endif /* X_IMPL_INI */
-#endif /* X_INI_H */
+X_INI_API bool x_ini_get_bool(const XIni *ini, const char *section, const char *key, bool def_value)
+{
+  const char *s = x_ini_get(ini, section, key, NULL);
+  if (!s) return def_value;
+
+  /* case-insensitive checks for common forms */
+  char c0 = (char)tolower((unsigned char)s[0]);
+  if ((c0 == 't' && s_x_stricmp(s, "true")  == 0) ||
+      (c0 == 'y' && s_x_stricmp(s, "yes")   == 0) ||
+      (c0 == 'o' && s_x_stricmp(s, "on")    == 0) ||
+      (c0 == '1' && s[1] == '\0'))
+  {
+    return true;
+  }
+  if ((c0 == 'f' && s_x_stricmp(s, "false") == 0) ||
+      (c0 == 'n' && s_x_stricmp(s, "no")    == 0) ||
+      (c0 == 'o' && s_x_stricmp(s, "off")   == 0) ||
+      (c0 == '0' && s[1] == '\0'))
+  {
+    return false;
+  }
+  return def_value;
+}
+
+X_INI_API int x_ini_section_count(const XIni *ini)
+{
+  if (!ini) return 0;
+  return ini->sections_count;
+}
+
+X_INI_API const char *x_ini_section_name(const XIni *ini, int section_index)
+{
+  if (!ini || section_index < 0 || section_index >= ini->sections_count) return NULL;
+  return ini->sections[section_index].name;
+}
+
+X_INI_API int x_ini_key_count(const XIni *ini, int section_index)
+{
+  if (!ini || section_index < 0 || section_index >= ini->sections_count) return 0;
+  return s_x_count_keys_in_section(ini, section_index);
+}
+
+X_INI_API const char *x_ini_key_name(const XIni *ini, int section_index, int key_index)
+{
+  if (!ini || section_index < 0 || section_index >= ini->sections_count) return NULL;
+
+  /* linear scan; stable order of appearance */
+  int seen = 0;
+  for (int i = 0; i < ini->entries_count; ++i)
+  {
+    const XIniEntry *e = &ini->entries[i];
+    if (e->section == section_index)
+    {
+      if (seen == key_index) return e->key;
+      ++seen;
+    }
+  }
+  return NULL;
+}
+
+X_INI_API const char *x_ini_value_at(const XIni *ini, int section_index, int key_index)
+{
+  if (!ini || section_index < 0 || section_index >= ini->sections_count) return NULL;
+
+  int seen = 0;
+  for (int i = 0; i < ini->entries_count; ++i)
+  {
+    const XIniEntry *e = &ini->entries[i];
+    if (e->section == section_index)
+    {
+      if (seen == key_index) return e->value;
+      ++seen;
+    }
+  }
+  return NULL;
+}
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
+#endif // X_IMPL_INI
+#endif // X_INI_H

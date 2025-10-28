@@ -1,77 +1,45 @@
-/**
- * STDX - TML (Tree Markup Language)
+/* 
+ * STDX - Tree Markup Language (TML)
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
  *
- * Author: marciovmf
+ * Author: marciof
  * License: MIT
  *
- * To compile the implementation define X_IMPL_TML
+ * To compile the implementation define X_IMPL_IO
  * in **one** source file before including this header.
  *
- * TML (Tree Markup Language) is a minimal indentation-based data format.
- * It combines YAML-like readability with one-pass parsing and a single
- * arena allocation for all internal data. Designed for simplicity, it
- * avoids dynamic memory churn while remaining human-readable.
- *
- * Syntax overview:
- *   - Indentation defines hierarchy (first indented line sets unit: 2 or 4 spaces).
- *   - Tabs are invalid.
- *   - Lines ending with ':' open a new section (node).
- *   - Key/value pairs use ':' or '=':
- *         key: value
- *         key = value
- *   - Lists use '-' for anonymous entries:
- *         - name: Foo
- *           hp: 10
- *         - name: Bar
- *           hp: 12
- *   - Triple quotes (""") define multi-line strings.
- *     The first and last newlines around """ are ignored.
- *   - Comma-separated lists are parsed once into typed arrays (i64/f64/str).
- *   - Lines starting with '#' are comments.
- *
- * Parser features:
- *   - One-pass, linear-time parsing.
- *   - Single arena allocation.
- *   - Typed value decoding (bool, int, float, string, array).
- *
+ *  TML is a minimal, indentation-based hierarchical data format.
+ *  It borrows the readability of YAML but is parsed in a single pass,
+ *  with one arena allocation for all internal data.
+ * 
+ *  Syntax overview:
+ *  - Indentation defines hierarchy. The first indented line sets the unit (2 or 4 spaces).
+ *  - Tabs are invalid.
+ *  - Lines ending with ':' define a new section (node).
+ *  - Key/value pairs use either ':' or '=' separators:
+ *  - Lists are defined with '-' as anonymous entries:
+ *  - Triple quotes (""") define multi-line strings.
+ *      The first newline after """ and the last before """ are ignored.
+ *  - Comma-separated lists are parsed once into typed arrays (i64/f64/str).
+ *  - Comments start with '#'.
+ * 
+ *  The TML parser performs:
+ *  - Single memory allocation (arena-style).
+ *  - Linear-time parsing with no dynamic allocations.
+ *  - Typed key/value decoding (bool, int, float, string, array).
+ * 
  * Example:
- *   level:
- *     name: "Caverns"
- *     seed: 12345
- *     enabled: true
- *     objects:
- *       - position: 1.0, 2.0, 0.0
- *         scale: 1.0, 1.0, 1.0
- *       - position: 7.0, 0.0, 0.0
- *         scale: 2.0, 2.0, 2.0
  *
- * TML API (x_tml_*):
- *   - x_tml_load() parses directly from memory.
- *   - Navigation via XTmlCursor (root, children, dot-path lookup).
- *   - Typed getters for bool, i64, f64, string, arrays.
- *   - One close() frees the arena.
- *
- * ------------------------------------------------------------------------------
- * BTML — Binary Tree Markup Language
- * ------------------------------------------------------------------------------
- *
- * BTML is the binary counterpart of TML.
- * It is a compact, little-endian, CRC32-protected format generated from parsed TML.
- *
- * Memory layout:
- *   [Header | Nodes[] | KeyValues[] | f64[] | i64[] | StringSlices[] | Text[]]
- *
- * Each section uses native structures with explicit offsets.
- * The CRC32 covers the entire header and payload.
- *
- * BTML API (x_btml_*):
- *   - x_btml_encode() : encode TML → BTML in memory.
- *   - x_btml_load() : map BTML from memory (no copies).
- *   - x_btml_encode_to_file() / x_btml_load_from_file() : thin FILE* wrappers.
- *   - x_btml_unload() : free mapped buffer.
- *   - Navigation mirrors TML (child_by_index, find_by_name, dot-path).
+ * level:
+ * name: "Caverns"
+ * seed: 12345
+ * enabled: true
+ * objects:
+ * - position: 1.0, 2.0, 0.0
+ * scale: 1.0, 1.0, 1.0
+ * - position: 7.0, 0.0, 0.0
+ * scale: 1.0, 1.0, 1.0
  */
 
 #ifndef STDX_TML_H
@@ -80,11 +48,6 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
-
-#define X_TML_VERSION_MAJOR 1
-#define X_TML_VERSION_MINOR 0
-#define X_TML_VERSION_PATCH 0
-#define X_TML_VERSION (X_TML_VERSION_MAJOR * 10000 + X_TML_VERSION_MINOR * 100 + X_TML_VERSION_PATCH)
 
 #ifndef X_TML_API
 #define X_TML_API
@@ -122,27 +85,9 @@ extern "C" {
     XTML_OPEN_DEFAULT = 0u
   };
 
-  /**
-   * x_tml_load()
-   * Parses TML (Tree Markup Language) directly from memory in a single pass
-   * using one arena allocation. The first indented line defines the UNIT
-   * (2 or 4 spaces). Tabs are invalid. Hierarchy is defined by indentation;
-   * '-' creates an anonymous list item; 'name:' opens a section;
-   * 'key: value' (or 'key = value') defines a key/value pair.
-   * Supported value types: bool, i64, f64, string (including """multi-line"""),
-   * and CSV-style arrays (parsed once into typed arrays).
-   */
   X_TML_API int  x_tml_load(const char *buf, uint32_t size, uint32_t flags, XTml **out_tml);
   X_TML_API void x_tml_unload(XTml *tml);
-
-  static inline XTmlCursor x_tml_root(XTml *tml)
-  {
-    (void)tml;
-    XTmlCursor c;
-    c.node = -1;
-    return c;
-  }
-
+  X_TML_API XTmlCursor x_tml_root(XTml *tml);
   X_TML_API int x_tml_get_section(XTml *tml, XTmlCursor parent, const char *dot_path, XTmlCursor *out);
   X_TML_API int x_tml_child_count(XTml *tml, XTmlCursor cur, uint32_t *out_count);
   X_TML_API int x_tml_child_at(XTml *tml, XTmlCursor cur, uint32_t index, XTmlCursor *out_child);
@@ -161,99 +106,13 @@ extern "C" {
   X_TML_API int x_tml_get_array_f64(XTml *tml, XTmlCursor cur, const char *key, const double **out_vals, uint32_t *out_len);
   X_TML_API int x_tml_get_array_i64(XTml *tml, XTmlCursor cur, const char *key, const int64_t **out_vals, uint32_t *out_len);
   X_TML_API int x_tml_get_array_str(XTml *tml, XTmlCursor cur, const char *key, const XTmlStrSlice **out_vals, uint32_t *out_len);
-
   X_TML_API int x_tml_has_key(XTml *tml, XTmlCursor cur, const char *key);
-  X_TML_API int x_tml_dump(XTml *tml, void *f /* FILE* ou stdout se NULL */);
-
-#define X_BTML_MAGIC 0x4C4D5442u /* 'B','T','M','L' */
-
-  typedef struct XBtmlHeader
-  {
-    uint32_t magic;
-    uint16_t version;
-    uint16_t unit;
-    uint32_t flags;
-    uint32_t be_le;
-    uint32_t node_count;
-    uint32_t kv_count;
-    uint32_t f64_count;
-    uint32_t i64_count;
-    uint32_t strslice_count;
-    uint32_t text_len;
-    uint32_t off_nodes;
-    uint32_t off_kvs;
-    uint32_t off_f64;
-    uint32_t off_i64;
-    uint32_t off_slices;
-    uint32_t off_text;
-    uint32_t crc32;
-  } XBtmlHeader;
-
-  typedef struct XBtmlNode
-  {
-    uint32_t name_off;
-    uint32_t name_len;
-    int32_t  parent;
-    int32_t  first_child;
-    int32_t  next_sibling;
-    uint32_t kv_start;
-    uint32_t kv_count;
-    uint32_t name_hash;
-  } XBtmlNode;
-
-  typedef struct XBtmlKV
-  {
-    uint32_t key_off;
-    uint32_t key_len;
-    uint8_t  kind;
-    uint8_t  arr_flags;
-    uint16_t _pad;
-    int64_t  i64;
-    double   f64;
-    int32_t  boolean;
-    uint32_t _pad2;
-    uint32_t str_off;
-    uint32_t str_len;
-    uint32_t arr_start;
-    uint32_t arr_count;
-  } XBtmlKV;
-
-  typedef struct XBtmlStrSlice
-  {
-    uint32_t off;
-    uint32_t len;
-  } XBtmlStrSlice;
-
-  typedef struct XBtml
-  {
-    void *blob;
-    uint32_t size;
-    XBtmlHeader *hdr;
-    XBtmlNode   *nodes;
-    XBtmlKV     *kvs;
-    double      *nums_f64;
-    int64_t     *nums_i64;
-    XBtmlStrSlice *slices;
-    const char  *text;
-  } XBtml;
-
-  X_TML_API int x_btml_encode(const XTml *tml, void **out_buf, uint32_t *out_size);
-  X_TML_API int x_btml_encode_to_file(const XTml *tml, const char *path);
-
-  X_TML_API int x_btml_load(const void *data, uint32_t size, XBtml *out);
-  X_TML_API int x_btml_load_from_file(const char *path, XBtml *out);
-  X_TML_API void x_btml_unload(XBtml *bin);
-
-  X_TML_API int x_btml_get_section_by_dotpath(const XBtml *bin, int parent, const char *dot, int *out_node);
-  X_TML_API int x_btml_find_child(const XBtml *bin, int parent, const char *name, uint32_t len);
-  X_TML_API int x_btml_child_count(const XBtml *bin, int parent, uint32_t *out);
-  X_TML_API int x_btml_child_at(const XBtml *bin, int parent, uint32_t idx, int *out_child);
+  X_TML_API int x_tml_dump(XTml *tml, void *f /* FILE* ou stdout if NULL */);
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-/* Implementation */
 #ifdef X_IMPL_TML
 
 #include <stdlib.h>
@@ -389,10 +248,7 @@ extern "C" {
     return len;
   }
 
-  static int s_tml_str_equal(const char *a,
-      uint32_t al,
-      const char *b,
-      uint32_t bl)
+  static int s_tml_str_equal(const char *a, uint32_t al, const char *b, uint32_t bl)
   {
     if (al != bl)
     {
@@ -713,7 +569,6 @@ extern "C" {
     return 1;
   }
 
-  /* triple-quoted helpers */
   static int s_tml_find_triple_end(const char *text,
       uint32_t size,
       uint32_t start_off,
@@ -733,6 +588,7 @@ extern "C" {
         *out_end_off = i;
         return 1;
       }
+
       i++;
     }
 
@@ -767,9 +623,7 @@ extern "C" {
     uint32_t triple_blocks;
   } s_tml_counts;
 
-  static void s_tml_prescan(const char *buf,
-      uint32_t len,
-      s_tml_counts *out)
+  static void s_tml_prescan(const char *buf, uint32_t len, s_tml_counts *out)
   {
     out->headers = 0;
     out->kvs = 0;
@@ -931,12 +785,20 @@ extern "C" {
     }
   }
 
-  /* Parser (UNIT=2 or 4 spaces, tabs are invalid) */
+  /* Parser (UNIT=2 or 4, tabs are invalid) */
   typedef struct s_stack_entry
   {
     uint32_t depth;
     int node;
   } s_stack_entry;
+
+  X_TML_API XTmlCursor x_tml_root(XTml *tml)
+  {
+    (void)tml;
+    XTmlCursor c;
+    c.node = -1;
+    return c;
+  }
 
   X_TML_API int x_tml_load(const char *buf,
       uint32_t size,
@@ -1637,10 +1499,8 @@ extern "C" {
     X_TML_FREE(arena);
   }
 
-  X_TML_API int x_tml_section_name(XTml *tml,
-      XTmlCursor cur,
-      const char **out_name,
-      uint32_t *out_len)
+  X_TML_API int x_tml_section_name(XTml *tml, XTmlCursor cur,
+      const char **out_name, uint32_t *out_len)
   {
     if (!tml || !out_name || !out_len)
     {
@@ -1660,9 +1520,7 @@ extern "C" {
     return 1;
   }
 
-  X_TML_API int x_tml_child_count(XTml *tml,
-      XTmlCursor cur,
-      uint32_t *out_count)
+  X_TML_API int x_tml_child_count(XTml *tml, XTmlCursor cur, uint32_t *out_count)
   {
     if (!tml || !out_count)
     {
@@ -1698,9 +1556,7 @@ extern "C" {
     return 1;
   }
 
-  X_TML_API int x_tml_child_at(XTml *tml,
-      XTmlCursor cur,
-      uint32_t index,
+  X_TML_API int x_tml_child_at(XTml *tml, XTmlCursor cur, uint32_t index,
       XTmlCursor *out_child)
   {
     if (!tml || !out_child)
@@ -1747,8 +1603,7 @@ extern "C" {
     return 0;
   }
 
-  X_TML_API int x_tml_find_child(XTml *tml,
-      XTmlCursor cur,
+  X_TML_API int x_tml_find_child(XTml *tml, XTmlCursor cur,
       const char *name,
       uint32_t name_len,
       XTmlCursor *out_child)
@@ -2054,6 +1909,7 @@ extern "C" {
     return 1;
   }
 
+  /* Arrays */
 
   static int s_tml_collect_array(XTml *tml,
       const XTmlKV *kv,
@@ -2511,982 +2367,6 @@ extern "C" {
     }
 
     return 0;
-  }
-
-  static int s_is_big_endian(void)
-  {
-    const uint32_t x = 0x01020304u;
-
-    return (*(const uint8_t *)&x) == 0x01;
-  }
-
-  static uint16_t s_le16(uint16_t v)
-  {
-    if (!s_is_big_endian())
-    {
-      return v;
-    }
-
-    return (uint16_t)((v >> 8) | (v << 8));
-  }
-
-  static uint32_t s_le32(uint32_t v)
-  {
-    if (!s_is_big_endian())
-    {
-      return v;
-    }
-
-    return ((v >> 24) & 0xFF) |
-      ((v >> 8)  & 0xFF00) |
-      ((v << 8)  & 0xFF0000) |
-      ((v << 24) & 0xFF000000);
-  }
-
-  static uint64_t s_le64(uint64_t v)
-  {
-    if (!s_is_big_endian())
-    {
-      return v;
-    }
-
-    return ((uint64_t)s_le32((uint32_t)v) << 32) |
-      s_le32((uint32_t)(v >> 32));
-  }
-
-  static double s_lef64(double d)
-  {
-    union
-    {
-      double d;
-      uint64_t u;
-    } x;
-
-    x.d = d;
-    x.u = s_le64(x.u);
-
-    return x.d;
-  }
-
-  static uint32_t s_crc32(const uint8_t *p, size_t n)
-  {
-    static uint32_t T[256];
-    static int init = 0;
-
-    if (!init)
-    {
-      for (uint32_t i = 0; i < 256; i++)
-      {
-        uint32_t c = i;
-
-        for (int k = 0; k < 8; k++)
-        {
-          if (c & 1)
-          {
-            c = 0xEDB88320u ^ (c >> 1);
-          }
-          else
-          {
-            c = (c >> 1);
-          }
-        }
-
-        T[i] = c;
-      }
-
-      init = 1;
-    }
-
-    uint32_t c = 0xFFFFFFFFu;
-
-    for (size_t i = 0; i < n; i++)
-    {
-      c = T[(c ^ p[i]) & 0xFF] ^ (c >> 8);
-    }
-
-    return c ^ 0xFFFFFFFFu;
-  }
-
-  static void s_w32(uint32_t v, FILE *f)
-  {
-    uint32_t w = s_le32(v);
-
-    fwrite(&w, 1, 4, f);
-  }
-
-  static void s_w16(uint16_t v, FILE *f)
-  {
-    uint16_t w = s_le16(v);
-
-    fwrite(&w, 1, 2, f);
-  }
-
-  static void s_w64(uint64_t v, FILE *f)
-  {
-    uint64_t w = s_le64(v);
-
-    fwrite(&w, 1, 8, f);
-  }
-
-  static void s_wf64(double v, FILE *f)
-  {
-    double w = s_lef64(v);
-
-    fwrite(&w, 1, 8, f);
-  }
-
-  static int s_btml_cook_to_FILE(const XTml *tml, void *vf /* FILE* */)
-  {
-    if (!tml || !vf)
-    {
-      return 0;
-    }
-
-    FILE *f = (FILE *)vf;
-
-    void *buf = NULL;
-    uint32_t size = 0;
-
-    if (!x_btml_encode(tml, &buf, &size))
-    {
-      return 0;
-    }
-
-    size_t wr = fwrite(buf, 1, size, f);
-    X_TML_FREE(buf);
-
-    return wr == size ? 1 : 0;
-  }
-
-  int s_btml_load_from_FILE(void *vf /* FILE* */,
-      XBtml *out)
-  {
-    if (!vf || !out)
-    {
-      return 0;
-    }
-
-    FILE *f = (FILE *)vf;
-
-    if (fseek(f, 0, SEEK_END) != 0)
-    {
-      return 0;
-    }
-
-    long szl = ftell(f);
-    if (szl <= 0)
-    {
-      return 0;
-    }
-
-    if (fseek(f, 0, SEEK_SET) != 0)
-    {
-      return 0;
-    }
-
-    uint32_t size = (uint32_t)szl;
-    uint8_t *buf = (uint8_t *)X_TML_ALLOC(size);
-    if (!buf)
-    {
-      return 0;
-    }
-
-    size_t rd = fread(buf, 1, size, f);
-    if (rd != size)
-    {
-      X_TML_FREE(buf);
-      return 0;
-    }
-
-    if (!x_btml_load(buf, size, out))
-    {
-      X_TML_FREE(buf);
-      return 0;
-    }
-
-    out->blob = buf;
-    out->size = size;
-
-    return 1;
-  }
-
-  X_TML_API int __x_btml_cook_to_FILE(const XTml *tml, void *vf)
-  {
-    if (!tml || !vf)
-    {
-      return 0;
-    }
-
-    FILE *f = (FILE *)vf;
-
-    XBtmlHeader H;
-    memset(&H, 0, sizeof(H));
-
-    H.magic = X_BTML_MAGIC;
-    H.version = s_le16(1);
-    H.unit = s_le16(0);
-    H.flags = s_le32(0);
-    H.be_le = s_le32(0x01020304u);
-
-    H.node_count = s_le32(tml->node_count);
-    H.kv_count = s_le32(tml->kv_count);
-    H.f64_count = s_le32(tml->nums_f64_count);
-    H.i64_count = s_le32(tml->nums_i64_count);
-    H.strslice_count = s_le32(tml->str_slice_count);
-    H.text_len = s_le32(tml->text_len);
-
-    long base = ftell(f);
-
-    fwrite(&H, 1, sizeof(H), f);
-
-    uint32_t off = (uint32_t)sizeof(H);
-
-    uint32_t off_nodes = off;
-    off += tml->node_count * (uint32_t)sizeof(XBtmlNode);
-
-    uint32_t off_kvs = off;
-    off += tml->kv_count * (uint32_t)sizeof(XBtmlKV);
-
-    uint32_t off_f64 = off;
-    off += tml->nums_f64_count * (uint32_t)sizeof(double);
-
-    uint32_t off_i64 = off;
-    off += tml->nums_i64_count * (uint32_t)sizeof(int64_t);
-
-    uint32_t off_slices = off;
-    off += tml->str_slice_count * (uint32_t)sizeof(XBtmlStrSlice);
-
-    uint32_t off_text = off;
-    off += tml->text_len;
-
-    fseek(f, base + off_nodes, SEEK_SET);
-
-    for (uint32_t i = 0; i < tml->node_count; i++)
-    {
-      const XTmlNode *n = &tml->nodes[i];
-
-      XBtmlNode on;
-
-      on.name_off = s_le32(n->name_off);
-      on.name_len = s_le32(n->name_len);
-      on.parent = (int32_t)s_le32((uint32_t)n->parent);
-      on.first_child = (int32_t)s_le32((uint32_t)n->first_child);
-      on.next_sibling = (int32_t)s_le32((uint32_t)n->next_sibling);
-      on.kv_start = s_le32(n->kv_start);
-      on.kv_count = s_le32(n->kv_count);
-      on.name_hash = s_le32(n->name_hash);
-
-      fwrite(&on, 1, sizeof(on), f);
-    }
-
-    fseek(f, base + off_kvs, SEEK_SET);
-
-    for (uint32_t i = 0; i < tml->kv_count; i++)
-    {
-      const XTmlKV *kv = &tml->kvs[i];
-
-      XBtmlKV okv;
-      memset(&okv, 0, sizeof(okv));
-
-      okv.key_off = s_le32(kv->key_off);
-      okv.key_len = s_le32(kv->key_len);
-      okv.kind = (uint8_t)kv->val.kind;
-      okv.boolean = (int32_t)s_le32((uint32_t)kv->val.boolean);
-      okv.i64 = (int64_t)s_le64((uint64_t)kv->val.i64);
-      okv.f64 = s_lef64(kv->val.f64);
-      okv.str_off = s_le32(kv->val.off);
-      okv.str_len = s_le32(kv->val.len);
-      okv.arr_start = s_le32(kv->val.arr_start);
-      okv.arr_count = s_le32(kv->val.arr_count);
-
-      uint8_t fl = 0;
-
-      if (kv->val.arr_is_f64)
-      {
-        fl |= (1u << 0);
-      }
-
-      if (kv->val.arr_is_i64)
-      {
-        fl |= (1u << 1);
-      }
-
-      if (kv->val.arr_is_str)
-      {
-        fl |= (1u << 2);
-      }
-
-      okv.arr_flags = fl;
-
-      fwrite(&okv, 1, sizeof(okv), f);
-    }
-
-    fseek(f, base + off_f64, SEEK_SET);
-
-    for (uint32_t i = 0; i < tml->nums_f64_count; i++)
-    {
-      s_wf64(tml->nums_f64[i], f);
-    }
-
-    fseek(f, base + off_i64, SEEK_SET);
-
-    for (uint32_t i = 0; i < tml->nums_i64_count; i++)
-    {
-      s_w64((uint64_t)tml->nums_i64[i], f);
-    }
-
-    fseek(f, base + off_slices, SEEK_SET);
-
-    for (uint32_t i = 0; i < tml->str_slice_count; i++)
-    {
-      XBtmlStrSlice ss;
-
-      ss.off = s_le32((uint32_t)(tml->str_slices[i].ptr - tml->text));
-      ss.len = s_le32(tml->str_slices[i].len);
-
-      fwrite(&ss, 1, sizeof(ss), f);
-    }
-
-    fseek(f, base + off_text, SEEK_SET);
-
-    fwrite(tml->text, 1, tml->text_len, f);
-
-    XBtmlHeader final = H;
-
-    final.off_nodes = s_le32(off_nodes);
-    final.off_kvs = s_le32(off_kvs);
-    final.off_f64 = s_le32(off_f64);
-    final.off_i64 = s_le32(off_i64);
-    final.off_slices = s_le32(off_slices);
-    final.off_text = s_le32(off_text);
-
-    long end = ftell(f);
-
-    fflush(f);
-
-    long size = end - base;
-
-    if (size <= 0)
-    {
-      return 0;
-    }
-
-    uint8_t *tmp = (uint8_t *)X_TML_ALLOC((size_t)size);
-
-    if (!tmp)
-    {
-      return 0;
-    }
-
-    fseek(f, base, SEEK_SET);
-
-    fread(tmp, 1, (size_t)size, f);
-
-    ((XBtmlHeader *)tmp)->crc32 = 0;
-
-    uint32_t crc = s_crc32(tmp, (size_t)size);
-
-    X_TML_FREE(tmp);
-
-    final.crc32 = s_le32(crc);
-
-    fseek(f, base, SEEK_SET);
-
-    fwrite(&final, 1, sizeof(final), f);
-
-    fseek(f, end, SEEK_SET);
-
-    return 1;
-  }
-
-  X_TML_API int x_btml_encode_to_file(const XTml *tml, const char *path)
-  {
-    FILE *f = fopen(path, "w+b");
-
-    if (!f)
-    {
-      return 0;
-    }
-
-    int ok = s_btml_cook_to_FILE(tml, f);
-
-    fclose(f);
-
-    return ok;
-  }
-
-  X_TML_API int x_btml_load(const void *data,
-      uint32_t size,
-      XBtml *out)
-  {
-    if (!data || !out || size < sizeof(XBtmlHeader))
-    {
-      return 0;
-    }
-
-    void *buf = X_TML_ALLOC(size);
-
-    if (!buf)
-    {
-      return 0;
-    }
-
-    memcpy(buf, data, size);
-
-    XBtmlHeader *H = (XBtmlHeader *)buf;
-
-    if (s_le32(H->magic) != X_BTML_MAGIC)
-    {
-      X_TML_FREE(buf);
-      return 0;
-    }
-
-    if (s_le16(H->version) != 1)
-    {
-      X_TML_FREE(buf);
-      return 0;
-    }
-
-    uint32_t off_nodes  = s_le32(H->off_nodes);
-    uint32_t off_kvs    = s_le32(H->off_kvs);
-    uint32_t off_f64    = s_le32(H->off_f64);
-    uint32_t off_i64    = s_le32(H->off_i64);
-    uint32_t off_slices = s_le32(H->off_slices);
-    uint32_t off_text   = s_le32(H->off_text);
-
-    if (off_text > size)
-    {
-      X_TML_FREE(buf);
-      return 0;
-    }
-
-    uint32_t file_crc = s_le32(H->crc32);
-
-    if (file_crc)
-    {
-      uint32_t prev = H->crc32;
-
-      H->crc32 = 0;
-
-      uint32_t calc = s_crc32((const uint8_t *)buf, size);
-
-      H->crc32 = prev;
-
-      if (calc != file_crc)
-      {
-        X_TML_FREE(buf);
-        return 0;
-      }
-    }
-
-    out->blob = buf;
-    out->size = size;
-    out->hdr  = H;
-
-    out->nodes = (XBtmlNode *)((uint8_t *)buf + off_nodes);
-    out->kvs   = (XBtmlKV  *)((uint8_t *)buf + off_kvs);
-    out->nums_f64 = (double *)((uint8_t *)buf + off_f64);
-    out->nums_i64 = (int64_t *)((uint8_t *)buf + off_i64);
-    out->slices   = (XBtmlStrSlice *)((uint8_t *)buf + off_slices);
-    out->text     = (const char *)((uint8_t *)buf + off_text);
-
-    if (s_is_big_endian())
-    {
-      uint32_t nf = s_le32(H->f64_count);
-
-      for (uint32_t i = 0; i < nf; i++)
-      {
-        union
-        {
-          double d;
-          uint64_t u;
-        } x;
-
-        x.d = out->nums_f64[i];
-        x.u = s_le64(x.u);
-        out->nums_f64[i] = x.d;
-      }
-
-      uint32_t ni = s_le32(H->i64_count);
-
-      for (uint32_t i = 0; i < ni; i++)
-      {
-        uint64_t u = (uint64_t)out->nums_i64[i];
-        out->nums_i64[i] = (int64_t)s_le64(u);
-      }
-    }
-
-    return 1;
-  }
-
-  X_TML_API int x_btml_load_from_file(const char *path, XBtml *out)
-  {
-    FILE *f = fopen(path, "rb");
-
-    if (!f)
-    {
-      return 0;
-    }
-
-    fseek(f, 0, SEEK_END);
-
-    long sz = ftell(f);
-
-    fseek(f, 0, SEEK_SET);
-
-    if (sz <= 0 || sz > 0x7FFFFFFF)
-    {
-      fclose(f);
-      return 0;
-    }
-
-    void *buf = X_TML_ALLOC((size_t)sz);
-
-    if (!buf)
-    {
-      fclose(f);
-      return 0;
-    }
-
-    fread(buf, 1, (size_t)sz, f);
-
-    fclose(f);
-
-    int ok = x_btml_load(buf, (uint32_t)sz, out);
-
-    if (!ok)
-    {
-      X_TML_FREE(buf);
-    }
-
-    return ok;
-  }
-
-  X_TML_API void x_btml_unload(XBtml *bin)
-  {
-    if (!bin || !bin->blob)
-    {
-      return;
-    }
-
-    X_TML_FREE(bin->blob);
-
-    memset(bin, 0, sizeof(*bin));
-  }
-
-
-  static uint32_t s_hash32(const char *s, uint32_t len)
-  {
-    uint32_t h = 2166136261u;
-
-    for (uint32_t i = 0; i < len; i++)
-    {
-      h ^= (uint8_t)s[i];
-      h *= 16777619u;
-    }
-
-    if (!h)
-    {
-      return 1u;
-    }
-
-    return h;
-  }
-
-  X_TML_API int x_btml_find_child(const XBtml *bin,
-      int parent,
-      const char *name,
-      uint32_t len)
-  {
-    if (!bin || !name || len == 0)
-    {
-      return -1;
-    }
-
-    uint32_t h = s_hash32(name, len);
-
-    if (parent < 0)
-    {
-      for (uint32_t i = 0; i < s_le32(bin->hdr->node_count); i++)
-      {
-        const XBtmlNode *n = &bin->nodes[i];
-
-        if ((int32_t)s_le32(n->parent) != -1)
-        {
-          continue;
-        }
-
-        if (s_le32(n->name_len) == len && s_le32(n->name_hash) == h)
-        {
-          const char *np = bin->text + s_le32(n->name_off);
-
-          if (memcmp(np, name, len) == 0)
-          {
-            return (int)i;
-          }
-        }
-      }
-
-      return -1;
-    }
-
-    int32_t it = (int32_t)s_le32(bin->nodes[parent].first_child);
-
-    while (it >= 0)
-    {
-      const XBtmlNode *n = &bin->nodes[it];
-
-      if (s_le32(n->name_len) == len && s_le32(n->name_hash) == h)
-      {
-        const char *np = bin->text + s_le32(n->name_off);
-
-        if (memcmp(np, name, len) == 0)
-        {
-          return it;
-        }
-      }
-
-      it = (int32_t)s_le32(n->next_sibling);
-    }
-
-    return -1;
-  }
-
-  X_TML_API int x_btml_child_count(const XBtml *bin,
-      int parent,
-      uint32_t *out)
-  {
-    if (!bin || !out)
-    {
-      return 0;
-    }
-
-    if (parent < 0)
-    {
-      uint32_t c = 0;
-
-      for (uint32_t i = 0; i < s_le32(bin->hdr->node_count); i++)
-      {
-        if ((int32_t)s_le32(bin->nodes[i].parent) == -1)
-        {
-          c++;
-        }
-      }
-
-      *out = c;
-
-      return 1;
-    }
-
-    uint32_t c = 0;
-
-    int32_t it = (int32_t)s_le32(bin->nodes[parent].first_child);
-
-    while (it >= 0)
-    {
-      c++;
-      it = (int32_t)s_le32(bin->nodes[it].next_sibling);
-    }
-
-    *out = c;
-
-    return 1;
-  }
-
-  X_TML_API int x_btml_child_at(const XBtml *bin,
-      int parent,
-      uint32_t idx,
-      int *out_child)
-  {
-    if (!bin || !out_child)
-    {
-      return 0;
-    }
-
-    if (parent < 0)
-    {
-      uint32_t k = 0;
-
-      for (uint32_t i = 0; i < s_le32(bin->hdr->node_count); i++)
-      {
-        if ((int32_t)s_le32(bin->nodes[i].parent) == -1)
-        {
-          if (k == idx)
-          {
-            *out_child = (int)i;
-            return 1;
-          }
-
-          k++;
-        }
-      }
-
-      return 0;
-    }
-
-    uint32_t k = 0;
-
-    int32_t it = (int32_t)s_le32(bin->nodes[parent].first_child);
-
-    while (it >= 0)
-    {
-      if (k == idx)
-      {
-        *out_child = it;
-        return 1;
-      }
-
-      k++;
-
-      it = (int32_t)s_le32(bin->nodes[it].next_sibling);
-    }
-
-    return 0;
-  }
-
-  X_TML_API int x_btml_get_section_by_dotpath(const XBtml *bin,
-      int parent,
-      const char *dot,
-      int *out_node)
-  {
-    if (!bin || !dot || !out_node)
-    {
-      return 0;
-    }
-
-    int cur = parent;
-
-    const char *p = dot;
-    const char *seg = dot;
-
-    uint32_t len = 0;
-
-    for (;;)
-    {
-      char c = *p;
-
-      if (c == '.' || c == '\0')
-      {
-        len = (uint32_t)(p - seg);
-
-        if (len == 0)
-        {
-          return 0;
-        }
-
-        int numeric = 1;
-
-        for (uint32_t i = 0; i < len; i++)
-        {
-          if (seg[i] < '0' || seg[i] > '9')
-          {
-            numeric = 0;
-            break;
-          }
-        }
-
-        if (numeric)
-        {
-          uint32_t idx = 0;
-
-          for (uint32_t i = 0; i < len; i++)
-          {
-            idx = idx * 10 + (uint32_t)(seg[i] - '0');
-          }
-
-          int child = -1;
-
-          if (!x_btml_child_at(bin, cur, idx, &child))
-          {
-            return 0;
-          }
-
-          cur = child;
-        }
-        else
-        {
-          int child = x_btml_find_child(bin, cur, seg, len);
-
-          if (child < 0)
-          {
-            return 0;
-          }
-
-          cur = child;
-        }
-
-        if (c == '\0')
-        {
-          break;
-        }
-
-        seg = p + 1;
-      }
-
-      p++;
-    }
-
-    *out_node = cur;
-
-    return 1;
-  }
-
-
-  /* BTML */
-
-  X_TML_API int x_btml_encode(const XTml *tml,
-      void **out_buf,
-      uint32_t *out_size)
-  {
-    if (!tml || !out_buf || !out_size)
-    {
-      return 0;
-    }
-
-    const uint32_t node_bytes  = tml->node_count      * (uint32_t)sizeof(XBtmlNode);
-    const uint32_t kv_bytes    = tml->kv_count        * (uint32_t)sizeof(XBtmlKV);
-    const uint32_t f64_bytes   = tml->nums_f64_count  * (uint32_t)sizeof(double);
-    const uint32_t i64_bytes   = tml->nums_i64_count  * (uint32_t)sizeof(int64_t);
-    const uint32_t slice_bytes = tml->str_slice_count * (uint32_t)sizeof(XBtmlStrSlice);
-    const uint32_t text_bytes  = tml->text_len;
-
-    uint32_t off = (uint32_t)sizeof(XBtmlHeader);
-
-    const uint32_t off_nodes  = off; off += node_bytes;
-    const uint32_t off_kvs    = off; off += kv_bytes;
-    const uint32_t off_f64    = off; off += f64_bytes;
-    const uint32_t off_i64    = off; off += i64_bytes;
-    const uint32_t off_slices = off; off += slice_bytes;
-    const uint32_t off_text   = off; off += text_bytes;
-
-    const uint32_t total_size = off;
-
-    uint8_t *buf = (uint8_t *)X_TML_ALLOC(total_size);
-    if (!buf)
-    {
-      return 0;
-    }
-
-    XBtmlHeader *H = (XBtmlHeader *)buf;
-    memset(H, 0, sizeof(*H));
-
-    H->magic  = X_BTML_MAGIC;
-    H->version = s_le16(1);
-    H->unit    = s_le16(0);
-    H->flags   = s_le32(0);
-    H->be_le   = s_le32(0x01020304u);
-
-    H->node_count     = s_le32(tml->node_count);
-    H->kv_count       = s_le32(tml->kv_count);
-    H->f64_count      = s_le32(tml->nums_f64_count);
-    H->i64_count      = s_le32(tml->nums_i64_count);
-    H->strslice_count = s_le32(tml->str_slice_count);
-    H->text_len       = s_le32(tml->text_len);
-
-    H->off_nodes  = s_le32(off_nodes);
-    H->off_kvs    = s_le32(off_kvs);
-    H->off_f64    = s_le32(off_f64);
-    H->off_i64    = s_le32(off_i64);
-    H->off_slices = s_le32(off_slices);
-    H->off_text   = s_le32(off_text);
-    H->crc32      = s_le32(0u);
-
-    if (node_bytes)
-    {
-      uint8_t *dst = buf + off_nodes;
-      for (uint32_t i = 0; i < tml->node_count; i++)
-      {
-        const XTmlNode *n = &tml->nodes[i];
-        XBtmlNode on;
-        on.name_off     = s_le32(n->name_off);
-        on.name_len     = s_le32(n->name_len);
-        on.parent       = (int32_t)s_le32((uint32_t)n->parent);
-        on.first_child  = (int32_t)s_le32((uint32_t)n->first_child);
-        on.next_sibling = (int32_t)s_le32((uint32_t)n->next_sibling);
-        on.kv_start     = s_le32(n->kv_start);
-        on.kv_count     = s_le32(n->kv_count);
-        on.name_hash    = s_le32(n->name_hash);
-        memcpy(dst + i * sizeof(XBtmlNode), &on, sizeof(XBtmlNode));
-      }
-    }
-
-    if (kv_bytes)
-    {
-      uint8_t *dst = buf + off_kvs;
-      for (uint32_t i = 0; i < tml->kv_count; i++)
-      {
-        const XTmlKV *kv = &tml->kvs[i];
-        XBtmlKV okv;
-        memset(&okv, 0, sizeof(okv));
-
-        okv.key_off   = s_le32(kv->key_off);
-        okv.key_len   = s_le32(kv->key_len);
-        okv.kind      = (uint8_t)kv->val.kind;
-
-        uint8_t fl = 0;
-        if (kv->val.arr_is_f64) { fl |= (1u << 0); }
-        if (kv->val.arr_is_i64) { fl |= (1u << 1); }
-        if (kv->val.arr_is_str) { fl |= (1u << 2); }
-        okv.arr_flags = fl;
-
-        okv.i64       = (int64_t)s_le64((uint64_t)kv->val.i64);
-        okv.f64       = s_lef64(kv->val.f64);
-        okv.boolean   = (int32_t)s_le32((uint32_t)kv->val.boolean);
-        okv.str_off   = s_le32(kv->val.off);
-        okv.str_len   = s_le32(kv->val.len);
-        okv.arr_start = s_le32(kv->val.arr_start);
-        okv.arr_count = s_le32(kv->val.arr_count);
-
-        memcpy(dst + i * sizeof(XBtmlKV), &okv, sizeof(XBtmlKV));
-      }
-    }
-
-    if (f64_bytes)
-    {
-      uint8_t *dst = buf + off_f64;
-      for (uint32_t i = 0; i < tml->nums_f64_count; i++)
-      {
-        const double le = s_lef64(tml->nums_f64[i]);
-        memcpy(dst + i * sizeof(double), &le, sizeof(double));
-      }
-    }
-
-    if (i64_bytes)
-    {
-      uint8_t *dst = buf + off_i64;
-      for (uint32_t i = 0; i < tml->nums_i64_count; i++)
-      {
-        const uint64_t le = s_le64((uint64_t)tml->nums_i64[i]);
-        memcpy(dst + i * sizeof(uint64_t), &le, sizeof(uint64_t));
-      }
-    }
-
-    if (slice_bytes)
-    {
-      uint8_t *dst = buf + off_slices;
-      for (uint32_t i = 0; i < tml->str_slice_count; i++)
-      {
-        XBtmlStrSlice ss;
-        ss.off = s_le32((uint32_t)(tml->str_slices[i].ptr - tml->text));
-        ss.len = s_le32(tml->str_slices[i].len);
-        memcpy(dst + i * sizeof(XBtmlStrSlice), &ss, sizeof(XBtmlStrSlice));
-      }
-    }
-
-    if (text_bytes)
-    {
-      memcpy(buf + off_text, tml->text, text_bytes);
-    }
-
-    {
-      uint32_t crc = s_crc32(buf, total_size);
-      H->crc32 = s_le32(crc);
-    }
-
-    *out_buf = buf;
-    *out_size = total_size;
-
-    return 1;
   }
 
 #ifdef __cplusplus

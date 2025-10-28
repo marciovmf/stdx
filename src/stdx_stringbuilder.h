@@ -2,20 +2,20 @@
  * STDX - Dynamic String Builder for C
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * Provides a simple interface for constructing strings efficiently:
+ * To compile the implementation define X_IMPL_STRINGBUILDER
+ * in **one** source file before including this header.
+ *
+ * To customize how this module allocates memory, define
+ * X_STRINGBUILDER_ALLOC / X_STRINGBUILDER_REALLOC / X_STRINGBUILDER_FREE before including.
+ *
+ * Notes:
+ * This header provides a simple interface for constructing strings efficiently:
  *   - Dynamic growth as data is appended
  *   - Append strings, characters, substrings, and formatted text
  *   - Convert to null-terminated C string
  *   - Clear or destroy the builder when done
- *
- * To compile the implementation, define:
- *     #define X_IMPL_STRINGBUILDER
- * in **one** source file before including this header.
- *
- * Author: marciovmf
- * License: MIT
- * Usage: #include "strbuilder.h"
  */
 
 #ifndef X_STRINGBUILDER_H
@@ -33,8 +33,7 @@
 #include <wchar.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   typedef struct XStrBuilder XStrBuilder;
@@ -79,8 +78,7 @@ extern "C"
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   struct XStrBuilder

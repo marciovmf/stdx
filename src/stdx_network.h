@@ -2,18 +2,17 @@
  * STDX - Cross-Platform Networking API
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
- *
- * Provides a high-level, cross-platform socket networking API.
- *
- * Usage:
- * To compile the implementation, define:
- *     #define X_IMPL_NETWORK
+ * License: MIT
+ * 
+ * To compile the implementation define X_IMPL_NET
  * in **one** source file before including this header.
  *
- * On windows, this library links with iphlpapi.lib and ws2_32.lib
+ * To customize how this module allocates memory, define
+ * X_NET_ALLOC / X_NET_FREE before including.
  *
- * Author: marciovmf
- * License: MIT
+ * Note:
+ *  - Provides a high-level, cross-platform socket networking API.
+ *  - On windows, this library links with iphlpapi.lib and ws2_32.lib
  */
 
 #ifndef X_NETWORK_H
@@ -39,8 +38,7 @@
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   typedef struct XAddress XAddress;
@@ -75,7 +73,7 @@ extern "C"
     uint32_t ifindex;
   } XNetAdapterInfo;
 
-  /* Core */
+  // Core
   bool    x_net_init(void);                                                               // Initialize the networking subsystem.
   void    x_net_shutdown(void);                                                           // Clean up the networking subsystem.
   bool    x_net_socket_is_valid(XSocket sock);                                            // Check if a socket is valid.
@@ -172,8 +170,7 @@ extern "C"
 #define X_NET_POLLOUT 0x02
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   static bool x_net_initialized = false;

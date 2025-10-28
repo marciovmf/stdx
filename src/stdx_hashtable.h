@@ -2,23 +2,22 @@
  * STDX - Generic Hashtable
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * Provides a generic, type-agnostic hashtable implementation with 
- * customizable hash and equality functions. Supports arbitrary key 
- * and value types, optional custom allocators, and built-in iteration.
- * 
- * Includes helpers for common cases like string keys.
- *
- * Header-only and modular. Designed for performance and flexibility.
- *
- * To compile the implementation, define:
- *     #define X_IMPL_HASHTABLE
+ * To compile the implementation define X_IMPL_HASHTABLE
  * in **one** source file before including this header.
  *
- * Author: marciovmf
- * License: MIT
- * Dependencies: stdx_arena.h stdx_allocator.h
- * Usage: #include "stdx_hashtable.h"
+ * To customize how this module allocates memory, define
+ * X_HASHTABLE_ALLOC / X_HASHTABLE_REALLOC / X_HASHTABLE_FREE before including.
+ *
+ * Notes:
+ *  - Provides a generic, type-agnostic hashtable implementation with 
+ *  customizable hash and equality functions. Supports arbitrary key 
+ *  and value types, optional custom allocators, and built-in iteration.
+ *  - Includes helpers for common cases like string keys.
+ *
+ * Dependencies:
+ *  stdx_arena.h
  */
 
 #ifndef X_HASHTABLE_H
@@ -38,8 +37,7 @@
 #include <stdbool.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   typedef size_t  (*XHashFnHash)(const void* key, size_t);
@@ -139,9 +137,9 @@ extern "C"
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
+
   // Helpers for pointer arithmetic on keys/values arrays
   static inline void* key_at(XHashtable* t, size_t i)
   {

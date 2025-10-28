@@ -2,8 +2,16 @@
  * STDX - Filesystem Utilities
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * Provides a cross-platform filesystem abstraction including:
+ * To compile the implementation define X_IMPL_FILESYSTEM
+ * in **one** source file before including this header.
+ *
+ * To customize how this module allocates memory, define
+ * X_FILESYSTEM_ALLOC / X_FILESYSTEM_REALLOC / X_FILESYSTEM_FREE before including.
+ *
+ * Notes:
+ *  Provides a cross-platform filesystem abstraction including:
  *   - Directory and file operations (create, delete, copy, rename, enumerate)
  *   - Filesystem monitoring via watch APIs
  *   - Rich path manipulation utilities (normalize, join, basename, dirname, extension, relative paths)
@@ -14,14 +22,8 @@
  *
  * Designed to unify and simplify filesystem operations across platforms.
  *
- * To compile the implementation, define:
- *     #define X_IMPL_FILESYSTEM
- * in **one** source file before including this header.
- *
- * Author: marciovmf
- * License: MIT
- * Dependencies: stdx_string.h
- * Usage: #include "stdx_filesystem.h"
+ * Dependencies:
+ *  stdx_string.h
  */
 
 #ifndef X_FILESYSTEM_H
@@ -45,7 +47,7 @@
 
 #ifndef X_FS_PAHT_MAX_LENGTH
 # define X_FS_PAHT_MAX_LENGTH 512
-#endif  // X_FS_PAHT_MAX_LENGTH
+#endif
 
 #ifdef _WIN32
 #define PATH_SEPARATOR '\\'
@@ -208,10 +210,8 @@ extern "C" {
 #define X_FILESYSTEM_FREE(p)          free(p)
 #endif
 
-
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   struct XFSDireHandle_t
@@ -367,9 +367,11 @@ extern "C"
 
   size_t x_fs_cwd_set_from_executable_path(void)
   {
-    XFSPath program_path;
+    XFSPath program_path, cwd;
     size_t bytesCopied = x_fs_path_from_executable(&program_path);
-    x_fs_cwd_set(program_path.buf);
+    XStrview dirname = x_fs_path_dirname((const char*) &program_path);
+    x_fs_path_from_strview(dirname, &cwd);
+    x_fs_cwd_set((const char*) &cwd);
     return bytesCopied;
   }
 

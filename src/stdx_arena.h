@@ -2,22 +2,20 @@
  * STDX - Arena Allocator
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * Provides a high-performance memory arena allocator for fast,
- * linear allocation and bulk deallocation via reset. Suitable for 
- * transient or frame-based memory usage patterns.
- *
- * Integrates with the generic Allocator interface from <stdx/allocator.h>,
- * allowing seamless use in allocator-aware systems.
- *
- * To compile the implementation, define:
- *     #define X_IMPL_ARENA
+ * To compile the implementation define X_IMPL_ARENA
  * in **one** source file before including this header.
  *
- * Author: marciovmf
- * License: MIT
- * Dependencies: stdx_allocator.h
- * Usage: #include "stdx_arena.h"
+ * To customize how this module allocates memory, define
+ * X_ARENA_ALLOC / X_ARENA_FREE before including.
+ *
+ * Notes:
+ *  Provides a high-performance memory arena allocator for fast,
+ *  linear allocation and bulk deallocation via reset. Suitable for 
+ *  transient or frame-based memory usage patterns.
+ *
+ * allowing seamless use in allocator-aware systems.
  */
 
 #ifndef X_ARENA_H
@@ -31,8 +29,7 @@
 #define X_ARENA_VERSION (X_ARENA_VERSION_MAJOR * 10000 + X_ARENA_VERSION_MINOR * 100 + X_ARENA_VERSION_PATCH)
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   typedef struct XArenaChunk_t XArenaChunk;
@@ -56,6 +53,10 @@ extern "C"
 #ifndef X_ARENA_ALLOC
 #define X_ARENA_ALLOC(sz)        malloc(sz)
 #define X_ARENA_FREE(p)          free(p)
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 struct XArenaChunk_t
@@ -143,5 +144,10 @@ void x_arena_destroy(XArena* arena)
   }
   X_ARENA_FREE(arena);
 }
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif // X_IMPL_ARENA
 #endif // X_ARENA_H

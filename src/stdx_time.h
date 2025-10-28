@@ -2,21 +2,17 @@
  * STDX - Time Utilities
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * Provides a portable threading abstraction for C programs. Includes:
- *   - Time based comparisson, measurement and Arithmetic operations
- *
- * Designed to abstract platform-specific APIs (e.g., pthreads, Win32)
- * behind a consistent and lightweight int32_t interface.
- *
- * To compile the implementation, define:
- *     #define X_IMPL_TIME
+ * To compile the implementation define X_IMPL_TIME
  * in **one** source file before including this header.
  *
- * Author: marciovmf
- * License: MIT
- * Usage: #include "stdx_time.h"
+ * Notes:
+ *  Provides a portable threading abstraction for C programs.
+ *  Includes Time based comparisson, measurement and arithmetic
+ *  ooperations
  */
+
 #ifndef X_TIME_H
 #define X_TIME_H
 

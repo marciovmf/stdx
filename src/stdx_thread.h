@@ -2,24 +2,22 @@
  * STDX - Multithreading Utilities
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * Provides a portable threading abstraction for C programs. Includes:
+ * To compile the implementation define X_IMPL_THREAD
+ * in **one** source file before including this header.
+ *
+ * To customize how this module allocates memory, define
+ * X_THREAD_ALLOC / X_THREAD_FREE before including.
+ *
+ * Notes:
+ *  Designed to abstract platform-specific APIs (e.g., pthreads, Win32)
+ *  behind a consistent and lightweight int32_terface.
+ *  This header provides functions for:
  *   - Thread creation and joining
  *   - Mutexes and condition variables
  *   - Sleep/yield utilities
  *   - A thread pool for concurrent task execution
- *
- * Designed to abstract platform-specific APIs (e.g., pthreads, Win32)
- * behind a consistent and lightweight int32_terface.
- *
- * To compile the implementation, define:
- *     #define X_IMPL_THREAD
- * in **one** source file before including this header.
- *
- * Author: marciovmf
- * License: MIT
- * Dependencies: stdx_alloc.h (optional for thread pool)
- * Usage: #include "stdx_thread.h"
  */
 
 #ifndef X_THREAD_H

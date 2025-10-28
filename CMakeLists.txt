@@ -94,21 +94,15 @@ set(STDX_INCLUDE_DIR                "${CMAKE_CURRENT_LIST_DIR}/src/")
 #----------------------------------------------------------------------------
 
 # Webserver
-add_executable(webserver demo/webserver.c)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_CURRENT_LIST_DIR}/demo/webserver")
+add_executable(webserver demo/webserver/webserver.c)
 target_include_directories(webserver PUBLIC ${STDX_INCLUDE_DIR})
-
-# Doxter
-add_executable(doxter demo/doxter.c)
-target_include_directories(doxter PUBLIC ${STDX_INCLUDE_DIR})
-
-# Platform
-#add_executable(platform demo/platform.c)
-#target_include_directories(platform public ${stdx_include_dir})
 
 #-----------------------------------------------------------------------------
 # Tests
 #------------------------------------------------------------------------------
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${OUTPUT_DIR}")
 create_test(TARGET test_arena SOURCES tests/test_arena.c)
 create_test(TARGET test_array SOURCES tests/test_array.c)
 create_test(TARGET test_hashtable SOURCES tests/test_hashtable.c)
@@ -120,6 +114,5 @@ create_test(TARGET test_threadpool SOURCES tests/test_threadpool.c)
 create_test(TARGET test_network SOURCES tests/test_network.c)
 create_test(TARGET test_io SOURCES tests/test_io.c)
 create_test(TARGET test_time SOURCES tests/test_time.c)
-create_test(TARGET test_math SOURCES tests/test_math.c)
-create_test(TARGET test_tml SOURCES tests/test_tml.c)
+create_test(TARGET test_ini SOURCES tests/test_ini.c)
 build_and_run_tests()

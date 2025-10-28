@@ -1,23 +1,23 @@
 /*
- * STDX - Dynamic Array
+ * STDX - Array
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * Provides a generic, dynamic array implementation with support for
- * random access, insertion, deletion, and stack-like operations 
- * (push/pop). Useful for managing homogeneous collections in C with
- * automatic resizing.
- *
- * Header-only and modular. Designed for performance and flexibility.
- *
- * To compile the implementation, define:
- *     #define X_IMPL_ARRAY
+ * To compile the implementation define X_IMPL_ARRAY
  * in **one** source file before including this header.
  *
- * Author: marciovmf
- * License: MIT
- * Dependencies: stdx_common.h
- * Usage: #include "stdx_array.h"
+ * To customize how this module allocates memory, define
+ * X_ARRAY_ALLOC / X_ARRAY_REALLOC / X_ARRAY_FREE before including.
+ *
+ * Notes:
+ *  Provides a generic, dynamic array implementation with support for
+ *  random access, insertion, deletion, and stack-like operations 
+ *  (push/pop). Useful for managing homogeneous collections in C with
+ *  automatic resizing.
+ *
+ * Dependencies:
+ *  stdx_common.h
  */
 
 #ifndef X_ARRAY_H

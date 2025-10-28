@@ -2,6 +2,10 @@
  * STDX - Minimal Unit Test framework
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
+ *
+ * To compile the implementation define X_IMPL_TEST
+ * in **one** source file before including this header.
  *
  * Features:
  *   - Lightweight, self-contained C test runner
@@ -20,6 +24,7 @@
  *     ASSERT_TRUE(2 + 2 == 4);
  *     return 0;
  *   }
+ *
  *   int32_t main() {
  *     STDXTestCase tests[] = {
  *       X_TEST(test_example)
@@ -27,27 +32,21 @@
  *     return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
  *   }
  *
- * To compile the implementation, define:
- *     #define X_IMPL_TEST
- * in **one** source file before including this header.
- *
- * Author: marciovmf
- * License: MIT
- * Dependencies: stdx_log.h
- * Usage: #include "stdx_test.h"
+ * Dependencies:
+ *  stdx_log.h
  */
 #ifndef X_TEST_H
 #define X_TEST_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #define X_TEST_VERSION_MAJOR 1
 #define X_TEST_VERSION_MINOR 0
 #define X_TEST_VERSION_PATCH 0
 
 #define X_TEST_VERSION (X_TEST_VERSION_MAJOR * 10000 + X_TEST_VERSION_MINOR * 100 + X_TEST_VERSION_PATCH)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #ifdef X_IMPL_TEST
   #ifndef X_IMPL_LOG
@@ -139,6 +138,10 @@ typedef struct
 #  include <time.h>
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static void x_test_internalOnSignal(int signal)
 {
   const char* signalName = "Unknown signal";
@@ -201,8 +204,12 @@ int stdx_run_tests(STDXTestCase* tests, int32_t num_tests)
 
   return passed != num_tests;
 }
-#endif  // X_IMPL_TEST
 
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // X_IMPL_TEST
 
 #ifdef X_INTERNAL_TIME_IMPL
   #undef X_IMPL_TIME

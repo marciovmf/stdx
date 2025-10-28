@@ -2,16 +2,11 @@
  * STDX - Common
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
  * Provides portable macros and types for different taks such as os detection,
  * architecture detection, compiler detection, bit manipulation, dll
  * export/import macros, assertions and more.
- *
- * Header-only and modular. Designed for performance and flexibility.
- *
- * Author: marciovmf
- * License: MIT
- * Usage: #include <stdx_common.h>
  */
 
 #ifndef X_COMMON_H
