@@ -8,15 +8,12 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/* ----------------------- helpers ---------------------- */
 static int s_eq(const char *a, const char *b)
 {
   if (!a && !b) return 1;
   if (!a || !b) return 0;
   return strcmp(a, b) == 0;
 }
-
-/* ------------------------ tests ----------------------- */
 
 
 int test_ini_parse_basic()
@@ -31,12 +28,12 @@ int test_ini_parse_basic()
   XIniError iniError;
   ASSERT_TRUE(x_ini_load_mem(txt, strlen(txt), &ini, &iniError));
 
-  /* typed getters */
+  // typed getters
   ASSERT_TRUE(x_ini_get_i32(&ini, "server", "port", 80) == 8080);
   ASSERT_TRUE(s_eq(x_ini_get(&ini, "server", "docroot", NULL), "files"));
   ASSERT_TRUE(x_ini_get_bool(&ini, "server", "list_dirs", false) == true);
 
-  /* defaults */
+  // defaults
   ASSERT_TRUE(x_ini_get(&ini, "server", "missing", "DEF") && s_eq(x_ini_get(&ini, "server", "missing", "DEF"), "DEF"));
   ASSERT_TRUE(x_ini_get_bool(&ini, "server", "missing_bool", true) == true);
 
@@ -130,7 +127,7 @@ int test_ini_bool_variants()
   ASSERT_TRUE(x_ini_get_bool(&ini, "b", "f3", true) == false);
   ASSERT_TRUE(x_ini_get_bool(&ini, "b", "f4", true) == false);
 
-  /* unknown -> default */
+  // unknown -> default
   ASSERT_TRUE(x_ini_get_bool(&ini, "b", "unknown", true) == true);
 
   x_ini_free(&ini);
@@ -151,13 +148,13 @@ int test_ini_iteration_helpers()
   XIniError iniError;
   ASSERT_TRUE(x_ini_load_mem(txt, strlen(txt), &ini, &iniError));
 
-  /* sections: "" (global), "s1", "s2" */
+  // sections: "" (global), "s1", "s2"
   ASSERT_TRUE(x_ini_section_count(&ini) == 3);
   ASSERT_TRUE(s_eq(x_ini_section_name(&ini, 0), ""));
   ASSERT_TRUE(s_eq(x_ini_section_name(&ini, 1), "s1"));
   ASSERT_TRUE(s_eq(x_ini_section_name(&ini, 2), "s2"));
 
-  /* key counts per section (linear scan inside helpers) */
+  // key counts per section (linear scan inside helpers)
   ASSERT_TRUE(x_ini_key_count(&ini, 0) == 1);
   ASSERT_TRUE(x_ini_key_count(&ini, 1) == 2);
   ASSERT_TRUE(x_ini_key_count(&ini, 2) == 1);
@@ -238,14 +235,12 @@ int test_ini_numeric_parsing()
   ASSERT_TRUE(x_ini_load_mem(txt, strlen(txt), &ini, &iniError));
   ASSERT_TRUE(x_ini_get_i32(&ini, "n", "i", 0) == -123);
   ASSERT_TRUE(x_ini_get_f32(&ini, "n", "f", 0.0f) > 3.49f && x_ini_get_f32(&ini, "n", "f", 0.0f) < 3.51f);
-  /* strtol with base 0 handles 0x prefix */
+  // strtol with base 0 handles 0x prefix
   ASSERT_TRUE(x_ini_get_i32(&ini, "n", "hex", 0) == 16);
 
   x_ini_free(&ini);
   return 0;
 }
-
-/* ----------------------- runner ----------------------- */
 
 int main(void)
 {

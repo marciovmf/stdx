@@ -95,8 +95,23 @@ set(STDX_INCLUDE_DIR                "${CMAKE_CURRENT_LIST_DIR}/src/")
 
 # Webserver
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_CURRENT_LIST_DIR}/demo/webserver")
-add_executable(webserver demo/webserver/webserver.c)
+add_executable(webserver demo/webserver/src/webserver.c)
 target_include_directories(webserver PUBLIC ${STDX_INCLUDE_DIR})
+
+# Doxter
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_CURRENT_LIST_DIR}/demo/doxter")
+add_executable(doxter demo/doxter/src/doxter.c)
+target_include_directories(doxter PUBLIC ${STDX_INCLUDE_DIR})
+
+# Site Generator
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/demo/sitegenerator/bin")
+add_executable(ssg demo/sitegenerator/src/ssg.c demo/sitegenerator/src/tcl.c)
+target_include_directories(ssg PUBLIC ${STDX_INCLUDE_DIR})
+
+# TCL
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/demo/tcl/bin")
+add_executable(tcl demo/tcl/src/tcl.c)
+target_include_directories(tcl PUBLIC ${STDX_INCLUDE_DIR})
 
 #-----------------------------------------------------------------------------
 # Tests

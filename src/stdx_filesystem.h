@@ -203,7 +203,7 @@ extern "C" {
 #endif
 
 #include <time.h>
-
+#include <stdlib.h>
 #ifndef X_FILESYSTEM_ALLOC
 #define X_FILESYSTEM_ALLOC(sz)        malloc(sz)
 #define X_FILESYSTEM_CALLOC(n,sz)     calloc((n),(sz))
