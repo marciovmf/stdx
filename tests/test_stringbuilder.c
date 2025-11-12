@@ -1,7 +1,7 @@
 #define X_IMPL_TEST
 #include <stdx_test.h>
-#define X_IMPL_STRINGBUILDER
-#include <stdx_stringbuilder.h>
+#define X_IMPL_STRBUILDER
+#include <stdx_strbuilder.h>
 
 int test_strbuilder_append_and_to_string()
 {
