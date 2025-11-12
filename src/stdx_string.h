@@ -11,7 +11,7 @@
  *  This header provides:
  *   - C string helpers: case-insensitive prefix/suffix matching
  *   - XSmallstr: fixed-capacity, stack-allocated strings
- *   - XStrview: immutable, non-owning views into C strings
+ *   - XSlice: immutable, non-owning views into C strings
  *   - Tokenization and trimming
  *   - UTF-8-aware string length calculation
  *   - Fast substring and search operations
@@ -48,7 +48,7 @@ extern "C" {
   {
     const char* data;
     size_t length;
-  } XStrview;
+  } XSlice;
 
   typedef struct
   {
@@ -310,14 +310,14 @@ extern "C" {
    * @param out Parameter.
    * @return Number of units written or measured (excluding the final terminator, if any).
    */
-  X_STRING_API size_t    x_smallstr_from_strview(XStrview sv, XSmallstr* out);
+  X_STRING_API size_t    x_smallstr_from_slice(XSlice sv, XSmallstr* out);
 
   /**
    * @brief Creates a non-owning view over a small string's contents.
    * @param s Destination small string.
    * @return Resulting view after the operation.
    */
-  X_STRING_API XStrview  x_smallstr_to_strview(const XSmallstr* s);
+  X_STRING_API XSlice  x_smallstr_to_slice(const XSmallstr* s);
 
   /**
    * @brief Returns the current byte length of the small string.
@@ -542,13 +542,13 @@ extern "C" {
   X_STRING_API int32_t   x_wsmallstr_find(const XWSmallstr* s, wchar_t c);
 
   // -------------------------------------------------------------------------------------
-  // XStrview - Non-owning string views and operations.
+  // XSlice - Non-owning string views and operations.
   // -------------------------------------------------------------------------------------
 
-#define     x_strview_empty() ((XStrview){ .data = 0, .length = 0 })
-#define     x_strview_is_empty(sv) ((sv).length == 0)
-#define     x_strview_init(cstr, len) ((XStrview){ .data = (cstr), .length = (len) })
-#define     x_strview(cstr)           (x_strview_init( (cstr), strlen(cstr) ))
+#define     x_slice_empty() ((XSlice){ .data = 0, .length = 0 })
+#define     x_slice_is_empty(sv) ((sv).length == 0)
+#define     x_slice_init(cstr, len) ((XSlice){ .data = (cstr), .length = (len) })
+#define     x_slice(cstr)           (x_slice_init( (cstr), strlen(cstr) ))
 
   /**
    * @brief Compares two string views for equality.
@@ -556,7 +556,7 @@ extern "C" {
    * @param b Second input view or string.
    * @return true if the condition holds; false otherwise.
    */
-  X_STRING_API bool      x_strview_eq(XStrview a, XStrview b);
+  X_STRING_API bool      x_slice_eq(XSlice a, XSlice b);
 
   /**
    * @brief Compares a string view with a C-string for equality.
@@ -564,7 +564,7 @@ extern "C" {
    * @param b Second input view or string.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_strview_eq_cstr(XStrview a, const char* b);
+  X_STRING_API bool      x_slice_eq_cstr(XSlice a, const char* b);
 
   /**
    * @brief Compares two string views case-insensitively.
@@ -572,7 +572,7 @@ extern "C" {
    * @param b Second input view or string.
    * @return true if the condition holds; false otherwise.
    */
-  X_STRING_API bool      x_strview_eq_ci(XStrview a, XStrview b);
+  X_STRING_API bool      x_slice_eq_ci(XSlice a, XSlice b);
 
   /**
    * @brief Lexicographically compares two string views.
@@ -580,7 +580,7 @@ extern "C" {
    * @param b Second input view or string.
    * @return Negative, zero, or positive according to lexicographic order.
    */
-  X_STRING_API int32_t   x_strview_cmp(XStrview a, XStrview b);
+  X_STRING_API int32_t   x_slice_cmp(XSlice a, XSlice b);
 
   /**
    * @brief Lexicographically compares two string views case-insensitively.
@@ -588,7 +588,7 @@ extern "C" {
    * @param b Second input view or string.
    * @return Function-specific integer result.
    */
-  X_STRING_API int32_t   x_strview_cmp_ci(XStrview a, XStrview b);
+  X_STRING_API int32_t   x_slice_cmp_ci(XSlice a, XSlice b);
 
   /**
    * @brief Creates a sub-view by byte range from a string view.
@@ -597,28 +597,28 @@ extern "C" {
    * @param len Number of units to copy or inspect.
    * @return Resulting view after the operation.
    */
-  X_STRING_API XStrview  x_strview_substr(XStrview sv, size_t start, size_t len);
+  X_STRING_API XSlice  x_slice_substr(XSlice sv, size_t start, size_t len);
 
   /**
    * @brief Removes leading ASCII whitespace from a string view.
    * @param sv String view input.
    * @return Function-specific result.
    */
-  X_STRING_API XStrview  x_strview_trim_left(XStrview sv);
+  X_STRING_API XSlice  x_slice_trim_left(XSlice sv);
 
   /**
    * @brief Removes trailing ASCII whitespace from a string view.
    * @param sv String view input.
    * @return Resulting view after the operation.
    */
-  X_STRING_API XStrview  x_strview_trim_right(XStrview sv);
+  X_STRING_API XSlice  x_slice_trim_right(XSlice sv);
 
   /**
    * @brief Removes leading and trailing ASCII whitespace from a string view.
    * @param sv String view input.
    * @return Function-specific result.
    */
-  X_STRING_API XStrview  x_strview_trim(XStrview sv);
+  X_STRING_API XSlice  x_slice_trim(XSlice sv);
 
   /**
    * @brief Finds the first occurrence of a character in a string view.
@@ -626,14 +626,14 @@ extern "C" {
    * @param c Character value.
    * @return Index on success, or -1 if not found.
    */
-  X_STRING_API int32_t   x_strview_find(XStrview sv, char c);
+  X_STRING_API int32_t   x_slice_find(XSlice sv, char c);
 
   /**
    * @brief Finds the next ASCII whitespace in a string view.
    * @param sv String view input.
    * @return Index on success, or -1 if not found.
    */
-  X_STRING_API int32_t   x_strview_find_white_space(XStrview sv);
+  X_STRING_API int32_t   x_slice_find_white_space(XSlice sv);
 
   /**
    * @brief Finds the last occurrence of a character in a string view.
@@ -641,7 +641,7 @@ extern "C" {
    * @param c Character value.
    * @return Index on success, or -1 if not found.
    */
-  X_STRING_API int32_t   x_strview_rfind(XStrview sv, char c);
+  X_STRING_API int32_t   x_slice_rfind(XSlice sv, char c);
 
   /**
    * @brief Splits a string view at the first occurrence of a delimiter.
@@ -651,7 +651,7 @@ extern "C" {
    * @param right Output: right side view.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_strview_split_at(XStrview sv, char delim, XStrview* left, XStrview* right);
+  X_STRING_API bool      x_slice_split_at(XSlice sv, char delim, XSlice* left, XSlice* right);
 
   /**
    * @brief Splits a string view at the first ASCII whitespace.
@@ -660,7 +660,7 @@ extern "C" {
    * @param right Output: right side view.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_strview_split_at_white_space(XStrview sv, XStrview* left, XStrview* right);
+  X_STRING_API bool      x_slice_split_at_white_space(XSlice sv, XSlice* left, XSlice* right);
 
   /**
    * @brief Extracts the next token delimited by ASCII whitespace.
@@ -668,7 +668,7 @@ extern "C" {
    * @param token Output: extracted token.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_strview_next_token_white_space(XStrview* input, XStrview* token);
+  X_STRING_API bool      x_slice_next_token_white_space(XSlice* input, XSlice* token);
 
   /**
    * @brief Extracts the next token delimited by a character.
@@ -677,7 +677,7 @@ extern "C" {
    * @param token Output: extracted token.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_strview_next_token(XStrview* input, char delim, XStrview* token);
+  X_STRING_API bool      x_slice_next_token(XSlice* input, char delim, XSlice* token);
 
   /**
    * @brief Checks whether a string view starts with the given C-string prefix.
@@ -685,7 +685,7 @@ extern "C" {
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
    */
-  X_STRING_API bool      x_strview_starts_with_cstr(XStrview sv, const char* prefix);
+  X_STRING_API bool      x_slice_starts_with_cstr(XSlice sv, const char* prefix);
 
   /**
    * @brief Checks whether a string view ends with the given C-string suffix.
@@ -693,7 +693,7 @@ extern "C" {
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
    */
-  X_STRING_API bool      x_strview_ends_with_cstr(XStrview sv, const char* prefix);
+  X_STRING_API bool      x_slice_ends_with_cstr(XSlice sv, const char* prefix);
 
   /**
    * @brief Creates a sub-view by byte range from a string view.
@@ -702,28 +702,28 @@ extern "C" {
    * @param char_len Parameter.
    * @return Function-specific result.
    */
-  X_STRING_API XStrview  x_strview_utf8_substr(XStrview sv, size_t char_start, size_t char_len);
+  X_STRING_API XSlice  x_slice_utf8_substr(XSlice sv, size_t char_start, size_t char_len);
 
   /**
    * @brief Removes leading Unicode whitespace (by UTF-8 codepoints).
    * @param sv String view input.
    * @return Resulting view after the operation.
    */
-  X_STRING_API XStrview  x_strview_utf8_trim_left(XStrview sv);
+  X_STRING_API XSlice  x_slice_utf8_trim_left(XSlice sv);
 
   /**
    * @brief Removes trailing ASCII whitespace from a string view.
    * @param sv String view input.
    * @return Function-specific result.
    */
-  X_STRING_API XStrview  x_strview_utf8_trim_right(XStrview sv);
+  X_STRING_API XSlice  x_slice_utf8_trim_right(XSlice sv);
 
   /**
    * @brief Removes leading and trailing Unicode whitespace (by UTF-8 codepoints).
    * @param sv String view input.
    * @return Resulting view after the operation.
    */
-  X_STRING_API XStrview  x_strview_utf8_trim(XStrview sv);
+  X_STRING_API XSlice  x_slice_utf8_trim(XSlice sv);
 
   /**
    * @brief Finds the first occurrence of a character in a string view.
@@ -731,7 +731,7 @@ extern "C" {
    * @param codepoint Unicode codepoint value.
    * @return Index on success, or -1 if not found.
    */
-  X_STRING_API int32_t   x_strview_utf8_find(XStrview sv, uint32_t codepoint);
+  X_STRING_API int32_t   x_slice_utf8_find(XSlice sv, uint32_t codepoint);
 
   /**
    * @brief Finds the last occurrence of a UTF-8 codepoint in a string view.
@@ -739,7 +739,7 @@ extern "C" {
    * @param codepoint Unicode codepoint value.
    * @return Index on success, or -1 if not found.
    */
-  X_STRING_API int32_t   x_strview_utf8_rfind(XStrview sv, uint32_t codepoint);
+  X_STRING_API int32_t   x_slice_utf8_rfind(XSlice sv, uint32_t codepoint);
 
   /**
    * @brief Splits a string view at the first occurrence of a delimiter.
@@ -749,7 +749,7 @@ extern "C" {
    * @param right Output: right side view.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_strview_utf8_split_at(XStrview sv, uint32_t delim, XStrview* left, XStrview* right);
+  X_STRING_API bool      x_slice_utf8_split_at(XSlice sv, uint32_t delim, XSlice* left, XSlice* right);
 
   /**
    * @brief Extracts the next token delimited by a UTF-8 codepoint.
@@ -758,7 +758,7 @@ extern "C" {
    * @param token Output: extracted token.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_strview_utf8_next_token(XStrview* input, uint32_t codepoint, XStrview* token);
+  X_STRING_API bool      x_slice_utf8_next_token(XSlice* input, uint32_t codepoint, XSlice* token);
 
   /**
    * @brief Checks whether a string view starts with the given C-string prefix.
@@ -766,7 +766,7 @@ extern "C" {
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
    */
-  X_STRING_API bool      x_strview_utf8_starts_with_cstr(XStrview sv, const char* prefix);
+  X_STRING_API bool      x_slice_utf8_starts_with_cstr(XSlice sv, const char* prefix);
 
   /**
    * @brief Checks whether a string view ends with the given C-string suffix.
@@ -774,22 +774,22 @@ extern "C" {
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
    */
-  X_STRING_API bool      x_strview_utf8_ends_with_cstr(XStrview sv, const char* prefix);
+  X_STRING_API bool      x_slice_utf8_ends_with_cstr(XSlice sv, const char* prefix);
 
   // -------------------------------------------------------------------------------------
   // XWStrview (string views on wchar_t)*
   // Non-owning wide string views and operations.
   // -------------------------------------------------------------------------------------
 
-#define x_wstrview_init(cstr, len) ((XWStrview){ .data = (cstr), .length = (len) })
-#define x_wstrview(cstr)           (x_wstrview_init( (cstr), wcslen(cstr) ))
+#define x_wslice_init(cstr, len) ((XWStrview){ .data = (cstr), .length = (len) })
+#define x_wslice(cstr)           (x_wslice_init( (cstr), wcslen(cstr) ))
 
   /**
    * @brief Checks whether the wide string view is empty.
    * @param sv String view input.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_wstrview_empty(XWStrview sv);
+  X_STRING_API bool      x_wslice_empty(XWStrview sv);
 
   /**
    * @brief Compares two wide string views for equality.
@@ -797,7 +797,7 @@ extern "C" {
    * @param b Second input view or string.
    * @return true if the condition holds; false otherwise.
    */
-  X_STRING_API bool      x_wstrview_eq(XWStrview a, XWStrview b);
+  X_STRING_API bool      x_wslice_eq(XWStrview a, XWStrview b);
 
   /**
    * @brief Lexicographically compares two wide string views.
@@ -805,7 +805,7 @@ extern "C" {
    * @param b Second input view or string.
    * @return Function-specific integer result.
    */
-  X_STRING_API int32_t   x_wstrview_cmp(XWStrview a, XWStrview b);
+  X_STRING_API int32_t   x_wslice_cmp(XWStrview a, XWStrview b);
 
   /**
    * @brief Creates a sub-view by range from a wide string view.
@@ -814,27 +814,27 @@ extern "C" {
    * @param len Number of units to copy or inspect.
    * @return Resulting view after the operation.
    */
-  X_STRING_API XWStrview x_wstrview_substr(XWStrview sv, size_t start, size_t len);
+  X_STRING_API XWStrview x_wslice_substr(XWStrview sv, size_t start, size_t len);
   /**
    * @brief Removes leading whitespace from a wide string view.
    * @param sv String view input.
    * @return Function-specific result.
    */
-  X_STRING_API XWStrview x_wstrview_trim_left(XWStrview sv);
+  X_STRING_API XWStrview x_wslice_trim_left(XWStrview sv);
 
   /**
    * @brief Removes trailing whitespace from a wide string view.
    * @param sv String view input.
    * @return Resulting view after the operation.
    */
-  X_STRING_API XWStrview x_wstrview_trim_right(XWStrview sv);
+  X_STRING_API XWStrview x_wslice_trim_right(XWStrview sv);
 
   /**
    * @brief Removes leading and trailing whitespace from a wide string view.
    * @param sv String view input.
    * @return Function-specific result.
    */
-  X_STRING_API XWStrview x_wstrview_trim(XWStrview sv);
+  X_STRING_API XWStrview x_wslice_trim(XWStrview sv);
 
   /**
    * @brief Splits a wide string view at the first occurrence of a delimiter.
@@ -844,7 +844,7 @@ extern "C" {
    * @param right Output: right side view.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_wstrview_split_at(XWStrview sv, uint32_t delim, XWStrview* left, XWStrview* right);
+  X_STRING_API bool      x_wslice_split_at(XWStrview sv, uint32_t delim, XWStrview* left, XWStrview* right);
 
   /**
    * @brief Extracts the next token from a string view using the given delimiter.
@@ -853,21 +853,21 @@ extern "C" {
    * @param token Output: extracted token.
    * @return Function-specific result.
    */
-  X_STRING_API bool      x_wstrview_next_token(XWStrview* input, wchar_t delim, XWStrview* token);
+  X_STRING_API bool      x_wslice_next_token(XWStrview* input, wchar_t delim, XWStrview* token);
 
   /**
    * @brief Creates a non-owning string view from a null-terminated C-string.
    * @param s Source null-terminated C-string (may be NULL).
-   * @return XStrview pointing to the provided string, or an empty view if s is NULL.
+   * @return XSlice pointing to the provided string, or an empty view if s is NULL.
    */
-  X_STRING_API XStrview x_strview_from_cstr(const char* s);
+  X_STRING_API XSlice x_slice_from_cstr(const char* s);
 
   /**
    * @brief Creates a non-owning string view from a fixed-capacity small string.
    * @param s Source small string (may be NULL).
-   * @return XStrview referencing the contents of the small string, or an empty view if s is NULL.
+   * @return XSlice referencing the contents of the small string, or an empty view if s is NULL.
    */
-  X_STRING_API XStrview x_strview_from_smallstr(const XSmallstr* s);
+  X_STRING_API XSlice x_slice_from_smallstr(const XSmallstr* s);
 
   /**
    * @brief Appends the contents of a string view to a small string.
@@ -875,7 +875,7 @@ extern "C" {
    * @param sv Source string view to append.
    * @return New length of the small string in bytes after the operation (null-terminated).
    */
-  X_STRING_API size_t x_smallstr_append_strview(XSmallstr* s, XStrview sv);
+  X_STRING_API size_t x_smallstr_append_slice(XSmallstr* s, XSlice sv);
 
   /**
    * @brief Appends a fixed-length portion of a C-string to a small string.
@@ -910,7 +910,7 @@ extern "C" {
    * @param c Character to search for.
    * @return true if the character is found; false otherwise.
    */
-  X_STRING_API bool x_strview_contains_char(XStrview sv, char c);
+  X_STRING_API bool x_slice_contains_char(XSlice sv, char c);
 
   /**
    * @brief Checks whether a string view contains the specified UTF-8 codepoint.
@@ -918,7 +918,7 @@ extern "C" {
    * @param codepoint Unicode codepoint to search for.
    * @return true if the codepoint is found; false otherwise.
    */
-  X_STRING_API bool x_strview_contains_utf8(XStrview sv, uint32_t codepoint);
+  X_STRING_API bool x_slice_contains_utf8(XSlice sv, uint32_t codepoint);
 
   /**
    * @brief Checks whether a small string contains the specified character.
@@ -936,7 +936,7 @@ extern "C" {
    * @param sep Separator view inserted between joined elements.
    * @return New length of the small string after concatenation.
    */
-  X_STRING_API size_t x_smallstr_join(XSmallstr* dst, const XStrview* parts, size_t count, XStrview sep);
+  X_STRING_API size_t x_smallstr_join(XSmallstr* dst, const XSlice* parts, size_t count, XSlice sep);
 
   /**
    * @brief Returns the maximum number of bytes (excluding terminator) a small string can hold.
@@ -963,9 +963,9 @@ extern "C" {
   /**
    * @brief Creates a compile-time string view from a string literal.
    * @param s String literal.
-   * @return XStrview representing the literal contents, excluding the null terminator.
+   * @return XSlice representing the literal contents, excluding the null terminator.
    */
-#define X_STRVIEW(s) ((XStrview){ (s), sizeof(s) - 1u })
+#define X_STRVIEW(s) ((XSlice){ (s), sizeof(s) - 1u })
 
 
 #ifdef __cplusplus
@@ -1532,7 +1532,7 @@ X_STRING_API size_t x_smallstr_utf8_len(const XSmallstr* s)
   return count;
 }
 
-X_STRING_API size_t x_smallstr_from_strview(XStrview sv, XSmallstr* out)
+X_STRING_API size_t x_smallstr_from_slice(XSlice sv, XSmallstr* out)
 {
   x_smallstr_clear(out);
   if (sv.length > X_SMALLSTR_MAX_LENGTH) return -1;
@@ -1579,9 +1579,9 @@ X_STRING_API int32_t x_smallstr_split_at(const XSmallstr* s, char delim, XSmalls
   return 1;
 }
 
-X_STRING_API XStrview x_smallstr_to_strview(const XSmallstr* s)
+X_STRING_API XSlice x_smallstr_to_slice(const XSmallstr* s)
 {
-  return x_strview_init(s->buf, s->length);
+  return x_slice_init(s->buf, s->length);
 }
 
 X_STRING_API int32_t x_smallstr_utf8_substring(const XSmallstr* s, size_t start_cp, size_t len_cp, XSmallstr* out)
@@ -1763,17 +1763,17 @@ X_STRING_API int32_t x_wsmallstr_next_token(XWSmallstr* input, wchar_t delim, XW
   return found;
 }
 
-X_STRING_API bool x_strview_eq(XStrview a, XStrview b)
+X_STRING_API bool x_slice_eq(XSlice a, XSlice b)
 {
   return a.length == b.length && (memcmp(a.data, b.data, a.length) == 0);
 }
 
-X_STRING_API bool x_strview_eq_cstr(XStrview a, const char* b)
+X_STRING_API bool x_slice_eq_cstr(XSlice a, const char* b)
 {
-  return x_strview_eq(a, x_strview(b));
+  return x_slice_eq(a, x_slice(b));
 }
 
-X_STRING_API int32_t x_strview_cmp(XStrview a, XStrview b)
+X_STRING_API int32_t x_slice_cmp(XSlice a, XSlice b)
 {
   size_t min_len = a.length < b.length ? a.length : b.length;
   int32_t r = memcmp(a.data, b.data, min_len);
@@ -1781,7 +1781,7 @@ X_STRING_API int32_t x_strview_cmp(XStrview a, XStrview b)
   return (int)(a.length - b.length);
 }
 
-X_STRING_API bool x_strview_eq_ci(XStrview a, XStrview b)
+X_STRING_API bool x_slice_eq_ci(XSlice a, XSlice b)
 {
   if (a.length != b.length) return 0;
   for (size_t i = 0; i < a.length; i++)
@@ -1792,7 +1792,7 @@ X_STRING_API bool x_strview_eq_ci(XStrview a, XStrview b)
   return true;
 }
 
-X_STRING_API int32_t x_strview_cmp_ci(XStrview a, XStrview b)
+X_STRING_API int32_t x_slice_cmp_ci(XSlice a, XSlice b)
 {
   size_t min_len = a.length < b.length ? a.length : b.length;
   for (size_t i = 0; i < min_len; i++)
@@ -1804,33 +1804,33 @@ X_STRING_API int32_t x_strview_cmp_ci(XStrview a, XStrview b)
   return (int)(a.length - b.length);
 }
 
-X_STRING_API XStrview x_strview_substr(XStrview sv, size_t start, size_t len)
+X_STRING_API XSlice x_slice_substr(XSlice sv, size_t start, size_t len)
 {
   if (start > sv.length) start = sv.length;
   if (start + len > sv.length) len = sv.length - start;
-  return x_strview_init(sv.data + start, len);
+  return x_slice_init(sv.data + start, len);
 }
 
-X_STRING_API XStrview x_strview_trim_left(XStrview sv)
+X_STRING_API XSlice x_slice_trim_left(XSlice sv)
 {
   size_t i = 0;
   while (i < sv.length && (unsigned char)sv.data[i] <= ' ') i++;
-  return x_strview_substr(sv, i, sv.length - i);
+  return x_slice_substr(sv, i, sv.length - i);
 }
 
-X_STRING_API XStrview x_strview_trim_right(XStrview sv)
+X_STRING_API XSlice x_slice_trim_right(XSlice sv)
 {
   size_t i = sv.length;
   while (i > 0 && (unsigned char)sv.data[i - 1] <= ' ') i--;
-  return x_strview_substr(sv, 0, i);
+  return x_slice_substr(sv, 0, i);
 }
 
-X_STRING_API XStrview x_strview_trim(XStrview sv)
+X_STRING_API XSlice x_slice_trim(XSlice sv)
 {
-  return x_strview_trim_right(x_strview_trim_left(sv));
+  return x_slice_trim_right(x_slice_trim_left(sv));
 }
 
-X_STRING_API int32_t x_strview_find(XStrview sv, char c)
+X_STRING_API int32_t x_slice_find(XSlice sv, char c)
 {
   for (size_t i = 0; i < sv.length; i++)
   {
@@ -1839,7 +1839,7 @@ X_STRING_API int32_t x_strview_find(XStrview sv, char c)
   return -1;
 }
 
-X_STRING_API int32_t x_strview_find_white_space(XStrview sv)
+X_STRING_API int32_t x_slice_find_white_space(XSlice sv)
 {
   for (size_t i = 0; i < sv.length; i++)
   {
@@ -1851,7 +1851,7 @@ X_STRING_API int32_t x_strview_find_white_space(XStrview sv)
   return -1;
 }
 
-X_STRING_API int32_t x_strview_rfind(XStrview sv, char c)
+X_STRING_API int32_t x_slice_rfind(XSlice sv, char c)
 {
   for (size_t i = sv.length; i > 0; i--)
   {
@@ -1860,28 +1860,28 @@ X_STRING_API int32_t x_strview_rfind(XStrview sv, char c)
   return -1;
 }
 
-X_STRING_API bool x_strview_split_at(XStrview sv, char delim, XStrview* left, XStrview* right)
+X_STRING_API bool x_slice_split_at(XSlice sv, char delim, XSlice* left, XSlice* right)
 {
-  int32_t pos = x_strview_find(sv, delim);
+  int32_t pos = x_slice_find(sv, delim);
   if (pos < 0) return false;
-  if (left) *left = x_strview_substr(sv, 0, pos);
-  if (right) *right = x_strview_substr(sv, pos + 1, sv.length - pos - 1);
+  if (left) *left = x_slice_substr(sv, 0, pos);
+  if (right) *right = x_slice_substr(sv, pos + 1, sv.length - pos - 1);
   return true;
 }
 
-X_STRING_API bool x_strview_split_at_white_space(XStrview sv, XStrview* left, XStrview* right)
+X_STRING_API bool x_slice_split_at_white_space(XSlice sv, XSlice* left, XSlice* right)
 {
-  int32_t pos = x_strview_find_white_space(sv);
+  int32_t pos = x_slice_find_white_space(sv);
   if (pos < 0) return false;
-  if (left) *left = x_strview_substr(sv, 0, pos);
-  if (right) *right = x_strview_substr(sv, pos + 1, sv.length - pos - 1);
+  if (left) *left = x_slice_substr(sv, 0, pos);
+  if (right) *right = x_slice_substr(sv, pos + 1, sv.length - pos - 1);
   return true;
 }
 
-X_STRING_API bool x_strview_next_token_white_space(XStrview* input, XStrview* token)
+X_STRING_API bool x_slice_next_token_white_space(XSlice* input, XSlice* token)
 {
-  XStrview rest;
-  if (x_strview_split_at_white_space(*input, token, &rest))
+  XSlice rest;
+  if (x_slice_split_at_white_space(*input, token, &rest))
   {
     *input = rest;
     return true;
@@ -1889,7 +1889,7 @@ X_STRING_API bool x_strview_next_token_white_space(XStrview* input, XStrview* to
   else if (input->length > 0)
   {
     *token = *input;
-    *input = (XStrview){0};
+    *input = (XSlice){0};
     return true;
   }
 
@@ -1898,10 +1898,10 @@ X_STRING_API bool x_strview_next_token_white_space(XStrview* input, XStrview* to
   return false;
 }
 
-X_STRING_API bool x_strview_next_token(XStrview* input, char delim, XStrview* token)
+X_STRING_API bool x_slice_next_token(XSlice* input, char delim, XSlice* token)
 {
-  XStrview rest;
-  if (x_strview_split_at(*input, delim, token, &rest))
+  XSlice rest;
+  if (x_slice_split_at(*input, delim, token, &rest))
   {
     *input = rest;
     return true;
@@ -1909,7 +1909,7 @@ X_STRING_API bool x_strview_next_token(XStrview* input, char delim, XStrview* to
   else if (input->length > 0)
   {
     *token = *input;
-    *input = (XStrview){0};
+    *input = (XSlice){0};
     return true;
   }
 
@@ -1918,7 +1918,7 @@ X_STRING_API bool x_strview_next_token(XStrview* input, char delim, XStrview* to
   return false;
 }
 
-X_STRING_API bool x_strview_starts_with_cstr(XStrview sv, const char* prefix)
+X_STRING_API bool x_slice_starts_with_cstr(XSlice sv, const char* prefix)
 {
   if (prefix == NULL || sv.length == 0 || sv.data == NULL)
     return false;
@@ -1929,7 +1929,7 @@ X_STRING_API bool x_strview_starts_with_cstr(XStrview sv, const char* prefix)
   return strncmp(sv.data, prefix, prefix_len) == 0;
 }
 
-X_STRING_API bool x_strview_ends_with_cstr(XStrview sv, const char* suffix)
+X_STRING_API bool x_slice_ends_with_cstr(XSlice sv, const char* suffix)
 {
   if (suffix == NULL || sv.length == 0 || sv.data == NULL)
     return false;
@@ -1940,50 +1940,50 @@ X_STRING_API bool x_strview_ends_with_cstr(XStrview sv, const char* suffix)
   return strncmp(sv.data + sv.length - suffix_len, suffix, suffix_len) == 0;
 }
 
-X_STRING_API bool x_wstrview_empty(XWStrview sv)
+X_STRING_API bool x_wslice_empty(XWStrview sv)
 {
   return sv.length == 0;
 }
 
-X_STRING_API bool x_wstrview_eq(XWStrview a, XWStrview b)
+X_STRING_API bool x_wslice_eq(XWStrview a, XWStrview b)
 {
   return a.length == b.length && wcsncmp(a.data, b.data, a.length) == 0;
 }
 
-X_STRING_API int32_t x_wstrview_cmp(XWStrview a, XWStrview b)
+X_STRING_API int32_t x_wslice_cmp(XWStrview a, XWStrview b)
 {
   size_t min = a.length < b.length ? a.length : b.length;
   int32_t result = wcsncmp(a.data, b.data, min);
   return result != 0 ? result : (int)(a.length - b.length);
 }
 
-X_STRING_API XWStrview x_wstrview_substr(XWStrview sv, size_t start, size_t len)
+X_STRING_API XWStrview x_wslice_substr(XWStrview sv, size_t start, size_t len)
 {
   if (start > sv.length) start = sv.length;
   if (start + len > sv.length) len = sv.length - start;
   return (XWStrview){ sv.data + start, len };
 }
 
-X_STRING_API XWStrview x_wstrview_trim_left(XWStrview sv)
+X_STRING_API XWStrview x_wslice_trim_left(XWStrview sv)
 {
   size_t i = 0;
   while (i < sv.length && iswspace(sv.data[i])) i++;
-  return x_wstrview_substr(sv, i, sv.length - i);
+  return x_wslice_substr(sv, i, sv.length - i);
 }
 
-X_STRING_API XWStrview x_wstrview_trim_right(XWStrview sv)
+X_STRING_API XWStrview x_wslice_trim_right(XWStrview sv)
 {
   size_t i = sv.length;
   while (i > 0 && iswspace(sv.data[i - 1])) i--;
-  return x_wstrview_substr(sv, 0, i);
+  return x_wslice_substr(sv, 0, i);
 }
 
-X_STRING_API XWStrview x_wstrview_trim(XWStrview sv)
+X_STRING_API XWStrview x_wslice_trim(XWStrview sv)
 {
-  return x_wstrview_trim_right(x_wstrview_trim_left(sv));
+  return x_wslice_trim_right(x_wslice_trim_left(sv));
 }
 
-X_STRING_API bool x_wstrview_split_at(XWStrview sv, uint32_t delim, XWStrview* left, XWStrview* right)
+X_STRING_API bool x_wslice_split_at(XWStrview sv, uint32_t delim, XWStrview* left, XWStrview* right)
 {
   for (size_t i = 0; i < sv.length; ++i)
   {
@@ -2004,10 +2004,10 @@ X_STRING_API bool x_wstrview_split_at(XWStrview sv, uint32_t delim, XWStrview* l
   return false;
 }
 
-X_STRING_API bool x_wstrview_next_token(XWStrview* input, wchar_t delim, XWStrview* token)
+X_STRING_API bool x_wslice_next_token(XWStrview* input, wchar_t delim, XWStrview* token)
 {
   XWStrview left, right;
-  if (x_wstrview_split_at(*input, (uint32_t)delim, &left, &right))
+  if (x_wslice_split_at(*input, (uint32_t)delim, &left, &right))
   {
     *token = left;
     *input = right;
@@ -2026,14 +2026,14 @@ X_STRING_API bool x_wstrview_next_token(XWStrview* input, wchar_t delim, XWStrvi
   return false;
 }
 
-X_STRING_API XStrview x_strview_utf8_substr(XStrview sv, size_t char_start, size_t char_len)
+X_STRING_API XSlice x_slice_utf8_substr(XSlice sv, size_t char_start, size_t char_len)
 {
   size_t byte_start = utf8_advance(sv.data, sv.length, char_start);
   size_t byte_end = utf8_advance(sv.data + byte_start, sv.length - byte_start, char_len);
-  return x_strview_init(sv.data + byte_start, byte_end );
+  return x_slice_init(sv.data + byte_start, byte_end );
 }
 
-X_STRING_API XStrview x_strview_utf8_trim_left(XStrview sv)
+X_STRING_API XSlice x_slice_utf8_trim_left(XSlice sv)
 {
   const char* start = sv.data;
   const char* end = sv.data + sv.length;
@@ -2043,13 +2043,13 @@ X_STRING_API XStrview x_strview_utf8_trim_left(XStrview sv)
     uint32_t cp = utf8_decode(&start, end);
     if (!s_is_unicode_whitespace(cp))
     {
-      return (XStrview){ prev, (size_t)(end - prev) };
+      return (XSlice){ prev, (size_t)(end - prev) };
     }
   }
-  return x_strview_init(end, 0);
+  return x_slice_init(end, 0);
 }
 
-X_STRING_API XStrview x_strview_utf8_trim_right(XStrview sv)
+X_STRING_API XSlice x_slice_utf8_trim_right(XSlice sv)
 {
   const char* start = sv.data;
   const char* end = sv.data + sv.length;
@@ -2063,18 +2063,18 @@ X_STRING_API XStrview x_strview_utf8_trim_right(XStrview sv)
     uint32_t cp = utf8_decode(&decode_from, end);
     if (!s_is_unicode_whitespace(cp))
     {
-      return x_strview_init(sv.data, (size_t)(prev - sv.data));
+      return x_slice_init(sv.data, (size_t)(prev - sv.data));
     }
   }
-  return x_strview_init(sv.data + sv.length, 0 );
+  return x_slice_init(sv.data + sv.length, 0 );
 }
 
-X_STRING_API XStrview x_strview_utf8_trim(XStrview sv)
+X_STRING_API XSlice x_slice_utf8_trim(XSlice sv)
 {
-  return x_strview_utf8_trim_right(x_strview_utf8_trim_left(sv));
+  return x_slice_utf8_trim_right(x_slice_utf8_trim_left(sv));
 }
 
-X_STRING_API int32_t x_strview_utf8_find(XStrview sv, uint32_t codepoint)
+X_STRING_API int32_t x_slice_utf8_find(XSlice sv, uint32_t codepoint)
 {
   const char* ptr = sv.data;
   const char* end = sv.data + sv.length;
@@ -2089,7 +2089,7 @@ X_STRING_API int32_t x_strview_utf8_find(XStrview sv, uint32_t codepoint)
   return -1;
 }
 
-X_STRING_API int32_t x_strview_utf8_rfind(XStrview sv, uint32_t codepoint)
+X_STRING_API int32_t x_slice_utf8_rfind(XSlice sv, uint32_t codepoint)
 {
   const char* ptr = sv.data;
   const char* end = sv.data + sv.length;
@@ -2106,7 +2106,7 @@ X_STRING_API int32_t x_strview_utf8_rfind(XStrview sv, uint32_t codepoint)
   return last_match ? (int)(last_match - sv.data) : -1;
 }
 
-X_STRING_API bool x_strview_utf8_split_at(XStrview sv, uint32_t delim, XStrview* left, XStrview* right)
+X_STRING_API bool x_slice_utf8_split_at(XSlice sv, uint32_t delim, XSlice* left, XSlice* right)
 {
   const char* ptr = sv.data;
   const char* end = sv.data + sv.length;
@@ -2118,8 +2118,8 @@ X_STRING_API bool x_strview_utf8_split_at(XStrview sv, uint32_t delim, XStrview*
     if (cp == (int32_t)delim) {
       size_t left_len = codepoint_start - sv.data;
       size_t right_len = end - ptr;
-      *left  = x_strview_init(sv.data, left_len);
-      *right = x_strview_init(ptr, right_len);
+      *left  = x_slice_init(sv.data, left_len);
+      *right = x_slice_init(ptr, right_len);
       return true;
     }
   }
@@ -2127,16 +2127,16 @@ X_STRING_API bool x_strview_utf8_split_at(XStrview sv, uint32_t delim, XStrview*
   return false;
 }
 
-X_STRING_API bool x_strview_utf8_next_token(XStrview* input, uint32_t delim, XStrview* token)
+X_STRING_API bool x_slice_utf8_next_token(XSlice* input, uint32_t delim, XSlice* token)
 {
-  XStrview rest;
-  if (x_strview_utf8_split_at(*input, delim, token, &rest)) {
+  XSlice rest;
+  if (x_slice_utf8_split_at(*input, delim, token, &rest)) {
     *input = rest;
     return true;
   }
   if (input->length > 0) {
     *token = *input;
-    *input = (XStrview){0};
+    *input = (XSlice){0};
     return true;
   }
 
@@ -2145,7 +2145,7 @@ X_STRING_API bool x_strview_utf8_next_token(XStrview* input, uint32_t delim, XSt
   return false;
 }
 
-X_STRING_API bool x_strview_utf8_starts_with_cstr(XStrview sv, const char* prefix)
+X_STRING_API bool x_slice_utf8_starts_with_cstr(XSlice sv, const char* prefix)
 {
   if (!sv.data || !prefix) return false;
   size_t prefix_len = strlen(prefix);
@@ -2153,7 +2153,7 @@ X_STRING_API bool x_strview_utf8_starts_with_cstr(XStrview sv, const char* prefi
   return memcmp(sv.data, prefix, prefix_len) == 0;
 }
 
-X_STRING_API bool x_strview_utf8_ends_with_cstr(XStrview sv, const char* suffix)
+X_STRING_API bool x_slice_utf8_ends_with_cstr(XSlice sv, const char* suffix)
 {
   if (!sv.data || !suffix) return false;
   size_t suffix_len = strlen(suffix);
@@ -2161,23 +2161,23 @@ X_STRING_API bool x_strview_utf8_ends_with_cstr(XStrview sv, const char* suffix)
   return memcmp(sv.data + sv.length - suffix_len, suffix, suffix_len) == 0;
 }
 
-X_STRING_API XStrview x_strview_from_cstr(const char* s)
+X_STRING_API XSlice x_slice_from_cstr(const char* s)
 {
-  XStrview sv;
+  XSlice sv;
   sv.data   = s ? s : "";
   sv.length = s ? (size_t)strlen(s) : 0u;
   return sv;
 }
 
-X_STRING_API XStrview x_strview_from_smallstr(const XSmallstr* s)
+X_STRING_API XSlice x_slice_from_smallstr(const XSmallstr* s)
 {
-  XStrview sv;
+  XSlice sv;
   sv.data   = s ? s->buf : "";
   sv.length = s ? s->length : 0u;
   return sv;
 }
 
-X_STRING_API size_t x_smallstr_append_strview(XSmallstr* s, XStrview sv)
+X_STRING_API size_t x_smallstr_append_slice(XSmallstr* s, XSlice sv)
 {
   if (!s || !sv.data) { return s ? s->length : 0u; }
 
@@ -2197,10 +2197,10 @@ X_STRING_API size_t x_smallstr_append_strview(XSmallstr* s, XStrview sv)
 
 X_STRING_API size_t x_smallstr_append_n(XSmallstr* s, const char* cstr, size_t n)
 {
-  XStrview sv;
+  XSlice sv;
   sv.data   = cstr ? cstr : "";
   sv.length = cstr ? n : 0u;
-  return x_smallstr_append_strview(s, sv);
+  return x_smallstr_append_slice(s, sv);
 }
 
 X_STRING_API size_t x_smallstr_vappendf(XSmallstr* s, const char* fmt, va_list args)
@@ -2240,23 +2240,23 @@ X_STRING_API size_t x_smallstr_appendf(XSmallstr* s, const char* fmt, ...)
   return r;
 }
 
-X_STRING_API bool x_strview_contains_char(XStrview sv, char c)
+X_STRING_API bool x_slice_contains_char(XSlice sv, char c)
 {
-  return x_strview_find(sv, c) >= 0;
+  return x_slice_find(sv, c) >= 0;
 }
 
-X_STRING_API bool x_strview_contains_utf8(XStrview sv, uint32_t codepoint)
+X_STRING_API bool x_slice_contains_utf8(XSlice sv, uint32_t codepoint)
 {
-  return x_strview_utf8_find(sv, codepoint) >= 0;
+  return x_slice_utf8_find(sv, codepoint) >= 0;
 }
 
 X_STRING_API bool x_smallstr_contains_char(const XSmallstr* s, char c)
 {
-  XStrview sv = x_strview_from_smallstr(s);
-  return x_strview_find(sv, c) >= 0;
+  XSlice sv = x_slice_from_smallstr(s);
+  return x_slice_find(sv, c) >= 0;
 }
 
-X_STRING_API size_t x_smallstr_join(XSmallstr* dst, const XStrview* parts, size_t count, XStrview sep)
+X_STRING_API size_t x_smallstr_join(XSmallstr* dst, const XSlice* parts, size_t count, XSlice sep)
 {
   if (!dst) { return 0u; }
 
@@ -2266,10 +2266,10 @@ X_STRING_API size_t x_smallstr_join(XSmallstr* dst, const XStrview* parts, size_
   {
     if (i != 0u)
     {
-      x_smallstr_append_strview(dst, sep);
+      x_smallstr_append_slice(dst, sep);
     }
 
-    x_smallstr_append_strview(dst, parts[i]);
+    x_smallstr_append_slice(dst, parts[i]);
 
     if (dst->length == X_SMALLSTR_MAX_LENGTH)
     {

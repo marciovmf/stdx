@@ -8,7 +8,7 @@
 #include <stdx_log.h>
 
 // Helpers
-static int sv_eq_cstr(XStrview sv, const char* s)
+static int sv_eq_cstr(XSlice sv, const char* s)
 {
   size_t n = s ? strlen(s) : 0u;
   return sv.length == n && (n == 0 || memcmp(sv.data, s, n) == 0);
@@ -93,109 +93,109 @@ int test_str_hash(void)
   return X_TEST_SUCCESS;
 }
 
-int test_x_strview_empty(void)
+int test_x_slice_empty(void)
 {
-  ASSERT_TRUE(x_strview_is_empty(x_strview("")));
-  ASSERT_FALSE(x_strview_is_empty(x_strview("a")));
+  ASSERT_TRUE(x_slice_is_empty(x_slice("")));
+  ASSERT_FALSE(x_slice_is_empty(x_slice("a")));
   return 0;
 }
 
-int test_x_strview_eq_and_cmp(void)
+int test_x_slice_eq_and_cmp(void)
 {
-  XStrview a = x_strview("hello");
-  XStrview b = x_strview("hello");
-  XStrview c = x_strview("world");
+  XSlice a = x_slice("hello");
+  XSlice b = x_slice("hello");
+  XSlice c = x_slice("world");
 
-  ASSERT_TRUE(x_strview_eq(a, b));
-  ASSERT_FALSE(x_strview_eq(a, c));
-  ASSERT_TRUE(x_strview_cmp(a, b) == 0);
-  ASSERT_TRUE(x_strview_cmp(a, c) < 0);
-  ASSERT_TRUE(x_strview_cmp(c, a) > 0);
+  ASSERT_TRUE(x_slice_eq(a, b));
+  ASSERT_FALSE(x_slice_eq(a, c));
+  ASSERT_TRUE(x_slice_cmp(a, b) == 0);
+  ASSERT_TRUE(x_slice_cmp(a, c) < 0);
+  ASSERT_TRUE(x_slice_cmp(c, a) > 0);
   return 0;
 }
 
-int test_x_strview_ci_eq_and_cmp(void)
+int test_x_slice_ci_eq_and_cmp(void)
 {
-  ASSERT_TRUE(x_strview_eq_ci(x_strview("HELLO"), x_strview("hello")));
-  ASSERT_TRUE(x_strview_cmp_ci(x_strview("HELLO"), x_strview("hello"))  == 0);
-  ASSERT_TRUE(x_strview_cmp_ci(x_strview("abc"), x_strview("DEF"))      < 0);
+  ASSERT_TRUE(x_slice_eq_ci(x_slice("HELLO"), x_slice("hello")));
+  ASSERT_TRUE(x_slice_cmp_ci(x_slice("HELLO"), x_slice("hello"))  == 0);
+  ASSERT_TRUE(x_slice_cmp_ci(x_slice("abc"), x_slice("DEF"))      < 0);
   return 0;
 }
 
-int test_x_strview_substr(void)
+int test_x_slice_substr(void)
 {
-  XStrview sv = x_strview("abcdef");
-  ASSERT_TRUE(x_strview_eq_cstr(x_strview_substr(sv, 0, 3), "abc"));
-  ASSERT_TRUE(x_strview_eq_cstr(x_strview_substr(sv, 2, 2), "cd"));
-  ASSERT_TRUE(x_strview_eq_cstr(x_strview_substr(sv, 4, 10), "ef")); // len clipped
+  XSlice sv = x_slice("abcdef");
+  ASSERT_TRUE(x_slice_eq_cstr(x_slice_substr(sv, 0, 3), "abc"));
+  ASSERT_TRUE(x_slice_eq_cstr(x_slice_substr(sv, 2, 2), "cd"));
+  ASSERT_TRUE(x_slice_eq_cstr(x_slice_substr(sv, 4, 10), "ef")); // len clipped
   return 0;
 }
 
-int test_x_strview_trim(void)
+int test_x_slice_trim(void)
 {
-  ASSERT_TRUE(x_strview_eq_cstr(x_strview_trim_left(x_strview("   abc")), "abc"));
-  ASSERT_TRUE(x_strview_eq_cstr(x_strview_trim_right(x_strview("abc   ")), "abc"));
-  ASSERT_TRUE(x_strview_eq_cstr(x_strview_trim(x_strview("   abc   ")), "abc"));
-  ASSERT_TRUE(x_strview_eq_cstr(x_strview_trim(x_strview("abc")), "abc"));
-  ASSERT_TRUE(x_strview_eq_cstr(x_strview_trim(x_strview("   ")), ""));
+  ASSERT_TRUE(x_slice_eq_cstr(x_slice_trim_left(x_slice("   abc")), "abc"));
+  ASSERT_TRUE(x_slice_eq_cstr(x_slice_trim_right(x_slice("abc   ")), "abc"));
+  ASSERT_TRUE(x_slice_eq_cstr(x_slice_trim(x_slice("   abc   ")), "abc"));
+  ASSERT_TRUE(x_slice_eq_cstr(x_slice_trim(x_slice("abc")), "abc"));
+  ASSERT_TRUE(x_slice_eq_cstr(x_slice_trim(x_slice("   ")), ""));
   return 0;
 }
 
-int test_x_strview_find_and_rfind(void)
+int test_x_slice_find_and_rfind(void)
 {
-  XStrview sv = x_strview("abacada");
+  XSlice sv = x_slice("abacada");
 
-  ASSERT_TRUE(x_strview_find(sv, 'a') == 0);
-  ASSERT_TRUE(x_strview_find(sv, 'c') == 3);
-  ASSERT_TRUE(x_strview_find(sv, 'x') == -1);
+  ASSERT_TRUE(x_slice_find(sv, 'a') == 0);
+  ASSERT_TRUE(x_slice_find(sv, 'c') == 3);
+  ASSERT_TRUE(x_slice_find(sv, 'x') == -1);
 
-  ASSERT_TRUE(x_strview_rfind(sv, 'a') == 6);
-  ASSERT_TRUE(x_strview_rfind(sv, 'b') == 1);
-  ASSERT_TRUE(x_strview_rfind(sv, 'x') == -1);
+  ASSERT_TRUE(x_slice_rfind(sv, 'a') == 6);
+  ASSERT_TRUE(x_slice_rfind(sv, 'b') == 1);
+  ASSERT_TRUE(x_slice_rfind(sv, 'x') == -1);
   return 0;
 }
 
-int test_x_strview_split_at(void)
+int test_x_slice_split_at(void)
 {
 
   { // Basic split test
-    XStrview sv = x_strview("key:value");
-    XStrview left, right;
-    ASSERT_TRUE(x_strview_split_at(sv, ':', &left, &right));
-    ASSERT_TRUE(x_strview_eq_cstr(left, "key"));
-    ASSERT_TRUE(x_strview_eq_cstr(right, "value"));
+    XSlice sv = x_slice("key:value");
+    XSlice left, right;
+    ASSERT_TRUE(x_slice_split_at(sv, ':', &left, &right));
+    ASSERT_TRUE(x_slice_eq_cstr(left, "key"));
+    ASSERT_TRUE(x_slice_eq_cstr(right, "value"));
   }
 
   { // Test advancing the stringview by tokens
     const char* results[] =
     { "wako", "yako", "dotty" };
-    XStrview csv = x_strview("wako,yako,dotty");
-    XStrview token;
+    XSlice csv = x_slice("wako,yako,dotty");
+    XSlice token;
     int i = 0;
-    while (x_strview_next_token(&csv, ',', &token))
+    while (x_slice_next_token(&csv, ',', &token))
     {
-      ASSERT_TRUE(x_strview_eq(x_strview(results[i]), token) == 1);
+      ASSERT_TRUE(x_slice_eq(x_slice(results[i]), token) == 1);
       i++;
     }
   }
 
   { // Test splitting by non existent separator
-    XStrview sv = x_strview("novalue");
-    XStrview left, right;
-    ASSERT_FALSE(x_strview_split_at(sv, ':', &left, &right));
+    XSlice sv = x_slice("novalue");
+    XSlice left, right;
+    ASSERT_FALSE(x_slice_split_at(sv, ':', &left, &right));
   }
   return 0;
 }
 
-int test_x_wstrview_next_token(void)
+int test_x_wslice_next_token(void)
 {
   {
     x_set_locale("Hebrew");
-    XWStrview s = x_wstrview( L"אחד,שתיים,שלוש");
+    XWStrview s = x_wslice( L"אחד,שתיים,שלוש");
     XWStrview token;
     int count = 0;
 
-    while(x_wstrview_next_token(&s, L',', &token))
+    while(x_wslice_next_token(&s, L',', &token))
     {
       ASSERT_TRUE(token.length > 0);
       count++;
@@ -205,11 +205,11 @@ int test_x_wstrview_next_token(void)
 
   {
     x_set_locale(NULL);
-    XWStrview input = x_wstrview( L"foo,bar,baz");
+    XWStrview input = x_wslice( L"foo,bar,baz");
     XWStrview token;
     int count = 0;
 
-    while (x_wstrview_next_token(&input, L',', &token))
+    while (x_wslice_next_token(&input, L',', &token))
     {
       count++;
     }
@@ -304,27 +304,27 @@ int test_conversion_utf8_and_back(void)
   return 0;
 }
 
-int test_xwstrview_basic(void)
+int test_xwslice_basic(void)
 {
-  XWStrview sv = x_wstrview(L" שלום ");
-  ASSERT_TRUE(!x_wstrview_empty(sv));
-  ASSERT_TRUE(x_wstrview_eq(sv, x_wstrview(L" שלום ")));
-  ASSERT_TRUE(x_wstrview_cmp(sv, x_wstrview(L" עולם ")) != 0);
+  XWStrview sv = x_wslice(L" שלום ");
+  ASSERT_TRUE(!x_wslice_empty(sv));
+  ASSERT_TRUE(x_wslice_eq(sv, x_wslice(L" שלום ")));
+  ASSERT_TRUE(x_wslice_cmp(sv, x_wslice(L" עולם ")) != 0);
   return 0;
 }
 
-int test_xwstrview_trim(void)
+int test_xwslice_trim(void)
 {
-  XWStrview sv = x_wstrview(L" \t\nשלום\n ");
-  XWStrview trimmed = x_wstrview_trim(sv);
-  ASSERT_TRUE(x_wstrview_eq(trimmed, x_wstrview(L"שלום")));
+  XWStrview sv = x_wslice(L" \t\nשלום\n ");
+  XWStrview trimmed = x_wslice_trim(sv);
+  ASSERT_TRUE(x_wslice_eq(trimmed, x_wslice(L"שלום")));
   return 0;
 }
 
-int test_xwstrview_substr(void)
+int test_xwslice_substr(void)
 {
-  XWStrview full = x_wstrview(L"שלוםעולם");
-  XWStrview mid = x_wstrview_substr(full, 2, 2);
+  XWStrview full = x_wslice(L"שלוםעולם");
+  XWStrview mid = x_wslice_substr(full, 2, 2);
   ASSERT_TRUE(mid.length == 2);
   ASSERT_TRUE(mid.data[0] == L'ו' && mid.data[1] == L'ם');
   return 0;
@@ -343,7 +343,7 @@ int test_wsmallstr_functions(void)
   return 0;
 }
 
-int test_x_strview_utf8_find_cp()
+int test_x_slice_utf8_find_cp()
 {
   const char* data = "🌍";
   const char* ptr = data;
@@ -354,126 +354,126 @@ int test_x_strview_utf8_find_cp()
   ASSERT_TRUE(cp == 0x1F30D);
   ASSERT_TRUE(len == x_utf8_strlen(data));
 
-  XStrview sv = x_strview("a🌍b🌍c");
+  XSlice sv = x_slice("a🌍b🌍c");
   ASSERT_TRUE(x_utf8_strlen(sv.data) == 5);            // 5 UTf-8 characters
-  ASSERT_TRUE(x_strview_utf8_find(sv, 0x1F30D) == 1);  // first 🌍
-  ASSERT_TRUE(x_strview_utf8_rfind(sv, 0x1F30D) == 6); // second 🌍
-  ASSERT_TRUE(x_strview_utf8_find(sv, 'b') == 5);      // ASCII still works via its codepoint
-  ASSERT_TRUE(x_strview_utf8_find(sv, 'z') == -1);     // not found
+  ASSERT_TRUE(x_slice_utf8_find(sv, 0x1F30D) == 1);  // first 🌍
+  ASSERT_TRUE(x_slice_utf8_rfind(sv, 0x1F30D) == 6); // second 🌍
+  ASSERT_TRUE(x_slice_utf8_find(sv, 'b') == 5);      // ASCII still works via its codepoint
+  ASSERT_TRUE(x_slice_utf8_find(sv, 'z') == -1);     // not found
   return 0;
 }
 
-int test_x_strview_utf8_rfind()
+int test_x_slice_utf8_rfind()
 {
-  XStrview sv = x_strview("hélllo");
-  ASSERT_TRUE(x_strview_utf8_rfind(sv, 'l') == 5);
-  ASSERT_TRUE(x_strview_utf8_rfind(sv, 'x') == -1);
+  XSlice sv = x_slice("hélllo");
+  ASSERT_TRUE(x_slice_utf8_rfind(sv, 'l') == 5);
+  ASSERT_TRUE(x_slice_utf8_rfind(sv, 'x') == -1);
   return 0;
 }
 
-int test_x_strview_utf8_split_at()
+int test_x_slice_utf8_split_at()
 {
   {
-    XStrview sv = x_strview("a✓b✓c");
-    XStrview left, right;
+    XSlice sv = x_slice("a✓b✓c");
+    XSlice left, right;
 
-    ASSERT_TRUE(x_strview_utf8_split_at(sv, 0x2713, &left, &right));
-    ASSERT_TRUE(x_strview_eq_cstr(left, "a"));
-    ASSERT_TRUE(x_strview_eq_cstr(right, "b✓c"));
+    ASSERT_TRUE(x_slice_utf8_split_at(sv, 0x2713, &left, &right));
+    ASSERT_TRUE(x_slice_eq_cstr(left, "a"));
+    ASSERT_TRUE(x_slice_eq_cstr(right, "b✓c"));
   }
 
   {
-    XStrview sv = x_strview("a✓b✓c");
-    XStrview tok;
+    XSlice sv = x_slice("a✓b✓c");
+    XSlice tok;
     const char* expected[] = {"a", "b", "c"};
     const char** e = expected;
-    while (x_strview_utf8_next_token(&sv, 0x2713, &tok))
+    while (x_slice_utf8_next_token(&sv, 0x2713, &tok))
     {
       // expect "a", "b", "c"
-      ASSERT_TRUE(x_strview_eq_cstr(tok, *e++));
+      ASSERT_TRUE(x_slice_eq_cstr(tok, *e++));
 
     }
   }
 
   {
-    XStrview sv = x_strview("héllo,world");
-    XStrview left, right;
-    bool ok = x_strview_utf8_split_at(sv, ',', &left, &right);
+    XSlice sv = x_slice("héllo,world");
+    XSlice left, right;
+    bool ok = x_slice_utf8_split_at(sv, ',', &left, &right);
 
     ASSERT_TRUE(ok);
-    ASSERT_TRUE(x_strview_eq_cstr(left, "héllo"));
-    ASSERT_TRUE(x_strview_eq_cstr(right, "world"));
+    ASSERT_TRUE(x_slice_eq_cstr(left, "héllo"));
+    ASSERT_TRUE(x_slice_eq_cstr(right, "world"));
   }
 
   return 0;
 }
 
-int test_x_strview_utf8_next_token()
+int test_x_slice_utf8_next_token()
 {
-  XStrview input = x_strview("uno,dos,tres");
-  XStrview token;
+  XSlice input = x_slice("uno,dos,tres");
+  XSlice token;
 
-  ASSERT_TRUE(x_strview_utf8_next_token(&input, ',', &token));
-  ASSERT_TRUE(x_strview_eq(token, x_strview("uno")));
-  ASSERT_TRUE(x_strview_utf8_next_token(&input, ',', &token));
-  ASSERT_TRUE(x_strview_eq(token, x_strview("dos")));
-  ASSERT_TRUE(x_strview_utf8_next_token(&input, ',', &token));
-  ASSERT_TRUE(x_strview_eq(token, x_strview("tres")));
-  ASSERT_TRUE(!x_strview_utf8_next_token(&input, ',', &token));
+  ASSERT_TRUE(x_slice_utf8_next_token(&input, ',', &token));
+  ASSERT_TRUE(x_slice_eq(token, x_slice("uno")));
+  ASSERT_TRUE(x_slice_utf8_next_token(&input, ',', &token));
+  ASSERT_TRUE(x_slice_eq(token, x_slice("dos")));
+  ASSERT_TRUE(x_slice_utf8_next_token(&input, ',', &token));
+  ASSERT_TRUE(x_slice_eq(token, x_slice("tres")));
+  ASSERT_TRUE(!x_slice_utf8_next_token(&input, ',', &token));
   return 0;
 }
 
-int test_x_strview_utf8_starts_with_cstr()
+int test_x_slice_utf8_starts_with_cstr()
 {
-  XStrview sv = x_strview("héllo 🌍");
-  ASSERT_TRUE(x_strview_utf8_starts_with_cstr(sv, "hé"));
-  ASSERT_TRUE(!x_strview_utf8_starts_with_cstr(sv, "🌍"));
+  XSlice sv = x_slice("héllo 🌍");
+  ASSERT_TRUE(x_slice_utf8_starts_with_cstr(sv, "hé"));
+  ASSERT_TRUE(!x_slice_utf8_starts_with_cstr(sv, "🌍"));
   return 0;
 }
 
-int test_x_strview_utf8_ends_with_cstr()
+int test_x_slice_utf8_ends_with_cstr()
 {
-  XStrview sv = x_strview("héllo 🌍");
-  ASSERT_TRUE(x_strview_utf8_ends_with_cstr(sv, "🌍"));
-  ASSERT_TRUE(x_strview_utf8_ends_with_cstr(sv, "o 🌍"));
-  ASSERT_TRUE(!x_strview_utf8_ends_with_cstr(sv, "héllo"));
+  XSlice sv = x_slice("héllo 🌍");
+  ASSERT_TRUE(x_slice_utf8_ends_with_cstr(sv, "🌍"));
+  ASSERT_TRUE(x_slice_utf8_ends_with_cstr(sv, "o 🌍"));
+  ASSERT_TRUE(!x_slice_utf8_ends_with_cstr(sv, "héllo"));
   return 0;
 }
 
-int test_x_strview_from_cstr_basic()
+int test_x_slice_from_cstr_basic()
 {
-  XStrview a = x_strview_from_cstr("hello");
+  XSlice a = x_slice_from_cstr("hello");
   ASSERT_TRUE(sv_eq_cstr(a, "hello"));
   ASSERT_TRUE(a.data[ a.length ] == '\0'); // points into a C string
 
-  XStrview b = x_strview_from_cstr(NULL);
+  XSlice b = x_slice_from_cstr(NULL);
   ASSERT_TRUE(b.length == 0);
   return 0;
 }
 
-int test_x_strview_from_smallstr_basic()
+int test_x_slice_from_smallstr_basic()
 {
   XSmallstr s;
   x_smallstr_clear(&s);
   x_smallstr_append_cstr(&s, "abc");
 
-  XStrview v = x_strview_from_smallstr(&s);
+  XSlice v = x_slice_from_smallstr(&s);
   ASSERT_TRUE(v.length == 3);
   ASSERT_TRUE(memcmp(v.data, "abc", 3) == 0);
 
-  XStrview z = x_strview_from_smallstr(NULL);
+  XSlice z = x_slice_from_smallstr(NULL);
   ASSERT_TRUE(z.length == 0);
   return 0;
 }
 
-int test_x_smallstr_append_strview_normal()
+int test_x_smallstr_append_slice_normal()
 {
   XSmallstr s;
   x_smallstr_clear(&s);
-  XStrview a = x_strview("foo");
-  XStrview b = x_strview("bar");
-  x_smallstr_append_strview(&s, a);
-  x_smallstr_append_strview(&s, b);
+  XSlice a = x_slice("foo");
+  XSlice b = x_slice("bar");
+  x_smallstr_append_slice(&s, a);
+  x_smallstr_append_slice(&s, b);
   ASSERT_TRUE(strcmp(x_smallstr_cstr(&s), "foobar") == 0);
   return 0;
 }
@@ -519,19 +519,19 @@ int test_x_smallstr_appendf_truncate()
   return 0;
 }
 
-int test_x_strview_contains_char()
+int test_x_slice_contains_char()
 {
-  XStrview sv = x_strview("hello");
-  ASSERT_TRUE(x_strview_contains_char(sv, 'e'));
-  ASSERT_TRUE(!x_strview_contains_char(sv, 'z'));
+  XSlice sv = x_slice("hello");
+  ASSERT_TRUE(x_slice_contains_char(sv, 'e'));
+  ASSERT_TRUE(!x_slice_contains_char(sv, 'z'));
   return 0;
 }
 
-int test_x_strview_contains_utf8()
+int test_x_slice_contains_utf8()
 {
-  XStrview sv = x_strview("a🌍b");
-  ASSERT_TRUE(x_strview_contains_utf8(sv, 0x1F30D));  // EARTH GLOBE EUROPE-AFRICA
-  ASSERT_TRUE(!x_strview_contains_utf8(sv, 0x1F600)); // 😀 not present
+  XSlice sv = x_slice("a🌍b");
+  ASSERT_TRUE(x_slice_contains_utf8(sv, 0x1F30D));  // EARTH GLOBE EUROPE-AFRICA
+  ASSERT_TRUE(!x_slice_contains_utf8(sv, 0x1F600)); // 😀 not present
   return 0;
 }
 
@@ -547,15 +547,15 @@ int test_x_smallstr_contains_char()
 
 int test_x_smallstr_join_basic()
 {
-  XStrview parts[3];
-  parts[0] = x_strview("red");
-  parts[1] = x_strview("green");
-  parts[2] = x_strview("blue");
+  XSlice parts[3];
+  parts[0] = x_slice("red");
+  parts[1] = x_slice("green");
+  parts[2] = x_slice("blue");
 
   XSmallstr dst;
   x_smallstr_clear(&dst);
 
-  x_smallstr_join(&dst, parts, 3, x_strview(","));
+  x_smallstr_join(&dst, parts, 3, x_slice(","));
   ASSERT_TRUE(strcmp(x_smallstr_cstr(&dst), "red,green,blue") == 0);
   return 0;
 }
@@ -565,7 +565,7 @@ int test_x_smallstr_join_empty_sep_and_zero()
   XSmallstr dst;
   x_smallstr_clear(&dst);
 
-  size_t n = x_smallstr_join(&dst, NULL, 0, x_strview(""));
+  size_t n = x_smallstr_join(&dst, NULL, 0, x_slice(""));
   ASSERT_TRUE(n == 0);
   ASSERT_TRUE(strcmp(x_smallstr_cstr(&dst), "") == 0);
   return 0;
@@ -574,16 +574,16 @@ int test_x_smallstr_join_empty_sep_and_zero()
 int test_x_smallstr_join_truncate()
 {
   // make long entries to force truncation
-  XStrview parts[4] = {
-    x_strview_from_cstr("AAAAA AAAAA AAAAA AAAAA"),
-    x_strview_from_cstr("BBBBB BBBBB BBBBB BBBBB"),
-    x_strview_from_cstr("CCCCC CCCCC CCCCC CCCCC"),
-    x_strview_from_cstr("DDDDD DDDDD DDDDD DDDDD"),
+  XSlice parts[4] = {
+    x_slice_from_cstr("AAAAA AAAAA AAAAA AAAAA"),
+    x_slice_from_cstr("BBBBB BBBBB BBBBB BBBBB"),
+    x_slice_from_cstr("CCCCC CCCCC CCCCC CCCCC"),
+    x_slice_from_cstr("DDDDD DDDDD DDDDD DDDDD"),
   };
 
   XSmallstr dst;
   x_smallstr_clear(&dst);
-  x_smallstr_join(&dst, parts, 4, x_strview("|"));
+  x_smallstr_join(&dst, parts, 4, x_slice("|"));
 
   ASSERT_TRUE(dst.length <= X_SMALLSTR_MAX_LENGTH);
   ASSERT_TRUE(dst.buf[ dst.length ] == '\0');
@@ -623,7 +623,7 @@ int test_x_smallstr_try_append_cstr_ok_and_count()
   return 0;
 }
 
-int test_x_smallstr_append_strview_truncate()
+int test_x_smallstr_append_slice_truncate()
 {
   XSmallstr s;
   x_smallstr_clear(&s);
@@ -634,13 +634,13 @@ int test_x_smallstr_append_strview_truncate()
   s.length = keep; 
   s.buf[s.length] = '\0';
 
-  XStrview tail = x_strview("TAIL"); // 4 bytes
+  XSlice tail = x_slice("TAIL"); // 4 bytes
   size_t prev = s.length;
 
   size_t before_free = X_SMALLSTR_MAX_LENGTH - prev;
   size_t expected_added = (tail.length <= before_free) ? tail.length : before_free;
 
-  x_smallstr_append_strview(&s, tail);
+  x_smallstr_append_slice(&s, tail);
 
   ASSERT_TRUE(s.length == prev + expected_added);
   ASSERT_TRUE(s.buf[s.length] == '\0');
@@ -692,17 +692,17 @@ int main()
 
   STDXTestCase tests[] =
   {
-    X_TEST(test_x_strview_utf8_ends_with_cstr),
-    X_TEST(test_x_strview_utf8_starts_with_cstr),
-    X_TEST(test_x_strview_utf8_next_token),
-    X_TEST(test_x_strview_utf8_find_cp),
-    X_TEST(test_x_strview_utf8_rfind),
-    X_TEST(test_x_strview_utf8_split_at),
+    X_TEST(test_x_slice_utf8_ends_with_cstr),
+    X_TEST(test_x_slice_utf8_starts_with_cstr),
+    X_TEST(test_x_slice_utf8_next_token),
+    X_TEST(test_x_slice_utf8_find_cp),
+    X_TEST(test_x_slice_utf8_rfind),
+    X_TEST(test_x_slice_utf8_split_at),
 
     X_TEST(test_wsmallstr_functions),
-    X_TEST(test_xwstrview_basic),
-    X_TEST(test_xwstrview_trim),
-    X_TEST(test_xwstrview_substr),
+    X_TEST(test_xwslice_basic),
+    X_TEST(test_xwslice_trim),
+    X_TEST(test_xwslice_substr),
 
     X_TEST(test_chinese_wcstr),
     X_TEST(test_arabic_wcstr),
@@ -721,24 +721,24 @@ int main()
     X_TEST(test_x_smallstr_clear),
     X_TEST(test_str_hash),
 
-    X_TEST(test_x_strview_empty),
-    X_TEST(test_x_strview_eq_and_cmp),
-    X_TEST(test_x_strview_ci_eq_and_cmp),
-    X_TEST(test_x_strview_substr),
-    X_TEST(test_x_strview_trim),
-    X_TEST(test_x_strview_find_and_rfind),
-    X_TEST(test_x_strview_split_at),
-    X_TEST(test_x_wstrview_next_token),
+    X_TEST(test_x_slice_empty),
+    X_TEST(test_x_slice_eq_and_cmp),
+    X_TEST(test_x_slice_ci_eq_and_cmp),
+    X_TEST(test_x_slice_substr),
+    X_TEST(test_x_slice_trim),
+    X_TEST(test_x_slice_find_and_rfind),
+    X_TEST(test_x_slice_split_at),
+    X_TEST(test_x_wslice_next_token),
 
-    X_TEST(test_x_strview_from_cstr_basic),
-    X_TEST(test_x_strview_from_smallstr_basic),
-    X_TEST(test_x_smallstr_append_strview_normal),
-    X_TEST(test_x_smallstr_append_strview_truncate),
+    X_TEST(test_x_slice_from_cstr_basic),
+    X_TEST(test_x_slice_from_smallstr_basic),
+    X_TEST(test_x_smallstr_append_slice_normal),
+    X_TEST(test_x_smallstr_append_slice_truncate),
     X_TEST(test_x_smallstr_append_n_basic),
     X_TEST(test_x_smallstr_appendf_basic),
     X_TEST(test_x_smallstr_appendf_truncate),
-    X_TEST(test_x_strview_contains_char),
-    X_TEST(test_x_strview_contains_utf8),
+    X_TEST(test_x_slice_contains_char),
+    X_TEST(test_x_slice_contains_utf8),
     X_TEST(test_x_smallstr_contains_char),
     X_TEST(test_x_smallstr_join_basic),
     X_TEST(test_x_smallstr_join_empty_sep_and_zero),

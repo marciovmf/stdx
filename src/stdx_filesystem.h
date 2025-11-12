@@ -110,10 +110,10 @@ extern "C" {
   // Path manipulation
 #define       x_fs_path(out, ...) x_fs_path_(out, __VA_ARGS__, 0)
 #define       x_fs_path_join(path, ...) x_fs_path_join_(path, __VA_ARGS__, 0)
-#define       x_fs_path_join_strview(path, ...) x_fs_path_join_strview_(path, __VA_ARGS__, 0)
+#define       x_fs_path_join_slice(path, ...) x_fs_path_join_slice_(path, __VA_ARGS__, 0)
   XFSPath*    x_fs_path_normalize(XFSPath* input);
-  XStrview    x_fs_path_basename(const char* input);
-  XStrview    x_fs_path_dirname(const char* input);
+  XSlice    x_fs_path_basename(const char* input);
+  XSlice    x_fs_path_dirname(const char* input);
   bool        x_fs_path_(XFSPath* out, ...);
   bool        x_fs_path_exists(const XFSPath* path);
   bool        x_fs_path_exists_cstr(const char* path);
@@ -136,8 +136,8 @@ extern "C" {
   int32_t     x_fs_path_compare_cstr(const XFSPath* a, const char* cstr); // ignores separator type
   bool        x_fs_path_eq(const XFSPath* a, const XSmallstr* b);
   bool        x_fs_path_eq_cstr(const XFSPath* a, const char* b);
-  XStrview    x_fs_path_extension(const char* input);
-  size_t      x_fs_path_from_strview(XStrview sv, XFSPath* out);
+  XSlice    x_fs_path_extension(const char* input);
+  size_t      x_fs_path_from_slice(XSlice sv, XFSPath* out);
   size_t      x_fs_path_join_(XFSPath* path, ...);
   size_t      x_fs_path_relative_to_cstr(const char* from_path, const char* to_path, XFSPath* out_path);
   size_t      x_fs_path_common_prefix (const char* from_path, const char* to_path, XFSPath* out_path);
@@ -242,7 +242,7 @@ extern "C" {
 #endif
   };
 
-  int32_t x_fs_path_join_one_strview(XFSPath* out, const XStrview segment)
+  int32_t x_fs_path_join_one_slice(XFSPath* out, const XSlice segment)
   {
     if (!out || !segment.data) return false;
 
@@ -369,8 +369,8 @@ extern "C" {
   {
     XFSPath program_path, cwd;
     size_t bytesCopied = x_fs_path_from_executable(&program_path);
-    XStrview dirname = x_fs_path_dirname((const char*) &program_path);
-    x_fs_path_from_strview(dirname, &cwd);
+    XSlice dirname = x_fs_path_dirname((const char*) &program_path);
+    x_fs_path_from_slice(dirname, &cwd);
     x_fs_cwd_set((const char*) &cwd);
     return bytesCopied;
   }
@@ -876,7 +876,7 @@ extern "C" {
     return (int) path->length;
   }
 
-  size_t x_fs_path_join_strview_(XFSPath* path, ...)
+  size_t x_fs_path_join_slice_(XFSPath* path, ...)
   {
     va_list args;
     va_start(args, path);
@@ -886,10 +886,10 @@ extern "C" {
 
     bool join_success = true;
 
-    const XStrview* segment = NULL;
-    while (join_success && (segment = va_arg(args, const XStrview*)) != NULL)
+    const XSlice* segment = NULL;
+    while (join_success && (segment = va_arg(args, const XSlice*)) != NULL)
     {
-      join_success &= x_fs_path_join_one_strview(path, *segment);
+      join_success &= x_fs_path_join_one_slice(path, *segment);
     }
     va_end(args);
 
@@ -978,19 +978,19 @@ extern "C" {
     return input;
   }
 
-  XStrview x_fs_path_basename(const char* input)
+  XSlice x_fs_path_basename(const char* input)
   {
-    XStrview empty = {0};
+    XSlice empty = {0};
     if (!input)
       return empty;
 
     const char* last_sep = find_last_path_separator(input);
-    return x_strview(last_sep ? last_sep + 1 : input);
+    return x_slice(last_sep ? last_sep + 1 : input);
   }
 
-  XStrview x_fs_path_dirname(const char* input)
+  XSlice x_fs_path_dirname(const char* input)
   {
-    XStrview empty =
+    XSlice empty =
     {0};
     if (!input) return empty;
 
@@ -1010,19 +1010,19 @@ extern "C" {
       // Root case: "/file" → "/"
       char root[2] =
       { *last_sep, '\0' };
-      return (XStrview){.data = root, .length = 1 };
+      return (XSlice){.data = root, .length = 1 };
     }
 
-    return (XStrview){.data = input, .length = len };
+    return (XSlice){.data = input, .length = len };
   }
 
-  XStrview x_fs_path_extension(const char* input)
+  XSlice x_fs_path_extension(const char* input)
   {
     const char* dot = strrchr(input, '.');
     if (!dot || strrchr(input, PATH_SEPARATOR) > dot)
-      return x_strview("");
+      return x_slice("");
 
-    return x_strview(dot + 1);
+    return x_slice(dot + 1);
   }
 
   size_t x_fs_path_change_extension(XFSPath* path, const char* new_ext)
@@ -1320,9 +1320,9 @@ extern "C" {
     return x_fs_path_exists_quick_cstr(x_fs_path_cstr(path));
   }
 
-  size_t x_fs_path_from_strview(XStrview sv, XFSPath* out)
+  size_t x_fs_path_from_slice(XSlice sv, XFSPath* out)
   {
-    return x_smallstr_from_strview(sv, out);
+    return x_smallstr_from_slice(sv, out);
   }
 
   bool x_fs_file_stat(const char* path, FSFileStat* out_stat)
