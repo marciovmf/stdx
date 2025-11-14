@@ -1,0 +1,59 @@
+
+Terminals:
+EOL = line break
+WS = space or tab
+IDENT = [A-Za-z_][A-Za-z0-9_]*
+TEXT = any run of non-EOL characters (may include spaces)
+DocComment      ::= "/**" EOL? DocBody "*/"
+
+DocBody         ::= ( Paragraph | TagBlock | EmptyLine )*
+Paragraph       ::= TextLine (EOL TextLine)* EOL?
+TagBlock        ::= TagLine (EOL ContLine)*
+EmptyLine       ::= EOL
+
+TextLine        ::= TEXT                     // line NOT starting with '@'
+TagLine         ::= "@" IDENT (WS IDENT)? (WS TEXT)?
+ContLine        ::= TEXT                     // continuation: a line NOT starting with '@'
+
+
+Semantics:
+Paragraph: consecutive non-@ lines form free text. The first non-empty line of the first paragraph is your implicit @brief unless an explicit @brief tag appears.
+TagBlock:
+@param <name> <desc…> → param with name and description.
+@return <desc…>
+@brief <desc…>
+@note <desc…>
+@deprecated <desc…>
+
+ - Any following normalized lines that do not start with @ are continuations of the current tag’s text (joined with spaces or newlines; your choice).
+ - Empty normalized lines separate paragraphs but do not break a TagBlock (they’re appended to the current tag as a blank line if you keep paragraphing inside tags).
+ - Scanner guardrails
+ - Recognize a doc block only if you see "/**" not immediately followed by / (i.e., ignore the empty token /**/).
+ - Stop at the first */.
+ - Strings/char literals are skipped before comment detection, so "/**" inside quotes doesn’t trigger.
+ - Tiny, deterministic rules for edge cases
+ - Lines may have * or not; normalization makes them equivalent.
+ - Tabs/spaces anywhere around * are fine.
+ - Continuation is purely lexical: if a normalized line starts with @, it begins a new TagBlock; otherwise it’s a continuation of the current TagBlock (if any) or part of a Paragraph.
+
+
+# Example
+
+/**
+* First line is the brief.
+  Second line of the same paragraph.
+
+* @param user  pointer to user data
+  may continue here, even without '*'
+*   and keep going if indented
+* @return status code
+*/
+
+
+/**
+ * @brief Opens the thing.
+ * @param path  file path
+   accepts continuation without '*'
+ *
+   A free-text paragraph after tags.
+ */
