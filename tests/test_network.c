@@ -1,6 +1,6 @@
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_NETWORK
+#define X_IMPL_NETWORK
 #include <stdx_network.h>
 #include <string.h>
 #include <stdio.h>
@@ -142,14 +142,14 @@ int main()
 
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_get_adapters_info),
-    STDX_TEST(test_tcp_socket),
-    STDX_TEST(test_udp_socket),
-    STDX_TEST(test_bind_listen_accept),
-    STDX_TEST(test_address_resolution),
-    STDX_TEST(test_udp_send_recv),
-    STDX_TEST(test_multicast_ipv4),
-    STDX_TEST(test_multicast_ipv6),
+    X_TEST(test_get_adapters_info),
+    X_TEST(test_tcp_socket),
+    X_TEST(test_udp_socket),
+    X_TEST(test_bind_listen_accept),
+    X_TEST(test_address_resolution),
+    X_TEST(test_udp_send_recv),
+    X_TEST(test_multicast_ipv4),
+    X_TEST(test_multicast_ipv6),
   };
 
   int result = stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

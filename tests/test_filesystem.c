@@ -1,6 +1,6 @@
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_FILESYSTEM
+#define X_IMPL_FILESYSTEM
 #include <stdx_filesystem.h>
 #include <stdx_string.h>
 
@@ -58,23 +58,23 @@ int test_x_fs_path_normalize(void)
 
 int test_x_fs_path_basename(void)
 {
-  XStrview base = x_fs_path_basename("/usr/local/bin/gcc");
-  ASSERT_TRUE(x_strview_eq(base, x_strview("gcc")));
+  XSlice base = x_fs_path_basename("/usr/local/bin/gcc");
+  ASSERT_TRUE(x_slice_eq(base, x_slice("gcc")));
   return 0;
 }
 
 int test_x_fs_path_dirname(void)
 {
-  XStrview dirname = x_fs_path_dirname("/usr/local/bin/gcc");
-  ASSERT_TRUE(x_strview_eq(dirname, x_strview("/usr/local/bin")));
+  XSlice dirname = x_fs_path_dirname("/usr/local/bin/gcc");
+  ASSERT_TRUE(x_slice_eq(dirname, x_slice("/usr/local/bin")));
   return 0;
 }
 
 int test_x_fs_path_extension(void)
 {
-  XStrview ext = x_fs_path_extension("/foo/bar/biz/bald/foo.tar.gz");
-  ASSERT_FALSE(x_strview_is_empty(ext));
-  ASSERT_TRUE(x_strview_eq_cstr(ext, "gz"));
+  XSlice ext = x_fs_path_extension("/foo/bar/biz/bald/foo.tar.gz");
+  ASSERT_FALSE(x_slice_is_empty(ext));
+  ASSERT_TRUE(x_slice_eq_cstr(ext, "gz"));
   return 0;
 }
 
@@ -177,12 +177,12 @@ int test_x_fs_path_functions(void)
   ASSERT_FALSE(x_fs_path_is_directory_cstr("nonexistent.txt"));
   ASSERT_FALSE(x_fs_path_is_file_cstr("."));
 
-  XStrview name = x_fs_path_basename("/usr/bin/clang");
+  XSlice name = x_fs_path_basename("/usr/bin/clang");
   ASSERT_TRUE(strncmp(name.data, "clang", name.length) == 0);
-  XStrview ext = x_fs_path_extension("program.c");
+  XSlice ext = x_fs_path_extension("program.c");
   ASSERT_TRUE(strncmp(ext.data, "c", ext.length) == 0);
 
-  XStrview parent = x_fs_path_dirname("/usr/bin/clang");
+  XSlice parent = x_fs_path_dirname("/usr/bin/clang");
   ASSERT_TRUE(strncmp(parent.data, "/usr/bin", parent.length) == 0);
 
   XFSPath path;
@@ -273,27 +273,27 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_x_fs_path_executable_path),
-    STDX_TEST(test_x_fs_path_init_and_set),
-    STDX_TEST(test_x_fs_path_normalize),
-    STDX_TEST(test_x_fs_path_basename),
-    STDX_TEST(test_x_fs_path_dirname),
-    STDX_TEST(test_x_fs_path_extension),
-    STDX_TEST(test_x_fs_path_extension_change),
-    STDX_TEST(test_x_fs_path_is_absolute),
-    STDX_TEST(test_x_fs_path_relative),
-    STDX_TEST(test_x_fs_path_split),
-    STDX_TEST(test_x_fs_path_exists),
+    X_TEST(test_x_fs_path_executable_path),
+    X_TEST(test_x_fs_path_init_and_set),
+    X_TEST(test_x_fs_path_normalize),
+    X_TEST(test_x_fs_path_basename),
+    X_TEST(test_x_fs_path_dirname),
+    X_TEST(test_x_fs_path_extension),
+    X_TEST(test_x_fs_path_extension_change),
+    X_TEST(test_x_fs_path_is_absolute),
+    X_TEST(test_x_fs_path_relative),
+    X_TEST(test_x_fs_path_split),
+    X_TEST(test_x_fs_path_exists),
 
-    STDX_TEST(test_x_fs_path_equality),
-    STDX_TEST(test_x_fs_path_functions),
-    STDX_TEST(test_x_fs_file_operations),
-    STDX_TEST(test_x_fs_directory_operations),
-    STDX_TEST(test_x_fs_cwd_functions),
-    STDX_TEST(test_x_fs_directory_traversal),
-    STDX_TEST(test_x_fs_temp_folder),
+    X_TEST(test_x_fs_path_equality),
+    X_TEST(test_x_fs_path_functions),
+    X_TEST(test_x_fs_file_operations),
+    X_TEST(test_x_fs_directory_operations),
+    X_TEST(test_x_fs_cwd_functions),
+    X_TEST(test_x_fs_directory_traversal),
+    X_TEST(test_x_fs_temp_folder),
 
-    STDX_TEST(test_x_fs_watch_empty),
+    X_TEST(test_x_fs_watch_empty),
 
   };
 

@@ -2,20 +2,15 @@
  * STDX - Common
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
  * Provides portable macros and types for different taks such as os detection,
  * architecture detection, compiler detection, bit manipulation, dll
  * export/import macros, assertions and more.
- *
- * Header-only and modular. Designed for performance and flexibility.
- *
- * Author: marciovmf
- * License: MIT
- * Usage: #include <stdx_common.h>
  */
 
-#ifndef STDX_COMMON_H
-#define STDX_COMMON_H
+#ifndef X_COMMON_H
+#define X_COMMON_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,11 +18,11 @@ extern "C" {
 #endif
 
 
-#define STDX_COMMON_VERSION_MAJOR 1
-#define STDX_COMMON_VERSION_MINOR 0
-#define STDX_COMMON_VERSION_PATCH 0
+#define X_COMMON_VERSION_MAJOR 1
+#define X_COMMON_VERSION_MINOR 0
+#define X_COMMON_VERSION_PATCH 0
 
-#define STDX_COMMON_VERSION (STDX_COMMON_VERSION_MAJOR * 10000 + STDX_COMMON_VERSION_MINOR * 100 + STDX_COMMON_VERSION_PATCH)
+#define X_COMMON_VERSION (X_COMMON_VERSION_MAJOR * 10000 + X_COMMON_VERSION_MINOR * 100 + X_COMMON_VERSION_PATCH)
 
   // -----------------------------------------------------------------------------
   // Compiler Detection macros
@@ -125,9 +120,9 @@ extern "C" {
   // DLL import/export
   // ----------------------------------------------------------------------------
 
-#if defined(PLAT_OS_WINDOWS)
-#define PLAT_EXPORT __declspec(dllexport)
-#define PLAT_IMPORT __declspec(dllimport)
+#if defined(X_OS_WINDOWS)
+#define X_PLAT_EXPORT __declspec(dllexport)
+#define X_PLAT_IMPORT __declspec(dllimport)
 #else
 #define PLAT_EXPORT __attribute__((visibility("default")))
 #define PLAT_IMPORT
@@ -250,7 +245,7 @@ extern "C" {
 #endif // X_OS_WINDOWS
 
 #include <stdint.h>
-#ifdef DEBUG
+#if defined(_DEBUG) || defined(DEBUG)
 #include <stdio.h>
 #endif
 
@@ -264,9 +259,16 @@ extern "C" {
   typedef int64_t   i64;
   typedef uint64_t  u64;
 
+  typedef struct XSize_t { i32 w, h; }  XSize;
+  typedef struct XPoint_t { i32 x, y; } XPoint;
+
+#ifndef X_ARRAY_COUNT
+#define X_ARRAY_COUNT(a) (sizeof(a)/sizeof((a)[0]))
+#endif
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif //STDX_COMMON_H
+#endif //X_COMMON_H
 

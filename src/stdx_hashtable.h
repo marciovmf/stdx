@@ -2,47 +2,43 @@
  * STDX - Generic Hashtable
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * Provides a generic, type-agnostic hashtable implementation with 
- * customizable hash and equality functions. Supports arbitrary key 
- * and value types, optional custom allocators, and built-in iteration.
- * 
- * Includes helpers for common cases like string keys.
- *
- * Header-only and modular. Designed for performance and flexibility.
- *
- * To compile the implementation, define:
- *     #define STDX_IMPLEMENTATION_HASHTABLE
+ * To compile the implementation define X_IMPL_HASHTABLE
  * in **one** source file before including this header.
  *
- * Author: marciovmf
- * License: MIT
- * Dependencies: stdx_arena.h stdx_allocator.h
- * Usage: #include "stdx_hashtable.h"
+ * To customize how this module allocates memory, define
+ * X_HASHTABLE_ALLOC / X_HASHTABLE_REALLOC / X_HASHTABLE_FREE before including.
+ *
+ * Notes:
+ *  - Provides a generic, type-agnostic hashtable implementation with 
+ *  customizable hash and equality functions. Supports arbitrary key 
+ *  and value types, optional custom allocators, and built-in iteration.
+ *  - Includes helpers for common cases like string keys.
+ *
+ * Dependencies:
+ *  stdx_arena.h
  */
 
-#ifndef STDX_HASHTABLE_H
-#define STDX_HASHTABLE_H
+#ifndef X_HASHTABLE_H
+#define X_HASHTABLE_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
-#define STDX_HASHTABLE_VERSION_MAJOR 1
-#define STDX_HASHTABLE_VERSION_MINOR 0
-#define STDX_HASHTABLE_VERSION_PATCH 0
-
-#define STDX_HASHTABLE_VERSION (STDX_HASHTABLE_VERSION_MAJOR * 10000 + STDX_HASHTABLE_VERSION_MINOR * 100 + STDX_HASHTABLE_VERSION_PATCH)
+#define X_HASHTABLE_VERSION_MAJOR 1
+#define X_HASHTABLE_VERSION_MINOR 0
+#define X_HASHTABLE_VERSION_PATCH 0
+#define X_HASHTABLE_VERSION (X_HASHTABLE_VERSION_MAJOR * 10000 + X_HASHTABLE_VERSION_MINOR * 100 + X_HASHTABLE_VERSION_PATCH)
 
 #define X_HASHTABLE_INITIAL_CAPACITY 16
 #define X_HASHTABLE_LOAD_FACTOR 0.75
 
-
 #include <stdx_common.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <string.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
   typedef size_t  (*XHashFnHash)(const void* key, size_t);
   typedef bool    (*XHashFnCompare)(const void* a, const void* b);
@@ -123,13 +119,26 @@ extern "C"
   bool x_hashtable_compare_cstr(const void* a, const void* b);
   void x_hashtable_free_cstr(void* a);
 
-#if defined(STDX_IMPLEMENTATION_HASHTABLE) || defined(STDX_DEV_LOCAL)
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef X_IMPL_HASHTABLE
 
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 #include <stdint.h>
+
+#ifndef X_HASHTABLE_ALLOC
+#define X_HASHTABLE_ALLOC(sz)        malloc(sz)
+#define X_HASHTABLE_FREE(p)          free(p)
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
   // Helpers for pointer arithmetic on keys/values arrays
   static inline void* key_at(XHashtable* t, size_t i)
@@ -169,7 +178,7 @@ extern "C"
 
   void x_hashtable_free_cstr(void* a)
   {
-    free(*(char**)a);
+    X_HASHTABLE_FREE(*(char**)a);
   }
 
   void x_hashtable_clone_cstr(void* dest, const void* src)
@@ -217,20 +226,20 @@ extern "C"
       XHashFnDestroy  fn_value_free
       )
   {
-    XHashtable* table = (XHashtable*)malloc(sizeof(XHashtable));
+    XHashtable* table = (XHashtable*)X_HASHTABLE_ALLOC(sizeof(XHashtable));
     if (!table) return NULL;
 
     size_t capacity = X_HASHTABLE_INITIAL_CAPACITY;
     table->entries = (XHashEntry*)calloc(capacity, sizeof(XHashEntry));
-    table->keys = malloc(key_size * capacity);
-    table->values = malloc(value_size * capacity);
+    table->keys = X_HASHTABLE_ALLOC(key_size * capacity);
+    table->values = X_HASHTABLE_ALLOC(value_size * capacity);
 
     if (!table->entries || !table->keys || !table->values)
     {
-      free(table->entries);
-      free(table->keys);
-      free(table->values);
-      free(table);
+      X_HASHTABLE_FREE(table->entries);
+      X_HASHTABLE_FREE(table->keys);
+      X_HASHTABLE_FREE(table->values);
+      X_HASHTABLE_FREE(table);
       return NULL;
     }
 
@@ -433,10 +442,10 @@ extern "C"
       }
     }
 
-    free(table->entries);
-    free(table->keys);
-    free(table->values);
-    free(table);
+    X_HASHTABLE_FREE(table->entries);
+    X_HASHTABLE_FREE(table->keys);
+    X_HASHTABLE_FREE(table->values);
+    X_HASHTABLE_FREE(table);
   }
 
   size_t x_hashtable_count(const XHashtable* table)
@@ -449,14 +458,14 @@ extern "C"
     if (!table || new_capacity <= table->capacity) return false;
 
     XHashEntry* new_entries = (XHashEntry*)calloc(new_capacity, sizeof(XHashEntry));
-    void* new_keys = malloc(table->key_size * new_capacity);
-    void* new_values = malloc(table->value_size * new_capacity);
+    void* new_keys = X_HASHTABLE_ALLOC(table->key_size * new_capacity);
+    void* new_values = X_HASHTABLE_ALLOC(table->value_size * new_capacity);
 
     if (!new_entries || !new_keys || !new_values)
     {
-      free(new_entries);
-      free(new_keys);
-      free(new_values);
+      X_HASHTABLE_FREE(new_entries);
+      X_HASHTABLE_FREE(new_keys);
+      X_HASHTABLE_FREE(new_values);
       return false;
     }
 
@@ -492,16 +501,16 @@ extern "C"
       }
     }
 
-    free(old_entries);
-    free(old_keys);
-    free(old_values);
+    X_HASHTABLE_FREE(old_entries);
+    X_HASHTABLE_FREE(old_keys);
+    X_HASHTABLE_FREE(old_values);
 
     return true;
   }
-#endif // STDX_IMPLEMENTATION_HASHTABLE
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // STDX_HASHTABLE_H
+#endif // X_IMPL_HASHTABLE
+#endif // X_HASHTABLE_H

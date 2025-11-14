@@ -2,42 +2,26 @@
  * STDX - Cross-Platform Networking API
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
- *
- * Provides a high-level, cross-platform socket networking API for C:
- *   - Unified socket creation and management for IPv4/IPv6 (TCP/UDP)
- *   - Support for non-blocking I/O via select/poll
- *   - Address resolution and string formatting utilities
- *   - DNS resolution (hostname to IP)
- *   - Multicast and broadcast support
- *   - Network adapter enumeration and querying
- *   - Portable error handling with human-readable messages
- *
- * All functions use consistent types and naming (XSocket, XAddress, etc.).
- *
- * To compile the implementation, define:
- *     #define STDX_IMPLEMENTATION_NETWORK
+ * License: MIT
+ * 
+ * To compile the implementation define X_IMPL_NET
  * in **one** source file before including this header.
  *
- * On windows, this library links with iphlpapi.lib and ws2_32.lib
+ * To customize how this module allocates memory, define
+ * X_NET_ALLOC / X_NET_FREE before including.
  *
- * Author: marciovmf
- * License: MIT
- * Usage: #include "stdx_network.h"
+ * Note:
+ *  - Provides a high-level, cross-platform socket networking API.
+ *  - On windows, this library links with iphlpapi.lib and ws2_32.lib
  */
 
-#ifndef XNET_H
-#define XNET_H
+#ifndef X_NETWORK_H
+#define X_NETWORK_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#define STDX_NETWORK_VERSION_MAJOR 1
-#define STDX_NETWORK_VERSION_MINOR 0
-#define STDX_NETWORK_VERSION_PATCH 0
-
-#define STDX_NETWORK_VERSION (STDX_NETWORK_VERSION_MAJOR * 10000 + STDX_NETWORK_VERSION_MINOR * 100 + STDX_NETWORK_VERSION_PATCH)
+#define X_NETWORK_VERSION_MAJOR 1
+#define X_NETWORK_VERSION_MINOR 0
+#define X_NETWORK_VERSION_PATCH 0
+#define X_NETWORK_VERSION (X_NETWORK_VERSION_MAJOR * 10000 + X_NETWORK_VERSION_MINOR * 100 + X_NETWORK_VERSION_PATCH)
 
 #include <stdint.h>
 #include <stdint.h>
@@ -45,27 +29,19 @@ extern "C"
 
 #if defined(_WIN32)
 #include <winsock2.h>
-#include <ws2tcpip.h>
+//#include <ws2tcpip.h>
   typedef SOCKET XSocket;
   typedef int32_t socklen_t;
 #else
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netinet/ip.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <unistd.h>
   typedef int32_t XSocket;
 #define INVALID_SOCKET (-1)
 #endif
 
-  typedef struct
-  {
-    int32_t family;
-    socklen_t addrlen;
-    struct sockaddr_storage addr;
-  } XAddress;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+  typedef struct XAddress XAddress;
 
   typedef enum
   {
@@ -88,91 +64,82 @@ extern "C"
   {
     int8_t name[128];
     int8_t description[256];
-    int8_t mac[18];      // MAC address XX:XX:XX:XX:XX:XX
-    int8_t ipv4[16];     // IPv4 address
-    int8_t ipv6[46];     // IPv6 address
-    uint64_t speed_bps;// Link speed in bits per second (if known)
-    bool is_wireless;  //
-    int32_t mtu;           // MTU size
+    int8_t mac[18];       /* MAC address XX:XX:XX:XX:XX:XX */
+    int8_t ipv4[16];      /* IPv4 address */
+    int8_t ipv6[46];      /* IPv6 address */
+    uint64_t speed_bps;   /* Link speed in bits per second (if known) */
+    bool is_wireless;
+    int32_t mtu;
     uint32_t ifindex;
   } XNetAdapterInfo;
 
   // Core
-  bool x_net_init(void);                                       // Initialize the networking subsystem.
-  void x_net_shutdown(void);                                    // Clean up the networking subsystem.
-  bool x_net_socket_is_valid(XSocket sock);                    // Check if a socket is valid.
-  void x_net_close(XSocket sock);                               // Close a socket.
-  int32_t  x_net_set_nonblocking(XSocket sock, int32_t nonblocking);    // Enable or disable non-blocking mode.
-
+  bool    x_net_init(void);                                                               // Initialize the networking subsystem.
+  void    x_net_shutdown(void);                                                           // Clean up the networking subsystem.
+  bool    x_net_socket_is_valid(XSocket sock);                                            // Check if a socket is valid.
+  void    x_net_close(XSocket sock);                                                      // Close a socket.
+  int32_t x_net_set_nonblocking(XSocket sock, int32_t nonblocking);                       // Enable or disable non-blocking mode.
   // Socket Creation
-  XSocket x_net_socket(XAddressFamily family, XSocketType type); // Create a socket with specified family and type.
-  XSocket x_net_socket_tcp4(void);                               // Create an IPv4 TCP socket.
-  XSocket x_net_socket_tcp6(void);                               // Create an IPv6 TCP socket.
-  XSocket x_net_socket_udp4(void);                               // Create an IPv4 UDP socket.
-  XSocket x_net_socket_udp6(void);                               // Create an IPv6 UDP socket.
-
+  XSocket x_net_socket(XAddressFamily family, XSocketType type);                          // Create a socket with specified family and type.
+  XSocket x_net_socket_tcp4(void);                                                        // Create an IPv4 TCP socket.
+  XSocket x_net_socket_tcp6(void);                                                        // Create an IPv6 TCP socket.
+  XSocket x_net_socket_udp4(void);                                                        // Create an IPv4 UDP socket.
+  XSocket x_net_socket_udp6(void);                                                        // Create an IPv6 UDP socket.
   // Bind, Listen, Connect
-  bool x_net_bind(XSocket sock, const XAddress* addr);          // Bind socket to a specific address.
-  bool x_net_bind_any(XSocket sock, XAddressFamily family, uint16_t port); // Bind socket to any local address of a given family.
-  bool x_net_bind_any_udp(XSocket sock);                        // Bind UDP socket to any IPv4 address.
-  bool x_net_bind_any_udp6(XSocket sock);                       // Bind UDP socket to any IPv6 address.
-  bool x_net_listen(XSocket sock, int32_t backlog);                 // Mark socket as listening for connections.
-  XSocket x_net_accept(XSocket sock, XAddress* out_addr);       // Accept an incoming connection.
-  int32_t x_net_connect(XSocket sock, const XAddress* addr);        // Connect to a remote address.
-
+  bool    x_net_bind(XSocket sock, const XAddress* addr);                                 // Bind socket to a specific address.
+  bool    x_net_bind_any(XSocket sock, XAddressFamily family, uint16_t port);             // Bind socket to any local address of a given family.
+  bool    x_net_bind_any_udp(XSocket sock);                                               // Bind UDP socket to any IPv4 address.
+  bool    x_net_bind_any_udp6(XSocket sock);                                              // Bind UDP socket to any IPv6 address.
+  bool    x_net_listen(XSocket sock, int32_t backlog);                                    // Mark socket as listening for connections.
+  XSocket x_net_accept(XSocket sock, XAddress* out_addr);                                 // Accept an incoming connection.
+  int32_t x_net_connect(XSocket sock, const XAddress* addr);                              // Connect to a remote address.
   // Send/Receive
-  size_t x_net_send(XSocket sock, const void* buf, size_t len);     // Send data on a connected socket.
-  size_t x_net_recv(XSocket sock, void* buf, size_t len);           // Receive data from a connected socket.
-  size_t x_net_sendto(XSocket sock, const void* buf, size_t len, const XAddress* addr); // Send data to a specific address.
-  size_t x_net_recvfrom(XSocket sock, void* buf, size_t len, XAddress* out_addr);      // Receive data from a socket and get sender's address.
-
+  size_t  x_net_send(XSocket sock, const void* buf, size_t len);                          // Send data on a connected socket.
+  size_t  x_net_recv(XSocket sock, void* buf, size_t len);                                // Receive data from a connected socket.
+  size_t  x_net_sendto(XSocket sock, const void* buf, size_t len, const XAddress* addr);  // Send data to a specific address.
+  size_t  x_net_recvfrom(XSocket sock, void* buf, size_t len, XAddress* out_addr);        // Receive data from a socket and get sender's address.
   // Polling
-  int32_t   x_net_select(XSocket* read_sockets, int32_t read_count, int32_t timeout_ms); // Wait for readability on multiple sockets.
-  int32_t   x_net_poll(XSocket sock, int32_t events, int32_t timeout_ms);   // Wait for specific events on a socket.
-
+  int32_t x_net_select(XSocket* read_sockets, int32_t read_count, int32_t timeout_ms);    // Wait for readability on multiple sockets.
+  int32_t x_net_poll(XSocket sock, int32_t events, int32_t timeout_ms);                   // Wait for specific events on a socket.
   // Address Utilities
-  bool  x_net_resolve(const int8_t* host, const int8_t* port, XAddressFamily family, XAddress* out_addr); // Resolve hostname and port to address.
-  int32_t   x_net_parse_ip(XAddressFamily family, const int8_t* ip, void* out_addr); // Parse IP string into raw address.
-  int32_t   x_net_format_address(const XAddress* addr, char* out_str, int32_t maxlen); // Format address as a string.
-
-  void  x_net_address_clear(XAddress* addr); // Clear the XAddress struct (zero it out).
-  void  x_net_address_any(XAddress* out_addr, int32_t family, uint16_t port); // Create "any" address for binding.
-  int32_t   x_net_address_from_ip_port(const int8_t* ip, uint16_t port, XAddress* out_addr); // Parse IP and port into XAddress.
-  int32_t   x_net_address_equal(const XAddress* a, const XAddress* b); // Compare two XAddress values.
-  int32_t   x_net_address_to_string(const XAddress* addr, char* buf, int32_t buf_len); // Format XAddress to string (IP:port).
-
+  bool    x_net_resolve(const int8_t* host, const int8_t* port, XAddressFamily family, XAddress* out_addr); // Resolve hostname and port to address.
+  int32_t x_net_parse_ip(XAddressFamily family, const int8_t* ip, void* out_addr);        // Parse IP string into raw address.
+  int32_t x_net_format_address(const XAddress* addr, char* out_str, int32_t maxlen);      // Format address as a string.
+  void    x_net_address_clear(XAddress* addr);                                            // Clear the XAddress struct (zero it out).
+  void    x_net_address_any(XAddress* out_addr, int32_t family, uint16_t port);           // Create "any" address for binding.
+  int32_t x_net_address_from_ip_port(const int8_t* ip, uint16_t port, XAddress* out_addr);// Parse IP and port into XAddress.
+  int32_t x_net_address_equal(const XAddress* a, const XAddress* b);                      // Compare two XAddress values.
+  int32_t x_net_address_to_string(const XAddress* addr, char* buf, int32_t buf_len);      // Format XAddress to string (IP:port).
   // DNS
-  int32_t   x_net_dns_resolve(const int8_t* hostname, XAddressFamily family, XAddress* out_addr); // Resolve hostname to address.
-
+  int32_t x_net_dns_resolve(const int8_t* hostname, XAddressFamily family, XAddress* out_addr); // Resolve hostname to address.
   // Multicast
-  bool  x_net_join_multicast_ipv4(XSocket sock, const int8_t* group); // Join an IPv4 multicast group.
-  bool  x_net_leave_multicast_ipv4(XSocket sock, const int8_t* group); // Leave an IPv4 multicast group.
-  bool  x_net_join_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex); // Join an IPv6 multicast group.
-  bool  x_net_leave_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex); // Leave an IPv6 multicast group.
-  bool  x_net_join_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr); // Join an IPv4 multicast group (using address struct).
-  bool  x_net_leave_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr); // Leave an IPv4 multicast group (using address struct).
-
+  bool    x_net_join_multicast_ipv4(XSocket sock, const int8_t* group);                   // Join an IPv4 multicast group.
+  bool    x_net_leave_multicast_ipv4(XSocket sock, const int8_t* group);                  // Leave an IPv4 multicast group.
+  bool    x_net_join_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex); // Join an IPv6 multicast group.
+  bool    x_net_leave_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex); // Leave an IPv6 multicast group.
+  bool    x_net_join_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr);       // Join an IPv4 multicast group (using address struct).
+  bool    x_net_leave_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr);      // Leave an IPv4 multicast group (using address struct).
   // Broadcast
-  bool  x_net_enable_broadcast(XSocket sock, bool enable); // Enable or disable broadcast on a socket.
-
+  bool    x_net_enable_broadcast(XSocket sock, bool enable);                              // Enable or disable broadcast on a socket.
   // Adapter information
-  int32_t   x_net_get_adapter_count(void); // Returns the number of network adapters on the system, or -1 on error.
-  int32_t   x_net_list_adapters(XNetAdapter* out_adapters, int32_t max_adapters); // List all available network adapters. Returns the number found, or -1 on error.
-  bool  x_net_get_adapter_info(const int8_t* name, XNetAdapterInfo* out_info); // Get detailed information about an adapter by name. Returns 0 on success, -1 on error.
-
+  int32_t x_net_get_adapter_count(void);                                                  // Returns the number of network adapters on the system, or -1 on error.
+  int32_t x_net_list_adapters(XNetAdapter* out_adapters, int32_t max_adapters);           // List all available network adapters. Returns the number found, or -1 on error.
+  bool    x_net_get_adapter_info(const int8_t* name, XNetAdapterInfo* out_info);          // Get detailed information about an adapter by name. Returns 0 on success, -1 on error.
   // Error handling
-  int32_t   x_net_get_last_error(void); // Returns the last network error code for the current thread/process. On Windows, this returns WSAGetLastError(). On POSIX, it returns errno.
-  int32_t   x_net_get_last_error_message(char* buf, int32_t buf_len);   // Writes a human-readable error message for the last network error into `buf`. Returns 0 on success, or -1 on failure (e.g., buffer too small).
+  int32_t x_net_get_last_error(void);                                                     // Returns the last network error code for the current thread/process. On Windows, this returns WSAGetLastError(). On POSIX, it returns errno.
+  int32_t x_net_get_last_error_message(char* buf, int32_t buf_len);                       // Writes a human-readable error message for the last network error into `buf`. Returns 0 on success, or -1 on failure (e.g., buffer too small).
 
+#ifdef __cplusplus
+}
+#endif
 
-#ifdef STDX_IMPLEMENTATION_NETWORK
+#ifdef X_IMPL_NETWORK
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 #ifdef _WIN32
-  // Windows includes
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -180,9 +147,7 @@ extern "C"
 #include <windows.h>
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "ws2_32.lib")
-
 #else
-  // Linux/Unix includes
 #include <ifaddrs.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -192,12 +157,30 @@ extern "C"
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <netpacket/packet.h>
+#include <netinet/ip.h>
+#include <netdb.h>
+#endif
+
+#ifndef X_NET_ALLOC
+#define X_NET_ALLOC(sz)        malloc(sz)
+#define X_NET_FREE(p)          free(p)
 #endif
 
 #define X_NET_POLLIN  0x01
 #define X_NET_POLLOUT 0x02
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
   static bool x_net_initialized = false;
+
+  struct XAddress
+  {
+    int32_t family;
+    socklen_t addrlen;
+    struct sockaddr_storage addr;
+  };
 
   bool x_net_init(void)
   {
@@ -655,13 +638,13 @@ extern "C"
     DWORD ret = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &size);
     if (ret != ERROR_BUFFER_OVERFLOW) return -1;
 
-    IP_ADAPTER_ADDRESSES* adapters = (IP_ADAPTER_ADDRESSES*)malloc(size);
+    IP_ADAPTER_ADDRESSES* adapters = (IP_ADAPTER_ADDRESSES*)X_NET_ALLOC(size);
     if (!adapters) return -1;
 
     ret = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, adapters, &size);
     if (ret != NO_ERROR)
     {
-      free(adapters);
+      X_NET_FREE(adapters);
       return -1;
     }
 
@@ -672,7 +655,7 @@ extern "C"
       count++;
       adapter = adapter->Next;
     }
-    free(adapters);
+    X_NET_FREE(adapters);
     return count;
   }
 
@@ -682,13 +665,13 @@ extern "C"
     DWORD ret = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &size);
     if (ret != ERROR_BUFFER_OVERFLOW) return -1;
 
-    IP_ADAPTER_ADDRESSES* adapters = (IP_ADAPTER_ADDRESSES*)malloc(size);
+    IP_ADAPTER_ADDRESSES* adapters = (IP_ADAPTER_ADDRESSES*)X_NET_ALLOC(size);
     if (!adapters) return -1;
 
     ret = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, adapters, &size);
     if (ret != NO_ERROR)
     {
-      free(adapters);
+      X_NET_FREE(adapters);
       return -1;
     }
 
@@ -701,7 +684,7 @@ extern "C"
       count++;
       adapter = adapter->Next;
     }
-    free(adapters);
+    X_NET_FREE(adapters);
     return count;
   }
 
@@ -713,13 +696,13 @@ extern "C"
     DWORD ret = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, NULL, &size);
     if (ret != ERROR_BUFFER_OVERFLOW) return -1;
 
-    IP_ADAPTER_ADDRESSES* adapters = (IP_ADAPTER_ADDRESSES*)malloc(size);
+    IP_ADAPTER_ADDRESSES* adapters = (IP_ADAPTER_ADDRESSES*)X_NET_ALLOC(size);
     if (!adapters) return -1;
 
     ret = GetAdaptersAddresses(AF_UNSPEC, 0, NULL, adapters, &size);
     if (ret != NO_ERROR)
     {
-      free(adapters);
+      X_NET_FREE(adapters);
       return -1;
     }
 
@@ -776,13 +759,13 @@ extern "C"
           }
           addr = addr->Next;
         }
-        free(adapters);
+        X_NET_FREE(adapters);
         return 0;
       }
       adapter = adapter->Next;
     }
 
-    free(adapters);
+    X_NET_FREE(adapters);
     return -1; // Not found
   }
 
@@ -807,7 +790,7 @@ extern "C"
       ifa = ifa->ifa_next;
     }
 
-    freeifaddrs(ifaddr);
+    X_NET_FREEifaddrs(ifaddr);
     return count;
   }
 
@@ -833,7 +816,7 @@ extern "C"
       ifa = ifa->ifa_next;
     }
 
-    freeifaddrs(ifaddr);
+    X_NET_FREEifaddrs(ifaddr);
     return count;
   }
 
@@ -851,7 +834,7 @@ extern "C"
     int32_t sock = socket(AF_INET, SOCK_DGRAM, 0);
     if (sock < 0)
     {
-      freeifaddrs(ifaddr);
+      X_NET_FREEifaddrs(ifaddr);
       return -1;
     }
 
@@ -980,10 +963,9 @@ extern "C"
 #endif
   }
 
-#endif // STDX_IMPLEMENTATION_NETWORK
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif // XNET_H
+#endif // X_IMPL_NETWORK
+#endif // X_NETWORK_H

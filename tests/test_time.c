@@ -1,6 +1,6 @@
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_TIME
+#define X_IMPL_TIME
 #include <stdx_time.h>
 
 int test_timer_elapsed_positive()
@@ -70,12 +70,12 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_timer_elapsed_positive),
-    STDX_TEST(test_time_conversions),
-    STDX_TEST(test_time_arithmetic),
-    STDX_TEST(test_time_comparisons),
-    STDX_TEST(test_time_sleep),
-    STDX_TEST(test_time_now)
+    X_TEST(test_timer_elapsed_positive),
+    X_TEST(test_time_conversions),
+    X_TEST(test_time_arithmetic),
+    X_TEST(test_time_comparisons),
+    X_TEST(test_time_sleep),
+    X_TEST(test_time_now)
   };
 
   return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));

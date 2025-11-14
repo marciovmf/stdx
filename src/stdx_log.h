@@ -2,38 +2,27 @@
  * STDX - Logging Utilities
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
+ * To compile the implementation define X_IMPL_LOG
+ * in **one** source file before including this header.
+ *
+ * Notes:
  * Provides a flexible logging system with support for:
  *   - Logger initialization and cleanup
  *   - Log levels with color-coded output
  *   - Source location tagging (file, line, function)
  *   - Multiple log output targets selectable via flags
  *   - Convenience macros for common log levels (debug, info, warning, error, fatal)
- *
- * Designed for easy integration and customizable runtime logging control.
- *
- * To compile the implementation, define:
- *     #define STDX_IMPLEMENTATION_LOG
- * in **one** source file before including this header.
- *
- * Author: marciovmf
- * License: MIT
- * Usage: #include "stdx_log.h"
  */
 
-#ifndef STDX_LOG_H
-#define STDX_LOG_H
+#ifndef X_LOG_H
+#define X_LOG_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-#define STDX_LOG_VERSION_MAJOR 1
-#define STDX_LOG_VERSION_MINOR 0
-#define STDX_LOG_VERSION_PATCH 0
-
-#define STDX_LOG_VERSION (STDX_LOG_VERSION_MAJOR * 10000 + STDX_LOG_VERSION_MINOR * 100 + STDX_LOG_VERSION_PATCH)
+#define X_LOG_VERSION_MAJOR 1
+#define X_LOG_VERSION_MINOR 0
+#define X_LOG_VERSION_PATCH 0
+#define X_LOG_VERSION (X_LOG_VERSION_MAJOR * 10000 + X_LOG_VERSION_MINOR * 100 + X_LOG_VERSION_PATCH)
 
 #ifdef _WIN32
 #ifndef _CRT_SECURE_NO_WARNINGS
@@ -45,6 +34,10 @@ extern "C"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdbool.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
   typedef enum
   {
@@ -120,11 +113,31 @@ extern "C"
 #define x_log_error(fmt, ...)      logger_log(XLOG_LEVEL_ERROR,     XLOG_COLOR_RED,     XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
 #define x_log_fatal(fmt, ...)      do{ logger_log(XLOG_LEVEL_FATAL, XLOG_COLOR_WHITE,   XLOG_COLOR_RED,   XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__); X_LOG_BREAK();} while(0);
 
-#ifdef STDX_IMPLEMENTATION_LOG
 
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef X_IMPL_LOG
+
+#ifndef _CRT_SECURE_NO_WARNINGS 
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include <stdlib.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif 
+#include <windows.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
   static XLogger g_logger =
   {
@@ -162,20 +175,6 @@ extern "C"
       default:                   return 39 + ANSI_BACKGROUND; // reset to default
     }
   }
-
-#ifdef _WIN32
-
-#if _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif 
-
-#ifndef _CRT_SECURE_NO_WARNINGS 
-#define _CRT_SECURE_NO_WARNINGS 1
-#endif
-
-#include <windows.h>
-#endif
 
   /* Enable VT processing on Windows 10+ */
   static inline void enable_windows_vt(void)
@@ -408,12 +407,10 @@ extern "C"
     }
   }
 
-
-#endif //STDX_IMPLEMENTATION_LOG
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif // STDX_LOG_H
+#endif // X_IMPL_LOG
+#endif // X_LOG_H
 

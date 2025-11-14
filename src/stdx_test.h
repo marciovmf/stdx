@@ -2,6 +2,10 @@
  * STDX - Minimal Unit Test framework
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
+ *
+ * To compile the implementation define X_IMPL_TEST
+ * in **one** source file before including this header.
  *
  * Features:
  *   - Lightweight, self-contained C test runner
@@ -12,55 +16,50 @@
  * Usage:
  *   - Define your test functions to return int32_t (0 for pass, 1 for fail)
  *   - Use `ASSERT_*` macros for checks
- *   - Register with STDX_TEST(name) and run with `stdx_run_tests(...)`
- *   - Define STDX_IMPLEMENTATION_TEST before including to enable main runner
+ *   - Register with X_TEST(name) and run with `stdx_run_tests(...)`
+ *   - Define X_IMPL_TEST before including to enable main runner
  *
  * Example:
  *   int32_t test_example() {
  *     ASSERT_TRUE(2 + 2 == 4);
  *     return 0;
  *   }
+ *
  *   int32_t main() {
  *     STDXTestCase tests[] = {
- *       STDX_TEST(test_example)
+ *       X_TEST(test_example)
  *     };
  *     return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
  *   }
  *
- * To compile the implementation, define:
- *     #define STDX_IMPLEMENTATION_TEST
- * in **one** source file before including this header.
- *
- * Author: marciovmf
- * License: MIT
- * Dependencies: stdx_log.h
- * Usage: #include "stdx_test.h"
+ * Dependencies:
+ *  stdx_log.h
  */
-#ifndef STDX_TEST_H
-#define STDX_TEST_H
+#ifndef X_TEST_H
+#define X_TEST_H
+
+#define X_TEST_VERSION_MAJOR 1
+#define X_TEST_VERSION_MINOR 0
+#define X_TEST_VERSION_PATCH 0
+
+#define X_TEST_VERSION (X_TEST_VERSION_MAJOR * 10000 + X_TEST_VERSION_MINOR * 100 + X_TEST_VERSION_PATCH)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define STDX_TEST_VERSION_MAJOR 1
-#define STDX_TEST_VERSION_MINOR 0
-#define STDX_TEST_VERSION_PATCH 0
-
-#define STDX_TEST_VERSION (STDX_TEST_VERSION_MAJOR * 10000 + STDX_TEST_VERSION_MINOR * 100 + STDX_TEST_VERSION_PATCH)
-
-#ifdef STDX_IMPLEMENTATION_TEST
-  #ifndef STDX_IMPLEMENTATION_LOG
-    #define STDX_INTERNAL_LOGGER_IMPLEMENTATION
-    #define STDX_IMPLEMENTATION_LOG
+#ifdef X_IMPL_TEST
+  #ifndef X_IMPL_LOG
+    #define X_INTERNAL_LOGGER_IMPL
+    #define X_IMPL_LOG
   #endif
 #endif
 #include <stdx_log.h>
 
-#ifdef STDX_IMPLEMENTATION_TEST
-  #ifndef STDX_IMPLEMENTATION_TIME
-    #define STDX_INTERNAL_TIME_IMPLEMENTATION
-    #define STDX_IMPLEMENTATION_TIME
+#ifdef X_IMPL_TEST
+  #ifndef X_IMPL_TIME
+    #define X_INTERNAL_TIME_IMPL
+    #define X_IMPL_TIME
   #endif
 #endif
 #include <stdx_time.h>
@@ -69,12 +68,12 @@ extern "C" {
 #include <stdint.h>
 #include <math.h>
 
-#ifndef STDX_TEST_SUCCESS  
-#define STDX_TEST_SUCCESS 0
+#ifndef X_TEST_SUCCESS  
+#define X_TEST_SUCCESS 0
 #endif
 
-#ifndef STDX_TEST_FAIL  
-#define STDX_TEST_FAIL -1 
+#ifndef X_TEST_FAIL  
+#define X_TEST_FAIL -1 
 #endif
 
 #define XLOG_GREEN(msg, ...)  x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_GREEN, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
@@ -98,9 +97,9 @@ extern "C" {
   } \
 } while (0)
 
-#define STDX_TEST_FLOAT_EPSILON 0.1f
+#define X_TEST_FLOAT_EPSILON 0.1f
 #define ASSERT_FLOAT_EQ(actual, expected) do { \
-  if (fabs((actual) - (expected)) > STDX_TEST_FLOAT_EPSILON) { \
+  if (fabs((actual) - (expected)) > X_TEST_FLOAT_EPSILON) { \
     x_log_error("\t%s:%d: Assertion failed: %s == %s", __FILE__, __LINE__, #actual, #expected); \
     return 1; \
   } \
@@ -121,9 +120,13 @@ typedef struct
   STDXTestFunction func;
 } STDXTestCase;
 
-#define STDX_TEST(name) {#name, name}
+#define X_TEST(name) {#name, name}
 
-#ifdef STDX_IMPLEMENTATION_TEST
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef X_IMPL_TEST
 
 #include <stdio.h>
 #include <signal.h>
@@ -133,6 +136,10 @@ typedef struct
 #  include <windows.h>
 #else
 #  include <time.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 static void x_test_internalOnSignal(int signal)
@@ -197,23 +204,21 @@ int stdx_run_tests(STDXTestCase* tests, int32_t num_tests)
 
   return passed != num_tests;
 }
-#endif  // STDX_IMPLEMENTATION_TEST
-
-
-#ifdef STDX_INTERNAL_TIME_IMPLEMENTATION
-  #undef STDX_IMPLEMENTATION_TIME
-  #undef STDX_INTERNAL_TIME_IMPLEMENTATION
-#endif
-
-
-#ifdef STDX_INTERNAL_LOGGER_IMPLEMENTATION
-  #undef STDX_IMPLEMENTATION_LOG
-  #undef STDX_INTERNAL_LOG_IMPLEMENTATION
-#endif
-
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // STDX_TEST_H
+#endif  // X_IMPL_TEST
+
+#ifdef X_INTERNAL_TIME_IMPL
+  #undef X_IMPL_TIME
+  #undef X_INTERNAL_TIME_IMPL
+#endif
+
+
+#ifdef X_INTERNAL_LOGGER_IMPL
+  #undef X_IMPL_LOG
+  #undef X_INTERNAL_LOG_IMPL
+#endif
+#endif // X_TEST_H

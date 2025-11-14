@@ -2,40 +2,37 @@
  * STDX - Multithreading Utilities
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * Provides a portable threading abstraction for C programs. Includes:
+ * To compile the implementation define X_IMPL_THREAD
+ * in **one** source file before including this header.
+ *
+ * To customize how this module allocates memory, define
+ * X_THREAD_ALLOC / X_THREAD_FREE before including.
+ *
+ * Notes:
+ *  Designed to abstract platform-specific APIs (e.g., pthreads, Win32)
+ *  behind a consistent and lightweight int32_terface.
+ *  This header provides functions for:
  *   - Thread creation and joining
  *   - Mutexes and condition variables
  *   - Sleep/yield utilities
  *   - A thread pool for concurrent task execution
- *
- * Designed to abstract platform-specific APIs (e.g., pthreads, Win32)
- * behind a consistent and lightweight int32_terface.
- *
- * To compile the implementation, define:
- *     #define STDX_IMPLEMENTATION_THREAD
- * in **one** source file before including this header.
- *
- * Author: marciovmf
- * License: MIT
- * Dependencies: stdx_alloc.h (optional for thread pool)
- * Usage: #include "stdx_thread.h"
  */
 
-#ifndef STDX_THREAD_H
-#define STDX_THREAD_H
+#ifndef X_THREAD_H
+#define X_THREAD_H
+
+#include <stdint.h>
+
+#define X_THREADING_VERSION_MAJOR 1
+#define X_THREADING_VERSION_MINOR 0
+#define X_THREADING_VERSION_PATCH 0
+#define X_THREADING_VERSION (X_THREADING_VERSION_MAJOR * 10000 + X_THREADING_VERSION_MINOR * 100 + X_THREADING_VERSION_PATCH)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define STDX_THREADING_VERSION_MAJOR 1
-#define STDX_THREADING_VERSION_MINOR 0
-#define STDX_THREADING_VERSION_PATCH 0
-
-#define STDX_THREADING_VERSION (STDX_THREADING_VERSION_MAJOR * 10000 + STDX_THREADING_VERSION_MINOR * 100 + STDX_THREADING_VERSION_PATCH)
-
-#include <stdint.h>
 
   typedef struct XThread_t XThread;
   typedef struct XMutex_t XMutex;
@@ -44,19 +41,11 @@ extern "C" {
   typedef struct XTask_t XTask;
   typedef void (*XThreadTask_fn)(void* arg);
   typedef void* (*x_thread_func_t)(void*);
-
-  // ---------------------------------------------------------------------------
   // Basic thread operations
-  // ---------------------------------------------------------------------------
-
   int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg);
   void    x_thread_join(XThread* t);
   void    x_thread_destroy(XThread* t);
-
-  // ---------------------------------------------------------------------------
   // Thread Synchronization
-  // ---------------------------------------------------------------------------
-
   int32_t x_thread_mutex_init(XMutex** m);
   void    x_thread_mutex_lock(XMutex* m);
   void    x_thread_mutex_unlock(XMutex* m);
@@ -68,26 +57,40 @@ extern "C" {
   void    x_thread_condvar_destroy(XCondVar* cv);
   void    x_thread_sleep_ms(int ms);
   void    x_thread_yield();
-
-
-  // ---------------------------------------------------------------------------
   // Thread pool
-  // ---------------------------------------------------------------------------
+  XThreadPool*  threadpool_create(int num_threads);
+  int32_t       threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
+  void          threadpool_destroy(XThreadPool* pool);
 
-  XThreadPool* threadpool_create(int num_threads);
-  int32_t threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
-  void threadpool_destroy(XThreadPool* pool);
+#ifdef __cplusplus
+}
+#endif
 
-
-#ifdef STDX_IMPLEMENTATION_THREAD
+#ifdef X_IMPL_THREAD
 
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
 
 #ifdef _WIN32
-
 #include <windows.h>
+#else
+#include <pthread.h>
+#include <unistd.h>
+#include <sched.h>
+#include <time.h>
+#endif // _WIN32
+
+#ifndef X_THREAD_ALLOC
+#define X_THREAD_ALLOC(sz)        malloc(sz)
+#define X_THREAD_FREE(p)          free(p)
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifdef _WIN32
 
   struct XThread_t { HANDLE handle; };
   struct XMutex_t  { CRITICAL_SECTION cs; };
@@ -103,15 +106,15 @@ extern "C" {
   {
     struct XThreadWrapper* wrap = (struct XThreadWrapper*)param;
     void* result = wrap->func(wrap->arg);
-    free(wrap);
+    X_THREAD_FREE(wrap);
     return (DWORD)(uintptr_t)result;
   }
 
   int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg)
   {
     if (!t || !func) return -1;
-    *t = malloc(sizeof(XThread));
-    struct XThreadWrapper* wrap = malloc(sizeof(struct XThreadWrapper));
+    *t = X_THREAD_ALLOC(sizeof(XThread));
+    struct XThreadWrapper* wrap = X_THREAD_ALLOC(sizeof(struct XThreadWrapper));
     wrap->func = func;
     wrap->arg = arg;
     (*t)->handle = CreateThread(NULL, 0, x_thread_proc, wrap, 0, NULL);
@@ -128,12 +131,12 @@ extern "C" {
 
   void x_thread_destroy(XThread* t)
   {
-    if (t) free(t);
+    if (t) X_THREAD_FREE(t);
   }
 
   int32_t x_thread_mutex_init(XMutex** m)
   {
-    *m = malloc(sizeof(XMutex));
+    *m = X_THREAD_ALLOC(sizeof(XMutex));
     InitializeCriticalSection(&(*m)->cs);
     return 0;
   }
@@ -151,12 +154,12 @@ extern "C" {
   void x_thread_mutex_destroy(XMutex* m)
   {
     DeleteCriticalSection(&m->cs);
-    free(m);
+    X_THREAD_FREE(m);
   }
 
   int32_t x_thread_condvar_init(XCondVar** cv)
   {
-    *cv = malloc(sizeof(XCondVar));
+    *cv = X_THREAD_ALLOC(sizeof(XCondVar));
     InitializeConditionVariable(&(*cv)->cv);
     return 0;
   }
@@ -178,7 +181,7 @@ extern "C" {
 
   void x_thread_condvar_destroy(XCondVar* cv)
   {
-    free(cv);
+    X_THREAD_FREE(cv);
   }
 
   void x_thread_sleep_ms(int ms)
@@ -193,11 +196,6 @@ extern "C" {
 
 #else // POSIX
 
-#include <pthread.h>
-#include <unistd.h>
-#include <sched.h>
-#include <time.h>
-
   struct XThread { pXThread id; };
   struct mutex  { px_thread_XMutex m; };
   struct condvar { px_thread_cond_t cv; };
@@ -205,7 +203,7 @@ extern "C" {
   int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg)
   {
     if (!t || !func) return -1;
-    *t = malloc(sizeof(XThread));
+    *t = X_THREAD_ALLOC(sizeof(XThread));
     return px_thread_create(&(*t)->id, NULL, func, arg);
   }
 
@@ -218,11 +216,11 @@ extern "C" {
 
   void x_thread_destroy(XThread* t)
   {
-    if (t) free(t);
+    if (t) X_THREAD_FREE(t);
   }
 
   int32_t x_thread_mutexinit(XMutex** m) {
-    *m = malloc(sizeof(XMutex));
+    *m = X_THREAD_ALLOC(sizeof(XMutex));
     px_thread_x_thread_mutexinit(&(*m)->m, NULL);
     return 0;
   }
@@ -240,12 +238,12 @@ extern "C" {
   void x_thread_mutex_destroy(XMutex* m)
   {
     px_thread_x_thread_mutexdestroy(&m->m);
-    free(m);
+    X_THREAD_FREE(m);
   }
 
   int32_t x_thread_condvar_init(XCondVar** cv)
   {
-    *cv = malloc(sizeof(XCondVar));
+    *cv = X_THREAD_ALLOC(sizeof(XCondVar));
     px_thread_cond_init(&(*cv)->cv, NULL);
     return 0;
   }
@@ -268,7 +266,7 @@ extern "C" {
   void x_thread_condvar_destroy(XCondVar* cv)
   {
     px_thread_cond_destroy(&cv->cv);
-    free(cv);
+    X_THREAD_FREE(cv);
   }
 
   void x_thread_sleep_ms(int ms)
@@ -282,7 +280,7 @@ extern "C" {
     sched_yield();
   }
 
-#endif
+#endif // WIN_32
 
 #define THREADPOOL_MAGIC 0xDEADBEEF
 
@@ -337,7 +335,7 @@ extern "C" {
       if (task)
       {
         task->fn(task->arg);
-        free(task);
+        X_THREAD_FREE(task);
       }
     }
     return NULL;
@@ -366,7 +364,7 @@ extern "C" {
   {
     if (!fn || !pool || pool->magic != THREADPOOL_MAGIC) return -1;
 
-    XTask* task = malloc(sizeof(XTask));
+    XTask* task = X_THREAD_ALLOC(sizeof(XTask));
     task->fn = fn;
     task->arg = arg;
     task->next = NULL;
@@ -402,7 +400,7 @@ extern "C" {
       x_thread_destroy(pool->threads[i]);
     }
 
-    free(pool->threads);
+    X_THREAD_FREE(pool->threads);
     x_thread_mutex_destroy(pool->lock);
     x_thread_condvar_destroy(pool->cv);
 
@@ -411,17 +409,15 @@ extern "C" {
     {
       XTask* tmp = pool->head;
       pool->head = tmp->next;
-      free(tmp);
+      X_THREAD_FREE(tmp);
     }
 
-    free(pool);
+    X_THREAD_FREE(pool);
   }
-
-
-#endif  // STDX_IMPLEMENTATION_THREAD
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // STDX_THREAD_H
+#endif  // X_IMPL_THREAD
+#endif  // X_THREAD_H

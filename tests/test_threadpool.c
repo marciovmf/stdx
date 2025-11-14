@@ -1,7 +1,7 @@
 #include <stdx_common.h>
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_THREAD
+#define X_IMPL_THREAD
 #include <stdx_thread.h>
 #include <stdx_log.h>
 
@@ -73,8 +73,8 @@ int main()
 
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_threadpool_execution),
-    STDX_TEST(test_enqueue_after_destroy),
+    X_TEST(test_threadpool_execution),
+    X_TEST(test_enqueue_after_destroy),
   };
 
   int result = stdx_run_tests(tests, sizeof(tests) / sizeof(tests[0]));
