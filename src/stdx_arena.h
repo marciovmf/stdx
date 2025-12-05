@@ -91,7 +91,6 @@ extern "C" {
 }
 #endif
 
-#endif // X_ARENA_H
 
 #ifdef X_IMPL_ARENA
 
@@ -128,14 +127,14 @@ struct XArenaChunk
 };
 
 /* Align up helper. */
-static inline size_t x__arena_align_up(size_t n, size_t a)
+static inline size_t x_arena_align_up(size_t n, size_t a)
 {
   size_t mask = a - 1u;
   return (n + mask) & ~mask;
 }
 
 /* Create a single-allocation chunk: header + inline data. */
-static XArenaChunk* x__arena_chunk_create(size_t size)
+static XArenaChunk* x_arena_chunk_create(size_t size)
 {
   /* Guard absurd sizes and overflow of header + payload. */
   if (size > (SIZE_MAX - sizeof(XArenaChunk)))
@@ -157,7 +156,7 @@ static XArenaChunk* x__arena_chunk_create(size_t size)
   return chunk;
 }
 
-static void x__arena_chunk_destroy(XArenaChunk* chunk)
+static void x_arena_chunk_destroy(XArenaChunk* chunk)
 {
   if (chunk)
   {
@@ -166,7 +165,7 @@ static void x__arena_chunk_destroy(XArenaChunk* chunk)
 }
 
 /* Push chunk to list head. */
-static inline void x__arena_push_chunk(XArena* arena, XArenaChunk* chunk)
+static inline void x_arena_push_chunk(XArena* arena, XArenaChunk* chunk)
 {
   chunk->next = arena->chunks;
   arena->chunks = chunk;
@@ -192,13 +191,13 @@ X_ARENA_API XArena* x_arena_create(size_t chunk_size)
   arena->current = NULL;
 
   /* Allocate the initial chunk so x_arena_alloc can be fast. */
-  XArenaChunk* head = x__arena_chunk_create(chunk_size);
+  XArenaChunk* head = x_arena_chunk_create(chunk_size);
   if (!head)
   {
     X_ARENA_FREE(arena);
     return NULL;
   }
-  x__arena_push_chunk(arena, head);
+  x_arena_push_chunk(arena, head);
   return arena;
 }
 
@@ -213,7 +212,7 @@ X_ARENA_API void x_arena_destroy(XArena* arena)
   while (c)
   {
     XArenaChunk* next = c->next;
-    x__arena_chunk_destroy(c);
+    x_arena_chunk_destroy(c);
     c = next;
   }
 
@@ -250,7 +249,7 @@ X_ARENA_API void x_arena_reset_keep_head(XArena* arena)
   while (c)
   {
     XArenaChunk* next = c->next;
-    x__arena_chunk_destroy(c);
+    x_arena_chunk_destroy(c);
     c = next;
   }
 
@@ -289,16 +288,16 @@ X_ARENA_API void x_arena_trim(XArena* arena, size_t keep_n)
   while (to_free)
   {
     XArenaChunk* next = to_free->next;
-    x__arena_chunk_destroy(to_free);
+    x_arena_chunk_destroy(to_free);
     to_free = next;
   }
 
   arena->current = arena->chunks;
 }
 
-X_ARENA_API static void* x__arena_alloc_from_chunk(XArenaChunk* c, size_t size)
+X_ARENA_API static void* x_arena_alloc_from_chunk(XArenaChunk* c, size_t size)
 {
-  size_t off = x__arena_align_up(c->used, X_ARENA_ALIGN);
+  size_t off = x_arena_align_up(c->used, X_ARENA_ALIGN);
   if (off > c->capacity)
   {
     return NULL;
@@ -329,7 +328,7 @@ X_ARENA_API void* x_arena_alloc(XArena* arena, size_t size)
   /* Fast path: try current chunk. */
   if (arena->current)
   {
-    void* p = x__arena_alloc_from_chunk(arena->current, size);
+    void* p = x_arena_alloc_from_chunk(arena->current, size);
     if (p)
     {
       return p;
@@ -343,7 +342,7 @@ X_ARENA_API void* x_arena_alloc(XArena* arena, size_t size)
     {
       continue;
     }
-    void* p = x__arena_alloc_from_chunk(c, size);
+    void* p = x_arena_alloc_from_chunk(c, size);
     if (p)
     {
       arena->current = c;
@@ -353,14 +352,14 @@ X_ARENA_API void* x_arena_alloc(XArena* arena, size_t size)
 
   /* Need a new chunk: grow by max(request, default chunk size). */
   size_t grow = size > arena->chunk_size ? size : arena->chunk_size;
-  XArenaChunk* n = x__arena_chunk_create(grow);
+  XArenaChunk* n = x_arena_chunk_create(grow);
   if (!n)
   {
     return NULL;
   }
 
-  x__arena_push_chunk(arena, n);
-  return x__arena_alloc_from_chunk(n, size);
+  x_arena_push_chunk(arena, n);
+  return x_arena_alloc_from_chunk(n, size);
 }
 
 X_ARENA_API void* x_arena_alloc_zero(XArena* arena, size_t size)
@@ -418,7 +417,7 @@ X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark)
     while (c)
     {
       XArenaChunk* next = c->next;
-      x__arena_chunk_destroy(c);
+      x_arena_chunk_destroy(c);
       c = next;
     }
 
@@ -426,10 +425,10 @@ X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark)
     arena->current = NULL;
 
     /* Recreate an initial chunk for future fast allocations. */
-    XArenaChunk* head = x__arena_chunk_create(arena->chunk_size);
+    XArenaChunk* head = x_arena_chunk_create(arena->chunk_size);
     if (head)
     {
-      x__arena_push_chunk(arena, head);
+      x_arena_push_chunk(arena, head);
     }
     return;
   }
@@ -439,7 +438,7 @@ X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark)
   while (c && c != mark.chunk)
   {
     XArenaChunk* next = c->next;
-    x__arena_chunk_destroy(c);
+    x_arena_chunk_destroy(c);
     c = next;
   }
 
@@ -478,3 +477,4 @@ size_t x_arena_head_used(const XArena* a)
 #endif /* X_ARENA_TESTING */
 
 #endif // X_IMPL_ARENA
+#endif // X_ARENA_H

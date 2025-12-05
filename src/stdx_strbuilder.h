@@ -355,7 +355,7 @@ extern "C" {
 
   X_STRBUILDER_API size_t x_strbuilder_utf8_charlen(const XStrBuilder* sb)
   {
-    size_t i = 0, count = 0;
+    size_t count = 0;
     const char* s = sb->data;
     while (*s)
     {

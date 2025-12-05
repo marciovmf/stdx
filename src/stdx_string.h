@@ -1105,25 +1105,6 @@ static size_t utf8_advance(const char* s, size_t len, size_t chars)
 X_STRING_API char* x_cstr_str(const char *haystack, const char *needle)
 {
   return strstr(haystack, needle);
-
-  if (!*needle)
-    return (char *)haystack;
-
-  for (; *haystack; haystack++)
-  {
-    const char *h = haystack;
-    const char *n = needle;
-
-    while (*h && *n && tolower((unsigned char)*h) == tolower((unsigned char)*n))
-    {
-      h++;
-      n++;
-    }
-
-    if (!*n)  // Reached end of needle => match
-      return (char *)haystack;
-  }
-  return NULL;
 }
 
 X_STRING_API bool x_cstr_ends_with(const char* str, const char* suffix)
@@ -1366,9 +1347,9 @@ X_STRING_API uint32_t x_cstr_hash(const char* str)
 
 X_STRING_API size_t smallstr(XSmallstr* smallString, const char* str)
 {
-  size_t length = strlen(str);
 #if defined(_DEBUG) || defined(DEBUG)
 #if defined(X_x_smallstr_ENABLE_DBG_MESSAGES)
+  size_t length = strlen(str);
   if (length >= X_SMALLSTR_MAX_LENGTH)
   {
     log_print_debug("The string length (%d) exceeds the maximum size of a XSmallstr (%d)", length, X_SMALLSTR_MAX_LENGTH);
@@ -1398,7 +1379,7 @@ X_STRING_API size_t x_smallstr_from_cstr(XSmallstr* s, const char* cstr)
 {
   size_t len = strlen(cstr);
   if (len > X_SMALLSTR_MAX_LENGTH)
-    return -1;
+    return 0;
   memcpy(s->buf, cstr, len);
   s->buf[len] = '\0';
   s->length = len;
@@ -1425,7 +1406,7 @@ X_STRING_API void x_smallstr_clear(XSmallstr* smallString)
 X_STRING_API size_t x_smallstr_append_cstr(XSmallstr* s, const char* cstr)
 {
   size_t len = strlen(cstr);
-  if (s->length + len > X_SMALLSTR_MAX_LENGTH) return -1;
+  if (s->length + len > X_SMALLSTR_MAX_LENGTH) return 0;
   memcpy(&s->buf[s->length], cstr, len);
   s->length += len;
   s->buf[s->length] = '\0';
@@ -1434,7 +1415,7 @@ X_STRING_API size_t x_smallstr_append_cstr(XSmallstr* s, const char* cstr)
 
 X_STRING_API size_t x_smallstr_append_char(XSmallstr* s, char c)
 {
-  if (s->length + 1 > X_SMALLSTR_MAX_LENGTH) return -1;
+  if (s->length + 1 > X_SMALLSTR_MAX_LENGTH) return 0;
   s->buf[s->length++] = (char)c;
   s->buf[s->length] = '\0';
   return s->length;
@@ -1442,7 +1423,7 @@ X_STRING_API size_t x_smallstr_append_char(XSmallstr* s, char c)
 
 X_STRING_API size_t x_smallstr_substring(const XSmallstr* s, size_t start, size_t len, XSmallstr* out)
 {
-  if (start > s->length || start + len > s->length) return -1;
+  if (start > s->length || start + len > s->length) return 0;
   out->length = len;
   memcpy(out->buf, &s->buf[start], len);
   out->buf[len] = '\0';
@@ -1486,7 +1467,6 @@ X_STRING_API int32_t x_smallstr_replace_all(XSmallstr* s, const char* find, cons
 {
   XSmallstr result;
   x_smallstr_clear(&result);
-  bool found = false;
 
   size_t find_len = strlen(find);
   size_t replace_len = strlen(replace);
@@ -1534,7 +1514,7 @@ X_STRING_API size_t x_smallstr_utf8_len(const XSmallstr* s)
 X_STRING_API size_t x_smallstr_from_slice(XSlice sv, XSmallstr* out)
 {
   x_smallstr_clear(out);
-  if (sv.length > X_SMALLSTR_MAX_LENGTH) return -1;
+  if (sv.length > X_SMALLSTR_MAX_LENGTH) return 0;
   memcpy(out->buf, sv.ptr, sv.length);
   out->buf[sv.length] = '\0';
   out->length = sv.length;
@@ -1606,7 +1586,6 @@ X_STRING_API void x_smallstr_utf8_trim_left(XSmallstr* s)
     uint32_t cp = utf8_decode(&start, end);
     if (!s_is_unicode_whitespace(cp))
     {
-      size_t offset = prev - s->buf;
       memmove(s->buf, prev, end - prev);
       s->length = end - prev;
       s->buf[s->length] = '\0';

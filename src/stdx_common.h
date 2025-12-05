@@ -214,7 +214,7 @@ extern "C" {
     {
       void *ptr;
       int error;
-    };
+    } value;
   };
 
 #define X_PTR_OK(p)      ((XPtr){ .is_error = 0, .ptr = (p) })

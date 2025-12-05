@@ -131,7 +131,6 @@ extern "C" {
 
   X_IO_API char *x_io_read_text(const char *filename, size_t* out_size) 
   {
-    size_t size = 0;
     XFile *f = x_io_open(filename, "rb");
     if (!f) return NULL;
     char *text = x_io_read_all(f, out_size);
