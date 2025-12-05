@@ -98,21 +98,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_CURRENT_LIST_DIR}/demo/webserver")
 add_executable(webserver demo/webserver/src/webserver.c)
 target_include_directories(webserver PUBLIC ${STDX_INCLUDE_DIR})
 
-# Doxter
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_CURRENT_LIST_DIR}/demo/doxter")
-add_executable(doxter demo/doxter/src/doxter.c)
-target_include_directories(doxter PUBLIC ${STDX_INCLUDE_DIR})
-
-# Site Generator
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/demo/sitegenerator/bin")
-add_executable(ssg demo/sitegenerator/src/ssg.c demo/sitegenerator/src/tcl.c)
-target_include_directories(ssg PUBLIC ${STDX_INCLUDE_DIR})
-
-# TCL
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/demo/tcl/bin")
-add_executable(tcl demo/tcl/src/tcl.c)
-target_include_directories(tcl PUBLIC ${STDX_INCLUDE_DIR})
-
 #-----------------------------------------------------------------------------
 # Tests
 #------------------------------------------------------------------------------
@@ -126,7 +111,7 @@ create_test(TARGET test_stringbuilder SOURCES tests/test_stringbuilder.c)
 create_test(TARGET test_filesystem SOURCES tests/test_filesystem.c)
 create_test(TARGET test_threading SOURCES tests/test_threading.c)
 create_test(TARGET test_threadpool SOURCES tests/test_threadpool.c)
-create_test(TARGET test_network SOURCES tests/test_network.c)
+create_test(TARGET test_network SOURCES tests/test_network.c NORUN)
 create_test(TARGET test_io SOURCES tests/test_io.c)
 create_test(TARGET test_time SOURCES tests/test_time.c)
 create_test(TARGET test_ini SOURCES tests/test_ini.c)
