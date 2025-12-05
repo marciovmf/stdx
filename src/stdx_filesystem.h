@@ -1110,10 +1110,10 @@ extern "C" {
   bool x_fs_path_eq(const XFSPath* path_a, const XFSPath* path_b)
   {
     if (path_a->buf == NULL && path_b->buf == NULL)
-      return false;
+      return true;
 
     if (path_a->length == 0 && path_b->length == 0)
-      return false;
+      return true;
 
     const char* a = &path_a->buf[0];
     const char* b = &path_b->buf[0];

@@ -979,7 +979,6 @@ extern "C" {
 #include <ctype.h>   /* tolower */
 #include <wctype.h>
 #include <locale.h>
-#include <errno.h>
 #include <stdio.h>
 
 #ifdef _WIN32
@@ -1869,12 +1868,20 @@ X_STRING_API bool x_slice_split_at(XSlice sv, char delim, XSlice* left, XSlice* 
   return true;
 }
 
+static bool inline s_char_is_white_space(char c)
+{
+  return ( c == ' ' || c == '\t' || c == '\r');
+}
+
 X_STRING_API bool x_slice_split_at_white_space(XSlice sv, XSlice* left, XSlice* right)
 {
   int32_t pos = x_slice_find_white_space(sv);
+
   if (pos < 0) return false;
-  if (left) *left = x_slice_substr(sv, 0, pos);
-  if (right) *right = x_slice_substr(sv, pos + 1, sv.length - pos - 1);
+  if (left)
+    *left = x_slice_trim(x_slice_substr(sv, 0, pos));
+  if (right)
+    *right = x_slice_trim(x_slice_substr(sv, pos + 1, sv.length - pos - 1));
   return true;
 }
 
