@@ -244,7 +244,7 @@ extern "C" {
 
   int32_t x_fs_path_join_one_slice(XFSPath* out, const XSlice segment)
   {
-    if (!out || !segment.data) return false;
+    if (!out || !segment.ptr) return false;
 
     size_t seg_len = segment.length;
     if (seg_len == 0) return true;
@@ -265,7 +265,7 @@ extern "C" {
     if (needs_sep) out->buf[out->length++] = PATH_SEPARATOR;
 
     // Append segment
-    memcpy(&out->buf[out->length], segment.data, seg_len);
+    memcpy(&out->buf[out->length], segment.ptr, seg_len);
     out->length += seg_len;
 
     // Null-terminate
@@ -1010,10 +1010,10 @@ extern "C" {
       // Root case: "/file" → "/"
       char root[2] =
       { *last_sep, '\0' };
-      return (XSlice){.data = root, .length = 1 };
+      return (XSlice){.ptr = root, .length = 1 };
     }
 
-    return (XSlice){.data = input, .length = len };
+    return (XSlice){.ptr = input, .length = len };
   }
 
   XSlice x_fs_path_extension(const char* input)
