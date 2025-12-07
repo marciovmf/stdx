@@ -12,6 +12,7 @@ STDX ships as a set of modules inside `src/`, each focused, readable, and self-c
 
 - `stdx_common` — Portability macros, compiler/OS detection, assertions, bit utilities, typedefs, tagged result pointers.  
 - `stdx_time` — Cross-platform timers, high-resolution time measurement, time arithmetic, sleeps.
+- `stdx_cpuid` — Provides cross-platform cpu information.
 
 ### Memory & Containers
 
