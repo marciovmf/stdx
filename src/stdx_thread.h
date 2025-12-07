@@ -58,9 +58,9 @@ extern "C" {
   void    x_thread_sleep_ms(int ms);
   void    x_thread_yield();
   // Thread pool
-  XThreadPool*  threadpool_create(int num_threads);
-  int32_t       threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
-  void          threadpool_destroy(XThreadPool* pool);
+  XThreadPool*  x_threadpool_create(int num_threads);
+  int32_t       x_threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
+  void          x_threadpool_destroy(XThreadPool* pool);
 
 #ifdef __cplusplus
 }
@@ -341,7 +341,7 @@ extern "C" {
     return NULL;
   }
 
-  XThreadPool* threadpool_create(int num_threads)
+  XThreadPool* x_threadpool_create(int num_threads)
   {
     if (num_threads <= 0)
       return NULL;
@@ -360,7 +360,7 @@ extern "C" {
     return pool;
   }
 
-  int32_t threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg)
+  int32_t x_threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg)
   {
     if (!fn || !pool || pool->magic != THREADPOOL_MAGIC) return -1;
 
@@ -384,7 +384,7 @@ extern "C" {
     return 0;
   }
 
-  void threadpool_destroy(XThreadPool* pool)
+  void x_threadpool_destroy(XThreadPool* pool)
   {
     if (!pool) return;
 

@@ -32,14 +32,14 @@ int test_threadpool_execution(void)
 {
   completed_tasks = 0;
 
-  XThreadPool* pool = threadpool_create(4);
+  XThreadPool* pool = x_threadpool_create(4);
   ASSERT_TRUE(pool != NULL);
 
   int args[NUM_TASKS];
   for (int i = 0; i < NUM_TASKS; ++i)
   {
     args[i] = i;
-    ASSERT_TRUE(threadpool_enqueue(pool, print_task, &args[i]) == 0); // Assuming 0 means success
+    ASSERT_TRUE(x_threadpool_enqueue(pool, print_task, &args[i]) == 0); // Assuming 0 means success
   }
 
   // Wait until all tasks complete
@@ -50,18 +50,18 @@ int test_threadpool_execution(void)
 
   ASSERT_TRUE(completed_tasks == NUM_TASKS);
 
-  threadpool_destroy(pool);
+  x_threadpool_destroy(pool);
   return 0;
 }
 
 int test_enqueue_after_destroy(void)
 {
-  XThreadPool* pool = threadpool_create(2);
+  XThreadPool* pool = x_threadpool_create(2);
   ASSERT_TRUE(pool != 0);
-  threadpool_destroy(pool);
+  x_threadpool_destroy(pool);
 
   int dummy = 42;
-  int result = threadpool_enqueue(pool, print_task, &dummy);
+  int result = x_threadpool_enqueue(pool, print_task, &dummy);
   ASSERT_TRUE(result != 0);
   return 0;
 }
