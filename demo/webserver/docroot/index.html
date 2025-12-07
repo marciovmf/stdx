@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--
+    Modified from the original Apache2 for Ubuntu deefault page.
+    Appropriated shamelessly by the STDX project.
+-->
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Apache2 Ubuntu Default Page: It works</title>
+  <style type="text/css" media="screen">
+    * { margin: 0; padding: 0; }
+    body, html {
+      padding: 3px;
+      background-color: #D8DBE2;
+      font-family: Verdana, sans-serif;
+      font-size: 11pt;
+      text-align: center;
+    }
+    div.main_page {
+      display: table;
+      width: 800px;
+      margin: 20px auto;
+      border: 2px solid #212738;
+      background-color: #FFFFFF;
+      text-align: center;
+    }
+    div.page_header {
+      height: 99px;
+      background-color: #F5F6F7;
+    }
+    div.page_header span {
+      margin: 15px 0 0 50px;
+      font-size: 180%;
+      font-weight: bold;
+      display: inline-block;
+    }
+    div.page_header img {
+      margin: 3px 0 0 40px;
+      border: 0;
+    }
+    div.section_header {
+      padding: 3px 6px;
+      background-color: #8E9CB2;
+      color: #FFFFFF;
+      font-weight: bold;
+      font-size: 112%;
+      text-align: center;
+    }
+    div.section_header_red { background-color: #CD214F; }
+    div.content_section_text {
+      padding: 8px;
+      color: #000000;
+      font-size: 100%;
+      text-align: left;
+    }
+    div.content_section_text pre {
+      margin: 8px 0;
+      padding: 8px;
+      border: 1px dotted #000;
+      background-color: #F5F6F7;
+      font-style: italic;
+    }
+    div.content_section_text a {
+      text-decoration: none;
+      font-weight: bold;
+      background-color: #DCDFE6;
+      color: #000000;
+    }
+    div.content_section_text a:hover {
+      background-color: #000000;
+      color: #DCDFE6;
+    }
+  </style>
+</head>
+<body>
+  <div class="main_page">
+    <div class="page_header">
+      <img src="/icons/ubuntu-logo.png" alt="Ubuntu Logo" style="float:left;"/>
+      <span>Apache2 Ubuntu Default Page</span>
+    </div>
+
+    <div class="section_header section_header_red">
+      It works!
+    </div>
+    <div class="content_section_text">
+      <p>
+        This is the default welcome page used to test the correct 
+        operation of the Apache2 server after installation on Ubuntu systems.
+        If you can read this page, it means that the Apache HTTP server installed at
+        this site is working properly.
+      </p>
+      <p>
+        You should <b>replace this file</b> (located at
+        <tt>/var/www/html/index.html</tt>) before continuing to operate your HTTP server.
+      </p>
+    </div>
+
+    <div class="section_header">
+      Configuration Overview
+    </div>
+    <div class="content_section_text">
+      <p>
+        The configuration layout for an Apache2 web server installation on Ubuntu systems is as follows:
+      </p>
+      <pre>
+/etc/apache2/
+|-- apache2.conf
+|-- ports.conf
+|-- sites-enabled/
+|-- mods-enabled/
+|-- conf-enabled/
+      </pre>
+      <p>
+        Except... none of those actually exist here.
+      </p>
+      <p>
+        This is not Apache. There’s no <tt>/etc/apache2</tt>, no sprawling hierarchy of symlinks.
+        There’s just a single C file, a socket, and an almost suspiciously efficient event loop.
+      </p>
+      <p>
+        You’re visiting the <b>STDX webserver demo</b> — a small, self-contained experiment 
+        in handcrafted HTTP. The code lives here:<br/>
+        👉 <a href="https://github.com/marciovmf/stdx/blob/main/demo/webserver/webserver.c">
+        stdx/demo/webserver/webserver.c</a><br/>
+        and the full library can be found at:<br/>
+        👉 <a href="https://github.com/marciovmf/stdx/">github.com/marciovmf/stdx</a>.
+      </p>
+    </div>
+
+    <div class="section_header">
+      Self-Reflection
+    </div>
+    <div class="content_section_text">
+      <p>
+        If I were Apache, I’d have modules, logs, and the comforting illusion of corporate reliability.
+        Instead, I’m a 300-line C program trying my best.
+      </p>
+
+      <p>
+        But I serve pages, respond to requests, <a href="/files">list directories</a> and speak fluent <code>HTTP/1.1</code>. That’s something.
+      </p>
+      <p>
+        Maybe minimalism <em>is</em> a kind of strength.
+      </p>
+    </div>
+
+    <div class="section_header">
+      Conclusion
+    </div>
+    <div class="content_section_text">
+      <p><b>It works.</b></p>
+      <p>Not because Apache decreed it, but because STDX wrote it.</p>
+      <p><tt>GET /</tt> — 200 OK (proudly handcrafted)</p>
+    </div>
+  </div>
+
+  <div class="validator">
+    <p>
+      <a href="http://validator.w3.org/check?uri=referer">
+        <img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional"
+             height="31" width="88" />
+      </a>
+    </p>
+  </div>
+</body>
+</html>
