@@ -77,7 +77,7 @@ int main()
     X_TEST(test_enqueue_after_destroy),
   };
 
-  int result = stdx_run_tests(tests, sizeof(tests) / sizeof(tests[0]));
+  int result = x_tests_run(tests, sizeof(tests) / sizeof(tests[0]));
 
   x_thread_mutex_destroy(count_lock);
   x_thread_condvar_destroy(count_cv);

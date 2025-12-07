@@ -43,6 +43,8 @@ extern "C" {
   typedef struct XStrBuilder XStrBuilder;
   typedef struct XWStrBuilder XWStrBuilder;
 
+#define x_strbuilder_append_cstr(sb, str) x_strbuilder_append((sb), (str))
+
   /**
    * @brief Creates a XStrBuilder
    * @param (none)

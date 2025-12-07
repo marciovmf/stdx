@@ -258,5 +258,5 @@ int main(void)
     X_TEST(test_ini_numeric_parsing),
   };
 
-  return stdx_run_tests(tests, (int)(sizeof(tests) / sizeof(tests[0])));
+  return x_tests_run(tests, (int)(sizeof(tests) / sizeof(tests[0])));
 }

@@ -1,8 +1,7 @@
-
 #include <stdx_common.h>
-#define STDX_IMPLEMENTATION_TEST
+#define X_IMPL_TEST
 #include <stdx_test.h>
-#define STDX_IMPLEMENTATION_CPUID
+#define X_IMPL_CPUID
 #include <stdx_cpuid.h>
 
 int test_cpuid(void)
@@ -37,8 +36,8 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    STDX_TEST(test_cpuid)
+    X_TEST(test_cpuid)
   };
 
-  return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
 }

@@ -243,5 +243,5 @@ int main()
     X_TEST(test_x_array_is_empty),
   };
 
-  return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
 }

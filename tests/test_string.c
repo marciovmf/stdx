@@ -11,7 +11,7 @@
 static int sv_eq_cstr(XSlice sv, const char* s)
 {
   size_t n = s ? strlen(s) : 0u;
-  return sv.length == n && (n == 0 || memcmp(sv.data, s, n) == 0);
+  return sv.length == n && (n == 0 || memcmp(sv.ptr, s, n) == 0);
 }
 
 static size_t vappend_proxy(XSmallstr* s, const char* fmt, ...)
@@ -326,7 +326,7 @@ int test_xwslice_substr(void)
   XWStrview full = x_wslice(L"שלוםעולם");
   XWStrview mid = x_wslice_substr(full, 2, 2);
   ASSERT_TRUE(mid.length == 2);
-  ASSERT_TRUE(mid.data[0] == L'ו' && mid.data[1] == L'ם');
+  ASSERT_TRUE(mid.ptr[0] == L'ו' && mid.ptr[1] == L'ם');
   return 0;
 }
 
@@ -355,7 +355,7 @@ int test_x_slice_utf8_find_cp()
   ASSERT_TRUE(len == x_utf8_strlen(data));
 
   XSlice sv = x_slice("a🌍b🌍c");
-  ASSERT_TRUE(x_utf8_strlen(sv.data) == 5);            // 5 UTf-8 characters
+  ASSERT_TRUE(x_utf8_strlen(sv.ptr) == 5);            // 5 UTf-8 characters
   ASSERT_TRUE(x_slice_utf8_find(sv, 0x1F30D) == 1);  // first 🌍
   ASSERT_TRUE(x_slice_utf8_rfind(sv, 0x1F30D) == 6); // second 🌍
   ASSERT_TRUE(x_slice_utf8_find(sv, 'b') == 5);      // ASCII still works via its codepoint
@@ -444,7 +444,7 @@ int test_x_slice_from_cstr_basic()
 {
   XSlice a = x_slice_from_cstr("hello");
   ASSERT_TRUE(sv_eq_cstr(a, "hello"));
-  ASSERT_TRUE(a.data[ a.length ] == '\0'); // points into a C string
+  ASSERT_TRUE(a.ptr[ a.length ] == '\0'); // points into a C string
 
   XSlice b = x_slice_from_cstr(NULL);
   ASSERT_TRUE(b.length == 0);
@@ -459,7 +459,7 @@ int test_x_slice_from_smallstr_basic()
 
   XSlice v = x_slice_from_smallstr(&s);
   ASSERT_TRUE(v.length == 3);
-  ASSERT_TRUE(memcmp(v.data, "abc", 3) == 0);
+  ASSERT_TRUE(memcmp(v.ptr, "abc", 3) == 0);
 
   XSlice z = x_slice_from_smallstr(NULL);
   ASSERT_TRUE(z.length == 0);
@@ -750,5 +750,5 @@ int main()
     X_TEST(test_x_smallstr_try_append_cstr_null_input)
   };
 
-  return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
 }

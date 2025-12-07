@@ -263,6 +263,6 @@ int main()
     X_TEST(test_x_arena_spike_then_trim_recovers_memory_pressure)
   };
 
-  return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
 }
 

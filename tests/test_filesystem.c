@@ -178,12 +178,12 @@ int test_x_fs_path_functions(void)
   ASSERT_FALSE(x_fs_path_is_file_cstr("."));
 
   XSlice name = x_fs_path_basename("/usr/bin/clang");
-  ASSERT_TRUE(strncmp(name.data, "clang", name.length) == 0);
+  ASSERT_TRUE(strncmp(name.ptr, "clang", name.length) == 0);
   XSlice ext = x_fs_path_extension("program.c");
-  ASSERT_TRUE(strncmp(ext.data, "c", ext.length) == 0);
+  ASSERT_TRUE(strncmp(ext.ptr, "c", ext.length) == 0);
 
   XSlice parent = x_fs_path_dirname("/usr/bin/clang");
-  ASSERT_TRUE(strncmp(parent.data, "/usr/bin", parent.length) == 0);
+  ASSERT_TRUE(strncmp(parent.ptr, "/usr/bin", parent.length) == 0);
 
   XFSPath path;
   ASSERT_TRUE(x_fs_path(&path, "a", "b", "c"));
@@ -297,5 +297,5 @@ int main()
 
   };
 
-  return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
 }

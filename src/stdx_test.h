@@ -16,7 +16,7 @@
  * Usage:
  *   - Define your test functions to return int32_t (0 for pass, 1 for fail)
  *   - Use `ASSERT_*` macros for checks
- *   - Register with X_TEST(name) and run with `stdx_run_tests(...)`
+ *   - Register with X_TEST(name) and run with `x_tests_run(...)`
  *   - Define X_IMPL_TEST before including to enable main runner
  *
  * Example:
@@ -29,11 +29,11 @@
  *     STDXTestCase tests[] = {
  *       X_TEST(test_example)
  *     };
- *     return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+ *     return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
  *   }
  *
  * Dependencies:
- *  stdx_log.h
+ *  x_log.h
  */
 #ifndef X_TEST_H
 #define X_TEST_H
@@ -142,7 +142,7 @@ typedef struct
 extern "C" {
 #endif
 
-static void x_test_internalOnSignal(int signal)
+static void s_tests_on_signal(int signal)
 {
   const char* signalName = "Unknown signal";
   switch(signal)
@@ -160,14 +160,14 @@ static void x_test_internalOnSignal(int signal)
   x_log_error("\n[!!!!]  Test Crashed! %s", signalName);
 }
 
-int stdx_run_tests(STDXTestCase* tests, int32_t num_tests)
+int x_tests_run(STDXTestCase* tests, int32_t num_tests)
 { 
-  signal(SIGABRT, x_test_internalOnSignal);
-  signal(SIGFPE,  x_test_internalOnSignal);
-  signal(SIGILL,  x_test_internalOnSignal);
-  signal(SIGINT,  x_test_internalOnSignal);
-  signal(SIGSEGV, x_test_internalOnSignal);
-  signal(SIGTERM, x_test_internalOnSignal);
+  signal(SIGABRT, s_tests_on_signal);
+  signal(SIGFPE,  s_tests_on_signal);
+  signal(SIGILL,  s_tests_on_signal);
+  signal(SIGINT,  s_tests_on_signal);
+  signal(SIGSEGV, s_tests_on_signal);
+  signal(SIGTERM, s_tests_on_signal);
 
   int32_t passed = 0; 
   double total_time = 0;

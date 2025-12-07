@@ -1,37 +1,32 @@
 /*
- * STDX - CPU information utility
+ * STDX - IO (file I/O utility functions)
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
+ * License: MIT
  *
- * This module provides a portable function to obtain CPU information
- * To compile the implementation, define:
- *     #define STDX_IMPLEMENTATION_CPUID
+ * To compile the implementation define X_IMPL_CPUID
  * in **one** source file before including this header.
  *
- * Author: marciovmf
- * License: MIT
- * Usage: #include "stdx_cpuid.h"
  */
-#ifndef STDX_CPUID_H
-#define STDX_CPUID_H
+#ifndef X_CPUID_H
+#define X_CPUID_H
+
+#include <stdint.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define STDX_CPUID_VERSION_MAJOR 1
-#define STDX_CPUID_VERSION_MINOR 0
-#define STDX_CPUID_VERSION_PATCH 0
-
-#define STDX_CPUID_VERSION (STDX_CPUID_VERSION_MAJOR * 10000 + STDX_CPUID_VERSION_MINOR * 100 + STDX_CPUID_VERSION_PATCH)
-
-#include <stdint.h>
-#include <stdbool.h>
+#define X_CPUID_VERSION_MAJOR 1
+#define X_CPUID_VERSION_MINOR 0
+#define X_CPUID_VERSION_PATCH 0
+#define X_CPUID_VERSION (X_CPUID_VERSION_MAJOR * 10000 + X_CPUID_VERSION_MINOR * 100 + X_CPUID_VERSION_PATCH)
 
 #if defined(_MSC_VER) || (defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)))
-#define STDX_CPUID_SUPPORTED 1
+#define X_CPUID_SUPPORTED 1
 #else
-#define STDX_CPUID_SUPPORTED 0
+#define X_CPUID_SUPPORTED 0
 #endif
 
   typedef enum
@@ -64,14 +59,13 @@ extern "C" {
     CPUFeature feature_flags;
   } XCPUInfo;
 
-
   XCPUInfo x_cpu_info();
 
 #ifdef __cplusplus
 }
 #endif
 
-#ifdef STDX_IMPLEMENTATION_CPUID
+#ifdef X_IMPL_CPUID
 
 #if defined(_MSC_VER)
 #include <intrin.h>
@@ -98,7 +92,7 @@ extern "C" {
 
 #include <string.h>
 
-static void stdx_cpuid(uint32_t eax, uint32_t ecx,
+static void x_cpuid(uint32_t eax, uint32_t ecx,
     uint32_t* out_eax, uint32_t* out_ebx,
     uint32_t* out_ecx, uint32_t* out_edx)
 {
@@ -128,10 +122,10 @@ static void stdx_cpuid(uint32_t eax, uint32_t ecx,
 #endif
 }
 
-static inline uint32_t stdx_cpuid_max_leaf(uint32_t leaf_type)
+static inline uint32_t x_cpuid_max_leaf(uint32_t leaf_type)
 {
   uint32_t a = 0;
-  stdx_cpuid(leaf_type, 0, &a, NULL, NULL, NULL);
+  x_cpuid(leaf_type, 0, &a, NULL, NULL, NULL);
   return a;
 }
 
@@ -146,7 +140,7 @@ XCPUInfo x_cpu_info()
     char* p = info.brand_string;
 
     for (uint32_t i = 0; i < 3; ++i) {
-      stdx_cpuid(0x80000002 + i, 0, &regs[0], &regs[1], &regs[2], &regs[3]);
+      x_cpuid(0x80000002 + i, 0, &regs[0], &regs[1], &regs[2], &regs[3]);
       memcpy(p +  0, &regs[0], 4);
       memcpy(p +  4, &regs[1], 4);
       memcpy(p +  8, &regs[2], 4);
@@ -228,13 +222,13 @@ XCPUInfo x_cpu_info()
   // Cache sizes (x86/64 only)
   //--------------------------------------------
 
-#if STDX_CPUID_SUPPORTED
+#if X_CPUID_SUPPORTED
   for (int level = 1; level <= 3; ++level)
   {
     for (int i = 0; i < 8; ++i)
     {
       uint32_t eax, ebx, ecx, edx;
-      stdx_cpuid(4, i, &eax, &ebx, &ecx, &edx);
+      x_cpuid(4, i, &eax, &ebx, &ecx, &edx);
       int type = eax & 0x1F;
       if (type == 0) continue;
       int lvl = (eax >> 5) & 0x7;
@@ -259,12 +253,12 @@ XCPUInfo x_cpu_info()
 
   info.feature_flags = CPU_FEATURE_NONE;
 
-#if STDX_CPUID_SUPPORTED
+#if X_CPUID_SUPPORTED
   {
     uint32_t eax, ebx, ecx, edx;
 
     // Basic feature bits
-    stdx_cpuid(1, 0, &eax, &ebx, &ecx, &edx);
+    x_cpuid(1, 0, &eax, &ebx, &ecx, &edx);
 
     if (edx & (1 << 25)) info.feature_flags |= CPU_FEATURE_SSE;
     if (edx & (1 << 26)) info.feature_flags |= CPU_FEATURE_SSE2;
@@ -274,9 +268,9 @@ XCPUInfo x_cpu_info()
     if (ecx & (1 << 20)) info.feature_flags |= CPU_FEATURE_SSE42;
     if (ecx & (1 << 28)) info.feature_flags |= CPU_FEATURE_AVX;
 
-    if (stdx_cpuid_max_leaf(0) >= 7)
+    if (x_cpuid_max_leaf(0) >= 7)
     {
-      stdx_cpuid(7, 0, &eax, &ebx, &ecx, &edx);
+      x_cpuid(7, 0, &eax, &ebx, &ecx, &edx);
       if (ebx & (1 << 5))   info.feature_flags |= CPU_FEATURE_AVX2;
       if (ebx & (1 << 16))  info.feature_flags |= CPU_FEATURE_AVX512F;
     }
@@ -312,5 +306,5 @@ XCPUInfo x_cpu_info()
   return info;
 }
 
-#endif  // STDX_IMPLEMENTATION_CPUID
-#endif // STDX_CPUID_H
+#endif // X_IMPL_CPUID
+#endif // X_CPUID_H

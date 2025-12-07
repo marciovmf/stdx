@@ -58,11 +58,11 @@ extern "C" {
 
   typedef enum
   {
+    XLOG_PLAIN      = 0,
     XLOG_TIMESTAMP  = 1 << 0,
     XLOG_TAG        = 1 << 1,
     XLOG_SOURCEINFO = 1 << 2,
     XLOG_DEFAULT    = XLOG_TAG | XLOG_TIMESTAMP | XLOG_SOURCEINFO
-
   } XLogComponent;
 
   typedef struct
@@ -105,10 +105,9 @@ extern "C" {
 #define X_LOG_BREAK() ((void)0)
 #endif
 
-
 #define x_log_raw(level, fg, bg, components, fmt, ...)  logger_log(level, fg, bg, components, __FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
 #define x_log_debug(fmt, ...)      logger_log(XLOG_LEVEL_DEBUG,     XLOG_COLOR_BLUE,    XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
-#define x_log_info(fmt, ...)       logger_log(XLOG_LEVEL_INFO,      XLOG_COLOR_WHITE,   XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
+#define x_log_info(fmt, ...)       logger_log(XLOG_LEVEL_INFO,      XLOG_COLOR_WHITE,   XLOG_COLOR_BLACK, XLOG_TIMESTAMP, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
 #define x_log_warning(fmt, ...)    logger_log(XLOG_LEVEL_WARNING,   XLOG_COLOR_YELLOW,  XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
 #define x_log_error(fmt, ...)      logger_log(XLOG_LEVEL_ERROR,     XLOG_COLOR_RED,     XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
 #define x_log_fatal(fmt, ...)      do{ logger_log(XLOG_LEVEL_FATAL, XLOG_COLOR_WHITE,   XLOG_COLOR_RED,   XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__); X_LOG_BREAK();} while(0);

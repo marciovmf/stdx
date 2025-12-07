@@ -104,6 +104,7 @@ target_include_directories(webserver PUBLIC ${STDX_INCLUDE_DIR})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${OUTPUT_DIR}")
 create_test(TARGET test_arena SOURCES tests/test_arena.c)
+create_test(TARGET test_cpuid SOURCES tests/test_cpuid.c)
 create_test(TARGET test_array SOURCES tests/test_array.c)
 create_test(TARGET test_hashtable SOURCES tests/test_hashtable.c)
 create_test(TARGET test_string SOURCES tests/test_string.c)
