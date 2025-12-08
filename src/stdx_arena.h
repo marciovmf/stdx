@@ -81,6 +81,9 @@ extern "C" {
   /** @brief Duplicate a C-string into the arena. */
   X_ARENA_API char* x_arena_strdup(XArena* arena, const char* cstr);
 
+  /** @brief Duplicate a slice into the arena. */
+  X_ARENA_API char* x_arena_slicedup(XArena* arena, const char* ptr, size_t len, bool null_terminate);
+
   /** @brief Take a mark (snapshot) of the arena state. */
   X_ARENA_API XArenaMark x_arena_mark(XArena* arena);
 
@@ -386,6 +389,24 @@ X_ARENA_API char* x_arena_strdup(XArena* arena, const char* cstr)
   }
   memcpy(d, cstr, n);
   d[n] = '\0';
+  return d;
+}
+
+X_ARENA_API char* x_arena_slicedup(XArena* arena, const char* ptr, size_t len, bool null_terminate)
+{
+  if (!ptr)
+  {
+    return NULL;
+  }
+
+  char* d = (char*) x_arena_alloc(arena, len + null_terminate ? 1u : 0u);
+  if (!d)
+  {
+    return NULL;
+  }
+  memcpy(d, ptr, len);
+  if (null_terminate)
+    d[len] = '\0';
   return d;
 }
 

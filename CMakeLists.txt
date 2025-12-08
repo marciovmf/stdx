@@ -78,9 +78,9 @@ endfunction()
 #----------------------------------------------------------------------------
 
 if (MSVC)
-  add_compile_options(/utf-8)
+  add_compile_options(/utf-8 /WX)
 elseif(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang")
-  add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+  add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8 -Wall -Wextra -pedantic -Werror)
 endif()
 
 set(OUTPUT_DIR "${CMAKE_CURRENT_LIST_DIR}/bin/${CMAKE_SYSTEM_NAME}_${CMAKE_HOST_SYSTEM_PROCESSOR}/$<CONFIG>")

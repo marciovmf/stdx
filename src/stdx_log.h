@@ -152,8 +152,9 @@ extern "C" {
 
   static int map_color_to_ansi(XLogColor color, bool fg)
   {
+    (void)(fg);
+
     const int ANSI_BACKGROUND = 10;
-    int bg = fg ? 0 : ANSI_BACKGROUND;
     switch (color) {
       case XLOG_COLOR_BLACK:          return 30 + ANSI_BACKGROUND;
       case XLOG_COLOR_RED:            return 31 + ANSI_BACKGROUND;

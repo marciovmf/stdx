@@ -102,7 +102,7 @@ int test_x_fs_path_relative(void)
 {
   // Relative
   XFSPath rel;
-  ASSERT_TRUE(x_fs_path_common_prefix("/usr/local/", "/usr/local/bin/gcc", &rel) == 0);
+  ASSERT_TRUE(x_fs_path_common_prefix("/usr/local/", "/usr/local/bin/gcc", &rel));
   ASSERT_TRUE(x_fs_path_compare_cstr(&rel, "bin/gcc") == 0);
   return 0;
 }
@@ -186,9 +186,9 @@ int test_x_fs_path_functions(void)
   ASSERT_TRUE(strncmp(parent.ptr, "/usr/bin", parent.length) == 0);
 
   XFSPath path;
-  ASSERT_TRUE(x_fs_path(&path, "a", "b", "c"));
+  ASSERT_TRUE(x_fs_path(&path, "a", "b", ".." ,"c"));
   x_fs_path_normalize(&path);
-  ASSERT_TRUE(x_fs_path_eq_cstr(&path, "a/b/c"));
+  ASSERT_TRUE(x_fs_path_eq_cstr(&path, "a/c"));
   return 0;
 }
 

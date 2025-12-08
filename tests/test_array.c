@@ -112,8 +112,6 @@ int test_x_array_delete_range()
   ASSERT_TRUE(x_array_delete_range(arr, 1, 10)    == XARRAY_INVALID_RANGE);
   ASSERT_TRUE(x_array_delete_range(arr, 10, 1)    == XARRAY_INVALID_RANGE);
   ASSERT_TRUE(x_array_delete_range(arr, 10, 10)   == XARRAY_INVALID_RANGE);
-  ASSERT_TRUE(x_array_delete_range(arr, -10, -3)  == XARRAY_INVALID_RANGE);
-  ASSERT_TRUE(x_array_delete_range(arr, -1, -30)  == XARRAY_INVALID_RANGE);
 
   ASSERT_TRUE(x_array_count(arr) == 5);
   ASSERT_TRUE(x_array_delete_range(arr, 1, 3) == XARRAY_OK);

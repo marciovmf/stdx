@@ -162,7 +162,7 @@ static const char *s_x_err_msg(XIniErrorCode code)
   }
 }
 
-static void *s_x_realloc_grow(void *ptr, size_t elem_size, int current, int *cap)
+static void *s_x_realloc_grow(void *ptr, size_t elem_size, int *cap)
 {
   int new_cap = (*cap > 0) ? (*cap * 2) : 8;
   size_t bytes = (size_t)new_cap * elem_size;
@@ -421,7 +421,7 @@ X_INI_API bool x_ini_load_mem(const void *data, size_t size, XIni *out_ini, XIni
       if (out_ini->sections_count == out_ini->sections_cap)
       {
         void *np = s_x_realloc_grow(out_ini->sections, sizeof(XIniSection),
-                                    out_ini->sections_count, &out_ini->sections_cap);
+            &out_ini->sections_cap);
         if (!np)
         {
           s_x_set_err(err, XINI_ERR_MEMORY, line_no, 1, s_x_err_msg(XINI_ERR_MEMORY));
@@ -497,7 +497,7 @@ X_INI_API bool x_ini_load_mem(const void *data, size_t size, XIni *out_ini, XIni
     if (out_ini->entries_count == out_ini->entries_cap)
     {
       void *np = s_x_realloc_grow(out_ini->entries, sizeof(XIniEntry),
-                                  out_ini->entries_count, &out_ini->entries_cap);
+                                  &out_ini->entries_cap);
       if (!np)
       {
         s_x_set_err(err, XINI_ERR_MEMORY, line_no, 1, s_x_err_msg(XINI_ERR_MEMORY));

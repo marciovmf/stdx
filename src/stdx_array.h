@@ -50,13 +50,13 @@ extern "C" {
   typedef struct XArray_t XArray;
 
   XArray*       x_array_create(size_t elementSize, size_t capacity);
-  XPtr          x_array_get(XArray* arr, size_t index);
+  XPtr          x_array_get(XArray* arr, unsigned int index);
   XPtr          x_array_getdata(XArray* arr);
   XArrayError   x_array_add(XArray* arr, void* data);
-  XArrayError   x_array_insert(XArray* arr, void* data, size_t index);
-  XArrayError   x_array_delete_range(XArray* arr, size_t start, size_t end);
+  XArrayError   x_array_insert(XArray* arr, void* data, unsigned int index);
+  XArrayError   x_array_delete_range(XArray* arr, unsigned int start, unsigned int end);
   void          x_array_clear(XArray* arr);
-  void          x_array_delete_at(XArray* arr, size_t index);
+  void          x_array_delete_at(XArray* arr, unsigned int index);
   void          x_array_destroy(XArray* arr);  
   uint32_t      x_array_count(XArray* arr);
   uint32_t      x_array_capacity(XArray* arr);
@@ -132,7 +132,7 @@ XArrayError x_array_add(XArray* arr, void* data)
   return XARRAY_OK;
 }
 
-XArrayError x_array_insert(XArray* arr, void* data, size_t index)
+XArrayError x_array_insert(XArray* arr, void* data, unsigned int index)
 {
   X_ASSERT(arr->array != NULL);
   X_ASSERT(arr->capacity > 0);
@@ -160,7 +160,7 @@ XArrayError x_array_insert(XArray* arr, void* data, size_t index)
   return XARRAY_OK;
 }
 
-XPtr x_array_get(XArray* arr, size_t index)
+XPtr x_array_get(XArray* arr, unsigned int index)
 {
   X_ASSERT(arr->array != NULL);
   X_ASSERT(arr->capacity > 0);
@@ -181,7 +181,7 @@ void x_array_destroy(XArray* arr)
   X_ARRAY_FREE(arr);
 }
 
-XArrayError x_array_delete_range(XArray* arr, size_t start, size_t end)
+XArrayError x_array_delete_range(XArray* arr, unsigned int start, unsigned int end)
 {
   X_ASSERT(arr->array != NULL);
   X_ASSERT(arr->capacity > 0);
@@ -221,7 +221,7 @@ uint32_t x_array_capacity(XArray* arr)
   return (uint32_t) arr->capacity;
 }
 
-void x_array_delete_at(XArray* arr, size_t index)
+void x_array_delete_at(XArray* arr, unsigned int index)
 {
   X_ASSERT(arr->array != NULL);
   X_ASSERT(arr->capacity > 0);

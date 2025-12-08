@@ -132,15 +132,15 @@ extern "C" {
   const char* x_fs_path_cstr(const XFSPath* p);
   size_t      x_fs_path_append(XFSPath* p, const char* comp);
   size_t      x_fs_path_change_extension(XFSPath* path, const char* new_ext);
-  int32_t     x_fs_path_compare(const XFSPath* a, const XFSPath* b); // ignores separator type
+  size_t      x_fs_path_compare(const XFSPath* a, const XFSPath* b); // ignores separator type
   int32_t     x_fs_path_compare_cstr(const XFSPath* a, const char* cstr); // ignores separator type
   bool        x_fs_path_eq(const XFSPath* a, const XSmallstr* b);
   bool        x_fs_path_eq_cstr(const XFSPath* a, const char* b);
-  XSlice    x_fs_path_extension(const char* input);
+  XSlice      x_fs_path_extension(const char* input);
   size_t      x_fs_path_from_slice(XSlice sv, XFSPath* out);
   size_t      x_fs_path_join_(XFSPath* path, ...);
   size_t      x_fs_path_relative_to_cstr(const char* from_path, const char* to_path, XFSPath* out_path);
-  size_t      x_fs_path_common_prefix (const char* from_path, const char* to_path, XFSPath* out_path);
+  bool        x_fs_path_common_prefix (const char* from_path, const char* to_path, XFSPath* out_path);
   size_t      x_fs_path_set(XFSPath* p, const char* cstr);
   bool        x_fs_path_split(const char* input, XFSPath* out_components, size_t max_components, size_t* out_count);
   size_t      x_fs_path_from_executable(XFSPath* out);
@@ -735,7 +735,7 @@ extern "C" {
     DWORD path_len = GetTempPathA((DWORD) X_FS_PAHT_MAX_LENGTH, out->buf);
     if (path_len == 0 || path_len > X_FS_PAHT_MAX_LENGTH)
     {
-      return -1;
+      return 0;
     }
     out->length = path_len;
 #else
@@ -748,7 +748,7 @@ extern "C" {
     // Copy the temporary folder path to buffer
     if (strlen(tmp_dir) >= X_FS_PAHT_MAX_LENGTH)
     {
-      return -1;
+      return 0;
     }
     x_fs_path(out, tmp_dir);
 #endif
@@ -781,7 +781,7 @@ extern "C" {
   }
 
   // Helper: trim trailing separators (does not modify original)
-  static size_t trim_trailing_separators(const unsigned char* buf, size_t len)
+  static size_t trim_trailing_separators(const char* buf, size_t len)
   {
     while (len > 0 && (buf[len - 1] == '/' || buf[len - 1] == '\\'))
     {
@@ -836,7 +836,7 @@ extern "C" {
   size_t x_fs_path_set(XFSPath* p, const char* cstr)
   {
     size_t len = strlen(cstr);
-    if (!x_fs_utf8_validate(cstr, len)) return -1;
+    if (!x_fs_utf8_validate(cstr, len)) return 0;
     return x_smallstr_from_cstr(p, cstr);
   }
 
@@ -844,7 +844,7 @@ extern "C" {
   {
     if (p->length > 0 && p->buf[p->length - 1] != PATH_SEPARATOR)
     {
-      if (x_smallstr_append_char(p, PATH_SEPARATOR) != 0) return -1;
+      if (x_smallstr_append_char(p, PATH_SEPARATOR) != 0) return 0;
     }
     return x_smallstr_append_cstr(p, comp);
   }
@@ -860,7 +860,7 @@ extern "C" {
     va_start(args, path);
 
     if (path == NULL)
-      return -1;
+      return 0;
 
     bool join_success = true;
 
@@ -872,7 +872,7 @@ extern "C" {
     va_end(args);
 
     if (!join_success)
-      return -1;
+      return 0;
     return (int) path->length;
   }
 
@@ -882,7 +882,7 @@ extern "C" {
     va_start(args, path);
 
     if (path == NULL)
-      return -1;
+      return 0;
 
     bool join_success = true;
 
@@ -894,7 +894,7 @@ extern "C" {
     va_end(args);
 
     if (!join_success)
-      return -1;
+      return 0;
     return (int) path->length;
   }
 
@@ -1027,7 +1027,7 @@ extern "C" {
 
   size_t x_fs_path_change_extension(XFSPath* path, const char* new_ext)
   {
-    if (!path || !new_ext) return -1;
+    if (!path || !new_ext) return 0;
 
     const char* path_str = x_smallstr_cstr(path);
     const char* last_dot = NULL;
@@ -1060,7 +1060,7 @@ extern "C" {
     if (new_ext[0] != '.')
     {
       if (x_smallstr_append_char(path, '.') <= 0)
-        return -1;
+        return 0;
     }
 
     return x_smallstr_append_cstr(path, new_ext);
@@ -1161,9 +1161,9 @@ extern "C" {
     return x_fs_path_is_absolute_cstr(x_fs_path_cstr(path));
   }
 
-  size_t x_fs_path_common_prefix(const char* from_path, const char* to_path, XFSPath* out_path)
+  bool x_fs_path_common_prefix(const char* from_path, const char* to_path, XFSPath* out_path)
   {
-    if (!from_path || !to_path || !out_path) return -1;
+    if (!from_path || !to_path || !out_path) return false;
 
     XFSPath from_copy;
     x_fs_path_init(&from_copy);
@@ -1196,7 +1196,7 @@ extern "C" {
           // Paths are identical
           x_fs_path_init(out_path);
           x_smallstr_from_cstr(out_path, ".");
-          return 0;
+          return true;
         }
         if (is_path_separator(to_path[prefix_len]))
         {
@@ -1204,13 +1204,13 @@ extern "C" {
           const char* suffix = to_path + prefix_len + 1;
           x_fs_path_init(out_path);
           x_smallstr_from_cstr(out_path, suffix);
-          return 0;
+          return true;
         }
       }
     }
 
     // No prefix match
-    return 1;
+    return false;
   }
 
   // Input must be normalized
@@ -1247,12 +1247,12 @@ extern "C" {
     return true;
   }
 
-  int32_t x_fs_path_compare(const XFSPath* a, const XFSPath* b)
+  size_t x_fs_path_compare(const XFSPath* a, const XFSPath* b)
   {
-    if (!a || !b) return -1;
+    if (!a || !b) return 0;
 
-    size_t alen = trim_trailing_separators(a->buf, a->length);
-    size_t blen = trim_trailing_separators(b->buf, b->length);
+    size_t alen = trim_trailing_separators((const char*) a->buf, a->length);
+    size_t blen = trim_trailing_separators((const char*) b->buf, b->length);
     size_t min_len = (alen < blen) ? alen : blen;
 
     for (size_t i = 0; i < min_len; ++i)
