@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{FILE_NAME}} — API Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <nav>
+    <h1>API Index</h1>
+    <div class="file-name">
+    <a href="index.html">home</a>
+    <a href="#{{FILE_NAME}}">{{FILE_NAME}}</a>
+    </div>
+
+    <h2>Functions</h2>
+    <ul>
+      {{INDEX_FUNCTIONS}}
+    </ul>
+
+    <h2>Macros</h2>
+    <ul>
+      {{INDEX_MACROS}}
+    </ul>
+
+    <h2>Structs</h2>
+    <ul>
+      {{INDEX_STRUCTS}}
+    </ul>
+
+    <h2>Enums</h2>
+    <ul>
+      {{INDEX_ENUMS}}
+    </ul>
+
+    <h2>Typedefs</h2>
+    <ul>
+      {{INDEX_TYPEDEFS}}
+    </ul>
+
+    <section class="modules">
+      <h2>Modules</h2>
+      <ul>
+        {{MODULE_LIST}}
+      </ul>
+    </section>
+  </nav>
+
+  <main id="{{FILE_NAME}}">
+    <header class="page-header">
+      <h1>{{FILE_NAME}}</h1>
+      <a href="index.html">home</a>
+      <div class="subtitle">
+        {{FILE_BRIEF}}
+      </div>
+    </header>
+    {{SYMBOLS}}
+  </main>
+
+</div>
+</body>
+</html>

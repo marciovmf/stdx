@@ -98,6 +98,11 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_CURRENT_LIST_DIR}/demo/webserver")
 add_executable(webserver demo/webserver/src/webserver.c)
 target_include_directories(webserver PUBLIC ${STDX_INCLUDE_DIR})
 
+# Doxter
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY  "${CMAKE_CURRENT_LIST_DIR}/demo/doxter")
+add_executable(doxter demo/doxter/src/doxter.c demo/doxter/src/doxter_parser.c)
+target_include_directories(doxter PUBLIC ${STDX_INCLUDE_DIR})
+
 #-----------------------------------------------------------------------------
 # Tests
 #------------------------------------------------------------------------------
