@@ -1,19 +1,22 @@
 #include <stdx_common.h>
 #define X_IMPL_ARRAY
-#define X_IMPL_STRING
+#define X_IMPL_ARRAY
+#define X_IMPL_FILESYSTEM
+#define X_IMPL_INI
 #define X_IMPL_IO
 #define X_IMPL_STRBUILDER
-#define X_IMPL_ARRAY
-#include <stdx_string.h>
-#include <stdx_strbuilder.h>
+#define X_IMPL_STRING
 #include <stdx_array.h>
+#include <stdx_filesystem.h>
+#include <stdx_ini.h>
 #include <stdx_io.h>
-#include "doxter.h"
+#include <stdx_strbuilder.h>
+#include <stdx_string.h>
+
 #define MD_IMPL
 #include "markdown.h"
-
-#define X_IMPL_INI
-#include <stdx_ini.h>
+#include "doxter.h"
+#include "doxter_template.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -95,7 +98,7 @@ typedef struct
 // --------------------------------------------------------
 
 typedef void (*DoxTemplateResolver)(const char *placeholder, void *user_data, XStrBuilder *out);
-  t
+
 static const char *s_type_to_string(DoxterType type)
 {
   switch (type)
@@ -477,85 +480,22 @@ static bool s_comment_next_tag(XSlice *comment, DoxTag *out_tag)
 //  Template Loading
 // --------------------------------------------------------
 
-static bool s_load_template_file(const char *dir,
-    const char *filename,
-    char **out_text)
-{
-  char path[512];
-  snprintf(path, sizeof(path), "%s/%s", dir, filename);
-
-  {
-    size_t size = 0;
-    char *text = x_io_read_text(path, &size);
-    if (!text)
-    {
-      fprintf(stderr, "Doxter: failed to read template '%s'\n", path);
-      return false;
-    }
-
-    *out_text = text;
-    return true;
-  }
-}
-
 static bool s_load_templates(DoxterTemplates *t)
 {
   memset(t, 0, sizeof(*t));
-
-  if (!s_load_template_file(DOXTER_TEMPLATE_DIR, "project_index.html", &t->project_index_html))
-  {
-    return false;
-  }
-
-  /* module item is optional */
-
-  if (!s_load_template_file(DOXTER_TEMPLATE_DIR, "module_index.html", &t->module_index_html))
-  {
-    return false;
-  }
-  if (!s_load_template_file(DOXTER_TEMPLATE_DIR, "symbol.html", &t->symbol_html))
-  {
-    return false;
-  }
-  if (!s_load_template_file(DOXTER_TEMPLATE_DIR, "index_item.html", &t->index_item_html))
-  {
-    return false;
-  }
-  if (!s_load_template_file(DOXTER_TEMPLATE_DIR, "style.css", &t->style_css))
-  {
-    return false;
-  }
-
-  // optional fragments
-  s_load_template_file(DOXTER_TEMPLATE_DIR, "project_module_item.html", &t->project_module_item_html);
-  s_load_template_file(DOXTER_TEMPLATE_DIR, "params.html", &t->params_html);
-  s_load_template_file(DOXTER_TEMPLATE_DIR, "param_item.html", &t->param_item_html);
-  s_load_template_file(DOXTER_TEMPLATE_DIR, "return.html", &t->return_html);
-  s_load_template_file(DOXTER_TEMPLATE_DIR, "module_item.html", &t->module_item_html);
+  t->project_index_html   = (char*) PROJECT_INDEX_HTML;
+  t->module_index_html    = (char*) MODULE_INDEX_HTML;
+  t->symbol_html          = (char*) SYMBOL_HTML;
+  t->index_item_html      = (char*) INDEX_ITEM_HTML;
+  t->style_css            = (char*) STYLE_CSS ;
+  t->project_module_item_html = (char*) PROJECT_MODULE_ITEM_HTML ;
+  t->params_html          = (char*) PARAMS_HTML;
+  t->param_item_html      = (char*) PARAM_ITEM_HTML;
+  t->return_html          = (char*) RETURN_HTML;
+  t->module_item_html     = (char*) MODULE_ITEM_HTML;
 
   return true;
 }
-
-static void s_free_templates(DoxterTemplates *t)
-{
-  if (!t)
-  {
-    return;
-  }
-
-  free(t->project_index_html);
-  free(t->project_module_item_html);
-  free(t->module_index_html);
-  free(t->symbol_html);
-  free(t->index_item_html);
-  free(t->params_html);
-  free(t->param_item_html);
-  free(t->return_html);
-  free(t->module_item_html);
-
-  memset(t, 0, sizeof(*t));
-}
-
 
 // --------------------------------------------------------
 // Templating
@@ -762,9 +702,7 @@ static void s_render_params_block(const DoxterSymbol *sym,
     }
     x_strbuilder_destroy(items);
   }
-
 }
-
 
 // --------------------------------------------------------
 // @return tag
@@ -1231,6 +1169,28 @@ static void s_project_css_resolver(const char *placeholder,
 #define DEFAULT_CONFIG_FILE_NAME "doxter.ini"
 #endif
 
+static void s_doxter_config_init_default(DoxterConfig* cfg)
+{
+  cfg->color_page_background           = "ffffff";
+  cfg->color_sidebar_background        = "f8f9fb";
+  cfg->color_main_text                 = "1b1b1b";
+  cfg->color_secondary_text            = "5f6368";
+  cfg->color_highlight                 = "0067b8";
+  cfg->color_light_borders             = "e1e4e8";
+  cfg->color_code_blocks               = "f6f8fa";
+  cfg->color_code_block_border         = "d0d7de";
+  cfg->mono_fonts                      = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace";
+  cfg->serif_fonts                     = "\"serif_fonts\", \"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+  cfg->border_radius                   = 10;
+  cfg->project_name                    = "Doxter";
+  cfg->project_url                     = "http://github.com/marciovmf/doxter";
+  cfg->option_skip_static_functions    = 0;
+  cfg->option_markdown_index_page      = 1;
+  cfg->option_markdown_gobal_comments  = 1;
+  cfg->option_markdown_index_page      = 1;
+  cfg->option_skip_undocumented_symbols = 0;
+}
+
 static bool s_load_doxter_file(const char* path, DoxterConfig* out)
 {
   DoxterConfig cfg;
@@ -1289,22 +1249,114 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* out)
   return true;
 }
 
-// --------------------------------------------------------
-// Main
-// --------------------------------------------------------
-
-int main(int argc, char **argv)
+typedef struct DoxterCmdLine
 {
-  int argi;
-  DoxterTemplates templates;
-  DoxterModuleList modules;
-  bool had_error = false;
+  const char*   doxter_file;
+  const char*   output_directory;
+  const char**  input_files;
+  u32           num_input_files;
+} DoxterCmdLine;
+
+static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
+{
+  memset(out, 0, sizeof(DoxterCmdLine));
+  out->output_directory = ".";
 
   if (argc < 2)
   {
-    printf("Usage: doxter <source_file> [source_file...]\n");
+    printf("Usage:\n\n  doxter [options] input_files\n\n");
+    printf("Options\n\n");
+    printf("  %-32s = %s\n", "-f <path-to-doxter.init>", "Path to doxter.ini.");
+    printf("  %-32s = %s\n", "-d <path-to-output-dir>", "Specify output directory for generated files.");
+    return false;
+  }
+
+  // parse options
+  i32 i = 1;
+  for (;;)
+  {
+    if (strncmp(argv[i],"-f", 2) == 0)
+    {
+      if (++i >= argc)
+      {
+        fprintf(stderr, "Invalid command line: -f requires path argument.\n");
+        return false;
+      }
+      out->doxter_file = argv[i++];
+    }
+    else if (strncmp(argv[i], "-d", 2) == 0)
+    {
+      if (++i >= argc)
+      {
+        fprintf(stderr, "Invalid command line: -d requires path argument.\n");
+        return false;
+      }
+      out->output_directory = argv[i++];
+    }
+    else
+      break;
+  }
+
+  // collect input files
+  if (i >= argc)
+  {
+    fprintf(stderr, "Invalid command line: No input files.\n");
+    return false;
+  }
+
+  out->input_files = (const char**) &(argv[i]);
+  out->num_input_files = argc - i;
+  return true;
+}
+
+// --------------------------------------------------------
+// Main
+// --------------------------------------------------------
+int main(int argc, char **argv)
+{
+  DoxterTemplates templates;
+  DoxterModuleList modules;
+  DoxterCmdLine args;
+  DoxterConfig cfg;
+  bool had_error = false;
+  XStrBuilder *sb;
+  XFSPath full_path;
+
+  if (!s_cmdline_parse(argc, argv, &args))
+    return 1;
+
+  // --------------------------------------------------------
+  // Create output directory if it does not exist 
+  // --------------------------------------------------------
+  XFSPath out_dir;
+  x_fs_path(&out_dir, args.output_directory);
+  if (! x_fs_path_exists(&out_dir) && !x_fs_directory_create_recursive(args.output_directory))
+  {
+    printf("Failed to create directory '%s'\n", args.output_directory);
     return 1;
   }
+
+  if (! x_fs_is_directory(args.output_directory))
+  {
+    printf("Path exists and is not a directory '%s'\n", args.output_directory);
+    return 1;
+  }
+
+  sb = x_strbuilder_create();
+  if (!sb)
+  {
+    fprintf(stderr, "Failed to create string builder\n");
+    return 1;
+  }
+
+  // --------------------------------------------------------
+  // Initialize the configuration from the doxter.ini if possible.
+  // Otherwise use default values.
+  // --------------------------------------------------------
+  if (args.doxter_file && x_fs_is_file(args.doxter_file))
+    s_load_doxter_file(args.doxter_file, &cfg);
+  else
+    s_doxter_config_init_default(&cfg);
 
   if (!s_load_templates(&templates))
   {
@@ -1312,32 +1364,35 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  DoxterConfig cfg;
-  s_load_doxter_file(DEFAULT_CONFIG_FILE_NAME, &cfg);
-
   s_modules_init(&modules);
 
-  /* First pass: compute module list (name + output name) */
-  for (argi = 1; argi < argc; ++argi)
+  // --------------------------------------------------------
+  //  Collect module list and html file names for each of them
+  // --------------------------------------------------------
+  
+  for (u32 argi = 0; argi < args.num_input_files; ++argi)
   {
     char base_name[256];
     char html_name[256];
 
-    s_get_names(argv[argi], base_name, sizeof(base_name),
+    s_get_names(args.input_files[argi], base_name, sizeof(base_name),
         html_name, sizeof(html_name));
 
     if (!s_modules_add(&modules, base_name, html_name))
     {
-      fprintf(stderr, "Warning: could not record module '%s'\n", argv[argi]);
+      fprintf(stderr, "Warning: could not record module '%s'\n", args.input_files[argi]);
       had_error = true;
     }
   }
 
-  /* Second pass: process each header and generate its HTML page */
+  // --------------------------------------------------------
+  // process each header and generate its HTML page
+  // --------------------------------------------------------
+  
   XArray* array = x_array_create(sizeof(DoxterSymbol), 64);
-  for (argi = 1; argi < argc; ++argi)
+  for (u32 argi = 0; argi < args.num_input_files; ++argi)
   {
-    const char *source_path = argv[argi];
+    const char *source_path = args.input_files[argi];
     size_t file_size = 0;
     char *input = x_io_read_text(source_path, &file_size);
 
@@ -1348,60 +1403,57 @@ int main(int argc, char **argv)
       continue;
     }
 
+    // --------------------------------------------------------
+    // Collect symbols for current source
+    // --------------------------------------------------------
     XSlice source = x_slice_init(input, file_size);
     x_array_clear(array);
-    u32 num_symbols = doxter_source_symbols_collect(source, &cfg, array);
+    doxter_source_symbols_collect(source, &cfg, array);
 
-    // Pass 4: Render templates
+    // --------------------------------------------------------
+    // Render templares per project module
+    // --------------------------------------------------------
+    char base_name[256];
+    char out_path[256];
+    s_get_names(source_path, base_name, sizeof(base_name),
+        out_path, sizeof(out_path));
+    x_strbuilder_clear(sb);
+    if (!sb)
     {
-      char base_name[256];
-      char out_path[256];
-      s_get_names(source_path, base_name, sizeof(base_name),
-          out_path, sizeof(out_path));
+      fprintf(stderr, "Failed to create string builder\n");
+      free(input);
+      had_error = true;
+      break;
+    }
 
-      {
-        XStrBuilder *sb = x_strbuilder_create();
-        if (!sb)
-        {
-          fprintf(stderr, "Failed to create string builder\n");
-          free(input);
-          had_error = true;
-          break;
-        }
+    DoxIndexCtx ctx;
+    ctx.file_name    = base_name;
+    ctx.output_name  = out_path;
+    ctx.symbols      = array;
+    ctx.templates    = &templates;
+    ctx.modules      = &modules;
 
-        {
-          DoxIndexCtx ctx;
-          ctx.file_name    = base_name;
-          ctx.output_name  = out_path;
-          ctx.symbols      = array;
-          ctx.templates    = &templates;
-          ctx.modules      = &modules;
+    s_render_template(templates.module_index_html,
+        s_index_resolver,
+        &ctx,
+        sb);
 
-          s_render_template(templates.module_index_html,
-              s_index_resolver,
-              &ctx,
-              sb);
-        }
-
-        {
-          char *html = x_strbuilder_to_string(sb);
-          if (!x_io_write_text(out_path, html))
-          {
-            fprintf(stderr, "Failed to write output file '%s'\n", out_path);
-            had_error = true;
-          }
-        }
-
-        x_strbuilder_destroy(sb);
-      }
+    char *html = x_strbuilder_to_string(sb);
+    x_fs_path(&full_path, args.output_directory, out_path);
+    if (!x_io_write_text(full_path.buf, html))
+    {
+      fprintf(stderr, "Failed to write output file '%s'\n", full_path.buf);
+      had_error = true;
     }
 
     free(input);
   }
 
-  /* Generate main project index.html using separate project templates */
+  // --------------------------------------------------------
+  // Generate main project index.html
+  // --------------------------------------------------------
   {
-    XStrBuilder *sb = x_strbuilder_create();
+    x_strbuilder_clear(sb);
     if (!sb)
     {
       fprintf(stderr, "Failed to create string builder for project index\n");
@@ -1420,15 +1472,18 @@ int main(int argc, char **argv)
 
       {
         char *html = x_strbuilder_to_string(sb);
-        if (!x_io_write_text("index.html", html))
+        x_fs_path(&full_path, args.output_directory, "index.html");
+        if (!x_io_write_text(full_path.buf, html))
         {
           fprintf(stderr,
-              "Failed to write project index file 'index.html'\\n");
+              "Failed to write project index file '%s'\\n", full_path.buf);
           had_error = true;
         }
       }
 
+      // --------------------------------------------------------
       // Generate CSS file
+      // --------------------------------------------------------
 
       x_strbuilder_clear(sb);
       s_render_template(templates.style_css,
@@ -1437,21 +1492,20 @@ int main(int argc, char **argv)
           sb);
       {
         char *css = x_strbuilder_to_string(sb);
-        if (!x_io_write_text("style.css", css))
+        x_fs_path(&full_path, args.output_directory, "style.css");
+        if (!x_io_write_text(full_path.buf, css))
         {
-          fprintf(stderr,
-              "Failed to write project css file 'style.css'\\n");
+          fprintf(stderr, "Failed to write project css file '%s'\\n", full_path.buf);
           had_error = true;
         }
       }
 
-      x_strbuilder_destroy(sb);
     }
   }
 
-  x_array_destroy(array);
   s_modules_free(&modules);
-  s_free_templates(&templates);
+  x_array_destroy(array);
+  x_strbuilder_destroy(sb);
 
   return had_error ? 1 : 0;
 }
