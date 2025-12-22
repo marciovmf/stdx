@@ -1,21 +1,24 @@
-/*
- * STDX - Lightweight String Utilities
+/**
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
- * To compile the implementation define X_IMPL_STRING
+ * ## Overview
+ *
+ * This header provides:
+ * - C string helpers: case-insensitive prefix/suffix matching
+ * - XSmallstr: fixed-capacity, stack-allocated strings
+ * - XSlice: immutable, non-owning views into C strings
+ * - Tokenization and trimming
+ * - UTF-8-aware string length calculation
+ * - Fast substring and search operations
+ * - Case-sensitive and case-insensitive comparisons
+ *   
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_STRING`
  * in **one** source file before including this header.
  *
- * Notes:
- *  This header provides:
- *   - C string helpers: case-insensitive prefix/suffix matching
- *   - XSmallstr: fixed-capacity, stack-allocated strings
- *   - XSlice: immutable, non-owning views into C strings
- *   - Tokenization and trimming
- *   - UTF-8-aware string length calculation
- *   - Fast substring and search operations
- *   - Case-sensitive and case-insensitive comparisons
  */
 
 #ifndef X_STRING_H
@@ -30,13 +33,15 @@
 #ifndef X_STRING_API
 #define X_STRING_API
 #endif
-
 #define X_STRING_VERSION_MAJOR 1
 #define X_STRING_VERSION_MINOR 0
 #define X_STRING_VERSION_PATCH 0
+
 #define X_STRING_VERSION (X_STRING_VERSION_MAJOR * 10000 + X_STRING_VERSION_MINOR * 100 + X_STRING_VERSION_PATCH)
 
 #ifndef X_SMALLSTR_MAX_LENGTH
+
+/** @brief Small string length */
 #define X_SMALLSTR_MAX_LENGTH 256
 #endif
 
@@ -85,9 +90,9 @@ extern "C" {
    */
   X_STRING_API void      x_set_locale(const char* locale);
 
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
   // C-String functions
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
 
   /**
    * @brief Computes a 32-bit FNV hash for a null-terminated C-string.
@@ -186,9 +191,9 @@ extern "C" {
    */
   X_STRING_API size_t    x_cstr_to_wcstr(const char* src, wchar_t* dest, size_t max);
 
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
   // Encoding conversions
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
 
   /**
    * @brief Converts between string encodings.
@@ -217,9 +222,9 @@ extern "C" {
    */
   X_STRING_API size_t    x_utf8_to_wcstr(const char* utf8, wchar_t* wide, size_t max);
 
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
   // UTF8 functions
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
 
   /**
    * @brief Returns the number of UTF-8 codepoints in a null-terminated string.
@@ -275,9 +280,9 @@ extern "C" {
    */
   X_STRING_API int32_t x_utf8_codepoint_length(unsigned char first_byte);
 
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
   // Fixed size small string functions
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
 
   /**
    * @brief Initializes a fixed-capacity small string from a source C-string.
@@ -458,9 +463,9 @@ extern "C" {
    */
   X_STRING_API void      x_smallstr_utf8_trim(XSmallstr* s);
 
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
   // XWSmallstr - Wide-char small strting
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
 
   /**
    * @brief Initializes a wide-character small string from a wide C-string.
@@ -541,9 +546,9 @@ extern "C" {
    */
   X_STRING_API int32_t   x_wsmallstr_find(const XWSmallstr* s, wchar_t c);
 
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
   // XSlice - Non-owning string views and operations.
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
 
 #define     x_slice_empty() ((XSlice){ .ptr = 0, .length = 0 })
 #define     x_slice_is_empty(sv) ((sv).length == 0)
@@ -649,7 +654,7 @@ extern "C" {
    * @param delim Delimiter character or codepoint.
    * @param left Output: left side view.
    * @param right Output: right side view.
-   * @return Function-specific result.
+   * @return true if delimiter was found.
    */
   X_STRING_API bool      x_slice_split_at(XSlice sv, char delim, XSlice* left, XSlice* right);
 
@@ -658,7 +663,7 @@ extern "C" {
    * @param sv String view input.
    * @param left Output: left side view.
    * @param right Output: right side view.
-   * @return Function-specific result.
+   * @return true fi delimiter was found.
    */
   X_STRING_API bool      x_slice_split_at_white_space(XSlice sv, XSlice* left, XSlice* right);
 
@@ -666,7 +671,7 @@ extern "C" {
    * @brief Extracts the next token delimited by ASCII whitespace.
    * @param input Parameter.
    * @param token Output: extracted token.
-   * @return Function-specific result.
+   * @return true fi delimiter was found.
    */
   X_STRING_API bool      x_slice_next_token_white_space(XSlice* input, XSlice* token);
 
@@ -675,7 +680,7 @@ extern "C" {
    * @param input Parameter.
    * @param delim Delimiter character or codepoint.
    * @param token Output: extracted token.
-   * @return Function-specific result.
+   * @return true if next token was found.
    */
   X_STRING_API bool      x_slice_next_token(XSlice* input, char delim, XSlice* token);
 
@@ -700,21 +705,21 @@ extern "C" {
    * @param sv String view input.
    * @param char_start Parameter.
    * @param char_len Parameter.
-   * @return Function-specific result.
+   * @return the substring slice.
    */
   X_STRING_API XSlice  x_slice_utf8_substr(XSlice sv, size_t char_start, size_t char_len);
 
   /**
    * @brief Removes leading Unicode whitespace (by UTF-8 codepoints).
    * @param sv String view input.
-   * @return Resulting view after the operation.
+   * @return trimmed slice.
    */
   X_STRING_API XSlice  x_slice_utf8_trim_left(XSlice sv);
 
   /**
    * @brief Removes trailing ASCII whitespace from a string view.
    * @param sv String view input.
-   * @return Function-specific result.
+   * @return trimmed slice.
    */
   X_STRING_API XSlice  x_slice_utf8_trim_right(XSlice sv);
 
@@ -747,7 +752,7 @@ extern "C" {
    * @param delim Delimiter character or codepoint.
    * @param left Output: left side view.
    * @param right Output: right side view.
-   * @return Function-specific result.
+   * @return true if delimiter was found.
    */
   X_STRING_API bool      x_slice_utf8_split_at(XSlice sv, uint32_t delim, XSlice* left, XSlice* right);
 
@@ -756,7 +761,7 @@ extern "C" {
    * @param input Parameter.
    * @param codepoint Unicode codepoint value.
    * @param token Output: extracted token.
-   * @return Function-specific result.
+   * @return true if the token was found.
    */
   X_STRING_API bool      x_slice_utf8_next_token(XSlice* input, uint32_t codepoint, XSlice* token);
 
@@ -776,10 +781,10 @@ extern "C" {
    */
   X_STRING_API bool      x_slice_utf8_ends_with_cstr(XSlice sv, const char* prefix);
 
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
   // XWStrview (string views on wchar_t)*
   // Non-owning wide string views and operations.
-  // -------------------------------------------------------------------------------------
+  // --------------------------------------------------------
 
 #define x_wslice_init(cstr, len) ((XWStrview){ .ptr = (cstr), .length = (len) })
 #define x_wslice(cstr)           (x_wslice_init( (cstr), wcslen(cstr) ))
@@ -842,7 +847,7 @@ extern "C" {
    * @param delim Delimiter character or codepoint.
    * @param left Output: left side view.
    * @param right Output: right side view.
-   * @return Function-specific result.
+   * @return true if delimiter was found.
    */
   X_STRING_API bool      x_wslice_split_at(XWStrview sv, uint32_t delim, XWStrview* left, XWStrview* right);
 
@@ -851,7 +856,7 @@ extern "C" {
    * @param input Parameter.
    * @param delim Parameter.
    * @param token Output: extracted token.
-   * @return Function-specific result.
+   * @return true if token was found.
    */
   X_STRING_API bool      x_wslice_next_token(XWStrview* input, wchar_t delim, XWStrview* token);
 

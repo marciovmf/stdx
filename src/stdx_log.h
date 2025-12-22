@@ -1,19 +1,22 @@
-/*
+/**
  * STDX - Logging Utilities
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
- * To compile the implementation define X_IMPL_LOG
- * in **one** source file before including this header.
+ * ## Overview
  *
- * Notes:
  * Provides a flexible logging system with support for:
- *   - Logger initialization and cleanup
- *   - Log levels with color-coded output
- *   - Source location tagging (file, line, function)
- *   - Multiple log output targets selectable via flags
- *   - Convenience macros for common log levels (debug, info, warning, error, fatal)
+ * - Logger initialization and cleanup
+ * - Log levels with color-coded output
+ * - Source location tagging (file, line, function)
+ * - Multiple log output targets selectable via flags
+ * - Convenience macros for common log levels (debug, info, warning, error, fatal)
+ *
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_LOG`
+ * in **one** source file before including this header.
  */
 
 #ifndef X_LOG_H
@@ -96,21 +99,101 @@ extern "C" {
     XLOG_COLOR_BRIGHT_WHITE,
   } XLogColor;
 
+  /**
+   * @brief Initialize the logging system.
+   * @param outputs Bitmask specifying enabled log outputs (console, file, etc.).
+   * @param level Minimum log level to emit.
+   * @param filename Optional file path for file output, or NULL if unused.
+   */
   void logger_init(XLogOutputFlags outputs, XLogLevel level, const char *filename);
+
+  /**
+   * @brief Shutdown the logging system and release resources.
+   */
   void logger_close(void);
-  void logger_log(XLogLevel level, XLogColor fg, XLogColor bg, XLogComponent components, const char* file, int line, const char* func, const char* fmt,  ...);
+
+  /**
+   * @brief Emit a formatted log message with full context information.
+   * @param level Log severity level.
+   * @param fg Foreground color.
+   * @param bg Background color.
+   * @param components Bitmask controlling which components (timestamp, file, line, etc.) are included.
+   * @param file Source file name.
+   * @param line Source line number.
+   * @param func Source function name.
+   * @param fmt printf-style format string.
+   */
+  void logger_log(
+      XLogLevel level,
+      XLogColor fg,
+      XLogColor bg,
+      XLogComponent components,
+      const char* file,
+      int line,
+      const char* func,
+      const char* fmt,
+      ...
+      );
+
+  /**
+   * @brief Emit a formatted log message without source context.
+   * @param level Log severity level.
+   * @param fmt printf-style format string.
+   */
   void logger_print(XLogLevel level, const char* fmt, ...);
 
+  /**
+   * @brief Platform- or user-defined break action for fatal logs.
+   *
+   * This macro can be overridden to trigger a debugger break or abort.
+   * Default implementation does nothing.
+   */
 #ifndef X_LOG_BREAK
 #define X_LOG_BREAK() ((void)0)
 #endif
 
-#define x_log_raw(level, fg, bg, components, fmt, ...)  logger_log(level, fg, bg, components, __FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
-#define x_log_debug(fmt, ...)      logger_log(XLOG_LEVEL_DEBUG,     XLOG_COLOR_BLUE,    XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
-#define x_log_info(fmt, ...)       logger_log(XLOG_LEVEL_INFO,      XLOG_COLOR_WHITE,   XLOG_COLOR_BLACK, XLOG_TIMESTAMP, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
-#define x_log_warning(fmt, ...)    logger_log(XLOG_LEVEL_WARNING,   XLOG_COLOR_YELLOW,  XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
-#define x_log_error(fmt, ...)      logger_log(XLOG_LEVEL_ERROR,     XLOG_COLOR_RED,     XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__)
-#define x_log_fatal(fmt, ...)      do{ logger_log(XLOG_LEVEL_FATAL, XLOG_COLOR_WHITE,   XLOG_COLOR_RED,   XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*) fmt"\n", ##__VA_ARGS__); X_LOG_BREAK();} while(0);
+  /**
+   * @brief Emit a raw log message with explicit formatting and components.
+   *
+   * Automatically injects source file, line, and function information.
+   */
+#define x_log_raw(level, fg, bg, components, fmt, ...) \
+  logger_log(level, fg, bg, components, __FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
+
+  /**
+   * @brief Emit a debug-level log message.
+   */
+#define x_log_debug(fmt, ...) \
+  logger_log(XLOG_LEVEL_DEBUG, XLOG_COLOR_BLUE, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__)
+
+  /**
+   * @brief Emit an informational log message with timestamp.
+   */
+#define x_log_info(fmt, ...) \
+  logger_log(XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__)
+
+  /**
+   * @brief Emit a warning-level log message.
+   */
+#define x_log_warning(fmt, ...) \
+  logger_log(XLOG_LEVEL_WARNING, XLOG_COLOR_YELLOW, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__)
+
+  /**
+   * @brief Emit an error-level log message.
+   */
+#define x_log_error(fmt, ...) \
+  logger_log(XLOG_LEVEL_ERROR, XLOG_COLOR_RED, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__)
+
+  /**
+   * @brief Emit a fatal log message and trigger a break action.
+   *
+   * Calls X_LOG_BREAK() after logging.
+   */
+#define x_log_fatal(fmt, ...) \
+  do { \
+    logger_log(XLOG_LEVEL_FATAL, XLOG_COLOR_WHITE, XLOG_COLOR_RED, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__); \
+    X_LOG_BREAK(); \
+  } while (0)
 
 
 #ifdef __cplusplus

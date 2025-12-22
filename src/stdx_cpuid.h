@@ -1,10 +1,17 @@
-/*
+/**
  * STDX - IO (file I/O utility functions)
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
- * To compile the implementation define X_IMPL_CPUID
+ * ## Overview
+ *
+ * This module provides access to basic, read-only information about the
+ * host CPU as detected at runtime.
+ *
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_CPUID`
  * in **one** source file before including this header.
  *
  */
@@ -59,7 +66,14 @@ extern "C" {
     CPUFeature feature_flags;
   } XCPUInfo;
 
-  XCPUInfo x_cpu_info();
+  /**
+   * @brief Query static information about the host CPU.
+   * All data is gathered once per call and returned by value.
+   * The caller owns the returned structure and no dynamic memory is involved.
+   * @return Structure containing CPU topology, cache sizes,
+   * brand string, and supported feature flags.
+   */
+  XCPUInfo x_cpu_info(void);
 
 #ifdef __cplusplus
 }
@@ -92,9 +106,13 @@ extern "C" {
 
 #include <string.h>
 
-static void x_cpuid(uint32_t eax, uint32_t ecx,
-    uint32_t* out_eax, uint32_t* out_ebx,
-    uint32_t* out_ecx, uint32_t* out_edx)
+static void x_cpuid(
+    uint32_t eax,
+    uint32_t ecx,
+    uint32_t* out_eax,
+    uint32_t* out_ebx,
+    uint32_t* out_ecx,
+    uint32_t* out_edx)
 {
 #if defined(_MSC_VER)
   int regs[4];

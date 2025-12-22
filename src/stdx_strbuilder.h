@@ -1,21 +1,24 @@
-/*
+/**
  * STDX - Dynamic String Builder for C
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
  * License: MIT
  *
- * To compile the implementation define X_IMPL_STRBUILDER
+ * ## Overview
+ *
+ * This header provides a simple interface for constructing strings efficiently:
+ * - Dynamic growth as data is appended
+ * - Append strings, characters, substrings, and formatted text
+ * - Convert to null-terminated C string
+ * - Clear or destroy the builder when done
+ *
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_STRBUILDER`
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * X_STRBUILDER_ALLOC / X_STRBUILDER_REALLOC / X_STRBUILDER_FREE before including.
- *
- * Notes:
- * This header provides a simple interface for constructing strings efficiently:
- *   - Dynamic growth as data is appended
- *   - Append strings, characters, substrings, and formatted text
- *   - Convert to null-terminated C string
- *   - Clear or destroy the builder when done
+ * `X_STRBUILDER_ALLOC` / `X_STRBUILDER_REALLOC` / `X_STRBUILDER_FREE` before including.
  */
 
 #ifndef X_STRBUILDER_H
@@ -43,19 +46,25 @@ extern "C" {
   typedef struct XStrBuilder XStrBuilder;
   typedef struct XWStrBuilder XWStrBuilder;
 
+  /**
+   * @brief Appends a C-string to the builder. This is an alias for
+   * s_strbuilder_append() function.
+   * @param sb Destination builder
+   * @param str Source null-terminated string (NULL is ignored)
+   * @return pointer to the XStrBuilder or NULL if creation fails
+   */
 #define x_strbuilder_append_cstr(sb, str) x_strbuilder_append((sb), (str))
 
   /**
    * @brief Creates a XStrBuilder
-   * @param (none)
    * @return pointer to the XStrBuilder or NULL if creation fails
    */
-  XStrBuilder*  x_strbuilder_create();
+  XStrBuilder*  x_strbuilder_create(void);
 
   /**
    * @brief Appends a C-string to the builder
    * @param sb Destination builder
-   *  @param str Source null-terminated string (NULL is ignored)
+   * @param str Source null-terminated string (NULL is ignored)
    */
   void   x_strbuilder_append(XStrBuilder *sb, const char *str);
 
@@ -115,7 +124,7 @@ extern "C" {
    * @param len_cp Number of code points to append
    */
   void   x_strbuilder_append_utf8_substring(XStrBuilder* sb, const char* utf8, size_t start_cp, size_t len_cp); // UTF-8-aware append
-  
+
   /**
    * @brief Counts UTF-8 code points contained in the builder
    * @param sb Builder to query
@@ -190,8 +199,33 @@ extern "C" {
 #include <wchar.h>
 
 #ifndef X_STRBUILDER_ALLOC
+/**
+ * @brief Internal macro for allocating memory.
+ * To override how this header allocates memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_STRBUILDER_ALLOC(sz)        malloc(sz)
+#endif
+
+#ifndef X_STRBUILDER_REALLOC
+/**
+ * @brief Internal macro for resizing memory.
+ * To override how this header resizes memory, define this macro with a
+ * different implementation before including this header.
+ * @param p   The pointer to memory region to resize.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_STRBUILDER_REALLOC(p,sz)    realloc((p),(sz))
+#endif
+
+#ifndef X_STRBUILDER_FREE
+/**
+ * @brief Internal macro for freeing memory.
+ * To override how this header frees memory, define this macro with a
+ * different implementation before including this header.
+ * @param p  The address of memory region to free.
+ */
 #define X_STRBUILDER_FREE(p)          free(p)
 #endif
 

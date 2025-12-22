@@ -1,16 +1,18 @@
-/*
+/**
  * STDX - Time Utilities
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
- * To compile the implementation define X_IMPL_TIME
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_TIME`
  * in **one** source file before including this header.
  *
- * Notes:
- *  Provides a portable threading abstraction for C programs.
- *  Includes Time based comparisson, measurement and arithmetic
- *  ooperations
+ * ## Overview
+ *
+ * Provides a portable threading abstraction for C programs.
+ * Includes Time based comparisson, measurement and arithmetic ooperations
  */
 
 #ifndef X_TIME_H
@@ -48,18 +50,93 @@ extern "C" {
 #endif
   } XTimer;
 
-  XTime   x_timer_elapsed(const XTimer* t);     // Return elapsed time since x_timer_start
-  double  x_time_milliseconds(XTime t);         // Convert to milliseconds
-  double  x_time_microseconds(XTime t);         // Convert to microseconds
-  double  x_time_nanoseconds(XTime t);          // Convert to nanoseconds
-  XTime   x_time_diff(XTime end, XTime start);  // Compute difference between two times
-  XTime   x_time_add(XTime a, XTime b);         // Add two XTime
-  XTime   x_time_sub(XTime a, XTime b);         // Subtract two XTime
-  int32_t x_time_equals(XTime a, XTime b);      // Compares two XTime
+  /**
+   * @brief Get the elapsed time since a timer was started.
+   * @param t Pointer to an initialized timer.
+   * @return Elapsed time as an XTime value.
+   */
+  XTime x_timer_elapsed(const XTimer* t);
+
+  /**
+   * @brief Convert a time value to milliseconds.
+   * @param t Time value to convert.
+   * @return Time in milliseconds.
+   */
+  double x_time_milliseconds(XTime t);
+
+  /**
+   * @brief Convert a time value to microseconds.
+   * @param t Time value to convert.
+   * @return Time in microseconds.
+   */
+  double x_time_microseconds(XTime t);
+
+  /**
+   * @brief Convert a time value to nanoseconds.
+   * @param t Time value to convert.
+   * @return Time in nanoseconds.
+   */
+  double x_time_nanoseconds(XTime t);
+
+  /**
+   * @brief Compute the difference between two time values.
+   * @param end End time.
+   * @param start Start time.
+   * @return Difference between end and start.
+   */
+  XTime x_time_diff(XTime end, XTime start);
+
+  /**
+   * @brief Add two time values.
+   * @param a First time value.
+   * @param b Second time value.
+   * @return Sum of a and b.
+   */
+  XTime x_time_add(XTime a, XTime b);
+
+  /**
+   * @brief Subtract one time value from another.
+   * @param a Minuend time value.
+   * @param b Subtrahend time value.
+   * @return Result of a minus b.
+   */
+  XTime x_time_sub(XTime a, XTime b);
+
+  /**
+   * @brief Compare two time values for equality.
+   * @param a First time value.
+   * @param b Second time value.
+   * @return Non-zero if equal, zero otherwise.
+   */
+  int32_t x_time_equals(XTime a, XTime b);
+
+  /**
+   * @brief Test whether one time value is less than another.
+   * @param a First time value.
+   * @param b Second time value.
+   * @return Non-zero if a < b, zero otherwise.
+   */
   int32_t x_time_less_than(XTime a, XTime b);
+
+  /**
+   * @brief Test whether one time value is greater than another.
+   * @param a First time value.
+   * @param b Second time value.
+   * @return Non-zero if a > b, zero otherwise.
+   */
   int32_t x_time_greater_than(XTime a, XTime b);
-  void    x_time_sleep(XTime t);                // Cross-platform sleep
-  XTime   x_time_now();                         // Wall-clock time since Unix epoch
+
+  /**
+   * @brief Sleep the current thread for the specified duration.
+   * @param t Duration to sleep.
+   */
+  void x_time_sleep(XTime t);
+
+  /**
+   * @brief Get the current wall-clock time.
+   * @return Current time since the Unix epoch.
+   */
+  XTime x_time_now(void);
 
 #ifdef __cplusplus
 }
@@ -71,107 +148,107 @@ extern "C" {
 extern "C" {
 #endif
 
-// Start the timer
-void x_timer_start(XTimer* t)
-{
+  // Start the timer
+  void x_timer_start(XTimer* t)
+  {
 #ifdef _WIN32
-  QueryPerformanceFrequency(&t->freq);
-  QueryPerformanceCounter(&t->start);
+    QueryPerformanceFrequency(&t->freq);
+    QueryPerformanceCounter(&t->start);
 #else
-  clock_gettime(CLOCK_MONOTONIC, &t->start);
+    clock_gettime(CLOCK_MONOTONIC, &t->start);
 #endif
-}
+  }
 
-// Return elapsed time since x_timer_start
-XTime x_timer_elapsed(const XTimer* t)
-{
-  XTime result;
+  // Return elapsed time since x_timer_start
+  XTime x_timer_elapsed(const XTimer* t)
+  {
+    XTime result;
 #ifdef _WIN32
-  LARGE_INTEGER now;
-  QueryPerformanceCounter(&now);
-  result.seconds = (double)(now.QuadPart - t->start.QuadPart) / t->freq.QuadPart;
+    LARGE_INTEGER now;
+    QueryPerformanceCounter(&now);
+    result.seconds = (double)(now.QuadPart - t->start.QuadPart) / t->freq.QuadPart;
 #else
-  struct timespec now;
-  clock_gettime(CLOCK_MONOTONIC, &now);
-  result.seconds = (now.tv_sec - t->start.tv_sec) + (now.tv_nsec - t->start.tv_nsec) / 1e9;
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    result.seconds = (now.tv_sec - t->start.tv_sec) + (now.tv_nsec - t->start.tv_nsec) / 1e9;
 #endif
-  return result;
-}
+    return result;
+  }
 
-double x_time_milliseconds(XTime t)
-{
-  return t.seconds * 1000.0;
-}
+  double x_time_milliseconds(XTime t)
+  {
+    return t.seconds * 1000.0;
+  }
 
-double x_time_microseconds(XTime t)
-{
-  return t.seconds * 1e6;
-}
+  double x_time_microseconds(XTime t)
+  {
+    return t.seconds * 1e6;
+  }
 
-double x_time_nanoseconds(XTime t)
-{
-  return t.seconds * 1e9;
-}
+  double x_time_nanoseconds(XTime t)
+  {
+    return t.seconds * 1e9;
+  }
 
-XTime x_time_diff(XTime end, XTime start)
-{
-  XTime diff = { .seconds = end.seconds - start.seconds };
-  return diff;
-}
+  XTime x_time_diff(XTime end, XTime start)
+  {
+    XTime diff = { .seconds = end.seconds - start.seconds };
+    return diff;
+  }
 
-XTime x_time_add(XTime a, XTime b)
-{
-  return (XTime){ .seconds = a.seconds + b.seconds };
-}
+  XTime x_time_add(XTime a, XTime b)
+  {
+    return (XTime){ .seconds = a.seconds + b.seconds };
+  }
 
-XTime x_time_sub(XTime a, XTime b)
-{
-  return (XTime){ .seconds = a.seconds - b.seconds };
-}
+  XTime x_time_sub(XTime a, XTime b)
+  {
+    return (XTime){ .seconds = a.seconds - b.seconds };
+  }
 
-int32_t x_time_equals(XTime a, XTime b)
-{
-  return a.seconds == b.seconds;
-}
+  int32_t x_time_equals(XTime a, XTime b)
+  {
+    return a.seconds == b.seconds;
+  }
 
-int32_t x_time_less_than(XTime a, XTime b)
-{
-  return a.seconds < b.seconds;
-}
+  int32_t x_time_less_than(XTime a, XTime b)
+  {
+    return a.seconds < b.seconds;
+  }
 
-int32_t x_time_greater_than(XTime a, XTime b)
-{
-  return a.seconds > b.seconds;
-}
+  int32_t x_time_greater_than(XTime a, XTime b)
+  {
+    return a.seconds > b.seconds;
+  }
 
-// Cross-platform sleep
-void x_time_sleep(XTime t)
-{
+  // Cross-platform sleep
+  void x_time_sleep(XTime t)
+  {
 #ifdef _WIN32
-  Sleep((DWORD)(t.seconds * 1000.0));
+    Sleep((DWORD)(t.seconds * 1000.0));
 #else
-  struct timespec ts;
-  ts.tv_sec = (time_t)t.seconds;
-  ts.tv_nsec = (long)((t.seconds - ts.tv_sec) * 1e9);
-  nanosleep(&ts, NULL);
+    struct timespec ts;
+    ts.tv_sec = (time_t)t.seconds;
+    ts.tv_nsec = (long)((t.seconds - ts.tv_sec) * 1e9);
+    nanosleep(&ts, NULL);
 #endif
-}
+  }
 
-// Wall-clock time since Unix epoch
-XTime x_time_now()
-{
+  // Wall-clock time since Unix epoch
+  XTime x_time_now()
+  {
 #ifdef _WIN32
-  FILETIME ft;
-  GetSystemTimeAsFileTime(&ft);
-  uint64_t ticks = ((uint64_t)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
-  double seconds = ticks / 10000000.0 - 11644473600.0; // FILETIME starts in 1601
-  return (XTime){ .seconds = seconds };
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    uint64_t ticks = ((uint64_t)ft.dwHighDateTime << 32) | ft.dwLowDateTime;
+    double seconds = ticks / 10000000.0 - 11644473600.0; // FILETIME starts in 1601
+    return (XTime){ .seconds = seconds };
 #else
-  struct timespec ts;
-  clock_gettime(CLOCK_REALTIME, &ts);
-  return (XTime){ .seconds = ts.tv_sec + ts.tv_nsec / 1e9 };
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    return (XTime){ .seconds = ts.tv_sec + ts.tv_nsec / 1e9 };
 #endif
-}
+  }
 
 #ifdef __cplusplus
 }

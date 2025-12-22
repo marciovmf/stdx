@@ -1,28 +1,30 @@
-/*
+/**
  * STDX - Filesystem Utilities
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
- * To compile the implementation define X_IMPL_FILESYSTEM
+ * ## Overview
+ *
+ *  Provides a cross-platform filesystem abstraction including:
+ *
+ * - Directory and file operations (create, delete, copy, rename, enumerate)
+ * - Filesystem monitoring via watch APIs
+ * - Rich path manipulation utilities (normalize, join, basename, dirname, extension, relative paths)
+ * - File metadata retrieval and modification (timestamps, permissions)
+ * - Utilities for symbolic links and file type queries
+ * - Temporary file and directory creation
+ * - Functions accepts and preserves valid UTF-8 paths.
+ *
+ * ## How to compile
+ * To compile the implementation define `X_IMPL_FILESYSTEM` 
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * X_FILESYSTEM_ALLOC / X_FILESYSTEM_REALLOC / X_FILESYSTEM_FREE before including.
+ * `X_FILESYSTEM_ALLOC` / `X_FILESYSTEM_REALLOC` / `X_FILESYSTEM_FREE` before including.
  *
- * Notes:
- *  Provides a cross-platform filesystem abstraction including:
- *   - Directory and file operations (create, delete, copy, rename, enumerate)
- *   - Filesystem monitoring via watch APIs
- *   - Rich path manipulation utilities (normalize, join, basename, dirname, extension, relative paths)
- *   - File metadata retrieval and modification (timestamps, permissions)
- *   - Utilities for symbolic links and file type queries
- *   - Temporary file and directory creation
- *   - Functions accepts and preserves valid UTF-8 (raw, not decodedint32_to codepoints) paths.
  *
- * Designed to unify and simplify filesystem operations across platforms.
- *
- * Dependencies:
+ * ## Dependencies
  *  stdx_string.h
  */
 
@@ -112,8 +114,9 @@ extern "C" {
 #define       x_fs_path_join(path, ...) x_fs_path_join_(path, __VA_ARGS__, 0)
 #define       x_fs_path_join_slice(path, ...) x_fs_path_join_slice_(path, __VA_ARGS__, 0)
   XFSPath*    x_fs_path_normalize(XFSPath* input);
-  XSlice    x_fs_path_basename(const char* input);
-  XSlice    x_fs_path_dirname(const char* input);
+  XSlice      x_fs_path_stem(const char* input);
+  XSlice      x_fs_path_basename(const char* input);
+  XSlice      x_fs_path_dirname(const char* input);
   bool        x_fs_path_(XFSPath* out, ...);
   bool        x_fs_path_exists(const XFSPath* path);
   bool        x_fs_path_exists_cstr(const char* path);
@@ -976,6 +979,21 @@ extern "C" {
     input->buf[temp.length] = '\0';
 
     return input;
+  }
+
+  XSlice x_fs_path_stem(const char* input)
+  {
+    XSlice empty = {0};
+    if (!input)
+      return empty;
+
+    size_t len = strlen(input);
+
+    const char* p = input + len - 1;
+    const char* start = input;
+
+    while (p > start && *p != '.') { p--; }
+    return x_slice_init(input, p - input);
   }
 
   XSlice x_fs_path_basename(const char* input)

@@ -1,23 +1,26 @@
-/*
+/**
  * STDX - Multithreading Utilities
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
- * To compile the implementation define X_IMPL_THREAD
+ * ## Overview
+ * Designed to abstract platform-specific APIs (e.g., pthreads, Win32)
+ * behind a consistent and lightweight int32_terface.
+ * This header provides functions for:
+ * - Thread creation and joining
+ * - Mutexes and condition variables
+ * - Sleep/yield utilities
+ * - A thread pool for concurrent task execution
+ *
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_THREAD`
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * X_THREAD_ALLOC / X_THREAD_FREE before including.
+ * `X_THREAD_ALLOC` / `X_THREAD_FREE` before including.
  *
- * Notes:
- *  Designed to abstract platform-specific APIs (e.g., pthreads, Win32)
- *  behind a consistent and lightweight int32_terface.
- *  This header provides functions for:
- *   - Thread creation and joining
- *   - Mutexes and condition variables
- *   - Sleep/yield utilities
- *   - A thread pool for concurrent task execution
  */
 
 #ifndef X_THREAD_H
@@ -34,33 +37,125 @@
 extern "C" {
 #endif
 
+  typedef void (*XThreadTask_fn)(void* arg);
+  typedef void* (*x_thread_func_t)(void*);
+
   typedef struct XThread_t XThread;
   typedef struct XMutex_t XMutex;
   typedef struct XCondVar_t XCondVar;
   typedef struct XThreadPool_t XThreadPool;
   typedef struct XTask_t XTask;
-  typedef void (*XThreadTask_fn)(void* arg);
-  typedef void* (*x_thread_func_t)(void*);
-  // Basic thread operations
-  int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg);
-  void    x_thread_join(XThread* t);
-  void    x_thread_destroy(XThread* t);
-  // Thread Synchronization
-  int32_t x_thread_mutex_init(XMutex** m);
-  void    x_thread_mutex_lock(XMutex* m);
-  void    x_thread_mutex_unlock(XMutex* m);
-  void    x_thread_mutex_destroy(XMutex* m);
-  int32_t x_thread_condvar_init(XCondVar** cv);
-  void    x_thread_condvar_wait(XCondVar* cv, XMutex* m);
-  void    x_thread_condvar_signal(XCondVar* cv);
-  void    x_thread_condvar_broadcast(XCondVar* cv);
-  void    x_thread_condvar_destroy(XCondVar* cv);
-  void    x_thread_sleep_ms(int ms);
-  void    x_thread_yield();
-  // Thread pool
-  XThreadPool*  x_threadpool_create(int num_threads);
-  int32_t       x_threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
-  void          x_threadpool_destroy(XThreadPool* pool);
+
+/**
+ * @brief Create and start a new thread.
+ * @param t Output pointer that receives the created thread handle.
+ * @param func Thread entry function.
+ * @param arg User argument passed to func.
+ * @return 0 on success, non-zero on failure.
+ */
+int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg);
+
+/**
+ * @brief Wait for a thread to finish execution.
+ * @param t Thread handle.
+ */
+void x_thread_join(XThread* t);
+
+/**
+ * @brief Destroy a thread handle and release its resources.
+ * @param t Thread handle.
+ */
+void x_thread_destroy(XThread* t);
+
+/**
+ * @brief Create a mutex.
+ * @param m Output pointer that receives the created mutex handle.
+ * @return 0 on success, non-zero on failure.
+ */
+int32_t x_thread_mutex_init(XMutex** m);
+
+/**
+ * @brief Lock a mutex, blocking until it becomes available.
+ * @param m Mutex handle.
+ */
+void x_thread_mutex_lock(XMutex* m);
+
+/**
+ * @brief Unlock a mutex.
+ * @param m Mutex handle.
+ */
+void x_thread_mutex_unlock(XMutex* m);
+
+/**
+ * @brief Destroy a mutex and release its resources.
+ * @param m Mutex handle.
+ */
+void x_thread_mutex_destroy(XMutex* m);
+
+/**
+ * @brief Create a condition variable.
+ * @param cv Output pointer that receives the created condition variable handle.
+ * @return 0 on success, non-zero on failure.
+ */
+int32_t x_thread_condvar_init(XCondVar** cv);
+
+/**
+ * @brief Wait on a condition variable.
+ * @param cv Condition variable handle.
+ * @param m Mutex that will be atomically released while waiting and re-acquired before returning.
+ */
+void x_thread_condvar_wait(XCondVar* cv, XMutex* m);
+
+/**
+ * @brief Wake one thread waiting on a condition variable.
+ * @param cv Condition variable handle.
+ */
+void x_thread_condvar_signal(XCondVar* cv);
+
+/**
+ * @brief Wake all threads waiting on a condition variable.
+ * @param cv Condition variable handle.
+ */
+void x_thread_condvar_broadcast(XCondVar* cv);
+
+/**
+ * @brief Destroy a condition variable and release its resources.
+ * @param cv Condition variable handle.
+ */
+void x_thread_condvar_destroy(XCondVar* cv);
+
+/**
+ * @brief Sleep the current thread for at least the given number of milliseconds.
+ * @param ms Duration in milliseconds.
+ */
+void x_thread_sleep_ms(int ms);
+
+/**
+ * @brief Yield execution to allow other threads to run.
+ */
+void x_thread_yield(void);
+
+/**
+ * @brief Create a thread pool with a fixed number of worker threads.
+ * @param num_threads Number of worker threads to start.
+ * @return Thread pool handle, or NULL on failure.
+ */
+XThreadPool* x_threadpool_create(int num_threads);
+
+/**
+ * @brief Enqueue a task for execution by the thread pool.
+ * @param pool Thread pool handle.
+ * @param fn Task function to execute.
+ * @param arg User argument passed to fn.
+ * @return 0 on success, non-zero on failure.
+ */
+int32_t x_threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
+
+/**
+ * @brief Destroy a thread pool and release its resources.
+ * @param pool Thread pool handle.
+ */
+void x_threadpool_destroy(XThreadPool* pool);
 
 #ifdef __cplusplus
 }
@@ -81,8 +176,25 @@ extern "C" {
 #include <time.h>
 #endif // _WIN32
 
+#include <stdlib.h>
+
 #ifndef X_THREAD_ALLOC
+/**
+ * @brief Internal macro for allocating memory.
+ * To override how this header allocates memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_THREAD_ALLOC(sz)        malloc(sz)
+#endif
+
+#ifndef X_THREAD_FREE
+/**
+ * @brief Internal macro for freeing memory.
+ * To override how this header frees memory, define this macro with a
+ * different implementation before including this header.
+ * @param p  The address of memory region to free.
+ */
 #define X_THREAD_FREE(p)          free(p)
 #endif
 

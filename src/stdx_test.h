@@ -1,25 +1,31 @@
-/*
+/**
  * STDX - Minimal Unit Test framework
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
- * To compile the implementation define X_IMPL_TEST
+ * ## Overview
+ *
+ * - Lightweight, self-contained C test runner
+ * - Colored PASS/FAIL output using x_log
+ * - Assertion macros for booleans, equality, floats
+ * - Signal handling for crash diagnostics (SIGSEGV, SIGABRT, etc.)
+ *
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_TEST`
  * in **one** source file before including this header.
  *
- * Features:
- *   - Lightweight, self-contained C test runner
- *   - Colored PASS/FAIL output using x_log
- *   - Assertion macros for booleans, equality, floats
- *   - Signal handling for crash diagnostics (SIGSEGV, SIGABRT, etc.)
+ * ## Usage
  *
- * Usage:
- *   - Define your test functions to return int32_t (0 for pass, 1 for fail)
- *   - Use `ASSERT_*` macros for checks
- *   - Register with X_TEST(name) and run with `x_tests_run(...)`
- *   - Define X_IMPL_TEST before including to enable main runner
+ * - Define your test functions to return int32_t (0 for pass, 1 for fail)
+ * - Use `ASSERT_*` macros for checks
+ * - Register with `X_TEST(name)` and run with `x_tests_run(...)`
+ * - Define `X_IMPL_TEST` before including to enable main runner.
  *
- * Example:
+ * ### Example
+ *
+ * ```` 
  *   int32_t test_example() {
  *     ASSERT_TRUE(2 + 2 == 4);
  *     return 0;
@@ -31,9 +37,11 @@
  *     };
  *     return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
  *   }
+ * ```` 
  *
- * Dependencies:
- *  x_log.h
+ * ## Dependencies
+ *
+ * x_log.h
  */
 #ifndef X_TEST_H
 #define X_TEST_H
@@ -215,7 +223,6 @@ int x_tests_run(STDXTestCase* tests, int32_t num_tests)
   #undef X_IMPL_TIME
   #undef X_INTERNAL_TIME_IMPL
 #endif
-
 
 #ifdef X_INTERNAL_LOGGER_IMPL
   #undef X_IMPL_LOG

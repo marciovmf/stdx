@@ -1,23 +1,26 @@
-/*
+/**
  * STDX - Generic Hashtable
  * Part of the STDX General Purpose C Library by marciovmf
  * https://github.com/marciovmf/stdx
  * License: MIT
  *
- * To compile the implementation define X_IMPL_HASHTABLE
+ * ## Overview
+ *
+ *  Provides a generic, type-agnostic hashtable implementation with 
+ *  customizable hash and equality functions. Supports arbitrary key 
+ *  and value types, optional custom allocators, and built-in iteration.
+ *  Includes helpers for common cases like string keys.
+ *
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_HASHTABLE`
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * X_HASHTABLE_ALLOC / X_HASHTABLE_REALLOC / X_HASHTABLE_FREE before including.
+ * `X_HASHTABLE_ALLOC` / `X_HASHTABLE_REALLOC` / `X_HASHTABLE_FREE` before including.
  *
- * Notes:
- *  - Provides a generic, type-agnostic hashtable implementation with 
- *  customizable hash and equality functions. Supports arbitrary key 
- *  and value types, optional custom allocators, and built-in iteration.
- *  - Includes helpers for common cases like string keys.
- *
- * Dependencies:
- *  stdx_arena.h
+ * ## Dependencies:
+ * - stdx_arena.h
  */
 
 #ifndef X_HASHTABLE_H

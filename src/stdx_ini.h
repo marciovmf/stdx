@@ -1,18 +1,24 @@
-/*
+/**
  * STDX - Minimal INI parser
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
- * To compile the implementation, define X_IMPL_INI
+ * ## How to compile
+ *
+ * To compile the implementation, define `X_IMPL_INI`
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * X_INI_ALLOC / X_INI_REALLOC / X_INI_FREE before including.
+ * `X_INI_ALLOC` / `X_INI_REALLOC` / `X_INI_FREE` before including.
  *
- * Notes:
- *   One flat string pool owns all normalized C strings (section names, keys, values).
- *   Sections and entries are indexed by arrays for direct and iterative access.
+ * ## Overview
+ *
+ * One flat string pool owns all normalized C strings (section names, keys, values).
+ * Sections and entries are indexed by arrays for direct and iterative access.
+ *
+ * To customize how this module allocates memory, define
+ * `X_INI_ALLOC` / `X_INI_REALLOC` / `X_INI_FREE` before including.
  */
 
 #ifndef X_INI_H
@@ -124,9 +130,34 @@ X_INI_API const char* x_ini_value_at(const XIni *ini, int section_index, int key
 #include <ctype.h>
 
 /* Allocator override */
+
 #ifndef X_INI_ALLOC
+/**
+ * @brief Internal macro for allocating memory.
+ * To override how this header allocates memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_INI_ALLOC(sz)        malloc(sz)
+#endif
+
+#ifndef X_INI_REALLOC
+/**
+ * @brief Internal macro for resizing memory.
+ * To override how this header resizes memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to resize.
+ */
 #define X_INI_REALLOC(p,sz)    realloc((p),(sz))
+#endif
+
+#ifndef X_INI_FREE
+/**
+ * @brief Internal macro for freeing memory.
+ * To override how this header frees memory, define this macro with a
+ * different implementation before including this header.
+ * @param p  The address of memory region to free.
+ */
 #define X_INI_FREE(p)          free(p)
 #endif
 

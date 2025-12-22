@@ -1,22 +1,25 @@
-/*
+/**
  * STDX - Array
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
- * To compile the implementation define X_IMPL_ARRAY
- * in **one** source file before including this header.
+ * ## Overview
  *
- * To customize how this module allocates memory, define
- * X_ARRAY_ALLOC / X_ARRAY_REALLOC / X_ARRAY_FREE before including.
- *
- * Notes:
  *  Provides a generic, dynamic array implementation with support for
  *  random access, insertion, deletion, and stack-like operations 
  *  (push/pop). Useful for managing homogeneous collections in C with
  *  automatic resizing.
  *
- * Dependencies:
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_ARRAY`
+ * in **one** source file before including this header.
+ *
+ * To customize how this module allocates memory, define
+ * `X_ARRAY_ALLOC` / `X_ARRAY_REALLOC` / `X_ARRAY_FREE` before including.
+ *
+ * ## Dependencies
  *  stdx_common.h
  */
 
@@ -39,11 +42,11 @@ extern "C" {
 
   typedef enum
   {
-    XARRAY_OK                         = 0,
-    XARRAY_INVALID_RANGE              = 1,
+    XARRAY_OK                         = 0,  /** Success */
+    XARRAY_INVALID_RANGE              = 1,  /** Invalid range access */
     XARRAY_MEMORY_ALLOCATION_FAILED   = 2,
     XARRAY_INDEX_OUT_OF_BOUNDS        = 3,
-    XARRAY_EMPTY                      = 4
+    XARRAY_EMPTY                      = 4   /** Array is empty */
 
   } XArrayError;
 

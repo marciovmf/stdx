@@ -343,6 +343,22 @@ int test_wsmallstr_functions(void)
   return 0;
 }
 
+int test_x_slice_starts_with(void)
+{
+  XSlice sv = x_slice("Hello!");
+  ASSERT_TRUE(x_slice_starts_with_cstr(sv, "H"));
+  ASSERT_TRUE(x_slice_starts_with_cstr(sv, "Hello"));
+  return 0;
+}
+
+int test_x_slice_ends_with(void)
+{
+  XSlice sv = x_slice("Hello!");
+  ASSERT_TRUE(x_slice_ends_with_cstr(sv, "!"));
+  ASSERT_TRUE(x_slice_ends_with_cstr(sv, "llo!"));
+  return 0;
+}
+
 int test_x_slice_utf8_find_cp()
 {
   const char* data = "🌍";
@@ -692,6 +708,9 @@ int main()
 
   STDXTestCase tests[] =
   {
+    X_TEST(test_x_slice_starts_with),
+    X_TEST(test_x_slice_ends_with),
+
     X_TEST(test_x_slice_utf8_ends_with_cstr),
     X_TEST(test_x_slice_utf8_starts_with_cstr),
     X_TEST(test_x_slice_utf8_next_token),

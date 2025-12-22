@@ -1,22 +1,22 @@
-/*
+/**
  * STDX - Common
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
+ * ## Overview
+ *
  * Provides portable macros and types for different taks such as os detection,
- * architecture detection, compiler detection, bit manipulation, dll
- * export/import macros, assertions and more.
+ * architecture detection, compiler detection, bit manipulation,
+ * dll export/import macros, assertions and more.
  */
 
 #ifndef X_COMMON_H
 #define X_COMMON_H
 
 #ifdef __cplusplus
-extern "C" {
 #include <stdbool.h>
 #endif
-
 
 #define X_COMMON_VERSION_MAJOR 1
 #define X_COMMON_VERSION_MINOR 0
@@ -24,9 +24,9 @@ extern "C" {
 
 #define X_COMMON_VERSION (X_COMMON_VERSION_MAJOR * 10000 + X_COMMON_VERSION_MINOR * 100 + X_COMMON_VERSION_PATCH)
 
-  // -----------------------------------------------------------------------------
-  // Compiler Detection macros
-  // -----------------------------------------------------------------------------
+// --------------------------------------------------------
+// Compiler Detection macros
+// --------------------------------------------------------
 
 #if defined(__GNUC__) || defined(__GNUG__)
 #define X_COMPILER_NAME "GCC"
@@ -46,9 +46,9 @@ extern "C" {
 #define X_COMPILER_UNKNOWN
 #endif
 
-  // -----------------------------------------------------------------------------
-  //  Compiler ATTRIBUTES / INLINE / ALIGN
-  // -----------------------------------------------------------------------------
+// --------------------------------------------------------
+//  Compiler ATTRIBUTES / INLINE / ALIGN
+// --------------------------------------------------------
 
 #if defined(COMPILER_MSVC)
 #define X_INLINE      __inline
@@ -71,9 +71,9 @@ extern "C" {
 #endif
 
 
-  // ----------------------------------------------------------------------------
-  // Branch prediction
-  // ----------------------------------------------------------------------------
+// --------------------------------------------------------
+// Branch prediction
+// --------------------------------------------------------
 
 #if defined(X_PLAT_COMPILER_GCC) || defined(X_PLAT_COMPILER_CLANG)
 #define X_LIKELY(x)   __builtin_expect(!!(x), 1)
@@ -83,10 +83,9 @@ extern "C" {
 #define X_UNLIKELY(x) (x)
 #endif
 
-
-  // ----------------------------------------------------------------------------
-  // Architecture detection
-  // ----------------------------------------------------------------------------
+// --------------------------------------------------------
+// Architecture detection
+// --------------------------------------------------------
 
 #if defined(_M_X64) || defined(__x86_64__)
 #define X_ARCH_X64 1
@@ -101,9 +100,9 @@ extern "C" {
 #endif
 
 
-  // -----------------------------------------------------------------------------
-  // OS Detection macros
-  // -----------------------------------------------------------------------------
+// --------------------------------------------------------
+// OS Detection macros
+// --------------------------------------------------------
 
 #if defined(_WIN32) || defined(_WIN64)
 #define X_OS_WINDOWS 1
@@ -116,9 +115,9 @@ extern "C" {
 #endif
 
 
-  // ----------------------------------------------------------------------------
-  // DLL import/export
-  // ----------------------------------------------------------------------------
+// --------------------------------------------------------
+// DLL import/export
+// --------------------------------------------------------
 
 #if defined(X_OS_WINDOWS)
 #define X_PLAT_EXPORT __declspec(dllexport)
@@ -136,13 +135,11 @@ extern "C" {
 #endif
 
 
-  // ----------------------------------------------------------------------------
-  // Assertion macros
-  // ----------------------------------------------------------------------------
+// --------------------------------------------------------
+// Assertion macros
+// --------------------------------------------------------
 
 #define X_STATIC_ASSERT(cond, msg) typedef char static_assert_##msg[(cond) ? 1 : -1]
-
-
 
 #ifdef DEBUG
 #define X_ASSERT(expr) \
@@ -156,9 +153,9 @@ extern "C" {
 #define X_ASSERT(expr) ((void)0)
 #endif
 
-  // ----------------------------------------------------------------------------
-  // Endianness
-  // ----------------------------------------------------------------------------
+// --------------------------------------------------------
+// Endianness
+// --------------------------------------------------------
 
 #if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 #define X_BIG_ENDIAN 1
@@ -166,9 +163,9 @@ extern "C" {
 #define X_LITTLE_ENDIAN 1
 #endif
 
-  // ----------------------------------------------------------------------------
-  // Path separator
-  // ----------------------------------------------------------------------------
+// --------------------------------------------------------
+// Path separator
+// --------------------------------------------------------
 
 #if defined(X_OS_WINDOWS)
 #define X_PATH_SEPARATOR              '\\'
@@ -178,10 +175,9 @@ extern "C" {
 #define X_PATH_SEPARATOR_ALTERNATIVE  '\\'
 #endif
 
-
-  // -----------------------------------------------------------------------------
-  // Bit manipulation macros
-  // -----------------------------------------------------------------------------
+// --------------------------------------------------------
+// Bit manipulation macros
+// --------------------------------------------------------
 
 #define X_BIT_SET(var, bit)    ((var) |=  (1U << (bit)))
 #define X_BIT_CLEAR(var, bit)  ((var) &= ~(1U << (bit)))
@@ -190,28 +186,27 @@ extern "C" {
 #define X_UNUSED(x) (void)(x) // mark a function argument as unused
 
 
-  // -----------------------------------------------------------------------------
-  // Wraps a value of a primitive type (e.g., int, float, etc.) in a temporary
-  // compound literal and returns a pointer to it.
-  //  - Requires C99 or later (for compound literals).
-  //  - The pointer must not be stored or used after the function call.
-  // -----------------------------------------------------------------------------
-
+/**
+ * @breif Wraps a value of a primitive type (e.g., int, float, etc.) in a temporary
+ * compound literal and returns a pointer to it.
+ * - Requires C99 or later (for compound literals).
+ * - The pointer must not be stored or used after the function call.
+ */
 #define X_VALUE_PTR(type, val) ((const void*)&(type){ (val) })
+
 #define X_VALUE_TYPE_PTR(type, val) ((const type*)&(type){ (val) })
 
+/**
+ * @brief A XPtr holds either a valid pointer or an error code.
+ * Used for functions that return a pointers but may fail.
+ */
+struct XPtr_t
+{
+  int error;
+  void *ptr;
+};
 
-  // -----------------------------------------------------------------------------
-  // A XPtr holds either a valid pointer or an error code.
-  // Used for functions that return a pointers but may fail.
-  // -----------------------------------------------------------------------------
-  
-  typedef struct XPtr_t XPtr;
-  struct XPtr_t
-  {
-    int error;
-    void *ptr;
-  };
+typedef struct XPtr_t XPtr;
 
 #define X_PTR_OK(p)      ((XPtr){ .error = 0, .ptr = (p) })
 #define X_PTR_ERR(e)     ((XPtr){ .error = (e), .ptr = 0 })
@@ -222,9 +217,9 @@ extern "C" {
 #define X_PTR_CAST(r, T) ((r).is_error ? NULL : (T)(r).ptr)
 
 
-  // -----------------------------------------------------------------------------
-  // Common types
-  // -----------------------------------------------------------------------------
+// --------------------------------------------------------
+// Common types
+// --------------------------------------------------------
 
 #if defined(X_OS_WINDOWS)
 #if defined (X_COMPILER_MSVC)
@@ -245,25 +240,24 @@ extern "C" {
 #include <stdio.h>
 #endif
 
-  typedef int8_t    i8;
-  typedef uint8_t   u8;
-  typedef uint8_t   byte;
-  typedef int16_t   i16;
-  typedef uint16_t  u16;
-  typedef int32_t   i32;
-  typedef uint32_t  u32;
-  typedef int64_t   i64;
-  typedef uint64_t  u64;
+typedef int8_t    i8;
+typedef uint8_t   u8;
+typedef uint8_t   byte;
+typedef int16_t   i16;
+typedef uint16_t  u16;
+typedef int32_t   i32;
+typedef uint32_t  u32;
+typedef int64_t   i64;
+typedef uint64_t  u64;
 
-  typedef struct XSize_t { i32 w, h; }  XSize;
-  typedef struct XPoint_t { i32 x, y; } XPoint;
+typedef struct XSize_t { i32 w, h; }  XSize;
+typedef struct XPoint_t { i32 x, y; } XPoint;
 
 #ifndef X_ARRAY_COUNT
 #define X_ARRAY_COUNT(a) (sizeof(a)/sizeof((a)[0]))
 #endif
 
 #ifdef __cplusplus
-}
 #endif
 
 #endif //X_COMMON_H

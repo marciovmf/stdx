@@ -1,18 +1,20 @@
-/*
- * STDX - Cross-Platform Networking API
- * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
- * License: MIT
+/**
+ *  STDX - Cross-Platform Networking API
+ *  Part of the STDX General Purpose C Library by marciovmf
+ *  License: MIT
+ *  <https://github.com/marciovmf/stdx>
+ 
+ * ## Overview
+ *
+ * - Provides a high-level, cross-platform socket networking API.
+ * - On windows, this library links with *iphlpapi.lib* and *ws2_32.lib*
  * 
- * To compile the implementation define X_IMPL_NET
+ * ## How to compile
+ * To compile the implementation define `X_IMPL_NET`
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * X_NET_ALLOC / X_NET_FREE before including.
- *
- * Note:
- *  - Provides a high-level, cross-platform socket networking API.
- *  - On windows, this library links with iphlpapi.lib and ws2_32.lib
+ * `X_NET_ALLOC` / `X_NET_FREE` before including.
  */
 
 #ifndef X_NETWORK_H
@@ -29,7 +31,6 @@
 
 #if defined(_WIN32)
 #include <winsock2.h>
-//#include <ws2tcpip.h>
   typedef SOCKET XSocket;
   typedef int32_t socklen_t;
 #else
@@ -162,7 +163,23 @@ extern "C" {
 #endif
 
 #ifndef X_NET_ALLOC
+/**
+ * @brief Internal macro for allocating memory.
+ * To override how this header allocates memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_NET_ALLOC(sz)        malloc(sz)
+#endif
+
+
+#ifndef X_NET_FREE
+/**
+ * @brief Internal macro for freeing memory.
+ * To override how this header frees memory, define this macro with a
+ * different implementation before including this header.
+ * @param p  The address of memory region to free.
+ */
 #define X_NET_FREE(p)          free(p)
 #endif
 
