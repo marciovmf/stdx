@@ -190,7 +190,6 @@ article.symbol h2 {
   white-space: pre;
   overflow-wrap: break-word;
   word-break: normal;
-  white-space: normal;
 }
 
 /* code is just text */

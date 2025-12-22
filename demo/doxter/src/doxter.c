@@ -1,6 +1,5 @@
 #include <stdx_common.h>
 #define X_IMPL_ARRAY
-#define X_IMPL_ARRAY
 #define X_IMPL_FILESYSTEM
 #define X_IMPL_INI
 #define X_IMPL_IO
@@ -23,6 +22,14 @@
 #include <stdbool.h>
 #include <string.h>
 
+#ifndef DEFAULT_CONFIG_FILE_NAME
+#define DEFAULT_CONFIG_FILE_NAME "doxter.ini"
+#endif
+
+#ifndef DOXTER_MAX_MODULES
+#define DOXTER_MAX_MODULES 64
+#endif
+
 // --------------------------------------------------------
 // Types
 // --------------------------------------------------------
@@ -35,8 +42,6 @@ typedef struct
   const char *end_ptr;
   bool     used;
 } DoxterDocblock;
-
-#define DOXTER_MAX_COMMENTS 256
 
 typedef enum
 {
@@ -67,8 +72,6 @@ typedef struct
   char *module_item_html;
   char *style_css;
 } DoxterTemplates;
-
-#define DOXTER_MAX_MODULES 64
 
 typedef struct
 {
@@ -169,8 +172,10 @@ static void s_modules_free(DoxterModuleList *list)
   memset(list, 0, sizeof(*list));
 }
 
-/* Derive output html name from an input path. E.g. "foo/bar/stdx_strbuilder.h" -> "stdx_strbuilder.html" */
-static void s_get_names(const char *path,
+/*
+ * Derive output html name from an input path. E.g. "foo/bar/stdx_strbuilder.h" -> "stdx_strbuilder.html"
+ */
+static void _s_get_names(const char *path,
     char *base_name,
     size_t base_cap,
     char *out_html,
@@ -231,9 +236,7 @@ static void s_get_names(const char *path,
   }
 }
 
-static bool s_modules_add(DoxterModuleList *list,
-    const char *module_name,
-    const char *output_name)
+static bool s_modules_add(DoxterModuleList *list, const char* input_file_name)
 {
   if (list->module_count >= DOXTER_MAX_MODULES)
   {
@@ -242,8 +245,21 @@ static bool s_modules_add(DoxterModuleList *list,
 
   DoxterModule *m = &list->modules[list->module_count];
 
-  m->module_name = s_strdup(module_name);
-  m->output_name = s_strdup(output_name);
+  XSmallstr tmp;
+  XSlice base_name = x_fs_path_basename(input_file_name);
+
+  x_smallstr_from_slice(base_name, &tmp);
+  m->module_name = _strdup(tmp.buf);
+
+  XSlice html_name = x_fs_path_stem(base_name.ptr);
+  x_smallstr_from_slice(html_name, &tmp);
+  x_smallstr_append_cstr(&tmp, ".html");
+  m->output_name = _strdup(tmp.buf);
+
+  printf("MODULE: %s\nbasename = %s\nstem = %s\n\n",
+      input_file_name,
+      m->module_name,
+      m->output_name);
 
   if (!m->module_name || !m->output_name)
   {
@@ -256,7 +272,6 @@ static bool s_modules_add(DoxterModuleList *list,
   list->module_count++;
   return true;
 }
-
 
 // --------------------------------------------------------
 // Identifier extraction
@@ -948,6 +963,8 @@ static void s_index_resolver(const char *placeholder,
   else if (strcmp(placeholder, "FILE_BRIEF") == 0)
   {
     DoxterSymbol* file_comment = (DoxterSymbol*) x_array_get(ctx->symbols, 0).ptr;
+    if (!file_comment)
+      return;
     XSlice b = file_comment->comment;
 
     const char* markdown = md_to_html(b.ptr, b.length);
@@ -1164,11 +1181,6 @@ static void s_project_css_resolver(const char *placeholder,
   }
 }
 
-
-#ifndef DEFAULT_CONFIG_FILE_NAME
-#define DEFAULT_CONFIG_FILE_NAME "doxter.ini"
-#endif
-
 static void s_doxter_config_init_default(DoxterConfig* cfg)
 {
   cfg->color_page_background           = "ffffff";
@@ -1251,16 +1263,22 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* out)
 
 typedef struct DoxterCmdLine
 {
+  const char*   project_name;
   const char*   doxter_file;
   const char*   output_directory;
   const char**  input_files;
+  bool          skip_static;
+  bool          skip_undocumented;
+  bool          skip_empty_defines;
   u32           num_input_files;
 } DoxterCmdLine;
 
 static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
 {
   memset(out, 0, sizeof(DoxterCmdLine));
+
   out->output_directory = ".";
+  // out->project_name = NULL; // optional, depends on your struct defaults
 
   if (argc < 2)
   {
@@ -1268,14 +1286,23 @@ static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
     printf("Options\n\n");
     printf("  %-32s = %s\n", "-f <path-to-doxter.init>", "Path to doxter.ini.");
     printf("  %-32s = %s\n", "-d <path-to-output-dir>", "Specify output directory for generated files.");
+    printf("  %-32s = %s\n", "-p <project-name>", "Project name.");
+    printf("  %-32s = %s\n", "--skip-static", "Skip static functions.");
+    printf("  %-32s = %s\n", "--skip-undocumented", "Skip undocumented symbols.");
+    printf("  %-32s = %s\n", "--skip-empty-defines", "Skip empty defines.");
     return false;
   }
 
-  // parse options
+  // parse options (must appear before input_files)
   i32 i = 1;
-  for (;;)
+  while (i < argc)
   {
-    if (strncmp(argv[i],"-f", 2) == 0)
+    const char* a = argv[i];
+
+    if (a[0] != '-')
+      break;
+
+    if (strcmp(a, "-f") == 0)
     {
       if (++i >= argc)
       {
@@ -1284,7 +1311,7 @@ static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
       }
       out->doxter_file = argv[i++];
     }
-    else if (strncmp(argv[i], "-d", 2) == 0)
+    else if (strcmp(a, "-d") == 0)
     {
       if (++i >= argc)
       {
@@ -1293,8 +1320,45 @@ static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
       }
       out->output_directory = argv[i++];
     }
+    else if (strcmp(a, "-p") == 0)
+    {
+      if (++i >= argc)
+      {
+        fprintf(stderr, "Invalid command line: -p requires project name argument.\n");
+        return false;
+      }
+      out->project_name = argv[i++];
+    }
+    else if (strcmp(a, "--skip-static") == 0)
+    {
+      out->skip_static = 1;
+      i++;
+    }
+    else if (strcmp(a, "--skip-undocumented") == 0)
+    {
+      out->skip_undocumented = 1;
+      i++;
+    }
+    else if (strcmp(a, "--skip-empty-defines") == 0)
+    {
+      out->skip_empty_defines = 1;
+      i++;
+    }
+    //else if (strcmp(a, "--md-global-comments") == 0)
+    //{
+    //  out->option_markdown_gobal_comments = 1; // keep your existing field name if it's spelled this way
+    //  i++;
+    //}
+    //else if (strcmp(a, "--md-index") == 0)
+    //{
+    //  out->option_markdown_index_page = 1;
+    //  i++;
+    //}
     else
-      break;
+    {
+      fprintf(stderr, "Invalid command line: Unknown option '%s'.\n", a);
+      return false;
+    }
   }
 
   // collect input files
@@ -1304,7 +1368,7 @@ static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
     return false;
   }
 
-  out->input_files = (const char**) &(argv[i]);
+  out->input_files = (const char**)&(argv[i]);
   out->num_input_files = argc - i;
   return true;
 }
@@ -1358,27 +1422,16 @@ int main(int argc, char **argv)
   else
     s_doxter_config_init_default(&cfg);
 
-  if (!s_load_templates(&templates))
-  {
-    fprintf(stderr, "Failed to load templates from '%s'\n", DOXTER_TEMPLATE_DIR);
-    return 1;
-  }
-
+  s_load_templates(&templates);
   s_modules_init(&modules);
 
   // --------------------------------------------------------
   //  Collect module list and html file names for each of them
   // --------------------------------------------------------
-  
+
   for (u32 argi = 0; argi < args.num_input_files; ++argi)
   {
-    char base_name[256];
-    char html_name[256];
-
-    s_get_names(args.input_files[argi], base_name, sizeof(base_name),
-        html_name, sizeof(html_name));
-
-    if (!s_modules_add(&modules, base_name, html_name))
+    if (!s_modules_add(&modules, args.input_files[argi]))
     {
       fprintf(stderr, "Warning: could not record module '%s'\n", args.input_files[argi]);
       had_error = true;
@@ -1388,7 +1441,7 @@ int main(int argc, char **argv)
   // --------------------------------------------------------
   // process each header and generate its HTML page
   // --------------------------------------------------------
-  
+
   XArray* array = x_array_create(sizeof(DoxterSymbol), 64);
   for (u32 argi = 0; argi < args.num_input_files; ++argi)
   {
@@ -1413,10 +1466,9 @@ int main(int argc, char **argv)
     // --------------------------------------------------------
     // Render templares per project module
     // --------------------------------------------------------
-    char base_name[256];
-    char out_path[256];
-    s_get_names(source_path, base_name, sizeof(base_name),
-        out_path, sizeof(out_path));
+
+    DoxterModule* m = &(modules.modules[argi]);
+
     x_strbuilder_clear(sb);
     if (!sb)
     {
@@ -1427,8 +1479,8 @@ int main(int argc, char **argv)
     }
 
     DoxIndexCtx ctx;
-    ctx.file_name    = base_name;
-    ctx.output_name  = out_path;
+    ctx.file_name    = m->module_name;
+    ctx.output_name  = m->output_name;
     ctx.symbols      = array;
     ctx.templates    = &templates;
     ctx.modules      = &modules;
@@ -1439,7 +1491,7 @@ int main(int argc, char **argv)
         sb);
 
     char *html = x_strbuilder_to_string(sb);
-    x_fs_path(&full_path, args.output_directory, out_path);
+    x_fs_path(&full_path, args.output_directory, m->output_name);
     if (!x_io_write_text(full_path.buf, html))
     {
       fprintf(stderr, "Failed to write output file '%s'\n", full_path.buf);

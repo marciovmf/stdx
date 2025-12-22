@@ -5,13 +5,24 @@
 #include <stdx_string.h>
 #include <stdx_array.h>
 
-#ifndef DOXTER_TEMPLATE_DIR
-#define DOXTER_TEMPLATE_DIR "templates"
-#endif  // DOXTER_TEMPLATE_DIR
-
 #ifndef DOXTER_COMMENT_MAX_ARGS
 #define DOXTER_COMMENT_MAX_ARGS 32
 #endif  // DOXTER_COMMENT_MAX_ARGS 
+
+typedef struct DoxterConfig DoxterConfig;
+typedef struct DoxterSymbol DoxterSymbol;
+typedef struct DoxterComment DoxterComment;
+
+typedef enum DoxterType
+{
+  DOXTER_FUNCTION,
+  DOXTER_MACRO,
+  DOXTER_STRUCT,
+  DOXTER_ENUM,
+  DOXTER_UNION,
+  DOXTER_TYPEDEF,
+  DOXTER_FILE
+} DoxterType;
 
 struct DoxterConfig
 {
@@ -40,31 +51,15 @@ struct DoxterConfig
   u8 option_markdown_index_page;
 };
 
-enum DoxterType
-{
-  DOXTER_FUNCTION,
-  DOXTER_MACRO,
-  DOXTER_STRUCT,
-  DOXTER_ENUM,
-  DOXTER_UNION,
-  DOXTER_TYPEDEF,
-  DOXTER_FILE
-};
-
-typedef struct DoxterConfig DoxterConfig;
-typedef enum DoxterType DoxterType;
-typedef struct DoxterSymbol DoxterSymbol;
-typedef struct DoxterComment DoxterComment;
-
 struct DoxterSymbol
 {
-  uint32_t    line;         // declaration starting line
-  uint32_t    column;       // declaration staing column
-  XSlice      declaration;  // Actual C code of the declaration. Functions do not include { } body. Structs, macros, enums, typedefs etc should incude full code.
-  XSlice      comment;      // /** ... */ right before the declaration, if any
-  XSlice      name;         // Symbol name of declaration
-  bool        is_typedef;   // true if it is a typedef
-  bool        is_static;    // true if it is static
+  uint32_t    line;           // declaration starting line
+  uint32_t    column;         // declaration staing column
+  XSlice      declaration;    // Actual C code of the declaration. Functions do not include { } body. Structs, macros, enums, typedefs etc should incude full code.
+  XSlice      comment;        // /** ... */ right before the declaration, if any
+  XSlice      name;           // Symbol name of declaration
+  bool        is_typedef;     // true if it is a typedef
+  bool        is_static;      // true if it is static
   bool        is_empty_macro; // true is it is an empty define macro like #define SOMENAME, without any value
   DoxterType  type;       
 };
@@ -93,8 +88,6 @@ struct DoxterComment
  * @return the number or symbols found
  */
 u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* array);
-
-void doxter_debug_print_symbol(DoxterSymbol* symbol);
 
 #endif //DOXTER_H
 
