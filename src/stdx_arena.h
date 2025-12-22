@@ -42,7 +42,7 @@ extern "C" {
   /**
    * Arena
    */
-  typedef struct XArena_t
+  typedef struct XArena
   {
     size_t       chunk_size;   // Preferred chunk size for growth.
     XArenaChunk* chunks;       // Head of chunk list (most recent first).

@@ -37,14 +37,14 @@
 extern "C" {
 #endif
 
-  typedef void (*XThreadTask_fn)(void* arg);
-  typedef void* (*x_thread_func_t)(void*);
+  typedef void (*XThreadTask)(void* arg);
+  typedef void* (*XThreadFunc)(void*);
 
-  typedef struct XThread_t XThread;
-  typedef struct XMutex_t XMutex;
-  typedef struct XCondVar_t XCondVar;
-  typedef struct XThreadPool_t XThreadPool;
-  typedef struct XTask_t XTask;
+  typedef struct XThread XThread;
+  typedef struct XMutex XMutex;
+  typedef struct XCondVar XCondVar;
+  typedef struct XThreadPool XThreadPool;
+  typedef struct XTask XTask;
 
 /**
  * @brief Create and start a new thread.
@@ -53,7 +53,7 @@ extern "C" {
  * @param arg User argument passed to func.
  * @return 0 on success, non-zero on failure.
  */
-int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg);
+int32_t x_thread_create(XThread** t, XThreadFunc func, void* arg);
 
 /**
  * @brief Wait for a thread to finish execution.
@@ -149,7 +149,7 @@ XThreadPool* x_threadpool_create(int num_threads);
  * @param arg User argument passed to fn.
  * @return 0 on success, non-zero on failure.
  */
-int32_t x_threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg);
+int32_t x_threadpool_enqueue(XThreadPool* pool, XThreadTask fn, void* arg);
 
 /**
  * @brief Destroy a thread pool and release its resources.
@@ -204,13 +204,13 @@ extern "C" {
 
 #ifdef _WIN32
 
-  struct XThread_t { HANDLE handle; };
-  struct XMutex_t  { CRITICAL_SECTION cs; };
-  struct XCondVar_t { CONDITION_VARIABLE cv; };
+  struct XThread { HANDLE handle; };
+  struct XMutex  { CRITICAL_SECTION cs; };
+  struct XCondVar { CONDITION_VARIABLE cv; };
 
   struct XThreadWrapper
   {
-    x_thread_func_t func;
+    XThreadFunc func;
     void* arg;
   };
 
@@ -222,7 +222,7 @@ extern "C" {
     return (DWORD)(uintptr_t)result;
   }
 
-  int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg)
+  int32_t x_thread_create(XThread** t, XThreadFunc func, void* arg)
   {
     if (!t || !func) return -1;
     *t = X_THREAD_ALLOC(sizeof(XThread));
@@ -309,10 +309,10 @@ extern "C" {
 #else // POSIX
 
   struct XThread { pXThread id; };
-  struct mutex  { px_thread_XMutex m; };
-  struct condvar { px_thread_cond_t cv; };
+  struct XMutex  { px_thread_XMutex m; };
+  struct XCondVar { px_thread_cond_t cv; };
 
-  int32_t x_thread_create(XThread** t, x_thread_func_t func, void* arg)
+  int32_t x_thread_create(XThread** t, XThreadFunc func, void* arg)
   {
     if (!t || !func) return -1;
     *t = X_THREAD_ALLOC(sizeof(XThread));
@@ -396,14 +396,14 @@ extern "C" {
 
 #define THREADPOOL_MAGIC 0xDEADBEEF
 
-  struct XTask_t
+  struct XTask
   {
-    XThreadTask_fn fn;
+    XThreadTask fn;
     void* arg;
     XTask* next;
   };
 
-  struct XThreadPool_t
+  struct XThreadPool
   {
     uint32_t magic;
     XThread** threads;
@@ -472,7 +472,7 @@ extern "C" {
     return pool;
   }
 
-  int32_t x_threadpool_enqueue(XThreadPool* pool, XThreadTask_fn fn, void* arg)
+  int32_t x_threadpool_enqueue(XThreadPool* pool, XThreadTask fn, void* arg)
   {
     if (!fn || !pool || pool->magic != THREADPOOL_MAGIC) return -1;
 

@@ -46,6 +46,9 @@
 extern "C" {
 #endif
 
+/**
+ * @brief Ini parsing status.
+ */
 typedef enum XIniErrorCode
 {
   XINI_OK = 0,
@@ -57,6 +60,9 @@ typedef enum XIniErrorCode
   XINI_ERR_UNTERMINATED_STRING
 } XIniErrorCode;
 
+/**
+ * @brief Ini error information
+ */
 typedef struct XIniError
 {
   XIniErrorCode code;  /* error kind */
@@ -65,12 +71,19 @@ typedef struct XIniError
   const char *message; /* short, static message string */
 } XIniError;
 
+
+/**
+ * @brief Ini section information
+ */
 typedef struct XIniSection
 {
   const char *name;   /* section name or "" for the global section */
   int first_entry;    /* index of first entry for this section, or -1 if none */
 } XIniSection;
 
+/**
+ * @brief Ini Entry
+ */
 typedef struct XIniEntry
 {
   int section;        /* section index this entry belongs to */
@@ -78,6 +91,10 @@ typedef struct XIniEntry
   const char *value;  /* normalized value (may be empty string) */
 } XIniEntry;
 
+
+/**
+ * @brief Represents a parsed INI source
+ */
 typedef struct XIni
 {
   /* string pool */
@@ -95,26 +112,118 @@ typedef struct XIni
   int          global_section; // index of the synthetic global section ("")
 } XIni;
 
-/* Loading / lifetime */
-X_INI_API bool        x_ini_load_file(const char *path, XIni *out_ini, XIniError *err);
-/* data is copied/normalized; err may be NULL */
-X_INI_API bool        x_ini_load_mem(const void *data, size_t size, XIni *out_ini, XIniError *err);
-X_INI_API void        x_ini_free(XIni *ini);
+/**
+* @brief Load and parse an INI file from disk.
+* @param path Path to the INI file.
+* @param out_ini Output structure receiving the parsed INI data.
+* @param err Optional output error information (may be NULL).
+* @return True on success, false on failure.
+*/
+X_INI_API bool x_ini_load_file(const char *path, XIni *out_ini, XIniError *err);
 
-/* Error string (static, thread-safe) */
+/**
+* @brief Load and parse INI data from a memory buffer.
+* @param data Pointer to the INI data in memory.
+* @param size Size of the data buffer in bytes.
+* @param out_ini Output structure receiving the parsed INI data.
+* @param err Optional output error information (may be NULL).
+* @return True on success, false on failure.
+*/
+X_INI_API bool x_ini_load_mem(const void *data, size_t size, XIni *out_ini, XIniError *err);
+
+/**
+* @brief Free all resources associated with an INI structure.
+* @param ini INI structure to free.
+* @return Nothing.
+*/
+X_INI_API void x_ini_free(XIni *ini);
+
+/**
+* @brief Get a human-readable string for an INI error code.
+* @param code Error code.
+* @return Pointer to a static, thread-safe error string.
+*/
 X_INI_API const char* x_ini_err_str(XIniErrorCode code);
 
-/* Queries */
+/**
+* @brief Retrieve a string value from the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param def_value Default value returned if the key is not found.
+* @return Pointer to the value string, or def_value if not found.
+*/
 X_INI_API const char* x_ini_get(const XIni *ini, const char *section, const char *key, const char *def_value);
-X_INI_API int32_t     x_ini_get_i32(const XIni *ini, const char *section, const char *key, int32_t def_value);
-X_INI_API float       x_ini_get_f32(const XIni *ini, const char *section, const char *key, float def_value);
-X_INI_API bool        x_ini_get_bool(const XIni *ini, const char *section, const char *key, bool def_value);
 
-/* Iteration helpers */
-X_INI_API int         x_ini_section_count(const XIni *ini);
+/**
+* @brief Retrieve a 32-bit integer value from the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param def_value Default value returned if the key is not found or cannot be parsed.
+* @return Parsed integer value, or def_value on failure.
+*/
+X_INI_API int32_t x_ini_get_i32(const XIni *ini, const char *section, const char *key, int32_t def_value);
+
+/**
+* @brief Retrieve a 32-bit floating-point value from the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param def_value Default value returned if the key is not found or cannot be parsed.
+* @return Parsed floating-point value, or def_value on failure.
+*/
+X_INI_API float x_ini_get_f32(const XIni *ini, const char *section, const char *key, float def_value);
+
+/**
+* @brief Retrieve a boolean value from the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param def_value Default value returned if the key is not found or cannot be parsed.
+* @return Parsed boolean value, or def_value on failure.
+*/
+X_INI_API bool x_ini_get_bool(const XIni *ini, const char *section, const char *key, bool def_value);
+
+/**
+* @brief Get the number of sections in the INI data.
+* @param ini Parsed INI data.
+* @return Number of sections.
+*/
+X_INI_API int x_ini_section_count(const XIni *ini);
+
+/**
+* @brief Get the name of a section by index.
+* @param ini Parsed INI data.
+* @param section_index Zero-based section index.
+* @return Section name string.
+*/
 X_INI_API const char* x_ini_section_name(const XIni *ini, int section_index);
-X_INI_API int         x_ini_key_count(const XIni *ini, int section_index);
+
+/**
+* @brief Get the number of keys in a section.
+* @param ini Parsed INI data.
+* @param section_index Zero-based section index.
+* @return Number of keys in the section.
+*/
+X_INI_API int x_ini_key_count(const XIni *ini, int section_index);
+
+/**
+* @brief Get the name of a key by section and key index.
+* @param ini Parsed INI data.
+* @param section_index Zero-based section index.
+* @param key_index Zero-based key index within the section.
+* @return Key name string.
+*/
 X_INI_API const char* x_ini_key_name(const XIni *ini, int section_index, int key_index);
+
+/**
+* @brief Get the value of a key by section and key index.
+* @param ini Parsed INI data.
+* @param section_index Zero-based section index.
+* @param key_index Zero-based key index within the section.
+* @return Value string at the specified position.
+*/
 X_INI_API const char* x_ini_value_at(const XIni *ini, int section_index, int key_index);
 
 #ifdef __cplusplus

@@ -93,60 +93,10 @@ extern "C" {
   } XFSWatchEvent;
 
   // Filesystem operations
-  XFSDireHandle* x_fs_find_first_file(const char* path, XFSDireEntry* entry);
-  bool        x_fs_directory_create(const char* path);
-  bool        x_fs_directory_create_recursive(const char* path);
-  bool        x_fs_directory_delete(const char* directory);
-  bool        x_fs_file_copy(const char* file, const char* newFile);
-  bool        x_fs_file_rename(const char* file, const char* newFile);
-  bool        x_fs_find_next_file(XFSDireHandle* dirHandle, XFSDireEntry* entry);
-  size_t      x_fs_get_temp_folder(XFSPath* out);
-  size_t      x_fs_cwd_get(XFSPath* path);
-  size_t      x_fs_cwd_set(const char* path);
-  size_t      x_fs_cwd_set_from_executable_path(void);
-  void        x_fs_find_close(XFSDireHandle* dirHandle);
-  // Filesystem Monitoring
-  XFSWatch*   x_fs_watch_open(const char* path);
-  void        x_fs_watch_close(XFSWatch* fw);
-  int32_t     x_fs_watch_poll(XFSWatch* fw, XFSWatchEvent* out_events,int32_t max_events);
   // Path manipulation
 #define       x_fs_path(out, ...) x_fs_path_(out, __VA_ARGS__, 0)
 #define       x_fs_path_join(path, ...) x_fs_path_join_(path, __VA_ARGS__, 0)
 #define       x_fs_path_join_slice(path, ...) x_fs_path_join_slice_(path, __VA_ARGS__, 0)
-  XFSPath*    x_fs_path_normalize(XFSPath* input);
-  XSlice      x_fs_path_stem(const char* input);
-  XSlice      x_fs_path_basename(const char* input);
-  XSlice      x_fs_path_dirname(const char* input);
-  bool        x_fs_path_(XFSPath* out, ...);
-  bool        x_fs_path_exists(const XFSPath* path);
-  bool        x_fs_path_exists_cstr(const char* path);
-  bool        x_fs_path_exists_quick(const XFSPath* path); // Sligthly faster
-  bool        x_fs_path_exists_quick_cstr(const char* path); // Sligthly faster
-  bool        x_fs_path_is_absolute(const XFSPath* path);
-  bool        x_fs_path_is_absolute_cstr(const char* path);
-  bool        x_fs_path_is_absolute_native(const XFSPath* path);
-  bool        x_fs_path_is_absolute_native_cstr(const char* path);
-  bool        x_fs_path_is_directory(const XFSPath* path);
-  bool        x_fs_path_is_directory_cstr(const char* path);
-  bool        x_fs_path_is_file(const XFSPath* path);
-  bool        x_fs_path_is_file_cstr(const char* path);
-  bool        x_fs_path_is_relative(const XFSPath* path);
-  bool        x_fs_path_is_relative_cstr(const char* path);
-  const char* x_fs_path_cstr(const XFSPath* p);
-  size_t      x_fs_path_append(XFSPath* p, const char* comp);
-  size_t      x_fs_path_change_extension(XFSPath* path, const char* new_ext);
-  size_t      x_fs_path_compare(const XFSPath* a, const XFSPath* b); // ignores separator type
-  int32_t     x_fs_path_compare_cstr(const XFSPath* a, const char* cstr); // ignores separator type
-  bool        x_fs_path_eq(const XFSPath* a, const XSmallstr* b);
-  bool        x_fs_path_eq_cstr(const XFSPath* a, const char* b);
-  XSlice      x_fs_path_extension(const char* input);
-  size_t      x_fs_path_from_slice(XSlice sv, XFSPath* out);
-  size_t      x_fs_path_join_(XFSPath* path, ...);
-  size_t      x_fs_path_relative_to_cstr(const char* from_path, const char* to_path, XFSPath* out_path);
-  bool        x_fs_path_common_prefix (const char* from_path, const char* to_path, XFSPath* out_path);
-  size_t      x_fs_path_set(XFSPath* p, const char* cstr);
-  bool        x_fs_path_split(const char* input, XFSPath* out_components, size_t max_components, size_t* out_count);
-  size_t      x_fs_path_from_executable(XFSPath* out);
 
   // Path manipulation
   typedef struct
@@ -157,19 +107,453 @@ extern "C" {
     uint32_t permissions; // Platform dependent
   } FSFileStat;
 
-  bool x_fs_file_stat(const char* path, FSFileStat* out_stat); // Retrieve file or directory metadata. Returns 0 on success.
-  bool x_fs_file_modification_time(const char* path, time_t* out_time); // Get last modification time. Returns 0 on success.
-  bool x_fs_file_creation_time(const char* path, time_t* out_time); // Get creation time. Returns 0 on success.
-  bool x_fs_file_permissions(const char* path, uint32_t* out_permissions); // Get file permissions.
-  bool x_fs_file_set_permissions(const char* path, uint32_t permissions); // Set file permissions.
-  // Utility
+  /**
+   * @brief Begin a directory enumeration and retrieve the first entry.
+   * @param path Directory path to search.
+   * @param entry Output directory entry filled with the first result.
+   * @return Handle used for subsequent enumeration, or NULL on failure.
+   */
+  XFSDireHandle* x_fs_find_first_file(const char* path, XFSDireEntry* entry);
+
+  /**
+   * @brief Create a directory.
+   * @param path Directory path to create.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_directory_create(const char* path);
+
+  /**
+   * @brief Create a directory and any missing parent directories.
+   * @param path Directory path to create.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_directory_create_recursive(const char* path);
+
+  /**
+   * @brief Delete an empty directory.
+   * @param directory Directory path to delete.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_directory_delete(const char* directory);
+
+  /**
+   * @brief Copy a file to a new path.
+   * @param file Source file path.
+   * @param newFile Destination file path.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_file_copy(const char* file, const char* newFile);
+
+  /**
+   * @brief Rename (move) a file to a new path.
+   * @param file Source file path.
+   * @param newFile Destination file path.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_file_rename(const char* file, const char* newFile);
+
+  /**
+   * @brief Continue a directory enumeration and retrieve the next entry.
+   * @param dirHandle Enumeration handle returned by x_fs_find_first_file().
+   * @param entry Output directory entry filled with the next result.
+   * @return True if an entry was written, false if no more entries or on failure.
+   */
+  bool x_fs_find_next_file(XFSDireHandle* dirHandle, XFSDireEntry* entry);
+
+  /**
+   * @brief Get the system temporary folder path.
+   * @param out Output path buffer to receive the temp folder.
+   * @return Length of the written path (in bytes/chars, excluding terminator), or 0 on failure.
+   */
+  size_t x_fs_get_temp_folder(XFSPath* out);
+
+  /**
+   * @brief Get the current working directory.
+   * @param path Output path buffer to receive the current working directory.
+   * @return Length of the written path (in bytes/chars, excluding terminator), or 0 on failure.
+   */
+  size_t x_fs_cwd_get(XFSPath* path);
+
+  /**
+   * @brief Set the current working directory.
+   * @param path New working directory path.
+   * @return Non-zero on success, 0 on failure.
+   */
+  size_t x_fs_cwd_set(const char* path);
+
+  /**
+   * @brief Set the current working directory to the executable's directory.
+   * @return Non-zero on success, 0 on failure.
+   */
+  size_t x_fs_cwd_set_from_executable_path(void);
+
+  /**
+   * @brief Close a directory enumeration handle.
+   * @param dirHandle Enumeration handle to close.
+   * @return Nothing.
+   */
+  void x_fs_find_close(XFSDireHandle* dirHandle);
+
+  /**
+   * @brief Open a filesystem watcher for the given path.
+   * @param path Path to watch (directory or file, depending on platform support).
+   * @return Watch handle, or NULL on failure.
+   */
+  XFSWatch* x_fs_watch_open(const char* path);
+
+  /**
+   * @brief Close a filesystem watcher.
+   * @param fw Watch handle to close.
+   * @return Nothing.
+   */
+  void x_fs_watch_close(XFSWatch* fw);
+
+  /**
+   * @brief Poll a filesystem watcher for pending events.
+   * @param fw Watch handle.
+   * @param out_events Output array to receive events.
+   * @param max_events Maximum number of events to write to out_events.
+   * @return Number of events written, or a negative value on error.
+   */
+  int32_t x_fs_watch_poll(XFSWatch* fw, XFSWatchEvent* out_events, int32_t max_events);
+
+  /**
+   * @brief Normalize a path in-place (e.g., separators, ".", ".." where possible).
+   * @param input Path to normalize.
+   * @return Pointer to the normalized path (same as input).
+   */
+  XFSPath* x_fs_path_normalize(XFSPath* input);
+
+  /**
+   * @brief Get the filename stem (basename without extension) from a path string.
+   * @param input Path as a C string.
+   * @return Slice pointing into input containing the stem.
+   */
+  XSlice x_fs_path_stem(const char* input);
+
+  /**
+   * @brief Get the basename (final component) from a path string.
+   * @param input Path as a C string.
+   * @return Slice pointing into input containing the basename.
+   */
+  XSlice x_fs_path_basename(const char* input);
+
+  /**
+   * @brief Get the directory name (everything before the final component) from a path string.
+   * @param input Path as a C string.
+   * @return Slice pointing into input containing the directory portion.
+   */
+  XSlice x_fs_path_dirname(const char* input);
+
+  /**
+   * @brief Build a path from one or more C string components (variadic), writing to out.
+   * @param out Output path to receive the resulting path.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_path_(XFSPath* out, ...);
+
+  /**
+   * @brief Check whether a path exists on disk.
+   * @param path Path to check.
+   * @return True if it exists, false otherwise.
+   */
+  bool x_fs_path_exists(const XFSPath* path);
+
+  /**
+   * @brief Check whether a C-string path exists on disk.
+   * @param path Path to check.
+   * @return True if it exists, false otherwise.
+   */
+  bool x_fs_path_exists_cstr(const char* path);
+
+  /**
+   * @brief Check whether a path exists on disk using a faster, less thorough method.
+   * @param path Path to check.
+   * @return True if it exists, false otherwise.
+   */
+  bool x_fs_path_exists_quick(const XFSPath* path);
+
+  /**
+   * @brief Check whether a C-string path exists on disk using a faster, less thorough method.
+   * @param path Path to check.
+   * @return True if it exists, false otherwise.
+   */
+  bool x_fs_path_exists_quick_cstr(const char* path);
+
+  /**
+   * @brief Check whether a path is absolute.
+   * @param path Path to check.
+   * @return True if absolute, false otherwise.
+   */
+  bool x_fs_path_is_absolute(const XFSPath* path);
+
+  /**
+   * @brief Check whether a C-string path is absolute.
+   * @param path Path to check.
+   * @return True if absolute, false otherwise.
+   */
+  bool x_fs_path_is_absolute_cstr(const char* path);
+
+  /**
+   * @brief Check whether a path is absolute using native platform rules.
+   * @param path Path to check.
+   * @return True if absolute, false otherwise.
+   */
+  bool x_fs_path_is_absolute_native(const XFSPath* path);
+
+  /**
+   * @brief Check whether a C-string path is absolute using native platform rules.
+   * @param path Path to check.
+   * @return True if absolute, false otherwise.
+   */
+  bool x_fs_path_is_absolute_native_cstr(const char* path);
+
+  /**
+   * @brief Check whether a path points to an existing directory.
+   * @param path Path to check.
+   * @return True if it is a directory, false otherwise.
+   */
+  bool x_fs_path_is_directory(const XFSPath* path);
+
+  /**
+   * @brief Check whether a C-string path points to an existing directory.
+   * @param path Path to check.
+   * @return True if it is a directory, false otherwise.
+   */
+  bool x_fs_path_is_directory_cstr(const char* path);
+
+  /**
+   * @brief Check whether a path points to an existing file.
+   * @param path Path to check.
+   * @return True if it is a file, false otherwise.
+   */
+  bool x_fs_path_is_file(const XFSPath* path);
+
+  /**
+   * @brief Check whether a C-string path points to an existing file.
+   * @param path Path to check.
+   * @return True if it is a file, false otherwise.
+   */
+  bool x_fs_path_is_file_cstr(const char* path);
+
+  /**
+   * @brief Check whether a path is relative.
+   * @param path Path to check.
+   * @return True if relative, false otherwise.
+   */
+  bool x_fs_path_is_relative(const XFSPath* path);
+
+  /**
+   * @brief Check whether a C-string path is relative.
+   * @param path Path to check.
+   * @return True if relative, false otherwise.
+   */
+  bool x_fs_path_is_relative_cstr(const char* path);
+
+  /**
+   * @brief Get a NUL-terminated C string view of an XFSPath.
+   * @param p Path object.
+   * @return Pointer to the internal NUL-terminated string.
+   */
+  const char* x_fs_path_cstr(const XFSPath* p);
+
+  /**
+   * @brief Append a single component to a path.
+   * @param p Path to append to.
+   * @param comp Component to append.
+   * @return New length of the path after appending.
+   */
+  size_t x_fs_path_append(XFSPath* p, const char* comp);
+
+  /**
+   * @brief Replace or set the extension of a path.
+   * @param path Path to modify.
+   * @param new_ext New extension (with or without leading dot, depending on implementation).
+   * @return New length of the path after the change.
+   */
+  size_t x_fs_path_change_extension(XFSPath* path, const char* new_ext);
+
+  /**
+   * @brief Compare two paths, ignoring separator type.
+   * @param a First path.
+   * @param b Second path.
+   * @return 0 if equal, <0 if a < b, >0 if a > b.
+   */
+  size_t x_fs_path_compare(const XFSPath* a, const XFSPath* b);
+
+  /**
+   * @brief Compare a path against a C string path, ignoring separator type.
+   * @param a Path.
+   * @param cstr C string path.
+   * @return 0 if equal, <0 if a < cstr, >0 if a > cstr.
+   */
+  int32_t x_fs_path_compare_cstr(const XFSPath* a, const char* cstr);
+
+  /**
+   * @brief Check whether a path equals a small string.
+   * @param a Path.
+   * @param b Small string to compare against.
+   * @return True if equal, false otherwise.
+   */
+  bool x_fs_path_eq(const XFSPath* a, const XSmallstr* b);
+
+  /**
+   * @brief Check whether a path equals a C string path.
+   * @param a Path.
+   * @param b C string path.
+   * @return True if equal, false otherwise.
+   */
+  bool x_fs_path_eq_cstr(const XFSPath* a, const char* b);
+
+  /**
+   * @brief Get the extension from a path string.
+   * @param input Path as a C string.
+   * @return Slice pointing into input containing the extension (may be empty).
+   */
+  XSlice x_fs_path_extension(const char* input);
+
+  /**
+   * @brief Convert a slice into an XFSPath.
+   * @param sv Input slice containing a path string.
+   * @param out Output path to receive the converted string.
+   * @return Length written to out.
+   */
+  size_t x_fs_path_from_slice(XSlice sv, XFSPath* out);
+
+  /**
+   * @brief Append one or more path components to an existing path (variadic).
+   * @param path Path to append into.
+   * @return New length of the path after joining.
+   */
+  size_t x_fs_path_join_(XFSPath* path, ...);
+
+  /**
+   * @brief Compute a relative path from one C-string path to another.
+   * @param from_path Base path.
+   * @param to_path Target path.
+   * @param out_path Output path receiving the relative path.
+   * @return Length of the written relative path, or 0 on failure.
+   */
+  size_t x_fs_path_relative_to_cstr(const char* from_path, const char* to_path, XFSPath* out_path);
+
+  /**
+   * @brief Compute the common prefix of two paths.
+   * @param from_path First path.
+   * @param to_path Second path.
+   * @param out_path Output path receiving the common prefix.
+   * @return True if a common prefix was written (may be empty depending on implementation), false on failure.
+   */
+  bool x_fs_path_common_prefix(const char* from_path, const char* to_path, XFSPath* out_path);
+
+  /**
+   * @brief Set a path from a C string.
+   * @param p Path to set.
+   * @param cstr Source C string.
+   * @return Length written to p.
+   */
+  size_t x_fs_path_set(XFSPath* p, const char* cstr);
+
+  /**
+   * @brief Split a path string into components.
+   * @param input Path as a C string.
+   * @param out_components Output array of components.
+   * @param max_components Maximum number of components to write.
+   * @param out_count Output count of components written.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_path_split(const char* input, XFSPath* out_components, size_t max_components, size_t* out_count);
+
+  /**
+   * @brief Get the executable path (or executable directory, depending on implementation).
+   * @param out Output path to receive the executable path.
+   * @return Length written to out, or 0 on failure.
+   */
+  size_t x_fs_path_from_executable(XFSPath* out);
+
+  /**
+   * @brief Retrieve metadata about a file or directory.
+   * @param path File or directory path.
+   * @param out_stat Output struct receiving the metadata.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_file_stat(const char* path, FSFileStat* out_stat);
+
+  /**
+   * @brief Retrieve the last modification time of a file or directory.
+   * @param path File or directory path.
+   * @param out_time Output time receiving the modification time.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_file_modification_time(const char* path, time_t* out_time);
+
+  /**
+   * @brief Retrieve the creation time of a file or directory.
+   * @param path File or directory path.
+   * @param out_time Output time receiving the creation time.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_file_creation_time(const char* path, time_t* out_time);
+
+  /**
+   * @brief Retrieve permissions metadata for a file or directory.
+   * @param path File or directory path.
+   * @param out_permissions Output value receiving the permissions (platform-dependent).
+   * @return True on success, false on failure.
+   */
+  bool x_fs_file_permissions(const char* path, uint32_t* out_permissions);
+
+  /**
+   * @brief Set permissions metadata for a file or directory.
+   * @param path File or directory path.
+   * @param permissions Permissions value to set (platform-dependent).
+   * @return True on success, false on failure.
+   */
+  bool x_fs_file_set_permissions(const char* path, uint32_t permissions);
+
+  /**
+   * @brief Check whether a path points to an existing regular file.
+   * @param path Path to check.
+   * @return True if it is a file, false otherwise.
+   */
   bool x_fs_is_file(const char* path);
+
+  /**
+   * @brief Check whether a path points to an existing directory.
+   * @param path Path to check.
+   * @return True if it is a directory, false otherwise.
+   */
   bool x_fs_is_directory(const char* path);
+
+  /**
+   * @brief Check whether a path is a symbolic link.
+   * @param path Path to check.
+   * @return True if it is a symlink, false otherwise.
+   */
   bool x_fs_is_symlink(const char* path);
+
+  /**
+   * @brief Read the target of a symbolic link.
+   * @param path Symbolic link path.
+   * @param out_path Output path receiving the resolved link target.
+   * @return True on success, false on failure.
+   */
   bool x_fs_read_symlink(const char* path, XFSPath* out_path);
-  // Temp files and dirs
+
+  /**
+   * @brief Create a temporary file with the given prefix.
+   * @param prefix Prefix to use for the temporary file name.
+   * @param out_path Output path receiving the created temp file path.
+   * @return True on success, false on failure.
+   */
   bool x_fs_make_temp_file(const char* prefix, XFSPath* out_path);
-  bool x_fs_make_temp_directory(const char* prefix, XFSPath* out_path); 
+
+  /**
+   * @brief Create a temporary directory with the given prefix.
+   * @param prefix Prefix to use for the temporary directory name.
+   * @param out_path Output path receiving the created temp directory path.
+   * @return True on success, false on failure.
+   */
+  bool x_fs_make_temp_directory(const char* prefix, XFSPath* out_path);
 
 #ifdef __cplusplus
 }

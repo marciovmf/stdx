@@ -74,62 +74,363 @@ extern "C" {
     uint32_t ifindex;
   } XNetAdapterInfo;
 
-  // Core
-  bool    x_net_init(void);                                                               // Initialize the networking subsystem.
-  void    x_net_shutdown(void);                                                           // Clean up the networking subsystem.
-  bool    x_net_socket_is_valid(XSocket sock);                                            // Check if a socket is valid.
-  void    x_net_close(XSocket sock);                                                      // Close a socket.
-  int32_t x_net_set_nonblocking(XSocket sock, int32_t nonblocking);                       // Enable or disable non-blocking mode.
-  // Socket Creation
-  XSocket x_net_socket(XAddressFamily family, XSocketType type);                          // Create a socket with specified family and type.
-  XSocket x_net_socket_tcp4(void);                                                        // Create an IPv4 TCP socket.
-  XSocket x_net_socket_tcp6(void);                                                        // Create an IPv6 TCP socket.
-  XSocket x_net_socket_udp4(void);                                                        // Create an IPv4 UDP socket.
-  XSocket x_net_socket_udp6(void);                                                        // Create an IPv6 UDP socket.
-  // Bind, Listen, Connect
-  bool    x_net_bind(XSocket sock, const XAddress* addr);                                 // Bind socket to a specific address.
-  bool    x_net_bind_any(XSocket sock, XAddressFamily family, uint16_t port);             // Bind socket to any local address of a given family.
-  bool    x_net_bind_any_udp(XSocket sock);                                               // Bind UDP socket to any IPv4 address.
-  bool    x_net_bind_any_udp6(XSocket sock);                                              // Bind UDP socket to any IPv6 address.
-  bool    x_net_listen(XSocket sock, int32_t backlog);                                    // Mark socket as listening for connections.
-  XSocket x_net_accept(XSocket sock, XAddress* out_addr);                                 // Accept an incoming connection.
-  int32_t x_net_connect(XSocket sock, const XAddress* addr);                              // Connect to a remote address.
-  // Send/Receive
-  size_t  x_net_send(XSocket sock, const void* buf, size_t len);                          // Send data on a connected socket.
-  size_t  x_net_recv(XSocket sock, void* buf, size_t len);                                // Receive data from a connected socket.
-  size_t  x_net_sendto(XSocket sock, const void* buf, size_t len, const XAddress* addr);  // Send data to a specific address.
-  size_t  x_net_recvfrom(XSocket sock, void* buf, size_t len, XAddress* out_addr);        // Receive data from a socket and get sender's address.
-  // Polling
-  int32_t x_net_select(XSocket* read_sockets, int32_t read_count, int32_t timeout_ms);    // Wait for readability on multiple sockets.
-  int32_t x_net_poll(XSocket sock, int32_t events, int32_t timeout_ms);                   // Wait for specific events on a socket.
-  // Address Utilities
-  bool    x_net_resolve(const int8_t* host, const int8_t* port, XAddressFamily family, XAddress* out_addr); // Resolve hostname and port to address.
-  int32_t x_net_parse_ip(XAddressFamily family, const int8_t* ip, void* out_addr);        // Parse IP string into raw address.
-  int32_t x_net_format_address(const XAddress* addr, char* out_str, int32_t maxlen);      // Format address as a string.
-  void    x_net_address_clear(XAddress* addr);                                            // Clear the XAddress struct (zero it out).
-  void    x_net_address_any(XAddress* out_addr, int32_t family, uint16_t port);           // Create "any" address for binding.
-  int32_t x_net_address_from_ip_port(const int8_t* ip, uint16_t port, XAddress* out_addr);// Parse IP and port into XAddress.
-  int32_t x_net_address_equal(const XAddress* a, const XAddress* b);                      // Compare two XAddress values.
-  int32_t x_net_address_to_string(const XAddress* addr, char* buf, int32_t buf_len);      // Format XAddress to string (IP:port).
-  // DNS
-  int32_t x_net_dns_resolve(const int8_t* hostname, XAddressFamily family, XAddress* out_addr); // Resolve hostname to address.
-  // Multicast
-  bool    x_net_join_multicast_ipv4(XSocket sock, const int8_t* group);                   // Join an IPv4 multicast group.
-  bool    x_net_leave_multicast_ipv4(XSocket sock, const int8_t* group);                  // Leave an IPv4 multicast group.
-  bool    x_net_join_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex); // Join an IPv6 multicast group.
-  bool    x_net_leave_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex); // Leave an IPv6 multicast group.
-  bool    x_net_join_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr);       // Join an IPv4 multicast group (using address struct).
-  bool    x_net_leave_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr);      // Leave an IPv4 multicast group (using address struct).
-  // Broadcast
-  bool    x_net_enable_broadcast(XSocket sock, bool enable);                              // Enable or disable broadcast on a socket.
-  // Adapter information
-  int32_t x_net_get_adapter_count(void);                                                  // Returns the number of network adapters on the system, or -1 on error.
-  int32_t x_net_list_adapters(XNetAdapter* out_adapters, int32_t max_adapters);           // List all available network adapters. Returns the number found, or -1 on error.
-  bool    x_net_get_adapter_info(const int8_t* name, XNetAdapterInfo* out_info);          // Get detailed information about an adapter by name. Returns 0 on success, -1 on error.
-  // Error handling
-  int32_t x_net_get_last_error(void);                                                     // Returns the last network error code for the current thread/process. On Windows, this returns WSAGetLastError(). On POSIX, it returns errno.
-  int32_t x_net_get_last_error_message(char* buf, int32_t buf_len);                       // Writes a human-readable error message for the last network error into `buf`. Returns 0 on success, or -1 on failure (e.g., buffer too small).
+/**
+* @brief Initialize the networking subsystem.
+* @param None.
+* @return True on success, false on failure.
+*/
+bool    x_net_init(void);
 
+/**
+* @brief Shut down the networking subsystem and release associated resources.
+* @param None.
+* @return Nothing.
+*/
+void    x_net_shutdown(void);
+
+/**
+* @brief Check whether a socket handle represents a valid socket.
+* @param sock Socket handle to validate.
+* @return True if the socket is valid, false otherwise.
+*/
+bool    x_net_socket_is_valid(XSocket sock);
+
+/**
+* @brief Close a socket handle.
+* @param sock Socket handle to close.
+* @return Nothing.
+*/
+void    x_net_close(XSocket sock);
+
+/**
+* @brief Enable or disable non-blocking mode on a socket.
+* @param sock Socket handle to configure.
+* @param nonblocking Non-zero to enable non-blocking mode, 0 to disable it.
+* @return 0 on success, or -1 on error.
+*/
+int32_t x_net_set_nonblocking(XSocket sock, int32_t nonblocking);
+
+/**
+* @brief Create a socket with the specified address family and socket type.
+* @param family Address family (e.g., IPv4/IPv6).
+* @param type Socket type (e.g., TCP/UDP).
+* @return New socket handle, or an invalid socket value on failure.
+*/
+XSocket x_net_socket(XAddressFamily family, XSocketType type);
+
+/**
+* @brief Create an IPv4 TCP socket.
+* @param None.
+* @return New socket handle, or an invalid socket value on failure.
+*/
+XSocket x_net_socket_tcp4(void);
+
+/**
+* @brief Create an IPv6 TCP socket.
+* @param None.
+* @return New socket handle, or an invalid socket value on failure.
+*/
+XSocket x_net_socket_tcp6(void);
+
+/**
+* @brief Create an IPv4 UDP socket.
+* @param None.
+* @return New socket handle, or an invalid socket value on failure.
+*/
+XSocket x_net_socket_udp4(void);
+
+/**
+* @brief Create an IPv6 UDP socket.
+* @param None.
+* @return New socket handle, or an invalid socket value on failure.
+*/
+XSocket x_net_socket_udp6(void);
+
+/**
+* @brief Bind a socket to a specific local address.
+* @param sock Socket handle to bind.
+* @param addr Local address to bind to.
+* @return True on success, false on failure.
+*/
+bool    x_net_bind(XSocket sock, const XAddress* addr);
+
+/**
+* @brief Bind a socket to any local address of the given family and port.
+* @param sock Socket handle to bind.
+* @param family Address family to bind (e.g., IPv4/IPv6).
+* @param port Local port to bind to.
+* @return True on success, false on failure.
+*/
+bool    x_net_bind_any(XSocket sock, XAddressFamily family, uint16_t port);
+
+/**
+* @brief Bind a UDP socket to any local IPv4 address (system-chosen port/address if applicable).
+* @param sock UDP socket handle to bind.
+* @return True on success, false on failure.
+*/
+bool    x_net_bind_any_udp(XSocket sock);
+
+/**
+* @brief Bind a UDP socket to any local IPv6 address (system-chosen port/address if applicable).
+* @param sock UDP socket handle to bind.
+* @return True on success, false on failure.
+*/
+bool    x_net_bind_any_udp6(XSocket sock);
+
+/**
+* @brief Mark a bound socket as listening for incoming connections.
+* @param sock Socket handle.
+* @param backlog Maximum pending connection queue length.
+* @return True on success, false on failure.
+*/
+bool    x_net_listen(XSocket sock, int32_t backlog);
+
+/**
+* @brief Accept an incoming connection on a listening socket.
+* @param sock Listening socket handle.
+* @param out_addr Optional output address receiving the peer address (may be NULL if supported).
+* @return New connected socket handle, or an invalid socket value on failure.
+*/
+XSocket x_net_accept(XSocket sock, XAddress* out_addr);
+
+/**
+* @brief Connect a socket to a remote address.
+* @param sock Socket handle to connect.
+* @param addr Remote address to connect to.
+* @return 0 on success, -1 on error, or a platform-defined in-progress code for non-blocking sockets.
+*/
+int32_t x_net_connect(XSocket sock, const XAddress* addr);
+
+/**
+* @brief Send data on a connected socket.
+* @param sock Connected socket handle.
+* @param buf Data to send.
+* @param len Number of bytes to send.
+* @return Number of bytes sent (may be less than len), or 0 on error/connection closed depending on implementation.
+*/
+size_t  x_net_send(XSocket sock, const void* buf, size_t len);
+
+/**
+* @brief Receive data from a connected socket.
+* @param sock Connected socket handle.
+* @param buf Output buffer to receive data.
+* @param len Maximum number of bytes to read.
+* @return Number of bytes received, or 0 on connection closed/error depending on implementation.
+*/
+size_t  x_net_recv(XSocket sock, void* buf, size_t len);
+
+/**
+* @brief Send data to a specific address (datagram sockets).
+* @param sock Socket handle.
+* @param buf Data to send.
+* @param len Number of bytes to send.
+* @param addr Destination address.
+* @return Number of bytes sent, or 0 on error depending on implementation.
+*/
+size_t  x_net_sendto(XSocket sock, const void* buf, size_t len, const XAddress* addr);
+
+/**
+* @brief Receive data from a socket and optionally retrieve the sender address.
+* @param sock Socket handle.
+* @param buf Output buffer to receive data.
+* @param len Maximum number of bytes to read.
+* @param out_addr Output address receiving the sender address.
+* @return Number of bytes received, or 0 on error/no data depending on implementation.
+*/
+size_t  x_net_recvfrom(XSocket sock, void* buf, size_t len, XAddress* out_addr);
+
+/**
+* @brief Wait for readability on multiple sockets.
+* @param read_sockets Array of sockets to wait on for readability.
+* @param read_count Number of sockets in read_sockets.
+* @param timeout_ms Timeout in milliseconds (-1 for infinite, 0 for non-blocking poll).
+* @return Number of sockets ready for reading, 0 on timeout, or -1 on error.
+*/
+int32_t x_net_select(XSocket* read_sockets, int32_t read_count, int32_t timeout_ms);
+
+/**
+* @brief Wait for specific events on a socket.
+* @param sock Socket handle.
+* @param events Bitmask of events to wait for (implementation-defined).
+* @param timeout_ms Timeout in milliseconds (-1 for infinite, 0 for non-blocking poll).
+* @return Event bitmask of occurred events, 0 on timeout, or -1 on error.
+*/
+int32_t x_net_poll(XSocket sock, int32_t events, int32_t timeout_ms);
+
+/**
+* @brief Resolve a host and service/port into a network address.
+* @param host Hostname or address string.
+* @param port Service name or port string.
+* @param family Address family to resolve (e.g., IPv4/IPv6/unspecified).
+* @param out_addr Output address receiving the resolved result.
+* @return True on success, false on failure.
+*/
+bool    x_net_resolve(const int8_t* host, const int8_t* port, XAddressFamily family, XAddress* out_addr);
+
+/**
+* @brief Parse an IP string into a raw binary address.
+* @param family Address family (IPv4 or IPv6).
+* @param ip IP address string.
+* @param out_addr Output buffer receiving the raw address bytes.
+* @return 0 on success, or -1 on failure.
+*/
+int32_t x_net_parse_ip(XAddressFamily family, const int8_t* ip, void* out_addr);
+
+/**
+* @brief Format an address as a human-readable string.
+* @param addr Address to format.
+* @param out_str Output buffer receiving the formatted string.
+* @param maxlen Size of out_str in bytes/chars.
+* @return Number of characters written (excluding terminator), or -1 on failure.
+*/
+int32_t x_net_format_address(const XAddress* addr, char* out_str, int32_t maxlen);
+
+/**
+* @brief Clear an XAddress structure (set to zero).
+* @param addr Address structure to clear.
+* @return Nothing.
+*/
+void    x_net_address_clear(XAddress* addr);
+
+/**
+* @brief Create an "any" address for binding on the given family and port.
+* @param out_addr Output address to fill.
+* @param family Address family (implementation expects a family code).
+* @param port Port to set.
+* @return Nothing.
+*/
+void    x_net_address_any(XAddress* out_addr, int32_t family, uint16_t port);
+
+/**
+* @brief Build an XAddress from an IP string and port.
+* @param ip IP address string.
+* @param port Port number.
+* @param out_addr Output address to fill.
+* @return 0 on success, or -1 on failure.
+*/
+int32_t x_net_address_from_ip_port(const int8_t* ip, uint16_t port, XAddress* out_addr);
+
+/**
+* @brief Compare two XAddress values for equality.
+* @param a First address.
+* @param b Second address.
+* @return Non-zero if equal, 0 if not equal.
+*/
+int32_t x_net_address_equal(const XAddress* a, const XAddress* b);
+
+/**
+* @brief Convert an XAddress to a string representation (typically "IP:port").
+* @param addr Address to format.
+* @param buf Output buffer receiving the string.
+* @param buf_len Size of buf in bytes/chars.
+* @return Number of characters written (excluding terminator), or -1 on failure.
+*/
+int32_t x_net_address_to_string(const XAddress* addr, char* buf, int32_t buf_len);
+
+/**
+* @brief Resolve a DNS hostname to an address.
+* @param hostname Hostname to resolve.
+* @param family Address family to resolve (e.g., IPv4/IPv6).
+* @param out_addr Output address receiving the resolved result.
+* @return 0 on success, or -1 on failure.
+*/
+int32_t x_net_dns_resolve(const int8_t* hostname, XAddressFamily family, XAddress* out_addr);
+
+/**
+* @brief Join an IPv4 multicast group by textual group address.
+* @param sock Socket handle.
+* @param group Multicast group address string (e.g., "239.0.0.1").
+* @return True on success, false on failure.
+*/
+bool    x_net_join_multicast_ipv4(XSocket sock, const int8_t* group);
+
+/**
+* @brief Leave an IPv4 multicast group by textual group address.
+* @param sock Socket handle.
+* @param group Multicast group address string.
+* @return True on success, false on failure.
+*/
+bool    x_net_leave_multicast_ipv4(XSocket sock, const int8_t* group);
+
+/**
+* @brief Join an IPv6 multicast group.
+* @param sock Socket handle.
+* @param multicast_ip Multicast group IPv6 address string.
+* @param ifindex Network interface index to join on.
+* @return True on success, false on failure.
+*/
+bool    x_net_join_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex);
+
+/**
+* @brief Leave an IPv6 multicast group.
+* @param sock Socket handle.
+* @param multicast_ip Multicast group IPv6 address string.
+* @param ifindex Network interface index to leave on.
+* @return True on success, false on failure.
+*/
+bool    x_net_leave_multicast_ipv6(XSocket sock, const int8_t* multicast_ip, uint32_t ifindex);
+
+/**
+* @brief Join an IPv4 multicast group using an XAddress structure.
+* @param sock Socket handle.
+* @param group_addr Multicast group address.
+* @return True on success, false on failure.
+*/
+bool    x_net_join_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr);
+
+/**
+* @brief Leave an IPv4 multicast group using an XAddress structure.
+* @param sock Socket handle.
+* @param group_addr Multicast group address.
+* @return True on success, false on failure.
+*/
+bool    x_net_leave_multicast_ipv4_addr(XSocket sock, const XAddress* group_addr);
+
+/**
+* @brief Enable or disable broadcast capability on a socket.
+* @param sock Socket handle.
+* @param enable True to enable broadcast, false to disable.
+* @return True on success, false on failure.
+*/
+bool    x_net_enable_broadcast(XSocket sock, bool enable);
+
+/**
+* @brief Get the number of network adapters available on the system.
+* @param None.
+* @return Number of adapters, or -1 on error.
+*/
+int32_t x_net_get_adapter_count(void);
+
+/**
+* @brief List available network adapters.
+* @param out_adapters Output array receiving adapter entries.
+* @param max_adapters Maximum number of adapters to write to out_adapters.
+* @return Number of adapters written, or -1 on error.
+*/
+int32_t x_net_list_adapters(XNetAdapter* out_adapters, int32_t max_adapters);
+
+/**
+* @brief Retrieve detailed information about a network adapter by name.
+* @param name Adapter name identifier.
+* @param out_info Output structure receiving detailed adapter information.
+* @return True on success, false on failure.
+*/
+bool    x_net_get_adapter_info(const int8_t* name, XNetAdapterInfo* out_info);
+
+/**
+* @brief Get the last network error code for the current thread/process.
+* @param None.
+* @return Last error code (WSAGetLastError() on Windows, errno on POSIX).
+*/
+int32_t x_net_get_last_error(void);
+
+/**
+* @brief Write a human-readable message for the last network error into a buffer.
+* @param buf Output buffer to receive the message string.
+* @param buf_len Size of buf in bytes/chars.
+* @return 0 on success, or -1 on failure (e.g., buffer too small).
+*/
+int32_t x_net_get_last_error_message(char* buf, int32_t buf_len);
 #ifdef __cplusplus
 }
 #endif

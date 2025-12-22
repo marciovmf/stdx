@@ -1,7 +1,7 @@
 /**
  * STDX - Generic Hashtable
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
+ * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
  * ## Overview
@@ -89,13 +89,41 @@ extern "C" {
 #define X_TOSTR(s) X_STR(s)
 #define X_TYPE_NAME(t) X_TOSTR(t)
 
+  /**
+   * @brief Create a hashtable with key/value type inference using compile-time type name strings.
+   * @param tk Key type (passed as a type token, e.g. int, XSmallstr, char*).
+   * @param tv Value type (passed as a type token, e.g. Foo, Bar*, char*).
+   * @return Pointer to a newly created hashtable, or NULL on failure.
+   */
 #define x_hashtable_create(tk, tv) x_hashtable_create_(  \
     sizeof(tk), strcmp( X_TYPE_NAME(tk), "char*") == 0, strchr(X_TYPE_NAME(tk), '*') != 0, \
     sizeof(tv), strcmp( X_TYPE_NAME(tv), "char*") == 0, strchr(X_TYPE_NAME(tv), '*') != 0)
 
+  /**
+   * @brief Create a hashtable using raw size and string/pointer traits for keys and values.
+   * @param key_size Size in bytes of the key type.
+   * @param key_null_terminated True if the key is a NUL-terminated string (C string).
+   * @param key_is_pointer True if the key is stored as a pointer value.
+   * @param value_size Size in bytes of the value type.
+   * @param value_null_terminated True if the value is a NUL-terminated string (C string).
+   * @param value_is_pointer True if the value is stored as a pointer value.
+   * @return Pointer to a newly created hashtable, or NULL on failure.
+   */
   static XHashtable* x_hashtable_create_(size_t key_size, bool key_null_terminated, bool key_is_pointer,
       size_t value_size, bool value_null_terminated, bool value_is_pointer);
 
+  /**
+   * @brief Create a fully-configurable hashtable with custom hashing, comparison, cloning, and destruction.
+   * @param key_size Size in bytes of the key type.
+   * @param value_size Size in bytes of the value type.
+   * @param fn_key_hash Function used to hash keys.
+   * @param fn_key_compare Function used to compare keys for equality.
+   * @param fn_key_copy Function used to clone/copy keys into the table.
+   * @param fn_key_free Function used to destroy/free keys owned by the table.
+   * @param fn_value_copy Function used to clone/copy values into the table.
+   * @param fn_value_free Function used to destroy/free values owned by the table.
+   * @return Pointer to a newly created hashtable, or NULL on failure.
+   */
   XHashtable* x_hashtable_create_full(
       size_t          key_size,
       size_t          value_size,
@@ -106,20 +134,99 @@ extern "C" {
       XHashFnClone    fn_value_copy,
       XHashFnDestroy  fn_value_free);
 
+  /**
+   * @brief Insert or update a key/value pair in the hashtable.
+   * @param table Hashtable instance.
+   * @param key Pointer to the key data.
+   * @param value Pointer to the value data.
+   * @return True on success, false on failure (e.g., allocation failure).
+   */
   bool x_hashtable_set(XHashtable* table, const void* key, const void* value);
+
+  /**
+   * @brief Retrieve a value from the hashtable by key.
+   * @param table Hashtable instance.
+   * @param key Pointer to the key data.
+   * @param out_value Output buffer to receive the value.
+   * @return True if the key was found and out_value was written, false otherwise.
+   */
   bool x_hashtable_get(XHashtable* table, const void* key, void* out_value);
+
+  /**
+   * @brief Destroy a hashtable and free all associated resources.
+   * @param table Hashtable instance to destroy.
+   * @return Nothing.
+   */
   void x_hashtable_destroy(XHashtable* table);
+
+  /**
+   * @brief Get the number of stored entries in the hashtable.
+   * @param table Hashtable instance.
+   * @return Number of key/value pairs currently stored.
+   */
   size_t x_hashtable_count(const XHashtable* table);
+
+  /**
+   * @brief Compare two NUL-terminated strings for equality.
+   * @param a Pointer to the first string (const char*).
+   * @param b Pointer to the second string (const char*).
+   * @return True if equal, false otherwise.
+   */
   bool stdx_str_eq(const void* a, const void* b);
+
+  /**
+   * @brief Check whether the hashtable contains a key.
+   * @param table Hashtable instance.
+   * @param key Pointer to the key data.
+   * @return True if the key exists, false otherwise.
+   */
   bool x_hashtable_has(XHashtable* table, const void* key);
+
+  /**
+   * @brief Remove an entry from the hashtable by key.
+   * @param table Hashtable instance.
+   * @param key Pointer to the key data.
+   * @return True if an entry was removed, false if the key was not found.
+   */
   bool x_hashtable_remove(XHashtable* table, const void* key);
 
-  // public utilities
+  /**
+   * @brief Hash an arbitrary byte buffer.
+   * @param ptr Pointer to the bytes to hash.
+   * @param size Number of bytes to hash.
+   * @return Hash value for the given byte buffer.
+   */
   size_t x_hashtable_hash_bytes(const void* ptr, size_t size);
+
+  /**
+   * @brief Hash a NUL-terminated C string (or string-like buffer) for hashtable use.
+   * @param ptr Pointer to the string data (typically const char*).
+   * @param size Size parameter (typically ignored for C strings, or used as a limit depending on implementation).
+   * @return Hash value for the string.
+   */
   size_t x_hashtable_hash_cstr(const void* ptr, size_t size);
 
+  /**
+   * @brief Clone a NUL-terminated C string into destination storage.
+   * @param dest Destination storage receiving the cloned string (implementation-defined: may store char*).
+   * @param src Source string pointer (const char*).
+   * @return Nothing.
+   */
   void x_hashtable_clone_cstr(void* dest, const void* src);
+
+  /**
+   * @brief Compare two NUL-terminated C strings for hashtable key equality.
+   * @param a First string pointer (const char*).
+   * @param b Second string pointer (const char*).
+   * @return True if equal, false otherwise.
+   */
   bool x_hashtable_compare_cstr(const void* a, const void* b);
+
+  /**
+   * @brief Free a cloned NUL-terminated C string previously allocated by x_hashtable_clone_cstr().
+   * @param a Pointer to the stored string (typically a char* or pointer slot containing it).
+   * @return Nothing.
+   */
   void x_hashtable_free_cstr(void* a);
 
 #ifdef __cplusplus
@@ -135,7 +242,22 @@ extern "C" {
 #include <stdint.h>
 
 #ifndef X_HASHTABLE_ALLOC
+/**
+ * @brief Internal macro for allocating memory.
+ * To override how this header allocates memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_HASHTABLE_ALLOC(sz)        malloc(sz)
+#endif
+
+#ifndef X_HASHTABLE_FREE
+/**
+ * @brief Internal macro for freeing memory.
+ * To override how this header frees memory, define this macro with a
+ * different implementation before including this header.
+ * @param p  The address of memory region to free.
+ */
 #define X_HASHTABLE_FREE(p)          free(p)
 #endif
 

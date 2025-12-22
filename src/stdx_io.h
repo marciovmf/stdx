@@ -169,7 +169,22 @@ extern "C" {
 #include <string.h>
 
 #ifndef X_IO_ALLOC
+/**
+ * @brief Internal macro for allocating memory.
+ * To override how this header allocates memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_IO_ALLOC(sz)        malloc(sz)
+#endif
+
+#ifndef X_IO_FREE
+/**
+ * @brief Internal macro for freeing memory.
+ * To override how this header frees memory, define this macro with a
+ * different implementation before including this header.
+ * @param p  The address of memory region to free.
+ */
 #define X_IO_FREE(p)          free(p)
 #endif
 
