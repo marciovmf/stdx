@@ -200,7 +200,7 @@ static void s_skip_trivia(DoxterTokenState* s)
   }
 }
 
-/* Returns a doc comment token starting at "/**". Advances past it. */
+/* Returns a doc comment token starting at "/ * *". Advances past it. */
 static DoxterToken s_read_doc_comment(DoxterTokenState* s)
 {
   const char* start = s->input.ptr;
@@ -998,6 +998,7 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, uint32_t line, uin
   /* Preferred typedef name for function pointers: (*Name) */
   XSlice fp_typedef_name = x_slice_empty();
   int fp_state = 0;
+  int paren_depth = 0;
 
   DoxterTokenState ts;
   ts.input = trimmed;
@@ -1028,15 +1029,24 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, uint32_t line, uin
       }
       else if (s_slice_eq_cstr(t.text, "struct"))
       {
-        saw_struct = true;
+        if (paren_depth == 0)
+        {
+          saw_struct = true;
+        }
       }
       else if (s_slice_eq_cstr(t.text, "enum"))
       {
-        saw_enum = true;
+        if (paren_depth == 0)
+        {
+          saw_enum = true;
+        }
       }
       else if (s_slice_eq_cstr(t.text, "union"))
       {
-        saw_union = true;
+        if (paren_depth == 0)
+        {
+          saw_union = true;
+        }
       }
       else
       {
@@ -1064,28 +1074,40 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, uint32_t line, uin
 
     if (t.kind == DOXTER_PUNCT)
     {
-      if (saw_typedef && fp_typedef_name.length == 0)
+      /* Track parentheses depth for top-level classification. */
+      if (t.text.length == 1 && t.text.ptr[0] == '(')
       {
-        fp_state = 1;
-      }
+        /* Function name is the identifier immediately before '(' at top-level. */
+        if (!saw_typedef && paren_depth == 0 && prev.kind == DOXTER_IDENT)
+        {
+          fn_name = prev.text;
+        }
 
-      if (prev.kind == DOXTER_IDENT)
+        /* Function-pointer typedef name pattern: typedef ... (*Name)(...) */
+        if (saw_typedef && fp_typedef_name.length == 0 && fp_state == 0)
+        {
+          fp_state = 1;
+        }
+
+        paren_depth += 1;
+      }
+      else if (t.text.length == 1 && t.text.ptr[0] == ')')
       {
-        fn_name = prev.text;
-      }
+        if (paren_depth > 0)
+        {
+          paren_depth -= 1;
+        }
 
+        if (fp_state == 3)
+        {
+          fp_state = 0;
+        }
+      }
       else if (t.text.length == 1 && t.text.ptr[0] == '*')
       {
         if (fp_state == 1)
         {
           fp_state = 2;
-        }
-      }
-      else if (t.text.length == 1 && t.text.ptr[0] == ')')
-      {
-        if (fp_state == 3)
-        {
-          fp_state = 0;
         }
       }
     }
