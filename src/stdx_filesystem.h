@@ -21,7 +21,7 @@
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * `X_FILESYSTEM_ALLOC` / `X_FILESYSTEM_REALLOC` / `X_FILESYSTEM_FREE` before including.
+ * `X_FILESYSTEM_ALLOC` / `X_FILESYSTEM_CALLOC` / `X_FILESYSTEM_FREE` before including.
  *
  *
  * ## Dependencies
@@ -591,9 +591,35 @@ extern "C" {
 
 #include <time.h>
 #include <stdlib.h>
+
 #ifndef X_FILESYSTEM_ALLOC
+/**
+ * @brief Internal macro for allocating memory.
+ * To override how this header allocates memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_FILESYSTEM_ALLOC(sz)        malloc(sz)
+#endif
+
+#ifndef X_FILESYSTEM_CALLOC
+
+/**
+ * @brief Internal macro for allocating zeroed memory.
+ * To override how this header allocates zeroed memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_FILESYSTEM_CALLOC(n,sz)     calloc((n),(sz))
+#endif
+
+#ifndef X_FILESYSTEM_FREE
+/**
+ * @brief Internal macro for freeing memory.
+ * To override how this header frees memory, define this macro with a
+ * different implementation before including this header.
+ * @param p  The address of memory region to free.
+ */
 #define X_FILESYSTEM_FREE(p)          free(p)
 #endif
 
