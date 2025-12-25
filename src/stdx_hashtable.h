@@ -84,6 +84,12 @@ extern "C" {
     XHashFnDestroy    fn_value_free;
   } XHashtable;
 
+  typedef struct
+  {
+    XHashtable* table;
+    size_t index;      // current occupied slot, or table->capacity when finished
+  } XHashtableIter;
+
 
 #define X_STR(s) #s
 #define X_TOSTR(s) X_STR(s)
@@ -228,6 +234,35 @@ extern "C" {
    * @return Nothing.
    */
   void x_hashtable_free_cstr(void* a);
+
+  /**
+   * @brief Initialize an iterator for a hashtable.
+   * @param table Hashtable instance.
+   * @param it Iterator to initialize.
+   * @return True if the iterator was initialized (even if empty table), false on invalid args.
+   */
+  bool x_hashtable_iter_begin(XHashtable* table, XHashtableIter* it);
+
+  /**
+   * @brief Advance iterator to the next occupied entry.
+   * @param it Iterator.
+   * @param out_key Receives pointer to key (user-facing: dereferenced if stored as pointer/string).
+   * @param out_value Receives pointer to value (user-facing: dereferenced if stored as pointer/string).
+   * @return True if an entry was produced, false if iteration finished or invalid args.
+   */
+  bool x_hashtable_iter_next(XHashtableIter* it, void** out_key, void** out_value);
+
+  /**
+   * @brief Const-friendly variant of x_hashtable_iter_next().
+   */
+  bool x_hashtable_iter_next_const(XHashtableIter* it, const void** out_key, const void** out_value);
+
+  /**
+   * @brief Get the raw slot index of the current entry (mainly for debugging).
+   * @param it Iterator.
+   * @return Current slot index, or table->capacity if finished/invalid.
+   */
+  size_t x_hashtable_iter_slot(const XHashtableIter* it);
 
 #ifdef __cplusplus
 }
@@ -631,6 +666,86 @@ extern "C" {
     X_HASHTABLE_FREE(old_values);
 
     return true;
+  }
+
+  static inline const void* x_hashtable__user_key_ptr(XHashtable* t, size_t i)
+  {
+    void* slot = key_at(t, i);
+
+    if (t->key_is_pointer || t->key_is_null_terminated)
+      return *(void**)slot;
+
+    return slot;
+  }
+
+  static inline void* x_hashtable__user_value_ptr(XHashtable* t, size_t i)
+  {
+    void* slot = value_at(t, i);
+
+    if (t->value_is_pointer || t->value_is_null_terminated)
+      return *(void**)slot;
+
+    return slot;
+  }
+
+  bool x_hashtable_iter_begin(XHashtable* table, XHashtableIter* it)
+  {
+    if (!table || !it)
+      return false;
+
+    it->table = table;
+    it->index = (size_t)-1;
+    return true;
+  }
+
+  bool x_hashtable_iter_next(XHashtableIter* it, void** out_key, void** out_value)
+  {
+    if (!it || !it->table || !out_key || !out_value)
+      return false;
+
+    XHashtable* t = it->table;
+
+    size_t start = it->index;
+    if (start == (size_t)-1)
+      start = 0;
+    else
+      start = start + 1;
+
+    for (size_t i = start; i < t->capacity; i++)
+    {
+      if (t->entries[i].state == X_HASH_ENTRY_OCCUPIED)
+      {
+        it->index = i;
+        *out_key = (void**) x_hashtable__user_key_ptr(t, i);
+        *out_value = x_hashtable__user_value_ptr(t, i);
+        return true;
+      }
+    }
+
+    it->index = t->capacity;
+    return false;
+  }
+
+  bool x_hashtable_iter_next_const(XHashtableIter* it, const void** out_key, const void** out_value)
+  {
+    if (!it || !out_key || !out_value)
+      return false;
+
+    void* v = NULL;
+    bool ok = x_hashtable_iter_next(it, out_key, &v);
+    if (!ok)
+      return false;
+
+    *out_value = (const void*)v;
+    return true;
+  }
+
+  size_t x_hashtable_iter_slot(const XHashtableIter* it)
+  {
+    if (!it || !it->table)
+      return 0;
+
+    return it->index;
   }
 
 #ifdef __cplusplus
