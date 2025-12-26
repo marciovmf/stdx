@@ -134,12 +134,19 @@ extern "C" {
    * @param arena   The arena to apply the snapshot.
    * @param mark    The snapshot to apply.
    */
-  void x_arena_release(XArena* arena, XArenaMark mark);
+  X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark);
+
+  /**
+   * @brief checks if a pointer points to arena owned memory
+   * @param arena The arena to check for pointer ownership
+   * @param ptr   The pointer to check
+   * @return true if ptr points to an address owned by the arena.
+   */
+  X_ARENA_API bool x_arena_has_pointer(const XArena* arena, void* ptr);
 
 #ifdef __cplusplus
 }
 #endif
-
 
 #ifdef X_IMPL_ARENA
 
@@ -533,6 +540,27 @@ X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark)
 #endif
     c->used = mark.used;
   }
+}
+
+X_ARENA_API bool x_arena_has_pointer(const XArena* a, void* p)
+{
+  if (!p)
+  {
+    return false;
+  }
+
+  for (XArenaChunk* c = a->chunks; c != NULL; c = c->next)
+  {
+    const void* begin = (const void*)c->data;
+    const void* end   = (const void*)(c->data + c->used);
+
+    if (p >= begin && p < end)
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 

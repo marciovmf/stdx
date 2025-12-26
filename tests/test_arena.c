@@ -47,6 +47,10 @@ int test_x_arena_alloc_triggers_new_chunk()
   void* b = x_arena_alloc(arena, 60); /* should trigger new chunk */
   ASSERT_TRUE(a && b);
   ASSERT_TRUE(x_arena_chunk_count(arena) == 2);
+
+  ASSERT_TRUE(x_arena_has_pointer(arena, a));
+  ASSERT_TRUE(x_arena_has_pointer(arena, b));
+
   x_arena_destroy(arena);
   return 0;
 }
@@ -99,6 +103,10 @@ int test_x_arena_alignment_respected()
   void* p1 = x_arena_alloc(arena, 1);      /* odd size to stress alignment */
   void* p2 = x_arena_alloc(arena, 8);
   void* p3 = x_arena_alloc(arena, 24);
+
+  ASSERT_TRUE(x_arena_has_pointer(arena, p1));
+  ASSERT_TRUE(x_arena_has_pointer(arena, p2));
+  ASSERT_TRUE(x_arena_has_pointer(arena, p3));
 
   ASSERT_TRUE(p1 && p2 && p3);
 

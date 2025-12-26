@@ -1,6 +1,7 @@
 #include "doxter.h"
-#include "stdx_array.h"
-#include "stdx_string.h"
+#include <stdx_array.h>
+#include <stdx_string.h>
+#include <stdx_io.h>
 #include <stdio.h>
 #include <stdio.h>
 #include <stdio.h>
@@ -9,32 +10,12 @@
 #include <stdbool.h>
 #include <string.h>
 
-typedef enum DoxterTokenKind
-{
-  DOXTER_END = 0,
-  DOXTER_MACRO_DIRECTIVE,
-  DOXTER_IDENT,
-  DOXTER_NUMBER,
-  DOXTER_STRING,
-  DOXTER_CHAR,
-  DOXTER_PUNCT,
-  DOXTER_DOX_COMMENT,
-  DOXTER_PP_END
-} DoxterTokenKind;
-
-typedef struct DoxterToken
-{
-  DoxterTokenKind kind;
-  XSlice text;
-  const char* start;
-} DoxterToken;
-
 typedef struct DoxterTokenState
 {
   XSlice input;
-  bool at_bol;      /* beginning of line (after newline) */
-  bool in_pp;       /* currently tokenizing a preprocessor directive */
-  bool pp_line_continuation; /* last returned token was "\" while in_pp */
+  bool at_bol;      // beginning of line (after newline)
+  bool in_pp;       // currently tokenizing a preprocessor directive
+  bool pp_line_continuation; // last returned token was "\" while in_pp
 } DoxterTokenState;
 
 static XSlice s_cleanup_comment(XSlice comment)
@@ -206,7 +187,7 @@ static DoxterToken s_read_doc_comment(DoxterTokenState* s)
   const char* start = s->input.ptr;
   size_t len = 0;
 
-  /* Consume '/**' */
+  // Consume '/**' 
   s_advance(s, 3);
   len += 3;
 
@@ -373,175 +354,6 @@ static DoxterToken s_read_macro_directive(DoxterTokenState* s)
   return t;
 }
 
-static bool s_is_space_no_nl(char c)
-{
-  return c == ' ' || c == '\t' || c == '\r' || c == '\f' || c == '\v';
-}
-
-static XSlice s_read_macro_body(XSlice* input)
-{
-  XSlice out = x_slice_empty();
-
-  if (input->length == 0)
-  {
-    return out;
-  }
-
-  /* We expect to be positioned at '#' (possibly after leading whitespace). */
-  const char* start = input->ptr;
-  size_t i = 0;
-
-  bool in_string = false;
-  bool in_char = false;
-  bool in_line_comment = false;
-  bool in_block_comment = false;
-  bool escape = false;
-
-  while (i < input->length)
-  {
-    char c = input->ptr[i];
-    char n = (i + 1 < input->length) ? input->ptr[i + 1] : '\0';
-
-    if (in_line_comment)
-    {
-      if (c == '\n')
-      {
-        /* End of physical line. Decide if directive continues. */
-        in_line_comment = false;
-
-        /* Look back for backslash before newline (ignoring trailing spaces and '\r'). */
-        size_t k = i;
-        while (k > 0 && (input->ptr[k - 1] == '\r' || s_is_space_no_nl(input->ptr[k - 1])))
-        {
-          k--;
-        }
-
-        if (k > 0 && input->ptr[k - 1] == '\\')
-        {
-          i++;
-          continue; /* Continued directive */
-        }
-
-        i++; /* Include newline in macro body slice */
-        break; /* End of directive */
-      }
-
-      i++;
-      continue;
-    }
-
-    if (in_block_comment)
-    {
-      if (c == '*' && n == '/')
-      {
-        in_block_comment = false;
-        i += 2;
-        continue;
-      }
-
-      i++;
-      continue;
-    }
-
-    if (in_string)
-    {
-      if (escape)
-      {
-        escape = false;
-      }
-      else if (c == '\\')
-      {
-        escape = true;
-      }
-      else if (c == '"')
-      {
-        in_string = false;
-      }
-
-      i++;
-      continue;
-    }
-
-    if (in_char)
-    {
-      if (escape)
-      {
-        escape = false;
-      }
-      else if (c == '\\')
-      {
-        escape = true;
-      }
-      else if (c == '\'')
-      {
-        in_char = false;
-      }
-
-      i++;
-      continue;
-    }
-
-    /* Not inside string/char/comment */
-    if (c == '/' && n == '/')
-    {
-      in_line_comment = true;
-      i += 2;
-      continue;
-    }
-
-    if (c == '/' && n == '*')
-    {
-      in_block_comment = true;
-      i += 2;
-      continue;
-    }
-
-    if (c == '"')
-    {
-      in_string = true;
-      i++;
-      continue;
-    }
-
-    if (c == '\'')
-    {
-      in_char = true;
-      i++;
-      continue;
-    }
-
-    if (c == '\n')
-    {
-      /* End of physical line. Decide if directive continues. */
-      size_t k = i;
-      while (k > 0 && (input->ptr[k - 1] == '\r' || s_is_space_no_nl(input->ptr[k - 1])))
-      {
-        k--;
-      }
-
-      if (k > 0 && input->ptr[k - 1] == '\\')
-      {
-        i++;
-        continue; /* Continued directive */
-      }
-
-      i++; /* Include newline */
-      break; /* End of directive */
-    }
-
-    i++;
-  }
-
-  out.ptr = start;
-  out.length = i;
-
-  input->ptr += i;
-  input->length -= i;
-
-  return out;
-}
-
-/* Punct: supports a small set of 2-char ops; everything else is 1 char. */
 static DoxterToken s_read_punct(DoxterTokenState* s)
 {
   const char* start = s->input.ptr;
@@ -580,7 +392,7 @@ static DoxterToken s_read_punct(DoxterTokenState* s)
   return t;
 }
 
-/* Main: returns next token (or END). */
+/* returns next token (or END). */
 static DoxterToken doxter_next_token(DoxterTokenState* s)
 {
   for (;;)
@@ -671,16 +483,6 @@ static DoxterToken doxter_next_token(DoxterTokenState* s)
   }
 }
 
-static bool s_slice_eq_cstr(XSlice a, const char* b)
-{
-  size_t blen = strlen(b);
-  if (a.length != blen)
-  {
-    return false;
-  }
-  return memcmp(a.ptr, b, blen) == 0;
-}
-
 static bool s_token_is_punct(DoxterToken t, char c)
 {
   return t.kind == DOXTER_PUNCT && t.text.length == 1 && t.text.ptr[0] == c;
@@ -688,7 +490,84 @@ static bool s_token_is_punct(DoxterToken t, char c)
 
 static bool s_token_is_ident_cstr(DoxterToken t, const char* s)
 {
-  return t.kind == DOXTER_IDENT && s_slice_eq_cstr(t.text, s);
+  return t.kind == DOXTER_IDENT && x_slice_eq_cstr(t.text, s);
+}
+
+static DoxterToken s_token_dup(DoxterProject* proj, DoxterToken t)
+{
+  if (t.text.length > 0)
+  {
+    char* dup = x_arena_slicedup(proj->scratch, t.text.ptr, t.text.length, false);
+    t.text.ptr = dup;
+  }
+  else
+  {
+    t.text.ptr = "";
+  }
+
+  t.start = t.text.ptr;
+  return t;
+}
+
+static XSlice s_slice_dup(XArena* arena, XSlice s)
+{
+  if (s.length == 0)
+  {
+    return s;
+  }
+
+  char* dup = x_arena_slicedup(arena, s.ptr, s.length, false);
+  s.ptr = dup;
+  return s;
+}
+
+static void s_symbol_dup_slices(DoxterProject* proj, DoxterSymbol* sym)
+{
+  sym->comment = (sym->comment.length ?
+      s_slice_dup(proj->scratch, sym->comment) :
+      x_slice_empty());
+  sym->declaration = (sym->declaration.length ?
+      s_slice_dup(proj->scratch, sym->declaration) :
+      x_slice_empty());
+  sym->name = (sym->name.length ?
+      s_slice_dup(proj->scratch, sym->name) :
+      x_slice_empty());
+}
+
+static void s_symbol_collect_tokens(DoxterProject* proj, XSlice declaration, u32* out_first, u32* out_count)
+{
+  *out_first = x_array_count(proj->tokens);
+  *out_count = 0;
+
+  if (declaration.length == 0)
+  {
+    return;
+  }
+
+  DoxterTokenState ts;
+  ts.input = declaration;
+  ts.at_bol = true;
+  ts.in_pp = false;
+  ts.pp_line_continuation = false;
+
+  for (;;)
+  {
+    DoxterToken t = doxter_next_token(&ts);
+    if (t.kind == DOXTER_END)
+    {
+      break;
+    }
+
+    /* PP_END is a structural token; it is not part of any declaration text. */
+    if (t.kind == DOXTER_PP_END)
+    {
+      continue;
+    }
+
+    t = s_token_dup(proj, t);
+    x_array_push(proj->tokens, &t);
+    (*out_count)++;
+  }
 }
 
 static void s_update_line_col(const char* from, const char* to, uint32_t* line, uint32_t* col)
@@ -910,10 +789,10 @@ static bool s_classify_macro(XSlice macro, XSlice comment, uint32_t line, uint32
   XSlice tok = x_slice_empty();
 
   x_slice_next_token_white_space(&it, &tok);
-  if (!s_slice_eq_cstr(tok, "#") && !s_slice_eq_cstr(tok, "#define"))
+  if (!x_slice_eq_cstr(tok, "#") && !x_slice_eq_cstr(tok, "#define"))
   {
     /* Accept '# define' too */
-    if (!s_slice_eq_cstr(tok, "#"))
+    if (!x_slice_eq_cstr(tok, "#"))
     {
       return false;
     }
@@ -921,13 +800,13 @@ static bool s_classify_macro(XSlice macro, XSlice comment, uint32_t line, uint32
 
   XSlice t1 = x_slice_empty();
   x_slice_next_token_white_space(&it, &t1);
-  if (s_slice_eq_cstr(tok, "#define"))
+  if (x_slice_eq_cstr(tok, "#define"))
   {
     /* ok */
   }
   else
   {
-    if (!s_slice_eq_cstr(t1, "define"))
+    if (!x_slice_eq_cstr(t1, "define"))
     {
       return false;
     }
@@ -1018,30 +897,30 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, uint32_t line, uin
 
     if (t.kind == DOXTER_IDENT)
     {
-      if (s_slice_eq_cstr(t.text, "typedef"))
+      if (x_slice_eq_cstr(t.text, "typedef"))
       {
         saw_typedef = true;
         out->is_typedef = true;
       }
-      else if (s_slice_eq_cstr(t.text, "static"))
+      else if (x_slice_eq_cstr(t.text, "static"))
       {
         out->is_static = true;
       }
-      else if (s_slice_eq_cstr(t.text, "struct"))
+      else if (x_slice_eq_cstr(t.text, "struct"))
       {
         if (paren_depth == 0)
         {
           saw_struct = true;
         }
       }
-      else if (s_slice_eq_cstr(t.text, "enum"))
+      else if (x_slice_eq_cstr(t.text, "enum"))
       {
         if (paren_depth == 0)
         {
           saw_enum = true;
         }
       }
-      else if (s_slice_eq_cstr(t.text, "union"))
+      else if (x_slice_eq_cstr(t.text, "union"))
       {
         if (paren_depth == 0)
         {
@@ -1160,8 +1039,19 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, uint32_t line, uin
  * @param aray An XArray for storing the symbols
  * @return the number or symbols found
  */
-u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* array)
+u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj)
 {
+  DoxterSourceInfo* source_info = &proj->sources[source_index];
+  source_info->first_symbol_index = x_array_count(proj->symbols);
+  source_info->num_symbols = 0;
+
+  size_t file_size = 0;
+  const char *source_file_name = source_info->path;
+  char *input = x_io_read_text(source_file_name, &file_size);
+  if (! input) return 0;
+
+  XSlice source = x_slice_init(input, file_size);
+
   DoxterTokenState ts;
   ts.input = source;
   ts.at_bol = true;
@@ -1191,8 +1081,11 @@ u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* arra
       sym.comment = file_comment;
       sym.declaration = x_slice_empty();
       sym.name = x_slice_empty();
+      sym.first_token_index = x_array_count(proj->tokens);
+      sym.num_tokens = 0;
 
-      x_array_push(array, &sym);
+      s_symbol_dup_slices(proj, &sym);
+      x_array_push(proj->symbols, &sym);
       count++;
 
       ts = tmp;
@@ -1261,7 +1154,7 @@ u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* arra
           break;
         }
 
-        if (s_slice_eq_cstr(directive, "define"))
+        if (x_slice_eq_cstr(directive, "define"))
         {
           if (macro_name.length == 0 && mt.kind == DOXTER_IDENT)
           {
@@ -1276,7 +1169,7 @@ u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* arra
         }
       }
 
-      if (s_slice_eq_cstr(directive, "define") && macro_name.length > 0)
+      if (x_slice_eq_cstr(directive, "define") && macro_name.length > 0)
       {
         DoxterSymbol sym;
         memset(&sym, 0, sizeof(sym));
@@ -1290,7 +1183,9 @@ u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* arra
         sym.name = macro_name;
         sym.is_empty_macro = empty_macro;
 
-        x_array_push(array, &sym);
+        s_symbol_dup_slices(proj, &sym);
+        s_symbol_collect_tokens(proj, sym.declaration, &sym.first_token_index, &sym.num_tokens);
+        x_array_push(proj->symbols, &sym);
         count++;
       }
 
@@ -1304,7 +1199,6 @@ u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* arra
       prev_sig2 = (DoxterToken){0};
       continue;
     }
-
 
     int effective_depth = brace_depth - extern_depth;
     if (effective_depth < 0)
@@ -1330,8 +1224,8 @@ u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* arra
 
     if (s_token_is_punct(t, '{'))
     {
-      bool is_extern_c = (prev_sig2.kind == DOXTER_IDENT && s_slice_eq_cstr(prev_sig2.text, "extern") &&
-          prev_sig.kind == DOXTER_STRING && s_slice_eq_cstr(prev_sig.text, "\"C\""));
+      bool is_extern_c = (prev_sig2.kind == DOXTER_IDENT && x_slice_eq_cstr(prev_sig2.text, "extern") &&
+          prev_sig.kind == DOXTER_STRING && x_slice_eq_cstr(prev_sig.text, "\"C\""));
 
       if (!is_extern_c && effective_depth == 0 && s_token_is_punct(prev_sig, ')') && !seen_equal)
       {
@@ -1346,9 +1240,11 @@ u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* arra
           DoxterSymbol sym;
           if (s_classify_statement(sig, pending_doc, stmt_line, stmt_col, &sym))
           {
-            if (!s_find_symbol(array, sym.name) && s_filter_symbol(&sym, cfg))
+            if (!s_find_symbol(proj->symbols, sym.name) && s_filter_symbol(&sym, &proj->config))
             {
-              x_array_push(array, &sym);
+              s_symbol_dup_slices(proj, &sym);
+              s_symbol_collect_tokens(proj, sym.declaration, &sym.first_token_index, &sym.num_tokens);
+              x_array_push(proj->symbols, &sym);
               count++;
             }
           }
@@ -1433,9 +1329,11 @@ u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* arra
         DoxterSymbol sym;
         if (s_classify_statement(stmt, pending_doc, stmt_line, stmt_col, &sym))
         {
-          if (!s_find_symbol(array, sym.name) && s_filter_symbol(&sym, cfg))
+          if (!s_find_symbol(proj->symbols, sym.name) && s_filter_symbol(&sym, &proj->config))
           {
-            x_array_push(array, &sym);
+            s_symbol_dup_slices(proj, &sym);
+            s_symbol_collect_tokens(proj, sym.declaration, &sym.first_token_index, &sym.num_tokens);
+            x_array_push(proj->symbols, &sym);
             count++;
           }
         }
@@ -1453,6 +1351,8 @@ u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* arra
     prev_sig = t;
   }
 
+  free(input);
+  source_info->num_symbols = count;
   return count;
 }
 
@@ -1487,9 +1387,6 @@ void doxter_token_dump(DoxterTokenState* s, const char* label)
       printf("END\n\n");
       break;
     }
-
-    /* Optional: if your state tracks line/col, print them here */
-    /* printf("%5u:%-4u ", (unsigned)s->line, (unsigned)s->col); */
 
     printf("%-12s len=%zu  ", s_tok_kind_name(t.kind), (size_t)t.text.length);
 

@@ -1,16 +1,22 @@
 #include <stdx_common.h>
 #define X_IMPL_ARRAY
+#define X_IMPL_ARENA
 #define X_IMPL_FILESYSTEM
 #define X_IMPL_INI
 #define X_IMPL_IO
 #define X_IMPL_STRBUILDER
 #define X_IMPL_STRING
+#define X_IMPL_HASHTABLE
+#define X_IMPL_LOG
 #include <stdx_array.h>
+#include <stdx_arena.h>
 #include <stdx_filesystem.h>
 #include <stdx_ini.h>
 #include <stdx_io.h>
 #include <stdx_strbuilder.h>
 #include <stdx_string.h>
+#include <stdx_hashtable.h>
+#include <stdx_log.h>
 
 #define MD_IMPL
 #include "markdown.h"
@@ -26,22 +32,21 @@
 #define DEFAULT_CONFIG_FILE_NAME "doxter.ini"
 #endif
 
-#ifndef DOXTER_MAX_MODULES
-#define DOXTER_MAX_MODULES 64
-#endif
-
 // --------------------------------------------------------
 // Types
 // --------------------------------------------------------
 
-typedef struct
+typedef struct DoxterCmdLine
 {
-  XSlice   text;
-  uint32_t line_start;
-  uint32_t line_end;
-  const char *end_ptr;
-  bool     used;
-} DoxterDocblock;
+  const char*   project_name;
+  const char*   doxter_file;
+  const char*   output_directory;
+  const char**  input_files;
+  bool          skip_static;
+  bool          skip_undocumented;
+  bool          skip_empty_defines;
+  u32           num_input_files;
+} DoxterCmdLine;
 
 typedef enum
 {
@@ -49,41 +54,14 @@ typedef enum
   DOX_TAG_PARAM,
   DOX_TAG_RETURN,
   DOX_TAG_UNKNOWN
-} DoxTagKind;
+} DoxterTagKind;
 
 typedef struct
 {
-  DoxTagKind kind;
+  DoxterTagKind kind;
   XSlice     name;
   XSlice     text;
-} DoxTag;
-
-typedef struct
-{
-  char *project_index_html;
-  char *project_module_item_html;
-
-  char *module_index_html;
-  char *symbol_html;
-  char *index_item_html;
-  char *params_html;
-  char *param_item_html;
-  char *return_html;
-  char *module_item_html;
-  char *style_css;
-} DoxterTemplates;
-
-typedef struct
-{
-  char *module_name;  /* e.g., "stdx_strbuilder.h"     */
-  char *output_name;  /* e.g., "stdx_strbuilder.html"  */
-} DoxterModule;
-
-typedef struct
-{
-  DoxterModule modules[DOXTER_MAX_MODULES];
-  uint32_t     module_count;
-} DoxterModuleList;
+} DoxterTag;
 
 typedef struct
 {
@@ -94,7 +72,13 @@ typedef struct
 typedef struct
 {
   XSlice items;
-} DoxParamsCtx;
+} DoxterFunctionParam;
+
+typedef struct
+{
+  XSlice desc;
+} DoxterFunctionReturn;
+
 
 // --------------------------------------------------------
 // Helpers 
@@ -115,7 +99,7 @@ static const char *s_type_to_string(DoxterType type)
   }
 }
 
-static const char *s_tag_type_to_string(DoxTagKind type)
+static const char *s_tag_type_to_string(DoxterTagKind type)
 {
   switch (type)
   {
@@ -149,107 +133,20 @@ static char *s_strdup(const char *s)
   return p;
 }
 
-static void s_modules_init(DoxterModuleList *list)
+static bool s_project_source_add(DoxterProject *proj, const char* input_file_name)
 {
-  memset(list, 0, sizeof(*list));
-}
-
-static void s_modules_free(DoxterModuleList *list)
-{
-  uint32_t i;
-
-  if (!list)
-  {
-    return;
-  }
-
-  for (i = 0; i < list->module_count; ++i)
-  {
-    free(list->modules[i].module_name);
-    free(list->modules[i].output_name);
-  }
-
-  memset(list, 0, sizeof(*list));
-}
-
-/*
- * Derive output html name from an input path. E.g. "foo/bar/stdx_strbuilder.h" -> "stdx_strbuilder.html"
- */
-static void _s_get_names(const char *path,
-    char *base_name,
-    size_t base_cap,
-    char *out_html,
-    size_t html_cap)
-{
-  const char *base = path;
-  const char *slash = strrchr(path, '/');
-#ifdef _WIN32
-  const char *bslash = strrchr(path, '\\');
-  if (!slash || (bslash && bslash > slash))
-  {
-    slash = bslash;
-  }
-#endif
-
-  if (slash)
-  {
-    base = slash + 1;
-  }
-
-  {
-    size_t blen = strlen(base);
-    if (blen >= base_cap)
-    {
-      blen = base_cap - 1;
-    }
-
-    memcpy(base_name, base, blen);
-    base_name[blen] = '\0';
-  }
-
-  /* strip extension */
-  {
-    char *dot = strrchr(base_name, '.');
-    if (dot)
-    {
-      *dot = '\0';
-    }
-  }
-
-  {
-    const char *ext = ".html";
-    size_t ext_len  = strlen(ext);
-    size_t cur_len  = strlen(base_name);
-
-    if (cur_len + ext_len + 1 < html_cap)
-    {
-      memcpy(out_html, base_name, cur_len);
-      memcpy(out_html + cur_len, ext, ext_len + 1);
-    }
-    else
-    {
-      if (html_cap > 0)
-      {
-        out_html[0] = '\0';
-      }
-    }
-  }
-}
-
-static bool s_modules_add(DoxterModuleList *list, const char* input_file_name)
-{
-  if (list->module_count >= DOXTER_MAX_MODULES)
+  if (proj->source_count >= DOXTER_MAX_MODULES)
   {
     return false;
   }
 
-  DoxterModule *m = &list->modules[list->module_count];
+  DoxterSourceInfo *m = &proj->sources[proj->source_count];
+  m->path = _strdup(input_file_name);
 
   XSmallstr tmp;
   XSlice base_name = x_fs_path_basename(input_file_name);
-
   x_smallstr_from_slice(base_name, &tmp);
-  m->module_name = _strdup(tmp.buf);
+  m->base_name = _strdup(tmp.buf);
 
   XSlice html_name = x_fs_path_stem(base_name.ptr);
   x_smallstr_from_slice(html_name, &tmp);
@@ -258,18 +155,18 @@ static bool s_modules_add(DoxterModuleList *list, const char* input_file_name)
 
   printf("MODULE: %s\nbasename = %s\nstem = %s\n\n",
       input_file_name,
-      m->module_name,
+      m->path,
       m->output_name);
 
-  if (!m->module_name || !m->output_name)
+  if (!m->path || !m->output_name)
   {
-    free(m->module_name);
+    free(m->path);
     free(m->output_name);
-    m->module_name = m->output_name = NULL;
+    m->path = m->output_name = NULL;
     return false;
   }
 
-  list->module_count++;
+  proj->source_count++;
   return true;
 }
 
@@ -376,7 +273,7 @@ static XSlice s_extract_macro_name(XSlice define_line)
 //  Comment tag parsing 
 // --------------------------------------------------------
 
-static bool s_comment_next_tag(XSlice *comment, DoxTag *out_tag)
+static bool s_comment_next_tag(XSlice *comment, DoxterTag *out_tag)
 {
   if (comment->length == 0)
   {
@@ -405,7 +302,7 @@ static bool s_comment_next_tag(XSlice *comment, DoxTag *out_tag)
 
   *comment = x_slice_trim(*comment);
 
-  DoxTagKind kind = DOX_TAG_TEXT;
+  DoxterTagKind kind = DOX_TAG_TEXT;
   XSlice     name = x_slice_empty();
 
   if ((!x_slice_starts_with_cstr(*comment, "@")) ||
@@ -499,15 +396,15 @@ static bool s_load_templates(DoxterTemplates *t)
 {
   memset(t, 0, sizeof(*t));
   t->project_index_html   = (char*) PROJECT_INDEX_HTML;
-  t->module_index_html    = (char*) MODULE_INDEX_HTML;
+  t->file_index_html      = (char*) MODULE_INDEX_HTML;
   t->symbol_html          = (char*) SYMBOL_HTML;
   t->index_item_html      = (char*) INDEX_ITEM_HTML;
   t->style_css            = (char*) STYLE_CSS ;
-  t->project_module_item_html = (char*) PROJECT_MODULE_ITEM_HTML ;
+  t->project_file_item_html = (char*) PROJECT_MODULE_ITEM_HTML ;
   t->params_html          = (char*) PARAMS_HTML;
   t->param_item_html      = (char*) PARAM_ITEM_HTML;
   t->return_html          = (char*) RETURN_HTML;
-  t->module_item_html     = (char*) MODULE_ITEM_HTML;
+  t->file_item_html       = (char*) MODULE_ITEM_HTML;
 
   return true;
 }
@@ -608,7 +505,7 @@ static void s_params_resolver(const char *placeholder,
     void *user_data,
     XStrBuilder *out)
 {
-  DoxParamsCtx *ctx = (DoxParamsCtx *) user_data;
+  DoxterFunctionParam *ctx = (DoxterFunctionParam *) user_data;
 
   if (strcmp(placeholder, "PARAMS_ITEMS") == 0)
   {
@@ -635,7 +532,7 @@ static void s_param_item_resolver(const char *placeholder,
 static XSlice s_symbol_doc_brief(const DoxterSymbol *sym)
 {
   XSlice it = sym->comment;
-  DoxTag tag;
+  DoxterTag tag;
 
   while (s_comment_next_tag(&it, &tag))
   {
@@ -651,7 +548,7 @@ static XSlice s_symbol_doc_brief(const DoxterSymbol *sym)
 static XSlice s_symbol_doc_return(const DoxterSymbol *sym)
 {
   XSlice it = sym->comment;
-  DoxTag tag;
+  DoxterTag tag;
 
   while (s_comment_next_tag(&it, &tag))
   {
@@ -682,7 +579,7 @@ static void s_render_params_block(const DoxterSymbol *sym,
 
     {
       XSlice it = sym->comment;
-      DoxTag tag;
+      DoxterTag tag;
 
       while (s_comment_next_tag(&it, &tag))
       {
@@ -702,7 +599,7 @@ static void s_render_params_block(const DoxterSymbol *sym,
 
     if (items->length > 0)
     {
-      DoxParamsCtx ctx;
+      DoxterFunctionParam ctx;
       {
         char *items_str = x_strbuilder_to_string(items);
         ctx.items = x_slice_init(items_str, (size_t) items->length);
@@ -722,16 +619,11 @@ static void s_render_params_block(const DoxterSymbol *sym,
 // --------------------------------------------------------
 // @return tag
 // --------------------------------------------------------
-typedef struct
-{
-  XSlice desc;
-} DoxReturnCtx;
-
 static void s_return_resolver(const char *placeholder,
     void *user_data,
     XStrBuilder *out)
 {
-  DoxReturnCtx *ctx = (DoxReturnCtx *) user_data;
+  DoxterFunctionReturn *ctx = (DoxterFunctionReturn *) user_data;
 
   if (strcmp(placeholder, "RETURN_DESC") == 0)
   {
@@ -755,7 +647,7 @@ static void s_render_return_block(const DoxterSymbol *sym,
   }
 
   {
-    DoxReturnCtx ctx;
+    DoxterFunctionReturn ctx;
     ctx.desc = r;
 
     s_render_template(templates->return_html,
@@ -851,15 +743,14 @@ typedef struct
   const char               *file_name;
   const char               *output_name;
   XArray                   *symbols; /* array of DoxterSymbol */
-  const DoxterTemplates    *templates;
-  const DoxterModuleList   *modules;
+  DoxterProject            *project;
 } DoxIndexCtx;
 
 static void s_render_index_for_type(const DoxIndexCtx *ctx,
     DoxterType type,
     XStrBuilder *out)
 {
-  if (!ctx->templates->index_item_html)
+  if (!ctx->project->templates.index_item_html)
   {
     return;
   }
@@ -884,7 +775,7 @@ static void s_render_index_for_type(const DoxIndexCtx *ctx,
         DoxIndexItemCtx item_ctx;
         item_ctx.symbol = sym;
 
-        s_render_template(ctx->templates->index_item_html,
+        s_render_template(ctx->project->templates.index_item_html,
             s_index_item_resolver,
             &item_ctx,
             out);
@@ -894,26 +785,20 @@ static void s_render_index_for_type(const DoxIndexCtx *ctx,
 }
 
 // --------------------------------------------------------
-// Module list rendering for per-page navigation
+// File list rendering for per-page navigation
 // --------------------------------------------------------
 
-typedef struct
-{
-  const DoxterModule *module;
-} DoxModuleItemCtx;
-
-static void s_module_item_resolver(const char *placeholder,
-    void *user_data,
+static void s_file_item_resolver(const char *placeholder, void *user_data,
     XStrBuilder *out)
 {
-  DoxModuleItemCtx *ctx = (DoxModuleItemCtx *) user_data;
-  const DoxterModule *m = ctx->module;
+  DoxterSourceInfo *ctx = (DoxterSourceInfo *) user_data;
+  const DoxterSourceInfo *m = ctx;
 
   if (strcmp(placeholder, "MODULE_NAME") == 0)
   {
-    if (m->module_name)
+    if (m->base_name)
     {
-      x_strbuilder_append(out, m->module_name);
+      x_strbuilder_append(out, m->base_name);
     }
   }
   else if (strcmp(placeholder, "MODULE_HREF") == 0)
@@ -925,27 +810,21 @@ static void s_module_item_resolver(const char *placeholder,
   }
 }
 
-static void s_render_module_list(const DoxIndexCtx *ctx,
-    XStrBuilder *out)
+static void s_render_file_list(const DoxIndexCtx *ctx, XStrBuilder *out)
 {
-  if (!ctx->modules ||
-      ctx->modules->module_count == 0 ||
-      !ctx->templates->module_item_html)
+  if (ctx->project->source_count == 0 ||
+      !ctx->project->templates.file_item_html)
   {
     return;
   }
 
   {
     uint32_t i;
-    for (i = 0; i < ctx->modules->module_count; ++i)
+    for (i = 0; i < ctx->project->source_count; ++i)
     {
-      DoxModuleItemCtx mctx;
-      mctx.module = &ctx->modules->modules[i];
-
-      s_render_template(ctx->templates->module_item_html,
-          s_module_item_resolver,
-          &mctx,
-          out);
+      const DoxterSourceInfo* mctx = &ctx->project->sources[i];
+      s_render_template(ctx->project->templates.file_item_html,
+          s_file_item_resolver, &mctx, out);
     }
   }
 }
@@ -1010,7 +889,7 @@ static void s_index_resolver(const char *placeholder,
   }
   else if (strcmp(placeholder, "SYMBOLS") == 0)
   {
-    if (!ctx->templates->symbol_html)
+    if (!ctx->project->templates.symbol_html)
     {
       return;
     }
@@ -1029,9 +908,9 @@ static void s_index_resolver(const char *placeholder,
         {
           DoxSymbolCtx sym_ctx;
           sym_ctx.symbol    = sym;
-          sym_ctx.templates = ctx->templates;
+          sym_ctx.templates = &ctx->project->templates;
 
-          s_render_template(ctx->templates->symbol_html,
+          s_render_template(ctx->project->templates.symbol_html,
               s_symbol_resolver,
               &sym_ctx,
               out);
@@ -1041,7 +920,7 @@ static void s_index_resolver(const char *placeholder,
   }
   else if (strcmp(placeholder, "MODULE_LIST") == 0)
   {
-    s_render_module_list(ctx, out);
+    s_render_file_list(ctx, out);
   }
 }
 
@@ -1049,29 +928,17 @@ static void s_index_resolver(const char *placeholder,
 // Project index rendering
 // --------------------------------------------------------
 
-typedef struct
-{
-  const DoxterModuleList  *modules;
-  const DoxterTemplates   *templates;
-} DoxProjectIndexCtx;
-
-typedef struct
-{
-  const DoxterModule *module;
-} DoxProjectModuleItemCtx;
-
-static void s_project_module_item_resolver(const char *placeholder,
+static void s_project_file_item_resolver(const char *placeholder,
     void *user_data,
     XStrBuilder *out)
 {
-  DoxProjectModuleItemCtx *ctx = (DoxProjectModuleItemCtx *) user_data;
-  const DoxterModule *m = ctx->module;
+  const DoxterSourceInfo *m = (DoxterSourceInfo*) user_data;
 
   if (strcmp(placeholder, "MODULE_NAME") == 0)
   {
-    if (m->module_name)
+    if (m->path)
     {
-      x_strbuilder_append(out, m->module_name);
+      x_strbuilder_append(out, m->path);
     }
   }
   else if (strcmp(placeholder, "MODULE_HREF") == 0)
@@ -1083,25 +950,23 @@ static void s_project_module_item_resolver(const char *placeholder,
   }
 }
 
-static void s_render_project_module_list(const DoxProjectIndexCtx *ctx,
+static void s_render_project_file_list(const DoxterProject *ctx,
     XStrBuilder *out)
 {
   uint32_t i;
 
-  if (!ctx->templates->project_module_item_html ||
-      !ctx->modules ||
-      ctx->modules->module_count == 0)
+  if (!ctx->templates.project_file_item_html || ctx->source_count == 0)
   {
     return;
   }
 
-  for (i = 0; i < ctx->modules->module_count; ++i)
+  for (i = 0; i < ctx->source_count; ++i)
   {
-    DoxProjectModuleItemCtx mctx;
-    mctx.module = &ctx->modules->modules[i];
+    const DoxterSourceInfo* mctx;
+    mctx = &(ctx->sources[i]);
 
-    s_render_template(ctx->templates->project_module_item_html,
-        s_project_module_item_resolver,
+    s_render_template(ctx->templates.project_file_item_html,
+        s_project_file_item_resolver,
         &mctx,
         out);
   }
@@ -1111,11 +976,11 @@ static void s_project_index_resolver(const char *placeholder,
     void *user_data,
     XStrBuilder *out)
 {
-  DoxProjectIndexCtx *ctx = (DoxProjectIndexCtx *) user_data;
+  DoxterProject *ctx = (DoxterProject *) user_data;
 
   if (strcmp(placeholder, "MODULE_LIST") == 0)
   {
-    s_render_project_module_list(ctx, out);
+    s_render_project_file_list(ctx, out);
   }
   else if (strcmp(placeholder, "TITLE") == 0 ||
       strcmp(placeholder, "FILE_NAME") == 0)
@@ -1181,31 +1046,8 @@ static void s_project_css_resolver(const char *placeholder,
   }
 }
 
-static void s_doxter_config_init_default(DoxterConfig* cfg)
+static bool s_load_doxter_file(const char* path, DoxterConfig* cfg)
 {
-  cfg->color_page_background           = "ffffff";
-  cfg->color_sidebar_background        = "f8f9fb";
-  cfg->color_main_text                 = "1b1b1b";
-  cfg->color_secondary_text            = "5f6368";
-  cfg->color_highlight                 = "0067b8";
-  cfg->color_light_borders             = "e1e4e8";
-  cfg->color_code_blocks               = "f6f8fa";
-  cfg->color_code_block_border         = "d0d7de";
-  cfg->mono_fonts                      = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace";
-  cfg->serif_fonts                     = "\"serif_fonts\", \"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
-  cfg->border_radius                   = 10;
-  cfg->project_name                    = "Doxter";
-  cfg->project_url                     = "http://github.com/marciovmf/doxter";
-  cfg->option_skip_static_functions    = 0;
-  cfg->option_markdown_index_page      = 1;
-  cfg->option_markdown_gobal_comments  = 1;
-  cfg->option_markdown_index_page      = 1;
-  cfg->option_skip_undocumented_symbols = 0;
-}
-
-static bool s_load_doxter_file(const char* path, DoxterConfig* out)
-{
-  DoxterConfig cfg;
   XIni ini;
   XIniError iniError;
   if (path == NULL)
@@ -1222,63 +1064,47 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* out)
     return false;
   }
 
-  cfg.color_page_background     = x_ini_get(&ini, "theme", "color_page_background",
-      "ffffff");
-  cfg.color_sidebar_background  = x_ini_get(&ini, "theme", "color_sidebar_background",
-      "f8f9fb");
-  cfg.color_main_text           = x_ini_get(&ini, "theme", "color_main_text",
-      "1b1b1b");
-  cfg.color_secondary_text      = x_ini_get(&ini, "theme", "color_secondary_text",
-      "5f6368");
-  cfg.color_highlight           = x_ini_get(&ini, "theme", "color_highlight",
-      "0067b8");
-  cfg.color_light_borders       = x_ini_get(&ini, "theme", "color_light_borders",
-      "e1e4e8");
-  cfg.color_code_blocks         = x_ini_get(&ini, "theme", "color_code_blocks",
-      "f6f8fa");
-  cfg.color_code_block_border   = x_ini_get(&ini, "theme", "color_code_block_border",
-      "d0d7de");
-  cfg.mono_fonts                = x_ini_get(&ini, "theme", "mono_fonts",
-      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace");
-  cfg.serif_fonts               = x_ini_get(&ini, "theme", "serif_fonts", " \"serif_fonts\", \"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, sans-serif");
+  cfg->color_page_background =
+    x_ini_get(&ini, "theme", "color_page_background", cfg->color_page_background);
+  cfg->color_sidebar_background =
+    x_ini_get(&ini, "theme", "color_sidebar_background", cfg->color_sidebar_background);
+  cfg->color_main_text =
+    x_ini_get(&ini, "theme", "color_main_text", cfg->color_main_text);
+  cfg->color_secondary_text =
+    x_ini_get(&ini, "theme", "color_secondary_text", cfg->color_secondary_text);
+  cfg->color_highlight =
+    x_ini_get(&ini, "theme", "color_highlight", cfg->color_highlight);
+  cfg->color_light_borders =
+    x_ini_get(&ini, "theme", "color_light_borders", cfg->color_light_borders);
+  cfg->color_code_blocks =
+    x_ini_get(&ini, "theme", "color_code_blocks", cfg->color_code_blocks);
+  cfg->color_code_block_border =
+    x_ini_get(&ini, "theme", "color_code_block_border", cfg->color_code_block_border);
+  cfg->mono_fonts =
+    x_ini_get(&ini, "theme", "mono_fonts", cfg->mono_fonts);
+  cfg->serif_fonts =
+    x_ini_get(&ini, "theme", "serif_fonts", cfg->serif_fonts);
+  cfg->project_name =
+    x_ini_get(&ini, "project", "name", cfg->project_name);
+  cfg->project_url =
+    x_ini_get(&ini, "project", "url", cfg->project_url);
+  cfg->border_radius =
+    x_ini_get_i32(&ini, "theme", "border_radius", cfg->border_radius);
+  cfg->option_skip_static_functions =
+    x_ini_get_i32(&ini, "options", "option_skip_static_functions", cfg->option_skip_static_functions);
+  cfg->option_markdown_index_page =
+    x_ini_get_i32(&ini, "options", "option_markdown_index_page", cfg->option_markdown_index_page);
+  cfg->option_skip_undocumented_symbols =
+    x_ini_get_i32(&ini, "options", "option_skip_undocumented_symbols", cfg->option_skip_undocumented_symbols);
 
-  cfg.border_radius               = x_ini_get_i32(&ini, "theme", "border_radius", 10);
-
-
-  cfg.project_name  = x_ini_get(&ini, "project", "name", "Doxter");
-  cfg.project_url   = x_ini_get(&ini, "project", "url", "http://github.com/marciovmf/doxter");
-  cfg.h_files = x_ini_get(&ini, "project", "h_files", ".");
-  cfg.c_files  = x_ini_get(&ini, "project", "c_files", ".");
-
-  cfg.option_skip_static_functions    = x_ini_get_i32(&ini, "options", "option_skip_static_functions", 0);
-  cfg.option_skip_undocumented_symbols = x_ini_get_i32(&ini, "options", "option_skip_undocumented_symbols", 0);
-
-  cfg.option_markdown_index_page      = x_ini_get_i32(&ini, "options", "option_markdown_index_page", 1);
-  cfg.option_markdown_gobal_comments  = x_ini_get_i32(&ini, "options", "option_markdown_gobal_comments", 1);
-  cfg.option_markdown_index_page      = x_ini_get_i32(&ini, "options", "option_markdown_index_page", 1);
-
-  *out = cfg;
   return true;
 }
-
-typedef struct DoxterCmdLine
-{
-  const char*   project_name;
-  const char*   doxter_file;
-  const char*   output_directory;
-  const char**  input_files;
-  bool          skip_static;
-  bool          skip_undocumented;
-  bool          skip_empty_defines;
-  u32           num_input_files;
-} DoxterCmdLine;
 
 static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
 {
   memset(out, 0, sizeof(DoxterCmdLine));
 
   out->output_directory = ".";
-  // out->project_name = NULL; // optional, depends on your struct defaults
 
   if (argc < 2)
   {
@@ -1373,18 +1199,83 @@ static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
   return true;
 }
 
+static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
+{
+  // We allocate an arena, place a DoxterProject in it and keep a pointer to the
+  // arena inside of the DoxterProject struct. To deallocate the DoxterProject
+  // we must actually free the arena.
+
+  const size_t arena_size = 1024 * 1024 * 4; // big enough
+  XArena* arena = x_arena_create(arena_size);
+  DoxterProject* proj = x_arena_alloc(arena, sizeof(DoxterProject));
+  proj->scratch                                 = arena;
+  proj->symbol_map                              = x_hashtable_create(XSlice, DoxterSymbol);
+  proj->symbols                                 = x_array_create(sizeof(DoxterSymbol), 256);
+  proj->tokens                                  = x_array_create(sizeof(DoxterToken), 64);
+  proj->source_count                            = 0;
+
+  // Default config values
+  proj->config.color_page_background            = "ffffff";
+  proj->config.color_sidebar_background         = "f8f9fb";
+  proj->config.color_main_text                  = "1b1b1b";
+  proj->config.color_secondary_text             = "5f6368";
+  proj->config.color_highlight                  = "0067b8";
+  proj->config.color_light_borders              = "e1e4e8";
+  proj->config.color_code_blocks                = "f6f8fa";
+  proj->config.color_code_block_border          = "d0d7de";
+  proj->config.mono_fonts                       = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace";
+  proj->config.serif_fonts                      = "\"serif_fonts\", \"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+  proj->config.border_radius                    = 10;
+  proj->config.project_name                     = "Doxter";
+  proj->config.project_url                      = "http://github.com/marciovmf/doxter";
+  proj->config.option_skip_static_functions     = 1;
+  proj->config.option_markdown_index_page       = 1;
+  proj->config.option_markdown_gobal_comments   = 1;
+  proj->config.option_markdown_index_page       = 1;
+  proj->config.option_skip_undocumented_symbols = 1;
+
+  // If provided, load the doxter file
+  if (args->doxter_file && x_fs_is_file(args->doxter_file))
+    s_load_doxter_file(args->doxter_file, &proj->config);
+
+  // Load templates
+  s_load_templates(&proj->templates);
+  memset(&proj->sources, 0, sizeof(proj->sources));
+
+  // Add source files to project
+  for (u32 i = 0; i < args->num_input_files; i++)
+  {
+    s_project_source_add(proj, args->input_files[i]);
+  }
+
+  return proj;
+}
+
+static void s_doxter_project_destroy(DoxterProject* proj)
+{
+  for (u32 i = 0; i < proj->source_count; ++i)
+  {
+    free(proj->sources[i].path);
+    free(proj->sources[i].base_name);
+    free(proj->sources[i].output_name);
+  }
+
+  x_arena_destroy(proj->scratch);
+  x_array_destroy(proj->tokens);
+  x_hashtable_destroy(proj->symbol_map);
+  memset(proj, 0, sizeof(DoxterProject));
+}
+
 // --------------------------------------------------------
 // Main
 // --------------------------------------------------------
 int main(int argc, char **argv)
 {
-  DoxterTemplates templates;
-  DoxterModuleList modules;
+  DoxterProject* proj;
   DoxterCmdLine args;
-  DoxterConfig cfg;
   bool had_error = false;
   XStrBuilder *sb;
-  XFSPath full_path;
+  //XFSPath full_path;
 
   if (!s_cmdline_parse(argc, argv, &args))
     return 1;
@@ -1406,6 +1297,71 @@ int main(int argc, char **argv)
     return 1;
   }
 
+  // --------------------------------------------------------
+  //  Collect file list and html file names for each of them
+  // --------------------------------------------------------
+  proj = s_doxter_project_create(&args);
+  for (u32 argi = 0; argi < args.num_input_files; ++argi)
+  {
+    if (!s_project_source_add(proj, args.input_files[argi]))
+    {
+      fprintf(stderr, "Warning: could not record file '%s'\n", args.input_files[argi]);
+      had_error = true;
+    }
+  }
+
+  // --------------------------------------------------------
+  // Parse all files, collect symbols and comments
+  // --------------------------------------------------------
+  for (u32 argi = 0; argi < proj->source_count; ++argi)
+  {
+    doxter_source_symbols_collect(argi, proj);
+  }
+
+  // --------------------------------------------------------
+  // Save each symbol from each source into the stdx_hashtable
+  // for cross reference.
+  // --------------------------------------------------------
+  for (u32 i_source = 0; i_source < proj->source_count; i_source++)
+  {
+    DoxterSourceInfo* source_info = &(proj->sources[i_source]);
+    for (u32 i_symbol = source_info->first_symbol_index;
+        i_symbol < source_info->num_symbols;
+        i_symbol++)
+    {
+      DoxterSymbol* sym = x_array_get(proj->symbols, i_symbol).ptr;
+      x_smallstr_clear(&sym->anchor);
+      if (sym->type == DOXTER_FILE)
+      {
+        x_smallstr_appendf(&sym->anchor, "%s%c", source_info->base_name, 0);
+        x_hashtable_set(proj->symbol_map, &sym->name, sym);
+      }
+      else
+      {
+        x_smallstr_appendf(&sym->anchor, "%s/#%.*s%c",
+            source_info->base_name, (u32) sym->name.length, sym->name.ptr, 0);
+        x_hashtable_set(proj->symbol_map, &sym->name, sym);
+      }
+    }
+  }
+
+  XHashtableIter it;
+  const XSlice *key;
+  const DoxterSymbol* value;
+
+  x_hashtable_iter_begin(proj->symbol_map, &it);
+  while (x_hashtable_iter_next(&it, (void**) &key, (void**) &value))
+  {
+    doxter_info("Key = '%.*s', value = '%s'\n",
+        (u32) key->length, key->ptr, value->anchor.buf);
+  }
+
+  return 0; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#if 0
+  // --------------------------------------------------------
+  // process each header and generate its HTML page
+  // --------------------------------------------------------
+
   sb = x_strbuilder_create();
   if (!sb)
   {
@@ -1413,36 +1369,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  // --------------------------------------------------------
-  // Initialize the configuration from the doxter.ini if possible.
-  // Otherwise use default values.
-  // --------------------------------------------------------
-  if (args.doxter_file && x_fs_is_file(args.doxter_file))
-    s_load_doxter_file(args.doxter_file, &cfg);
-  else
-    s_doxter_config_init_default(&cfg);
-
-  s_load_templates(&templates);
-  s_modules_init(&modules);
-
-  // --------------------------------------------------------
-  //  Collect module list and html file names for each of them
-  // --------------------------------------------------------
-
-  for (u32 argi = 0; argi < args.num_input_files; ++argi)
-  {
-    if (!s_modules_add(&modules, args.input_files[argi]))
-    {
-      fprintf(stderr, "Warning: could not record module '%s'\n", args.input_files[argi]);
-      had_error = true;
-    }
-  }
-
-  // --------------------------------------------------------
-  // process each header and generate its HTML page
-  // --------------------------------------------------------
-
-  XArray* array = x_array_create(sizeof(DoxterSymbol), 64);
+  //x_array_clear(proj->symbols);
   for (u32 argi = 0; argi < args.num_input_files; ++argi)
   {
     const char *source_path = args.input_files[argi];
@@ -1460,14 +1387,14 @@ int main(int argc, char **argv)
     // Collect symbols for current source
     // --------------------------------------------------------
     XSlice source = x_slice_init(input, file_size);
-    x_array_clear(array);
-    doxter_source_symbols_collect(source, &cfg, array);
+    //x_array_clear(proj->symbols);
+    doxter_source_symbols_collect(source, proj, array);
 
     // --------------------------------------------------------
-    // Render templares per project module
+    // Render templares per project file
     // --------------------------------------------------------
 
-    DoxterModule* m = &(modules.modules[argi]);
+    DoxterSourceInfo* m = &(proj->sources[argi]);
 
     x_strbuilder_clear(sb);
     if (!sb)
@@ -1479,13 +1406,12 @@ int main(int argc, char **argv)
     }
 
     DoxIndexCtx ctx;
-    ctx.file_name    = m->module_name;
+    ctx.file_name    = m->base_name;
     ctx.output_name  = m->output_name;
     ctx.symbols      = array;
-    ctx.templates    = &templates;
-    ctx.modules      = &modules;
+    ctx.project      = proj;
 
-    s_render_template(templates.module_index_html,
+    s_render_template(proj->templates.file_index_html,
         s_index_resolver,
         &ctx,
         sb);
@@ -1513,14 +1439,12 @@ int main(int argc, char **argv)
     }
     else
     {
-      DoxProjectIndexCtx pctx;
-      pctx.modules   = &modules;
-      pctx.templates = &templates;
+      //DoxterProject pctx;
+      //pctx.sources   = proj->sources;
+      //pctx.templates = proj->templates;
 
-      s_render_template(templates.project_index_html,
-          s_project_index_resolver,
-          &pctx,
-          sb);
+      s_render_template(proj->templates.project_index_html,
+          s_project_index_resolver, proj, sb);
 
       {
         char *html = x_strbuilder_to_string(sb);
@@ -1538,9 +1462,9 @@ int main(int argc, char **argv)
       // --------------------------------------------------------
 
       x_strbuilder_clear(sb);
-      s_render_template(templates.style_css,
+      s_render_template(proj->templates.style_css,
           s_project_css_resolver,
-          &cfg,
+          &proj->config,
           sb);
       {
         char *css = x_strbuilder_to_string(sb);
@@ -1554,10 +1478,10 @@ int main(int argc, char **argv)
 
     }
   }
-
-  s_modules_free(&modules);
   x_array_destroy(array);
+#endif
   x_strbuilder_destroy(sb);
+  s_doxter_project_destroy(proj);
 
   return had_error ? 1 : 0;
 }

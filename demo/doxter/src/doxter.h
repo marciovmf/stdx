@@ -3,11 +3,41 @@
 
 #include <stdx_common.h>
 #include <stdx_string.h>
+#include <stdx_hashtable.h>
 #include <stdx_array.h>
+#include <stdx_arena.h>
 
 #ifndef DOXTER_COMMENT_MAX_ARGS
 #define DOXTER_COMMENT_MAX_ARGS 32
 #endif  // DOXTER_COMMENT_MAX_ARGS 
+
+#ifndef DOXTER_MAX_MODULES
+#define DOXTER_MAX_MODULES 64
+#endif
+
+typedef enum DoxterTokenKind
+{
+  DOXTER_END = 0,
+  DOXTER_MACRO_DIRECTIVE,
+  DOXTER_IDENT,
+  DOXTER_NUMBER,
+  DOXTER_STRING,
+  DOXTER_CHAR,
+  DOXTER_PUNCT,
+  DOXTER_DOX_COMMENT,
+  DOXTER_PP_END
+} DoxterTokenKind;
+
+typedef struct DoxterToken
+{
+  DoxterTokenKind kind;
+  XSlice text;
+  const char* start;
+} DoxterToken;
+
+#define doxter_info(msg, ...)  x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
+#define doxter_warning(msg, ...)  x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_YELLOW, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
+#define doxter_error(msg, ...)    x_log_raw(XLOG_LEVEL_INFO, XLOG_COLOR_RED, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
 
 typedef struct DoxterConfig DoxterConfig;
 typedef struct DoxterSymbol DoxterSymbol;
@@ -15,13 +45,13 @@ typedef struct DoxterComment DoxterComment;
 
 typedef enum DoxterType
 {
-  DOXTER_FUNCTION,
-  DOXTER_MACRO,
-  DOXTER_STRUCT,
-  DOXTER_ENUM,
-  DOXTER_UNION,
-  DOXTER_TYPEDEF,
-  DOXTER_FILE
+  DOXTER_FUNCTION   = 1,
+  DOXTER_MACRO      = 2,
+  DOXTER_STRUCT     = 3,
+  DOXTER_ENUM       = 4,
+  DOXTER_UNION      = 5,
+  DOXTER_TYPEDEF    = 6,
+  DOXTER_FILE       = 7
 } DoxterType;
 
 struct DoxterConfig
@@ -61,6 +91,10 @@ struct DoxterSymbol
   bool        is_typedef;     // true if it is a typedef
   bool        is_static;      // true if it is static
   bool        is_empty_macro; // true is it is an empty define macro like #define SOMENAME, without any value
+  u32         num_tokens;
+  u32         first_token_index; // indexes DoxterProject.tokens array.
+  
+  XSmallstr   anchor;
   DoxterType  type;       
 };
 
@@ -80,6 +114,42 @@ struct DoxterComment
   DoxterType type;
 };
 
+typedef struct
+{
+  char *project_index_html;
+  char *project_file_item_html;
+  char *file_index_html;
+  char *symbol_html;
+  char *index_item_html;
+  char *params_html;
+  char *param_item_html;
+  char *return_html;
+  char *file_item_html;
+  char *style_css;
+} DoxterTemplates;
+
+typedef struct
+{
+  char *path;               // Original path as passed via cmdline
+  char *base_name;          // soruce file name without path
+  char *output_name;        // source output file name with html extension
+  u32   num_symbols;        // number of symbols for this source in DoxterProject.symbols
+  u32   first_symbol_index; // index of first symbol in DoxterProject.symbols
+} DoxterSourceInfo;
+
+
+typedef struct
+{
+  DoxterTemplates   templates;
+  DoxterConfig      config;
+  XHashtable        *symbol_map;
+  XArena            *scratch;     // A scratch buffer.
+  XArray            *tokens;      // An array of tokens.
+  XArray            *symbols;     // An array of all symbols.
+  uint32_t          source_count;
+  DoxterSourceInfo  sources[DOXTER_MAX_MODULES];
+} DoxterProject;
+
 /**
  * @brief Collects all symbols from a source file. Comments are also collected
  * when present.
@@ -87,7 +157,7 @@ struct DoxterComment
  * @param aray An XArray for storing the symbols
  * @return the number or symbols found
  */
-u32 doxter_source_symbols_collect(XSlice source, DoxterConfig* cfg, XArray* array);
+u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj);
 
 #endif //DOXTER_H
 
