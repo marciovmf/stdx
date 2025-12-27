@@ -63,28 +63,40 @@ typedef struct
   XSlice     text;
 } DoxterTag;
 
-typedef struct
-{
-  XSlice name;
-  XSlice desc;
-} DoxParamItemCtx;
-
-typedef struct
-{
-  XSlice items;
-} DoxterFunctionParam;
-
-typedef struct
-{
-  XSlice desc;
-} DoxterFunctionReturn;
-
-
 // --------------------------------------------------------
 // Helpers 
 // --------------------------------------------------------
 
-typedef void (*DoxTemplateResolver)(const char *placeholder, void *user_data, XStrBuilder *out);
+typedef enum
+{
+  DOX_TMPL_ROLE_NONE,
+  DOX_TMPL_ROLE_PARAM_ITEM,
+  DOX_TMPL_ROLE_PARAMS,
+  DOX_TMPL_ROLE_RETURN,
+  DOX_TMPL_ROLE_SYMBOL,
+  DOX_TMPL_ROLE_INDEX_ITEM,
+  DOX_TMPL_ROLE_FILE_ITEM,
+  DOX_TMPL_ROLE_FILE_INDEX,
+  DOX_TMPL_ROLE_PROJECT_FILE_ITEM,
+  DOX_TMPL_ROLE_PROJECT_INDEX,
+  DOX_TMPL_ROLE_STYLE_CSS
+} DoxterTemplateRole;
+
+typedef struct
+{
+  DoxterTemplateRole      role;
+  u32                     source_index;
+  DoxterProject           *project;
+  const DoxterConfig      *config;
+  const DoxterSymbol      *symbol;
+  const DoxterSourceInfo  *source;
+  XSlice                  param_name;
+  XSlice                  param_desc;
+  XSlice                  params_items;
+  XSlice                  return_desc;
+} DoxterTemplateCtx;
+
+static DoxterTemplateCtx s_template_ctx;
 
 static const char *s_type_to_string(DoxterType type)
 {
@@ -99,40 +111,6 @@ static const char *s_type_to_string(DoxterType type)
   }
 }
 
-static const char *s_tag_type_to_string(DoxterTagKind type)
-{
-  switch (type)
-  {
-    case DOX_TAG_TEXT:    return "@brief";
-    case DOX_TAG_PARAM:   return "@param";
-    case DOX_TAG_RETURN:  return "@return";
-    case DOX_TAG_UNKNOWN: 
-    default:              return "Unknown";
-  }
-}
-
-static char *s_strdup(const char *s)
-{
-  size_t len;
-  char  *p;
-
-  if (!s)
-  {
-    return NULL;
-  }
-
-  len = strlen(s);
-  p = (char *) malloc(len + 1);
-  if (!p)
-  {
-    return NULL;
-  }
-
-  memcpy(p, s, len + 1);
-  p[len] = '\0';
-  return p;
-}
-
 static bool s_project_source_add(DoxterProject *proj, const char* input_file_name)
 {
   if (proj->source_count >= DOXTER_MAX_MODULES)
@@ -141,127 +119,20 @@ static bool s_project_source_add(DoxterProject *proj, const char* input_file_nam
   }
 
   DoxterSourceInfo *m = &proj->sources[proj->source_count];
-  m->path = _strdup(input_file_name);
+  m->path = x_arena_strdup(proj->scratch, input_file_name);
 
   XSmallstr tmp;
   XSlice base_name = x_fs_path_basename(input_file_name);
   x_smallstr_from_slice(base_name, &tmp);
-  m->base_name = _strdup(tmp.buf);
+  m->base_name = x_arena_strdup(proj->scratch, tmp.buf);
 
   XSlice html_name = x_fs_path_stem(base_name.ptr);
   x_smallstr_from_slice(html_name, &tmp);
   x_smallstr_append_cstr(&tmp, ".html");
-  m->output_name = _strdup(tmp.buf);
-
-  if (!m->path || !m->output_name)
-  {
-    free(m->path);
-    free(m->output_name);
-    m->path = m->output_name = NULL;
-    return false;
-  }
+  m->output_name = x_arena_strdup(proj->scratch, tmp.buf);
 
   proj->source_count++;
   return true;
-}
-
-// --------------------------------------------------------
-// Identifier extraction
-// --------------------------------------------------------
-
-static XSlice s_extract_identifier(XSlice slice)
-{
-  const char *start = slice.ptr;
-  const char *cur   = start + slice.length;
-
-  while (cur > start)
-  {
-    char c = (char) *(cur - 1);
-    if (c == ' ' || c == '\t' || c == '\r' || c == '\n' ||
-        c == '*' || c == ')' || c == '(' || c == ';'     ||
-        c == '{' || c == '}' || c == '[' || c == ']')
-    {
-      cur--;
-    }
-    else
-    {
-      break;
-    }
-  }
-
-  const char *end = cur;
-
-  while (cur > start)
-  {
-    char c = (char) *(cur - 1);
-    if ((c >= 'A' && c <= 'Z') ||
-        (c >= 'a' && c <= 'z') ||
-        (c >= '0' && c <= '9') ||
-        c == '_')
-    {
-      cur--;
-    }
-    else
-    {
-      break;
-    }
-  }
-
-  if (end <= cur)
-  {
-    return x_slice_empty();
-  }
-
-  return x_slice_init((char *) cur, (size_t) (end - cur));
-}
-
-static XSlice s_extract_function_name(XSlice full_decl)
-{
-  const char *start = full_decl.ptr;
-  const char *p     = start;
-  const char *end   = start + full_decl.length;
-
-  while (p < end && *p != '(')
-  {
-    p++;
-  }
-
-  {
-    XSlice header = x_slice_init((char *) start, (size_t) (p - start));
-    header = x_slice_trim(header);
-    return s_extract_identifier(header);
-  }
-}
-
-static XSlice s_extract_macro_name(XSlice define_line)
-{
-  XSlice s = x_slice_trim(define_line);
-  XSlice tok = x_slice("#define");
-  x_slice_next_token_white_space(&s, &tok);
-
-  XSlice name = x_slice_empty();
-  x_slice_next_token_white_space(&s, &name);
-
-  if (name.length == 0)
-  {
-    return x_slice_empty();
-  }
-
-  const char *p   = name.ptr;
-  const char *end = name.ptr + name.length;
-  const char *cut = end;
-
-  const char *it;
-  for (it = p; it < end; ++it)
-  {
-    if (*it == '(')
-    {
-      cut = it;
-      break;
-    }
-  }
-
-  return x_slice_init((char *) p, (size_t) (cut - p));
 }
 
 // --------------------------------------------------------
@@ -384,33 +255,27 @@ static bool s_comment_next_tag(XSlice *comment, DoxterTag *out_tag)
 }
 
 // --------------------------------------------------------
-//  Template Loading
-// --------------------------------------------------------
-
-static bool s_load_templates(DoxterTemplates *t)
-{
-  memset(t, 0, sizeof(*t));
-  t->project_index_html   = (char*) PROJECT_INDEX_HTML;
-  t->file_index_html      = (char*) MODULE_INDEX_HTML;
-  t->symbol_html          = (char*) SYMBOL_HTML;
-  t->index_item_html      = (char*) INDEX_ITEM_HTML;
-  t->style_css            = (char*) STYLE_CSS ;
-  t->project_file_item_html = (char*) PROJECT_MODULE_ITEM_HTML ;
-  t->params_html          = (char*) PARAMS_HTML;
-  t->param_item_html      = (char*) PARAM_ITEM_HTML;
-  t->return_html          = (char*) RETURN_HTML;
-  t->file_item_html       = (char*) MODULE_ITEM_HTML;
-
-  return true;
-}
-
-// --------------------------------------------------------
 // Templating
 // --------------------------------------------------------
 
+static void s_template_ctx_push(DoxterTemplateCtx *backup)
+{
+  *backup = s_template_ctx;
+}
+
+static void s_template_ctx_pop(const DoxterTemplateCtx *backup)
+{
+  s_template_ctx = *backup;
+}
+
+static void s_template_resolve_placeholder(const char *placeholder,
+    DoxterProject *project,
+    u32 source_index,
+    XStrBuilder *out);
+
 static void s_render_template(const char *tmpl,
-    DoxTemplateResolver resolver,
-    void *user_data,
+    DoxterProject *project,
+    u32 source_index,
     XStrBuilder *out)
 {
   const char *p = tmpl;
@@ -429,36 +294,28 @@ static void s_render_template(const char *tmpl,
       x_strbuilder_append_substring(out, p, (size_t) (open - p));
     }
 
+    const char *close = strstr(open + 2, "}}");
+    if (!close)
     {
-      const char *close = strstr(open + 2, "}}");
-      if (!close)
-      {
-        x_strbuilder_append(out, open);
-        break;
-      }
-
-      XSlice name_slice = x_slice_init((char *) (open + 2),
-          (size_t) (close - (open + 2)));
-      name_slice = x_slice_trim(name_slice);
-
-      {
-        char   name_buf[64];
-        size_t copy_len = name_slice.length;
-        if (copy_len >= sizeof(name_buf))
-        {
-          copy_len = sizeof(name_buf) - 1;
-        }
-        memcpy(name_buf, name_slice.ptr, copy_len);
-        name_buf[copy_len] = '\0';
-
-        if (resolver)
-        {
-          resolver(name_buf, user_data, out);
-        }
-      }
-
-      p = close + 2;
+      x_strbuilder_append(out, open);
+      break;
     }
+
+    XSlice name_slice = x_slice_init(
+        (char *) (open + 2),
+        (size_t) (close - (open + 2)));
+    name_slice = x_slice_trim(name_slice);
+
+    char   placeholder[64];
+    size_t copy_len = name_slice.length;
+    if (copy_len >= sizeof(placeholder))
+    {
+      copy_len = sizeof(placeholder) - 1;
+    }
+    memcpy(placeholder, name_slice.ptr, copy_len);
+    placeholder[copy_len] = '\0';
+    s_template_resolve_placeholder(placeholder, project, source_index, out);
+    p = close + 2;
   }
 }
 
@@ -493,34 +350,6 @@ static void s_append_anchor(const DoxterSymbol *sym, XStrBuilder *out)
         x_strbuilder_append_char(out, '-');
       }
     }
-  }
-}
-
-static void s_params_resolver(const char *placeholder,
-    void *user_data,
-    XStrBuilder *out)
-{
-  DoxterFunctionParam *ctx = (DoxterFunctionParam *) user_data;
-
-  if (strcmp(placeholder, "PARAMS_ITEMS") == 0)
-  {
-    x_strbuilder_append_substring(out, ctx->items.ptr, ctx->items.length);
-  }
-}
-
-static void s_param_item_resolver(const char *placeholder,
-    void *user_data,
-    XStrBuilder *out)
-{
-  DoxParamItemCtx *ctx = (DoxParamItemCtx *) user_data;
-
-  if (strcmp(placeholder, "PARAM_NAME") == 0)
-  {
-    x_strbuilder_append_substring(out, ctx->name.ptr, ctx->name.length);
-  }
-  else if (strcmp(placeholder, "PARAM_DESC") == 0)
-  {
-    x_strbuilder_append_substring(out, ctx->desc.ptr, ctx->desc.length);
   }
 }
 
@@ -580,33 +409,41 @@ static void s_render_params_block(const DoxterSymbol *sym,
       {
         if (tag.kind == DOX_TAG_PARAM)
         {
-          DoxParamItemCtx item_ctx;
-          item_ctx.name = tag.name;
-          item_ctx.desc = tag.text;
+          DoxterTemplateCtx backup;
+          s_template_ctx_push(&backup);
+          s_template_ctx.role = DOX_TMPL_ROLE_PARAM_ITEM;
+          s_template_ctx.param_name = tag.name;
+          s_template_ctx.param_desc = tag.text;
+          s_template_ctx.symbol = sym;
 
           s_render_template(templates->param_item_html,
-              s_param_item_resolver,
-              &item_ctx,
+              s_template_ctx.project,
+              s_template_ctx.source_index,
               items);
+
+          s_template_ctx_pop(&backup);
         }
       }
     }
 
     if (items->length > 0)
     {
-      DoxterFunctionParam ctx;
-      {
-        char *items_str = x_strbuilder_to_string(items);
-        ctx.items = x_slice_init(items_str, (size_t) items->length);
+      char *items_str = x_strbuilder_to_string(items);
 
-        s_render_template(templates->params_html,
-            s_params_resolver,
-            &ctx,
-            out);
+      DoxterTemplateCtx backup;
+      s_template_ctx_push(&backup);
+      s_template_ctx.role = DOX_TMPL_ROLE_PARAMS;
+      s_template_ctx.params_items = x_slice_init(items_str, (size_t) items->length);
+      s_template_ctx.symbol = sym;
 
-        //free(items_str);
-      }
+      s_render_template(templates->params_html,
+          s_template_ctx.project,
+          s_template_ctx.source_index,
+          out);
+
+      s_template_ctx_pop(&backup);
     }
+
     x_strbuilder_destroy(items);
   }
 }
@@ -614,17 +451,6 @@ static void s_render_params_block(const DoxterSymbol *sym,
 // --------------------------------------------------------
 // @return tag
 // --------------------------------------------------------
-static void s_return_resolver(const char *placeholder,
-    void *user_data,
-    XStrBuilder *out)
-{
-  DoxterFunctionReturn *ctx = (DoxterFunctionReturn *) user_data;
-
-  if (strcmp(placeholder, "RETURN_DESC") == 0)
-  {
-    x_strbuilder_append_substring(out, ctx->desc.ptr, ctx->desc.length);
-  }
-}
 
 static void s_render_return_block(const DoxterSymbol *sym,
     const DoxterTemplates *templates,
@@ -642,13 +468,18 @@ static void s_render_return_block(const DoxterSymbol *sym,
   }
 
   {
-    DoxterFunctionReturn ctx;
-    ctx.desc = r;
+    DoxterTemplateCtx backup;
+    s_template_ctx_push(&backup);
+    s_template_ctx.role = DOX_TMPL_ROLE_RETURN;
+    s_template_ctx.return_desc = r;
+    s_template_ctx.symbol = sym;
 
     s_render_template(templates->return_html,
-        s_return_resolver,
-        &ctx,
+        s_template_ctx.project,
+        s_template_ctx.source_index,
         out);
+
+    s_template_ctx_pop(&backup);
   }
 }
 
@@ -658,123 +489,45 @@ static void s_render_return_block(const DoxterSymbol *sym,
 
 typedef struct
 {
-  const DoxterSymbol    *symbol;
-  const DoxterTemplates *templates;
-} DoxSymbolCtx;
-
-static void s_symbol_resolver(const char *placeholder,
-    void *user_data,
-    XStrBuilder *out)
-{
-  DoxSymbolCtx *ctx = (DoxSymbolCtx *) user_data;
-  const DoxterSymbol *sym = ctx->symbol;
-
-  if (strcmp(placeholder, "ANCHOR") == 0)
-  {
-    s_append_anchor(sym, out);
-  }
-  else if (strcmp(placeholder, "NAME") == 0)
-  {
-    x_strbuilder_append_substring(out, sym->name.ptr, sym->name.length);
-  }
-  else if (strcmp(placeholder, "KIND") == 0)
-  {
-    x_strbuilder_append(out, s_type_to_string(sym->type));
-  }
-  else if (strcmp(placeholder, "LINE") == 0)
-  {
-    char buf[32];
-    snprintf(buf, sizeof(buf), "%u", (unsigned) sym->line);
-    x_strbuilder_append(out, buf);
-  }
-  else if (strcmp(placeholder, "DECL") == 0)
-  {
-    XSlice t = x_slice_trim(sym->declaration);
-    x_strbuilder_append_substring(out, t.ptr, t.length);
-  }
-  else if (strcmp(placeholder, "BRIEF") == 0)
-  {
-    XSlice b = x_slice_trim(s_symbol_doc_brief(sym));
-    x_strbuilder_append_substring(out, b.ptr, b.length);
-  }
-  else if (strcmp(placeholder, "PARAMS_BLOCK") == 0)
-  {
-    s_render_params_block(sym, ctx->templates, out);
-  }
-  else if (strcmp(placeholder, "RETURN_BLOCK") == 0)
-  {
-    s_render_return_block(sym, ctx->templates, out);
-  }
-  else {
-    printf("Lookdig for placeholder: %s\n", placeholder);
-    // Config 
-  }
-}
-
-typedef struct
-{
-  const DoxterSymbol *symbol;
-} DoxIndexItemCtx;
-
-static void s_index_item_resolver(const char *placeholder,
-    void *user_data,
-    XStrBuilder *out)
-{
-  DoxIndexItemCtx *ctx = (DoxIndexItemCtx *) user_data;
-  const DoxterSymbol *sym = ctx->symbol;
-
-  if (strcmp(placeholder, "ANCHOR") == 0)
-  {
-    s_append_anchor(sym, out);
-  }
-  else if (strcmp(placeholder, "NAME") == 0)
-  {
-    x_strbuilder_append_substring(out, sym->name.ptr, sym->name.length);
-  }
-}
-
-typedef struct
-{
-  const char               *file_name;
-  const char               *output_name;
-  XArray                   *symbols; /* array of DoxterSymbol */
-  DoxterProject            *project;
+  u32             source_index;
+  DoxterProject   *project;
 } DoxIndexCtx;
 
-static void s_render_index_for_type(const DoxIndexCtx *ctx,
+static void s_render_index_for_type(DoxterProject *proj,
+    u32 source_index,
     DoxterType type,
     XStrBuilder *out)
 {
-  if (!ctx->project->templates.index_item_html)
-  {
-    return;
-  }
+  const DoxterSourceInfo* source = &(proj->sources[source_index]);
 
+  const u32 first = source->first_symbol_index;
+  const u32 count = first + source->num_symbols;
+  for (u32 symbol_i = first; symbol_i < count; symbol_i++)
   {
-    u32 count = x_array_count(ctx->symbols);
-    for (u32 i = 0; i < count; ++i)
+    DoxterSymbol *sym = (DoxterSymbol *) x_array_get(proj->symbols, symbol_i).ptr;
+
+    if (sym->name.length == 0)
     {
-      DoxterSymbol *sym = (DoxterSymbol *) x_array_get(ctx->symbols, i).ptr;
+      continue;
+    }
 
-      if (sym->name.length == 0)
-      {
-        continue;
-      }
+    if (sym->type != type)
+    {
+      continue;
+    }
 
-      if (sym->type != type)
-      {
-        continue;
-      }
+    {
+      DoxterTemplateCtx backup;
+      s_template_ctx_push(&backup);
+      s_template_ctx.role = DOX_TMPL_ROLE_INDEX_ITEM;
+      s_template_ctx.symbol = sym;
 
-      {
-        DoxIndexItemCtx item_ctx;
-        item_ctx.symbol = sym;
+      s_render_template(proj->templates.index_item_html,
+          proj,
+          source_index,
+          out);
 
-        s_render_template(ctx->project->templates.index_item_html,
-            s_index_item_resolver,
-            &item_ctx,
-            out);
-      }
+      s_template_ctx_pop(&backup);
     }
   }
 }
@@ -783,139 +536,31 @@ static void s_render_index_for_type(const DoxIndexCtx *ctx,
 // File list rendering for per-page navigation
 // --------------------------------------------------------
 
-static void s_file_item_resolver(const char *placeholder, void *user_data,
-    XStrBuilder *out)
+static void s_render_file_list(DoxterProject *proj, XStrBuilder *out)
 {
-  DoxterSourceInfo *ctx = (DoxterSourceInfo *) user_data;
-  const DoxterSourceInfo *m = ctx;
-
-  if (strcmp(placeholder, "MODULE_NAME") == 0)
-  {
-    if (m->base_name)
-    {
-      x_strbuilder_append(out, m->base_name);
-    }
-  }
-  else if (strcmp(placeholder, "MODULE_HREF") == 0)
-  {
-    if (m->output_name)
-    {
-      x_strbuilder_append(out, m->output_name);
-    }
-  }
-}
-
-static void s_render_file_list(const DoxIndexCtx *ctx, XStrBuilder *out)
-{
-  if (ctx->project->source_count == 0 ||
-      !ctx->project->templates.file_item_html)
+  if (proj->source_count == 0 || !proj->templates.file_item_html)
   {
     return;
   }
 
   {
     uint32_t i;
-    for (i = 0; i < ctx->project->source_count; ++i)
+    for (i = 0; i < proj->source_count; ++i)
     {
-      const DoxterSourceInfo* mctx = &ctx->project->sources[i];
-      s_render_template(ctx->project->templates.file_item_html,
-          s_file_item_resolver, &mctx, out);
+      const DoxterSourceInfo* mctx = &proj->sources[i];
+
+      DoxterTemplateCtx backup;
+      s_template_ctx_push(&backup);
+      s_template_ctx.role = DOX_TMPL_ROLE_FILE_ITEM;
+      s_template_ctx.source = mctx;
+
+      s_render_template(proj->templates.file_item_html,
+          proj,
+          s_template_ctx.source_index,
+          out);
+
+      s_template_ctx_pop(&backup);
     }
-  }
-}
-
-static void s_index_resolver(const char *placeholder,
-    void *user_data,
-    XStrBuilder *out)
-{
-  DoxIndexCtx *ctx = (DoxIndexCtx *) user_data;
-
-  if (strcmp(placeholder, "FILE_NAME") == 0)
-  {
-    x_strbuilder_append(out, ctx->file_name);
-  }
-  else if (strcmp(placeholder, "FILE_BRIEF") == 0)
-  {
-    DoxterSymbol* file_comment = (DoxterSymbol*) x_array_get(ctx->symbols, 0).ptr;
-    if (!file_comment)
-      return;
-    XSlice b = file_comment->comment;
-
-    const char* markdown = md_to_html(b.ptr, b.length);
-    u32 len = (u32) (markdown ? strlen(markdown) : 0);
-
-    if (b.length > 0)
-    {
-      //x_strbuilder_append_substring(out, b.ptr, b.length);
-      x_strbuilder_append_substring(out, markdown, len);
-    }
-    else
-    {
-      x_strbuilder_append(out, "Generated C API reference. Symbols documented with /** ... */ blocks.");
-    }
-  }
-  else if (strcmp(placeholder, "INDEX_ITEMS") == 0)
-  {
-    s_render_index_for_type(ctx, DOXTER_FUNCTION, out);
-    s_render_index_for_type(ctx, DOXTER_MACRO,    out);
-    s_render_index_for_type(ctx, DOXTER_STRUCT,   out);
-    s_render_index_for_type(ctx, DOXTER_ENUM,     out);
-    s_render_index_for_type(ctx, DOXTER_TYPEDEF,  out);
-  }
-  else if (strcmp(placeholder, "INDEX_FUNCTIONS") == 0)
-  {
-    s_render_index_for_type(ctx, DOXTER_FUNCTION, out);
-  }
-  else if (strcmp(placeholder, "INDEX_MACROS") == 0)
-  {
-    s_render_index_for_type(ctx, DOXTER_MACRO, out);
-  }
-  else if (strcmp(placeholder, "INDEX_STRUCTS") == 0)
-  {
-    s_render_index_for_type(ctx, DOXTER_STRUCT, out);
-  }
-  else if (strcmp(placeholder, "INDEX_ENUMS") == 0)
-  {
-    s_render_index_for_type(ctx, DOXTER_ENUM, out);
-  }
-  else if (strcmp(placeholder, "INDEX_TYPEDEFS") == 0)
-  {
-    s_render_index_for_type(ctx, DOXTER_TYPEDEF, out);
-  }
-  else if (strcmp(placeholder, "SYMBOLS") == 0)
-  {
-    if (!ctx->project->templates.symbol_html)
-    {
-      return;
-    }
-
-    {
-      u32 count = x_array_count(ctx->symbols);
-      for (u32 i = 0; i < count; ++i)
-      {
-        DoxterSymbol *sym = (DoxterSymbol *) x_array_get(ctx->symbols, i).ptr;
-
-        if (sym->name.length == 0)
-        {
-          continue;
-        }
-
-        {
-          DoxSymbolCtx sym_ctx;
-          sym_ctx.symbol    = sym;
-          sym_ctx.templates = &ctx->project->templates;
-
-          s_render_template(ctx->project->templates.symbol_html,
-              s_symbol_resolver,
-              &sym_ctx,
-              out);
-        }
-      }
-    }
-  }
-  else if (strcmp(placeholder, "MODULE_LIST") == 0)
-  {
-    s_render_file_list(ctx, out);
   }
 }
 
@@ -923,124 +568,392 @@ static void s_index_resolver(const char *placeholder,
 // Project index rendering
 // --------------------------------------------------------
 
-static void s_project_file_item_resolver(const char *placeholder,
-    void *user_data,
+static void s_render_project_file_list(DoxterProject *proj,
     XStrBuilder *out)
 {
-  const DoxterSourceInfo *m = (DoxterSourceInfo*) user_data;
+  if (!proj->templates.project_file_item_html || proj->source_count == 0)
+    return;
 
-  if (strcmp(placeholder, "MODULE_NAME") == 0)
+  for (u32 i = 0; i < proj->source_count; ++i)
   {
-    if (m->path)
-    {
-      x_strbuilder_append(out, m->path);
-    }
-  }
-  else if (strcmp(placeholder, "MODULE_HREF") == 0)
-  {
-    if (m->output_name)
-    {
-      x_strbuilder_append(out, m->output_name);
-    }
+    const DoxterSourceInfo* mctx = &(proj->sources[i]);
+
+    DoxterTemplateCtx backup;
+    s_template_ctx_push(&backup);
+    s_template_ctx.role = DOX_TMPL_ROLE_PROJECT_FILE_ITEM;
+    s_template_ctx.source = mctx;
+
+    s_render_template(proj->templates.project_file_item_html,
+        proj,
+        s_template_ctx.source_index,
+        out);
+
+    s_template_ctx_pop(&backup);
   }
 }
 
-static void s_render_project_file_list(const DoxterProject *ctx,
+/**
+ * Finds the apropriate value for replacing the template's placeholder and
+ * outputs it to the passed in StringBuilder.
+ */
+static void s_template_resolve_placeholder(const char *placeholder,
+    DoxterProject *project,
+    u32 source_index,
     XStrBuilder *out)
 {
-  uint32_t i;
+  const DoxterSourceInfo* source = NULL;
 
-  if (!ctx->templates.project_file_item_html || ctx->source_count == 0)
+  if (project && project->source_count > 0 && source_index < project->source_count)
   {
+    source = &project->sources[source_index];
+  }
+
+  /* Param item */
+  if (strcmp(placeholder, "PARAM_NAME") == 0)
+  {
+    x_strbuilder_append_substring(out,
+        s_template_ctx.param_name.ptr,
+        s_template_ctx.param_name.length);
     return;
   }
 
-  for (i = 0; i < ctx->source_count; ++i)
+  if (strcmp(placeholder, "PARAM_DESC") == 0)
   {
-    const DoxterSourceInfo* mctx;
-    mctx = &(ctx->sources[i]);
-
-    s_render_template(ctx->templates.project_file_item_html,
-        s_project_file_item_resolver,
-        &mctx,
-        out);
+    x_strbuilder_append_substring(out,
+        s_template_ctx.param_desc.ptr,
+        s_template_ctx.param_desc.length);
+    return;
   }
-}
 
-static void s_project_index_resolver(const char *placeholder,
-    void *user_data,
-    XStrBuilder *out)
-{
-  DoxterProject *ctx = (DoxterProject *) user_data;
+  /* Params block */
+  if (strcmp(placeholder, "PARAMS_ITEMS") == 0)
+  {
+    x_strbuilder_append_substring(out,
+        s_template_ctx.params_items.ptr,
+        s_template_ctx.params_items.length);
+    return;
+  }
+
+  /* Return block */
+  if (strcmp(placeholder, "RETURN_DESC") == 0)
+  {
+    x_strbuilder_append_substring(out,
+        s_template_ctx.return_desc.ptr,
+        s_template_ctx.return_desc.length);
+    return;
+  }
+
+  /* File item (side bar / lists) */
+  if (strcmp(placeholder, "MODULE_NAME") == 0)
+  {
+    if (s_template_ctx.source && s_template_ctx.source->base_name)
+    {
+      x_strbuilder_append(out, s_template_ctx.source->base_name);
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "MODULE_HREF") == 0)
+  {
+    if (s_template_ctx.source && s_template_ctx.source->output_name)
+    {
+      x_strbuilder_append(out, s_template_ctx.source->output_name);
+    }
+    return;
+  }
+
+  /* CSS */
+  if (s_template_ctx.role == DOX_TMPL_ROLE_STYLE_CSS && s_template_ctx.config)
+  {
+    const DoxterConfig *cfg = s_template_ctx.config;
+
+    if (strcmp(placeholder, "COLOR_PAGE_BACKGROUND") == 0)
+    {
+      x_strbuilder_append(out, cfg->color_page_background);
+      return;
+    }
+    if (strcmp(placeholder, "COLOR_SIDEBAR_BACKGROUND") == 0)
+    {
+      x_strbuilder_append(out, cfg->color_sidebar_background);
+      return;
+    }
+    if (strcmp(placeholder, "COLOR_MAIN_TEXT") == 0)
+    {
+      x_strbuilder_append(out, cfg->color_main_text);
+      return;
+    }
+    if (strcmp(placeholder, "COLOR_SECONDARY_TEXT") == 0)
+    {
+      x_strbuilder_append(out, cfg->color_secondary_text);
+      return;
+    }
+    if (strcmp(placeholder, "COLOR_HIGHLIGHT") == 0)
+    {
+      x_strbuilder_append(out, cfg->color_highlight);
+      return;
+    }
+    if (strcmp(placeholder, "COLOR_LIGHT_BORDERS") == 0)
+    {
+      x_strbuilder_append(out, cfg->color_light_borders);
+      return;
+    }
+    if (strcmp(placeholder, "COLOR_CODE_BLOCKS") == 0)
+    {
+      x_strbuilder_append(out, cfg->color_code_blocks);
+      return;
+    }
+    if (strcmp(placeholder, "COLOR_CODE_BLOCK_BORDER") == 0)
+    {
+      x_strbuilder_append(out, cfg->color_code_block_border);
+      return;
+    }
+    if (strcmp(placeholder, "MONO_FONTS") == 0)
+    {
+      x_strbuilder_append(out, cfg->mono_fonts);
+      return;
+    }
+    if (strcmp(placeholder, "SERIF_FONTS") == 0)
+    {
+      x_strbuilder_append(out, cfg->serif_fonts);
+      return;
+    }
+    if (strcmp(placeholder, "BORDER_RADIUS") == 0)
+    {
+      x_strbuilder_append_format(out, "%d", cfg->border_radius);
+      return;
+    }
+
+    printf("Unknown key for css file: '%s'\n", placeholder);
+    return;
+  }
+
+  /* File index page / project page */
+  if (strcmp(placeholder, "FILE_NAME") == 0)
+  {
+    if (s_template_ctx.role == DOX_TMPL_ROLE_PROJECT_INDEX)
+    {
+      x_strbuilder_append(out, "Symbols");
+    }
+    else if (source && source->base_name)
+    {
+      x_strbuilder_append(out, source->base_name);
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "TITLE") == 0)
+  {
+    if (s_template_ctx.role == DOX_TMPL_ROLE_PROJECT_INDEX)
+    {
+      x_strbuilder_append(out, "Symbols");
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "FILE_BRIEF") == 0)
+  {
+    if (!source)
+    {
+      return;
+    }
+
+    DoxterSymbol* file_comment =
+      (DoxterSymbol*) x_array_get(project->symbols, source->first_symbol_index).ptr;
+
+    if (!file_comment)
+    {
+      return;
+    }
+
+    XSlice b = file_comment->comment;
+    const char* markdown = md_to_html(b.ptr, b.length);
+    u32 len = (u32) (markdown ? strlen(markdown) : 0);
+
+    if (b.length > 0)
+    {
+      x_strbuilder_append_substring(out, markdown, len);
+    }
+    else
+    {
+      x_strbuilder_append(out,
+          "Generated C API reference. Symbols documented with /** ... */ blocks.");
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "INDEX_ITEMS") == 0)
+  {
+    s_render_index_for_type(project, source_index, DOXTER_FUNCTION, out);
+    s_render_index_for_type(project, source_index, DOXTER_MACRO,    out);
+    s_render_index_for_type(project, source_index, DOXTER_STRUCT,   out);
+    s_render_index_for_type(project, source_index, DOXTER_ENUM,     out);
+    s_render_index_for_type(project, source_index, DOXTER_TYPEDEF,  out);
+    return;
+  }
+
+  if (strcmp(placeholder, "INDEX_FUNCTIONS") == 0)
+  {
+    s_render_index_for_type(project, source_index, DOXTER_FUNCTION, out);
+    return;
+  }
+
+  if (strcmp(placeholder, "INDEX_MACROS") == 0)
+  {
+    s_render_index_for_type(project, source_index, DOXTER_MACRO, out);
+    return;
+  }
+
+  if (strcmp(placeholder, "INDEX_STRUCTS") == 0)
+  {
+    s_render_index_for_type(project, source_index, DOXTER_STRUCT, out);
+    return;
+  }
+
+  if (strcmp(placeholder, "INDEX_ENUMS") == 0)
+  {
+    s_render_index_for_type(project, source_index, DOXTER_ENUM, out);
+    return;
+  }
+
+  if (strcmp(placeholder, "INDEX_TYPEDEFS") == 0)
+  {
+    s_render_index_for_type(project, source_index, DOXTER_TYPEDEF, out);
+    return;
+  }
+
+  if (strcmp(placeholder, "SYMBOLS") == 0)
+  {
+    if (!source || !project->templates.symbol_html)
+    {
+      return;
+    }
+
+    const u32 first = source->first_symbol_index;
+    const u32 count = first + source->num_symbols;
+    for (u32 symbol_i = first; symbol_i < count; symbol_i++)
+    {
+      DoxterSymbol *sym = (DoxterSymbol *) x_array_get(project->symbols, symbol_i).ptr;
+
+      if (sym->name.length == 0)
+      {
+        continue;
+      }
+
+      {
+        DoxterTemplateCtx backup;
+        s_template_ctx_push(&backup);
+        s_template_ctx.role = DOX_TMPL_ROLE_SYMBOL;
+        s_template_ctx.symbol = sym;
+
+        s_render_template(project->templates.symbol_html,
+            project,
+            source_index,
+            out);
+
+        s_template_ctx_pop(&backup);
+      }
+    }
+    return;
+  }
 
   if (strcmp(placeholder, "MODULE_LIST") == 0)
   {
-    s_render_project_file_list(ctx, out);
+    if (s_template_ctx.role == DOX_TMPL_ROLE_PROJECT_INDEX)
+    {
+      s_render_project_file_list(project, out);
+    }
+    else
+    {
+      s_render_file_list(project, out);
+    }
+    return;
   }
-  else if (strcmp(placeholder, "TITLE") == 0 ||
-      strcmp(placeholder, "FILE_NAME") == 0)
+
+  /* Symbol / index item */
+  if (strcmp(placeholder, "ANCHOR") == 0)
   {
-    /* Simple default title; template can ignore if not needed */
-    x_strbuilder_append(out, "API Index");
+    if (s_template_ctx.symbol)
+    {
+      s_append_anchor(s_template_ctx.symbol, out);
+    }
+    return;
   }
+
+  if (strcmp(placeholder, "NAME") == 0)
+  {
+    if (s_template_ctx.symbol)
+    {
+      x_strbuilder_append_substring(out,
+          s_template_ctx.symbol->name.ptr,
+          s_template_ctx.symbol->name.length);
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "KIND") == 0)
+  {
+    if (s_template_ctx.symbol)
+    {
+      x_strbuilder_append(out, s_type_to_string(s_template_ctx.symbol->type));
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "LINE") == 0)
+  {
+    if (s_template_ctx.symbol)
+    {
+      char buf[32];
+      snprintf(buf, sizeof(buf), "%u", (unsigned) s_template_ctx.symbol->line);
+      x_strbuilder_append(out, buf);
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "DECL") == 0)
+  {
+    if (s_template_ctx.symbol)
+    {
+      XSlice t = x_slice_trim(s_template_ctx.symbol->declaration);
+      x_strbuilder_append_substring(out, t.ptr, t.length);
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "BRIEF") == 0)
+  {
+    if (s_template_ctx.symbol)
+    {
+      XSlice b = x_slice_trim(s_symbol_doc_brief(s_template_ctx.symbol));
+      x_strbuilder_append_substring(out, b.ptr, b.length);
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "PARAMS_BLOCK") == 0)
+  {
+    if (s_template_ctx.symbol)
+    {
+      s_render_params_block(s_template_ctx.symbol, &project->templates, out);
+    }
+    return;
+  }
+
+  if (strcmp(placeholder, "RETURN_BLOCK") == 0)
+  {
+    if (s_template_ctx.symbol)
+    {
+      s_render_return_block(s_template_ctx.symbol, &project->templates, out);
+    }
+    return;
+  }
+
+  doxter_error("Unknown template placeholder: %s\n", placeholder);
 }
 
-static void s_project_css_resolver(const char *placeholder,
-    void *user_data,
-    XStrBuilder *out)
-{
-  DoxterConfig *cfg = (DoxterConfig *) user_data;
-
-  if (strcmp(placeholder, "COLOR_PAGE_BACKGROUND") == 0)
-  {
-    x_strbuilder_append(out,  cfg->color_page_background);
-  }
-  else if (strcmp(placeholder, "COLOR_SIDEBAR_BACKGROUND") == 0)
-  {
-    x_strbuilder_append(out,  cfg->color_sidebar_background);
-  }
-  else if (strcmp(placeholder, "COLOR_MAIN_TEXT") == 0)
-  {
-    x_strbuilder_append(out,  cfg->color_main_text);
-  }
-  else if (strcmp(placeholder, "COLOR_SECONDARY_TEXT") == 0)
-  {
-    x_strbuilder_append(out,  cfg->color_secondary_text);
-  }
-  else if (strcmp(placeholder, "COLOR_HIGHLIGHT") == 0)
-  {
-    x_strbuilder_append(out,  cfg->color_highlight);
-  }
-  else if (strcmp(placeholder, "COLOR_LIGHT_BORDERS") == 0)
-  {
-    x_strbuilder_append(out,  cfg->color_light_borders);
-  }
-  else if (strcmp(placeholder, "COLOR_CODE_BLOCKS") == 0)
-  {
-    x_strbuilder_append(out,  cfg->color_code_blocks);
-  }
-  else if (strcmp(placeholder, "COLOR_CODE_BLOCK_BORDER") == 0)
-  {
-    x_strbuilder_append(out,  cfg->color_code_block_border);
-  }
-  else if (strcmp(placeholder, "MONO_FONTS") == 0)
-  {
-    x_strbuilder_append(out,  cfg->mono_fonts);
-  }
-  else if (strcmp(placeholder, "SERIF_FONTS") == 0)
-  {
-    x_strbuilder_append(out,  cfg->serif_fonts);
-  }
-  else if (strcmp(placeholder, "BORDER_RADIUS") == 0)
-  {
-    x_strbuilder_append_format(out, "%d", cfg->border_radius);
-  }
-  else 
-  {
-    printf("Unknown key for css file: '%s'\n", placeholder);
-  }
-}
-
+/**
+ * Loads the doxter.ini (or whatever name passed by the user)
+ */
 static bool s_load_doxter_file(const char* path, DoxterConfig* cfg)
 {
   XIni ini;
@@ -1095,6 +1008,9 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* cfg)
   return true;
 }
 
+/**
+ * Parse the command line
+ */
 static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
 {
   memset(out, 0, sizeof(DoxterCmdLine));
@@ -1194,15 +1110,15 @@ static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
   return true;
 }
 
+/**
+ * Creates a DoxterProject instance
+ */
 static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
 {
-  // We allocate an arena, place a DoxterProject in it and keep a pointer to the
-  // arena inside of the DoxterProject struct. To deallocate the DoxterProject
-  // we must actually free the arena.
+  const size_t arena_size = 1024 * 1024 * 4; // big enough arena size.
 
-  const size_t arena_size = 1024 * 1024 * 4; // big enough
   XArena* arena = x_arena_create(arena_size);
-  DoxterProject* proj = x_arena_alloc(arena, sizeof(DoxterProject));
+  DoxterProject* proj = (DoxterProject*) malloc (sizeof(DoxterProject));
   proj->scratch                                 = arena;
   proj->symbol_map                              = x_hashtable_create(XSlice, DoxterSymbol);
   proj->symbols                                 = x_array_create(sizeof(DoxterSymbol), 256);
@@ -1234,7 +1150,16 @@ static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
     s_load_doxter_file(args->doxter_file, &proj->config);
 
   // Load templates
-  s_load_templates(&proj->templates);
+  proj->templates.project_index_html   = (char*) PROJECT_INDEX_HTML;
+  proj->templates.file_index_html      = (char*) MODULE_INDEX_HTML;
+  proj->templates.symbol_html          = (char*) SYMBOL_HTML;
+  proj->templates.index_item_html      = (char*) INDEX_ITEM_HTML;
+  proj->templates.style_css            = (char*) STYLE_CSS ;
+  proj->templates.project_file_item_html = (char*) PROJECT_MODULE_ITEM_HTML ;
+  proj->templates.params_html          = (char*) PARAMS_HTML;
+  proj->templates.param_item_html      = (char*) PARAM_ITEM_HTML;
+  proj->templates.return_html          = (char*) RETURN_HTML;
+  proj->templates.file_item_html       = (char*) MODULE_ITEM_HTML;
   memset(&proj->sources, 0, sizeof(proj->sources));
 
   // Add source files to project
@@ -1246,23 +1171,18 @@ static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
       fprintf(stderr, "Warning: could not record file '%s'\n", f);
     }
   }
-
   return proj;
 }
 
+/**
+ * Destroys a DoxterProject instance
+ */
 static void s_doxter_project_destroy(DoxterProject* proj)
 {
-  for (u32 i = 0; i < proj->source_count; ++i)
-  {
-    free(proj->sources[i].path);
-    free(proj->sources[i].base_name);
-    free(proj->sources[i].output_name);
-  }
-
   x_arena_destroy(proj->scratch);
   x_array_destroy(proj->tokens);
   x_hashtable_destroy(proj->symbol_map);
-  memset(proj, 0, sizeof(DoxterProject));
+  free(proj);
 }
 
 // --------------------------------------------------------
@@ -1274,7 +1194,7 @@ int main(int argc, char **argv)
   DoxterCmdLine args;
   bool had_error = false;
   XStrBuilder *sb;
-  //XFSPath full_path;
+  XFSPath full_path;
 
   if (!s_cmdline_parse(argc, argv, &args))
     return 1;
@@ -1286,13 +1206,13 @@ int main(int argc, char **argv)
   x_fs_path(&out_dir, args.output_directory);
   if (! x_fs_path_exists(&out_dir) && !x_fs_directory_create_recursive(args.output_directory))
   {
-    printf("Failed to create directory '%s'\n", args.output_directory);
+    doxter_error("Failed to create directory '%s'\n", args.output_directory);
     return 1;
   }
 
   if (! x_fs_is_directory(args.output_directory))
   {
-    printf("Path exists and is not a directory '%s'\n", args.output_directory);
+    doxter_error("Path exists and is not a directory '%s'\n", args.output_directory);
     return 1;
   }
 
@@ -1301,19 +1221,22 @@ int main(int argc, char **argv)
   // --------------------------------------------------------
   // Parse all files, collect symbols and comments
   // --------------------------------------------------------
-  for (u32 argi = 0; argi < proj->source_count; argi++)
+  for (u32 arg_i = 0; arg_i < proj->source_count; arg_i++)
   {
-    printf("-- %d ", argi);
-    doxter_source_symbols_collect(argi, proj);
+    const char* path = proj->sources[arg_i].path;
+    doxter_info("Parsing %s\n", path);
+    i32 count = doxter_source_parse(proj, arg_i);
+    if (count < 0)
+      doxter_error("Error parsing %s. Failed to open file.", path);
   }
 
   // --------------------------------------------------------
   // Save each symbol from each source into the stdx_hashtable
-  // for cross reference.
+  // for cross links later.
   // --------------------------------------------------------
-  for (u32 i_source = 0; i_source < proj->source_count; i_source++)
+  for (u32 source_i = 0; source_i < proj->source_count; source_i++)
   {
-    DoxterSourceInfo* source_info = &(proj->sources[i_source]);
+    DoxterSourceInfo* source_info = &(proj->sources[source_i]);
     for (u32 i_symbol = source_info->first_symbol_index;
         i_symbol < source_info->num_symbols;
         i_symbol++)
@@ -1334,21 +1257,8 @@ int main(int argc, char **argv)
     }
   }
 
-  XHashtableIter it;
-  const XSlice *key;
-  const DoxterSymbol* value;
-
-  x_hashtable_iter_begin(proj->symbol_map, &it);
-  while (x_hashtable_iter_next(&it, (void**) &key, (void**) &value))
-  {
-    doxter_info("Key = '%.*s', value = '%s'\n",
-        (u32) key->length, key->ptr, value->anchor.buf);
-  }
-
-  return 0; // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#if 0
   // --------------------------------------------------------
-  // process each header and generate its HTML page
+  // process each header and generate corresponding HTML page
   // --------------------------------------------------------
 
   sb = x_strbuilder_create();
@@ -1358,117 +1268,85 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  //x_array_clear(proj->symbols);
-  for (u32 argi = 0; argi < args.num_input_files; ++argi)
+  for (u32 source_i = 0; source_i < proj->source_count; source_i++)
   {
-    const char *source_path = args.input_files[argi];
-    size_t file_size = 0;
-    char *input = x_io_read_text(source_path, &file_size);
-
-    if (!input)
-    {
-      fprintf(stderr, "Failed to read '%s'\n", source_path);
-      had_error = true;
-      continue;
-    }
-
-    // --------------------------------------------------------
-    // Collect symbols for current source
-    // --------------------------------------------------------
-    XSlice source = x_slice_init(input, file_size);
-    //x_array_clear(proj->symbols);
-    doxter_source_symbols_collect(source, proj, array);
-
-    // --------------------------------------------------------
-    // Render templares per project file
-    // --------------------------------------------------------
-
-    DoxterSourceInfo* m = &(proj->sources[argi]);
+    const DoxterSourceInfo* source =
+      (const DoxterSourceInfo*) &proj->sources[source_i];
 
     x_strbuilder_clear(sb);
-    if (!sb)
-    {
-      fprintf(stderr, "Failed to create string builder\n");
-      free(input);
-      had_error = true;
-      break;
-    }
+
+    // --------------------------------------------------------
+    // Render templates per project file
+    // --------------------------------------------------------
 
     DoxIndexCtx ctx;
-    ctx.file_name    = m->base_name;
-    ctx.output_name  = m->output_name;
-    ctx.symbols      = array;
     ctx.project      = proj;
+    ctx.source_index = source_i;
 
     s_render_template(proj->templates.file_index_html,
-        s_index_resolver,
-        &ctx,
+        proj,
+        source_i,
         sb);
 
     char *html = x_strbuilder_to_string(sb);
-    x_fs_path(&full_path, args.output_directory, m->output_name);
+    x_fs_path(&full_path, args.output_directory, source->output_name);
     if (!x_io_write_text(full_path.buf, html))
     {
       fprintf(stderr, "Failed to write output file '%s'\n", full_path.buf);
       had_error = true;
     }
-
-    free(input);
   }
 
   // --------------------------------------------------------
   // Generate main project index.html
   // --------------------------------------------------------
+  x_strbuilder_clear(sb);
   {
-    x_strbuilder_clear(sb);
-    if (!sb)
+    DoxterTemplateCtx backup;
+    s_template_ctx_push(&backup);
+    s_template_ctx.role = DOX_TMPL_ROLE_PROJECT_INDEX;
+    s_render_template(proj->templates.project_index_html,
+        proj,
+        0,
+        sb);
+    s_template_ctx_pop(&backup);
+  }
+
+  char *html = x_strbuilder_to_string(sb);
+  x_fs_path(&full_path, args.output_directory, "index.html");
+  if (!x_io_write_text(full_path.buf, html))
+  {
+    fprintf(stderr,
+        "Failed to write project index file '%s'\\n", full_path.buf);
+    had_error = true;
+  }
+
+  // --------------------------------------------------------
+  // Generate CSS file
+  // --------------------------------------------------------
+
+  x_strbuilder_clear(sb);
+  {
+    DoxterTemplateCtx backup;
+    s_template_ctx_push(&backup);
+    s_template_ctx.role = DOX_TMPL_ROLE_STYLE_CSS;
+    s_template_ctx.config = &proj->config;
+    s_render_template(proj->templates.style_css,
+        proj,
+        0,
+        sb);
+    s_template_ctx_pop(&backup);
+  }
+  {
+    char *css = x_strbuilder_to_string(sb);
+    x_fs_path(&full_path, args.output_directory, "style.css");
+    if (!x_io_write_text(full_path.buf, css))
     {
-      fprintf(stderr, "Failed to create string builder for project index\n");
+      fprintf(stderr, "Failed to write project css file '%s'\\n", full_path.buf);
       had_error = true;
     }
-    else
-    {
-      //DoxterProject pctx;
-      //pctx.sources   = proj->sources;
-      //pctx.templates = proj->templates;
-
-      s_render_template(proj->templates.project_index_html,
-          s_project_index_resolver, proj, sb);
-
-      {
-        char *html = x_strbuilder_to_string(sb);
-        x_fs_path(&full_path, args.output_directory, "index.html");
-        if (!x_io_write_text(full_path.buf, html))
-        {
-          fprintf(stderr,
-              "Failed to write project index file '%s'\\n", full_path.buf);
-          had_error = true;
-        }
-      }
-
-      // --------------------------------------------------------
-      // Generate CSS file
-      // --------------------------------------------------------
-
-      x_strbuilder_clear(sb);
-      s_render_template(proj->templates.style_css,
-          s_project_css_resolver,
-          &proj->config,
-          sb);
-      {
-        char *css = x_strbuilder_to_string(sb);
-        x_fs_path(&full_path, args.output_directory, "style.css");
-        if (!x_io_write_text(full_path.buf, css))
-        {
-          fprintf(stderr, "Failed to write project css file '%s'\\n", full_path.buf);
-          had_error = true;
-        }
-      }
-
-    }
   }
-  x_array_destroy(array);
-#endif
+
   x_strbuilder_destroy(sb);
   s_doxter_project_destroy(proj);
 

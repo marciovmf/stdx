@@ -10,13 +10,15 @@
 #include <stdbool.h>
 #include <string.h>
 
-typedef struct DoxterTokenState
+typedef struct DoxterTokenizer
 {
   XSlice input;
-  bool at_bol;      // beginning of line (after newline)
-  bool in_pp;       // currently tokenizing a preprocessor directive
-  bool pp_line_continuation; // last returned token was "\" while in_pp
-} DoxterTokenState;
+  uint32_t line;
+  uint32_t column;
+  bool at_bol;                // beginning of line (after newline)
+  bool in_pp;                 // currently tokenizing a preprocessor directive
+  bool pp_line_continuation;  // last returned token was "\" while in_pp
+} DoxterTokenizer;
 
 static XSlice s_cleanup_comment(XSlice comment)
 {
@@ -75,12 +77,12 @@ static XSlice s_cleanup_comment(XSlice comment)
   return comment;
 }
 
-static bool s_is_space(char c)
+static bool s_char_is_space(char c)
 {
   return c == ' ' || c == '\t' || c == '\r' || c == '\n' || c == '\f' || c == '\v';
 }
 
-static bool s_is_ident_start(char c)
+static bool s_char_is_ident_start(char c)
 {
   if (c >= 'a' && c <= 'z') return true;
   if (c >= 'A' && c <= 'Z') return true;
@@ -88,35 +90,41 @@ static bool s_is_ident_start(char c)
   return false;
 }
 
-static bool s_is_ident_char(char c)
+static bool s_char_is_ident_char(char c)
 {
-  if (s_is_ident_start(c)) return true;
+  if (s_char_is_ident_start(c)) return true;
   if (c >= '0' && c <= '9') return true;
   return false;
 }
 
-static void s_advance(DoxterTokenState* s, size_t n)
+static void s_tokenizer_advance(DoxterTokenizer* s, size_t n)
 {
   if (n > s->input.length)
   {
     n = s->input.length;
   }
+
+  for (size_t i = 0; i < n; i++)
+  {
+    char c = s->input.ptr[i];
+    if (c == '\n')
+    {
+      s->line++;
+      s->column = 1;
+      s->at_bol = true;
+    }
+    else
+    {
+      s->column++;
+    }
+  }
+
   s->input.ptr += n;
   s->input.length -= n;
 }
 
-static bool s_starts_with(XSlice in, const char* lit)
-{
-  size_t n = strlen(lit);
-  if (in.length < n)
-  {
-    return false;
-  }
-  return memcmp(in.ptr, lit, n) == 0;
-}
-
 /* Skips whitespace and non-doc comments. Updates at_bol/in_pp state. */
-static void s_skip_trivia(DoxterTokenState* s)
+static void s_tokenizer_skip_trivia(DoxterTokenizer* s)
 {
   for (;;)
   {
@@ -129,7 +137,7 @@ static void s_skip_trivia(DoxterTokenState* s)
     char c = s->input.ptr[0];
 
     /* Whitespace */
-    if (s_is_space(c))
+    if (s_char_is_space(c))
     {
       if (c == '\n')
       {
@@ -140,17 +148,17 @@ static void s_skip_trivia(DoxterTokenState* s)
         s->at_bol = true;
       }
 
-      s_advance(s, 1);
+      s_tokenizer_advance(s, 1);
       continue;
     }
 
     /* Line comment */
     if (s->input.length >= 2 && s->input.ptr[0] == '/' && s->input.ptr[1] == '/')
     {
-      s_advance(s, 2);
+      s_tokenizer_advance(s, 2);
       while (s->input.length > 0 && s->input.ptr[0] != '\n')
       {
-        s_advance(s, 1);
+        s_tokenizer_advance(s, 1);
       }
       continue;
     }
@@ -164,15 +172,15 @@ static void s_skip_trivia(DoxterTokenState* s)
         return;
       }
 
-      s_advance(s, 2);
+      s_tokenizer_advance(s, 2);
       while (s->input.length > 0)
       {
         if (s->input.length >= 2 && s->input.ptr[0] == '*' && s->input.ptr[1] == '/')
         {
-          s_advance(s, 2);
+          s_tokenizer_advance(s, 2);
           break;
         }
-        s_advance(s, 1);
+        s_tokenizer_advance(s, 1);
       }
       continue;
     }
@@ -182,20 +190,20 @@ static void s_skip_trivia(DoxterTokenState* s)
 }
 
 /* Returns a doc comment token starting at "/ * *". Advances past it. */
-static DoxterToken s_read_doc_comment(DoxterTokenState* s)
+static DoxterToken s_tokenizer_read_doc_comment(DoxterTokenizer* s)
 {
   const char* start = s->input.ptr;
   size_t len = 0;
 
   // Consume '/**' 
-  s_advance(s, 3);
+  s_tokenizer_advance(s, 3);
   len += 3;
 
   while (s->input.length > 0)
   {
     if (s->input.length >= 2 && s->input.ptr[0] == '*' && s->input.ptr[1] == '/')
     {
-      s_advance(s, 2);
+      s_tokenizer_advance(s, 2);
       len += 2;
       break;
     }
@@ -206,7 +214,7 @@ static DoxterToken s_read_doc_comment(DoxterTokenState* s)
       s->at_bol = true;
     }
 
-    s_advance(s, 1);
+    s_tokenizer_advance(s, 1);
     len += 1;
   }
 
@@ -219,13 +227,13 @@ static DoxterToken s_read_doc_comment(DoxterTokenState* s)
 }
 
 /* Reads a string or char literal as a single token. */
-static DoxterToken s_read_quoted(DoxterTokenState* s, DoxterTokenKind kind, char quote)
+static DoxterToken s_tokenizer_read_quoted(DoxterTokenizer* s, DoxterTokenKind kind, char quote)
 {
   const char* start = s->input.ptr;
   size_t len = 0;
 
   /* Consume opening quote */
-  s_advance(s, 1);
+  s_tokenizer_advance(s, 1);
   len += 1;
 
   bool escape = false;
@@ -234,7 +242,7 @@ static DoxterToken s_read_quoted(DoxterTokenState* s, DoxterTokenKind kind, char
   {
     char c = s->input.ptr[0];
 
-    s_advance(s, 1);
+    s_tokenizer_advance(s, 1);
     len += 1;
 
     if (escape)
@@ -268,14 +276,14 @@ static DoxterToken s_read_quoted(DoxterTokenState* s, DoxterTokenKind kind, char
   return t;
 }
 
-static DoxterToken s_read_ident(DoxterTokenState* s)
+static DoxterToken s_tokenizer_read_ident(DoxterTokenizer* s)
 {
   const char* start = s->input.ptr;
   size_t len = 0;
 
-  while (s->input.length > 0 && s_is_ident_char(s->input.ptr[0]))
+  while (s->input.length > 0 && s_char_is_ident_char(s->input.ptr[0]))
   {
-    s_advance(s, 1);
+    s_tokenizer_advance(s, 1);
     len += 1;
   }
 
@@ -287,7 +295,7 @@ static DoxterToken s_read_ident(DoxterTokenState* s)
   return t;
 }
 
-static DoxterToken s_read_number(DoxterTokenState* s)
+static DoxterToken s_tokenizer_read_number(DoxterTokenizer* s)
 {
   const char* start = s->input.ptr;
   size_t len = 0;
@@ -297,7 +305,7 @@ static DoxterToken s_read_number(DoxterTokenState* s)
     char c = s->input.ptr[0];
     if ((c >= '0' && c <= '9') || c == '.' || c == 'x' || c == 'X' || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F') || c == 'u' || c == 'U' || c == 'l' || c == 'L')
     {
-      s_advance(s, 1);
+      s_tokenizer_advance(s, 1);
       len += 1;
       continue;
     }
@@ -312,11 +320,11 @@ static DoxterToken s_read_number(DoxterTokenState* s)
   return t;
 }
 
-static DoxterToken s_read_macro_directive(DoxterTokenState* s)
+static DoxterToken s_tokenizer_read_macro_directive(DoxterTokenizer* s)
 {
   const char* start = s->input.ptr;
 
-  s_advance(s, 1); /* '#' */
+  s_tokenizer_advance(s, 1); /* '#' */
 
   while (s->input.length > 0)
   {
@@ -327,7 +335,7 @@ static DoxterToken s_read_macro_directive(DoxterTokenState* s)
     }
     if (c == ' ' || c == '\t' || c == '\r' || c == '\f' || c == '\v')
     {
-      s_advance(s, 1);
+      s_tokenizer_advance(s, 1);
       continue;
     }
     break;
@@ -336,9 +344,9 @@ static DoxterToken s_read_macro_directive(DoxterTokenState* s)
   const char* name_start = s->input.ptr;
   size_t name_len = 0;
 
-  while (s->input.length > 0 && s_is_ident_char(s->input.ptr[0]))
+  while (s->input.length > 0 && s_char_is_ident_char(s->input.ptr[0]))
   {
-    s_advance(s, 1);
+    s_tokenizer_advance(s, 1);
     name_len++;
   }
 
@@ -354,7 +362,7 @@ static DoxterToken s_read_macro_directive(DoxterTokenState* s)
   return t;
 }
 
-static DoxterToken s_read_punct(DoxterTokenState* s)
+static DoxterToken s_tokenizer_read_punct(DoxterTokenizer* s)
 {
   const char* start = s->input.ptr;
   size_t len = 1;
@@ -382,7 +390,7 @@ static DoxterToken s_read_punct(DoxterTokenState* s)
     }
   }
 
-  s_advance(s, len);
+  s_tokenizer_advance(s, len);
 
   DoxterToken t;
   t.kind = DOXTER_PUNCT;
@@ -393,11 +401,20 @@ static DoxterToken s_read_punct(DoxterTokenState* s)
 }
 
 /* returns next token (or END). */
-static DoxterToken doxter_next_token(DoxterTokenState* s)
+static DoxterToken s_tokenizer_next_token(DoxterTokenizer* s, uint32_t* out_line, uint32_t* out_col)
 {
   for (;;)
   {
-    s_skip_trivia(s);
+    s_tokenizer_skip_trivia(s);
+
+    if (out_line)
+    {
+      *out_line = s->line;
+    }
+    if (out_col)
+    {
+      *out_col = s->column;
+    }
 
     if (s->input.length == 0)
     {
@@ -409,12 +426,12 @@ static DoxterToken doxter_next_token(DoxterTokenState* s)
     }
 
     /* Doc comment tokenization: must be returned whole */
-    if (s_starts_with(s->input, "/**"))
+    if (x_slice_starts_with_cstr(s->input, "/**"))
     {
-      return s_read_doc_comment(s);
+      return s_tokenizer_read_doc_comment(s);
     }
 
-    /* Preprocessor end: s_skip_trivia stops at '\n' in pp mode when not continued. */
+    /* Preprocessor end: s_tokenizer_skip_trivia stops at '\n' in pp mode when not continued. */
     if (s->in_pp && s->input.length > 0 && s->input.ptr[0] == '\n')
     {
       const char* end_ptr = s->input.ptr;
@@ -422,7 +439,7 @@ static DoxterToken doxter_next_token(DoxterTokenState* s)
       s->in_pp = false;
       s->pp_line_continuation = false;
       s->at_bol = true;
-      s_advance(s, 1);
+      s_tokenizer_advance(s, 1);
 
       DoxterToken t;
       t.kind = DOXTER_PP_END;
@@ -437,7 +454,7 @@ static DoxterToken doxter_next_token(DoxterTokenState* s)
     {
       if (s->input.ptr[0] == '#')
       {
-        return s_read_macro_directive(s);
+        return s_tokenizer_read_macro_directive(s);
       }
       s->at_bol = false;
     }
@@ -446,34 +463,34 @@ static DoxterToken doxter_next_token(DoxterTokenState* s)
 
     if (c == '"')
     {
-      DoxterToken t = s_read_quoted(s, DOXTER_STRING, '"');
+      DoxterToken t = s_tokenizer_read_quoted(s, DOXTER_STRING, '"');
       if (s->in_pp) s->pp_line_continuation = false;
       return t;
     }
 
     if (c == '\'')
     {
-      DoxterToken t = s_read_quoted(s, DOXTER_CHAR, '\'');
+      DoxterToken t = s_tokenizer_read_quoted(s, DOXTER_CHAR, '\'');
       if (s->in_pp) s->pp_line_continuation = false;
       return t;
     }
 
-    if (s_is_ident_start(c))
+    if (s_char_is_ident_start(c))
     {
-      DoxterToken t = s_read_ident(s);
+      DoxterToken t = s_tokenizer_read_ident(s);
       if (s->in_pp) s->pp_line_continuation = false;
       return t;
     }
 
     if (c >= '0' && c <= '9')
     {
-      DoxterToken t = s_read_number(s);
+      DoxterToken t = s_tokenizer_read_number(s);
       if (s->in_pp) s->pp_line_continuation = false;
       return t;
     }
 
     {
-      DoxterToken t = s_read_punct(s);
+      DoxterToken t = s_tokenizer_read_punct(s);
       if (s->in_pp)
       {
         s->pp_line_continuation = (t.kind == DOXTER_PUNCT && t.text.length == 1 && t.text.ptr[0] == '\\');
@@ -488,50 +505,34 @@ static bool s_token_is_punct(DoxterToken t, char c)
   return t.kind == DOXTER_PUNCT && t.text.length == 1 && t.text.ptr[0] == c;
 }
 
-static bool s_token_is_ident_cstr(DoxterToken t, const char* s)
-{
-  return t.kind == DOXTER_IDENT && x_slice_eq_cstr(t.text, s);
-}
-
 static DoxterToken s_token_dup(DoxterProject* proj, DoxterToken t)
 {
   if (t.text.length > 0)
   {
-    char* dup = x_arena_slicedup(proj->scratch, t.text.ptr, t.text.length, false);
+    char* dup = x_arena_slicedup(proj->scratch, t.text.ptr, t.text.length, true);
     t.text.ptr = dup;
   }
   else
   {
     t.text.ptr = "";
+    t.text.length = 0;
   }
 
   t.start = t.text.ptr;
   return t;
 }
 
-static XSlice s_slice_dup(XArena* arena, XSlice s)
-{
-  if (s.length == 0)
-  {
-    return s;
-  }
-
-  char* dup = x_arena_slicedup(arena, s.ptr, s.length, false);
-  s.ptr = dup;
-  return s;
-}
-
 static void s_symbol_dup_slices(DoxterProject* proj, DoxterSymbol* sym)
 {
-  sym->comment = (sym->comment.length ?
-      s_slice_dup(proj->scratch, sym->comment) :
-      x_slice_empty());
-  sym->declaration = (sym->declaration.length ?
-      s_slice_dup(proj->scratch, sym->declaration) :
-      x_slice_empty());
-  sym->name = (sym->name.length ?
-      s_slice_dup(proj->scratch, sym->name) :
-      x_slice_empty());
+  sym->comment.ptr = (sym->comment.length ?
+      x_arena_slicedup(proj->scratch, sym->comment.ptr, sym->comment.length, true)
+      : "");
+  sym->declaration.ptr = (sym->declaration.length ?
+      x_arena_slicedup(proj->scratch, sym->declaration.ptr, sym->declaration.length, true)
+      : "");
+  sym->name.ptr = (sym->name.length ?
+      x_arena_slicedup(proj->scratch, sym->name.ptr, sym->name.length, true)
+      : "");
 }
 
 static void s_symbol_collect_tokens(DoxterProject* proj, XSlice declaration, u32* out_first, u32* out_count)
@@ -544,15 +545,17 @@ static void s_symbol_collect_tokens(DoxterProject* proj, XSlice declaration, u32
     return;
   }
 
-  DoxterTokenState ts;
+  DoxterTokenizer ts;
   ts.input = declaration;
+  ts.line = 1;
+  ts.column = 1;
   ts.at_bol = true;
   ts.in_pp = false;
   ts.pp_line_continuation = false;
 
   for (;;)
   {
-    DoxterToken t = doxter_next_token(&ts);
+    DoxterToken t = s_tokenizer_next_token(&ts, NULL, NULL);
     if (t.kind == DOXTER_END)
     {
       break;
@@ -567,24 +570,6 @@ static void s_symbol_collect_tokens(DoxterProject* proj, XSlice declaration, u32
     t = s_token_dup(proj, t);
     x_array_push(proj->tokens, &t);
     (*out_count)++;
-  }
-}
-
-static void s_update_line_col(const char* from, const char* to, uint32_t* line, uint32_t* col)
-{
-  const char* p = from;
-  while (p < to)
-  {
-    if (*p == '\n')
-    {
-      (*line)++;
-      *col = 1;
-    }
-    else
-    {
-      (*col)++;
-    }
-    p++;
   }
 }
 
@@ -751,99 +736,6 @@ static bool s_filter_symbol(DoxterSymbol* sym, DoxterConfig* cfg)
   return true;
 }
 
-static XSlice s_trim_pp_leading_ws(XSlice s)
-{
-  while (s.length > 0)
-  {
-    char c = *s.ptr;
-    if (c != ' ' && c != '\t' && c != '\r' && c != '\n' && c != '\f' && c != '\v')
-    {
-      break;
-    }
-    s.ptr++;
-    s.length--;
-  }
-  return s;
-}
-
-static bool s_classify_macro(XSlice macro, XSlice comment, uint32_t line, uint32_t col, DoxterSymbol* out)
-{
-  XSlice m = s_trim_pp_leading_ws(macro);
-  if (m.length == 0 || *m.ptr != '#')
-  {
-    return false;
-  }
-
-  memset(out, 0, sizeof(*out));
-  out->line = line;
-  out->column = col;
-  out->comment = comment;
-  out->declaration = macro;
-  out->name = x_slice_empty();
-  out->is_typedef = false;
-  out->is_static = false;
-  out->is_empty_macro = false;
-
-  /* Tokenize directive with whitespace tokenizer; punctuation remains attached, handle name(a,b) via '(' scan. */
-  XSlice it = m;
-  XSlice tok = x_slice_empty();
-
-  x_slice_next_token_white_space(&it, &tok);
-  if (!x_slice_eq_cstr(tok, "#") && !x_slice_eq_cstr(tok, "#define"))
-  {
-    /* Accept '# define' too */
-    if (!x_slice_eq_cstr(tok, "#"))
-    {
-      return false;
-    }
-  }
-
-  XSlice t1 = x_slice_empty();
-  x_slice_next_token_white_space(&it, &t1);
-  if (x_slice_eq_cstr(tok, "#define"))
-  {
-    /* ok */
-  }
-  else
-  {
-    if (!x_slice_eq_cstr(t1, "define"))
-    {
-      return false;
-    }
-    x_slice_next_token_white_space(&it, &t1);
-  }
-
-  if (t1.length == 0)
-  {
-    return false;
-  }
-
-  out->type = DOXTER_MACRO;
-
-  /* Macro name may be NAME(args) with no whitespace. */
-  const char* p = (const char*) memchr(t1.ptr, '(', t1.length);
-  if (p != NULL)
-  {
-    out->name.ptr = t1.ptr;
-    out->name.length = (size_t) (p - t1.ptr);
-  }
-  else
-  {
-    out->name = t1;
-  }
-
-  /* Determine empty macro: no further tokens (besides possible trailing whitespace). */
-  {
-    XSlice rest = x_slice_trim(it);
-    if (rest.length == 0)
-    {
-      out->is_empty_macro = true;
-    }
-  }
-
-  return out->name.length > 0;
-}
-
 static bool s_classify_statement(XSlice stmt, XSlice comment, uint32_t line, uint32_t col, DoxterSymbol* out)
 {
   XSlice trimmed = x_slice_trim(stmt);
@@ -879,8 +771,10 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, uint32_t line, uin
   int fp_state = 0;
   int paren_depth = 0;
 
-  DoxterTokenState ts;
+  DoxterTokenizer ts;
   ts.input = trimmed;
+  ts.line = 1;
+  ts.column = 1;
   ts.at_bol = true;
   ts.in_pp = false;
   ts.pp_line_continuation = false;
@@ -889,7 +783,7 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, uint32_t line, uin
 
   for (;;)
   {
-    DoxterToken t = doxter_next_token(&ts);
+    DoxterToken t = s_tokenizer_next_token(&ts, NULL, NULL);
     if (t.kind == DOXTER_END)
     {
       break;
@@ -1032,14 +926,7 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, uint32_t line, uin
   return false;
 }
 
-/**
- * @brief Collects all symbols from a source file. Comments are also collected
- * when present.
- * @param source Source file to scan for symbols
- * @param aray An XArray for storing the symbols
- * @return the number or symbols found
- */
-u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj)
+i32 doxter_source_parse(DoxterProject* proj, u32 source_index)
 {
   DoxterSourceInfo* source_info = &proj->sources[source_index];
   source_info->first_symbol_index = x_array_count(proj->symbols);
@@ -1048,30 +935,32 @@ u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj)
   size_t file_size = 0;
   const char *source_file_name = source_info->path;
   char *input = x_io_read_text(source_file_name, &file_size);
-  if (! input) return 0;
+  if (! input)
+    return -1;
 
   XSlice source = x_slice_init(input, file_size);
 
-  DoxterTokenState ts;
+  DoxterTokenizer ts;
   ts.input = source;
+  ts.line = 1;
+  ts.column = 1;
   ts.at_bol = true;
   ts.in_pp = false;
   ts.pp_line_continuation = false;
 
   XSlice pending_doc = x_slice_empty();
-  u32 count = 0;
+  i32 count = 0;
 
-  uint32_t line = 1;
-  uint32_t col = 1;
-  const char* cur_ptr = source.ptr;
+  uint32_t tok_line = 1;
+  uint32_t tok_col = 1;
 
   /* File symbol: if the file begins with a doxter comment. */
   {
-    DoxterTokenState tmp = ts;
-    DoxterToken t = doxter_next_token(&tmp);
+    DoxterTokenizer tmp = ts;
+    DoxterToken t = s_tokenizer_next_token(&tmp, &tok_line, &tok_col);
     if (t.kind == DOXTER_DOX_COMMENT && t.text.ptr == source.ptr)
     {
-      XSlice file_comment = s_cleanup_comment(t.text);
+      XSlice file_comment =  s_cleanup_comment(t.text);
 
       DoxterSymbol sym;
       memset(&sym, 0, sizeof(sym));
@@ -1089,8 +978,6 @@ u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj)
       count++;
 
       ts = tmp;
-      s_update_line_col(cur_ptr, ts.input.ptr, &line, &col);
-      cur_ptr = ts.input.ptr;
     }
   }
 
@@ -1109,18 +996,11 @@ u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj)
 
   while (ts.input.length > 0)
   {
-    DoxterToken t = doxter_next_token(&ts);
+    DoxterToken t = s_tokenizer_next_token(&ts, &tok_line, &tok_col);
     if (t.kind == DOXTER_END)
     {
       break;
     }
-
-    /* Track line/col up to token start. */
-    s_update_line_col(cur_ptr, t.start, &line, &col);
-    uint32_t tok_line = line;
-    uint32_t tok_col = col;
-    s_update_line_col(t.text.ptr, t.text.ptr + t.text.length, &line, &col);
-    cur_ptr = t.text.ptr + t.text.length;
 
     if (t.kind == DOXTER_DOX_COMMENT)
     {
@@ -1140,7 +1020,7 @@ u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj)
 
       for (;;)
       {
-        DoxterToken mt = doxter_next_token(&ts);
+        DoxterToken mt = s_tokenizer_next_token(&ts, NULL, NULL);
 
         if (mt.kind == DOXTER_END)
         {
@@ -1174,8 +1054,8 @@ u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj)
         DoxterSymbol sym;
         memset(&sym, 0, sizeof(sym));
         sym.type = DOXTER_MACRO;
-        sym.line = line;
-        sym.column = col;
+        sym.line = tok_line;
+        sym.column = tok_col;
         sym.comment = pending_doc;
         sym.declaration.ptr = start_ptr;
         sym.declaration.length = (size_t)(end_ptr - start_ptr);
@@ -1261,10 +1141,12 @@ u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj)
           tmp.length = (size_t) ((source.ptr + source.length) - t.text.ptr);
           if (s_skip_code_block(&tmp))
           {
-            s_update_line_col(cur_ptr, tmp.ptr, &line, &col);
-            cur_ptr = tmp.ptr;
-            ts.input = tmp;
-            ts.at_bol = true;
+            const char* target = tmp.ptr;
+            if (target > ts.input.ptr)
+            {
+              size_t delta = (size_t) (target - ts.input.ptr);
+              s_tokenizer_advance(&ts, delta);
+            }
             ts.in_pp = false;
             ts.pp_line_continuation = false;
           }
@@ -1351,71 +1233,6 @@ u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj)
     prev_sig = t;
   }
 
-  free(input);
   source_info->num_symbols = count;
   return count;
-}
-
-static const char* s_tok_kind_name(DoxterTokenKind k)
-{
-  switch (k)
-  {
-    case DOXTER_END:         return "END";
-    case DOXTER_MACRO_DIRECTIVE:         return "MACRO";
-    case DOXTER_IDENT:       return "IDENT";
-    case DOXTER_NUMBER:      return "NUMBER";
-    case DOXTER_STRING:      return "STRING";
-    case DOXTER_CHAR:        return "CHAR";
-    case DOXTER_PUNCT:       return "PUNCT";
-    case DOXTER_DOX_COMMENT: return "DOX_COMMENT";
-    case DOXTER_PP_END:      return "PP_END";
-    default:                 return "UNKNOWN";
-  }
-}
-
-#define s_next_token doxter_next
-void doxter_token_dump(DoxterTokenState* s, const char* label)
-{
-  printf("=== TOKEN DUMP: %s ===\n", label);
-
-  for (;;)
-  {
-    DoxterToken t = doxter_next_token(s);
-
-    if (t.kind == DOXTER_END)
-    {
-      printf("END\n\n");
-      break;
-    }
-
-    printf("%-12s len=%zu  ", s_tok_kind_name(t.kind), (size_t)t.text.length);
-
-    size_t n = t.text.length;
-    if (n > 80) n = 80;
-
-    fwrite(t.text.ptr, 1, n, stdout);
-    if (n < t.text.length) printf("...");
-    printf("\n");
-
-    /* Sanity check: DOX_COMMENT must be whole */
-    if (t.kind == DOXTER_DOX_COMMENT)
-    {
-      if (t.text.length < 5 ||
-          t.text.ptr[0] != '/' || t.text.ptr[1] != '*' || t.text.ptr[2] != '*' ||
-          t.text.ptr[t.text.length - 2] != '*' || t.text.ptr[t.text.length - 1] != '/')
-      {
-        printf("!! ERROR: malformed DOX_COMMENT token\n");
-      }
-    }
-  }
-}
-
-u32 doxter_test_tokenizer(XSlice source)
-{
-  DoxterTokenState ts;
-  ts.input = source;
-  ts.at_bol = true;
-  ts.in_pp = false;
-  doxter_token_dump(&ts, "test");
-  return 0;
 }

@@ -157,7 +157,7 @@ typedef struct
  * @param aray An XArray for storing the symbols
  * @return the number or symbols found
  */
-u32 doxter_source_symbols_collect(u32 source_index, DoxterProject* proj);
+i32 doxter_source_parse(DoxterProject* proj, u32 source_index);
 
 #endif //DOXTER_H
 
