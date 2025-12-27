@@ -463,7 +463,7 @@ X_ARENA_API char* x_arena_slicedup(XArena* arena, const char* ptr, size_t len, b
     return NULL;
   }
 
-  char* d = (char*) x_arena_alloc(arena, len + null_terminate ? 1u : 0u);
+  char* d = (char*) x_arena_alloc(arena, len + (null_terminate ? 1u : 0u));
   if (!d)
   {
     return NULL;

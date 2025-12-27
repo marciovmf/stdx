@@ -153,11 +153,6 @@ static bool s_project_source_add(DoxterProject *proj, const char* input_file_nam
   x_smallstr_append_cstr(&tmp, ".html");
   m->output_name = _strdup(tmp.buf);
 
-  printf("MODULE: %s\nbasename = %s\nstem = %s\n\n",
-      input_file_name,
-      m->path,
-      m->output_name);
-
   if (!m->path || !m->output_name)
   {
     free(m->path);
@@ -1245,7 +1240,11 @@ static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
   // Add source files to project
   for (u32 i = 0; i < args->num_input_files; i++)
   {
-    s_project_source_add(proj, args->input_files[i]);
+    const char* f = args->input_files[i];
+    if (! s_project_source_add(proj, f))
+    {
+      fprintf(stderr, "Warning: could not record file '%s'\n", f);
+    }
   }
 
   return proj;
@@ -1297,24 +1296,14 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  // --------------------------------------------------------
-  //  Collect file list and html file names for each of them
-  // --------------------------------------------------------
   proj = s_doxter_project_create(&args);
-  for (u32 argi = 0; argi < args.num_input_files; ++argi)
-  {
-    if (!s_project_source_add(proj, args.input_files[argi]))
-    {
-      fprintf(stderr, "Warning: could not record file '%s'\n", args.input_files[argi]);
-      had_error = true;
-    }
-  }
 
   // --------------------------------------------------------
   // Parse all files, collect symbols and comments
   // --------------------------------------------------------
-  for (u32 argi = 0; argi < proj->source_count; ++argi)
+  for (u32 argi = 0; argi < proj->source_count; argi++)
   {
+    printf("-- %d ", argi);
     doxter_source_symbols_collect(argi, proj);
   }
 
