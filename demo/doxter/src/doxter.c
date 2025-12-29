@@ -549,6 +549,178 @@ static void s_render_file_list(DoxterProject *proj, XStrBuilder *out)
 }
 
 // --------------------------------------------------------
+// Syntax Highlight render
+// --------------------------------------------------------
+
+static void s_append_html_escaped(XStrBuilder* out, XSlice s)
+{
+  for (size_t i = 0; i < s.length; ++i)
+  {
+    char c = s.ptr[i];
+    if (c == '&') { x_strbuilder_append(out, "&amp;"); continue; }
+    if (c == '<') { x_strbuilder_append(out, "&lt;");  continue; }
+    if (c == '>') { x_strbuilder_append(out, "&gt;");  continue; }
+    if (c == '"') { x_strbuilder_append(out, "&quot;"); continue; }
+    x_strbuilder_append_char(out, c);
+  }
+}
+
+static bool s_is_c_keyword(XSlice s)
+{
+  static const char* kw[] =
+  {
+    "auto","break","case","char","const","continue","default","do","double","else","enum",
+    "extern","float","for","goto","if","inline","int","long","register","restrict","return",
+    "short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void",
+    "volatile","while","_Alignas","_Alignof","_Atomic","_Bool","_Complex","_Generic",
+    "_Imaginary","_Noreturn","_Static_assert","_Thread_local","bool"
+  };
+
+  for (size_t i = 0; i < sizeof(kw) / sizeof(kw[0]); ++i)
+  {
+    if (x_slice_eq_cstr(s, kw[i]))
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static void s_emit_tok_span_begin(XStrBuilder* out, const char* cls)
+{
+  x_strbuilder_append(out, "<span class=\"tok ");
+  x_strbuilder_append(out, cls);
+  x_strbuilder_append(out, "\">");
+}
+
+static void s_emit_tok_span_end(XStrBuilder* out)
+{
+  x_strbuilder_append(out, "</span>");
+}
+
+static void s_emit_token_highlighted(XStrBuilder* out, const DoxterToken* t)
+{
+  const char* cls = "unk";
+
+  switch (t->kind)
+  {
+    case DOXTER_MACRO_DIRECTIVE: cls = "pp"; break;
+    case DOXTER_IDENT:           cls = s_is_c_keyword(t->text) ? "kw" : "id"; break;
+    case DOXTER_NUMBER:          cls = "num"; break;
+    case DOXTER_STRING:          cls = "str"; break;
+    case DOXTER_CHAR:            cls = "chr"; break;
+    case DOXTER_PUNCT:           cls = "pun"; break;
+    case DOXTER_DOX_COMMENT:     cls = "doc"; break;
+    default:                     cls = "unk"; break;
+  }
+
+  s_emit_tok_span_begin(out, cls);
+
+  /* Macro directive tokens are stored as "define"/"include"/etc. Add the '#'. */
+  if (t->kind == DOXTER_MACRO_DIRECTIVE)
+  {
+    s_append_html_escaped(out, x_slice_from_cstr("#"));
+  }
+
+  s_append_html_escaped(out, t->text);
+  s_emit_tok_span_end(out);
+}
+
+static bool s_tok_is_word(DoxterTokenKind k)
+{
+  return k == DOXTER_IDENT || k == DOXTER_NUMBER || k == DOXTER_STRING || k == DOXTER_CHAR;
+}
+
+static bool s_tok_is_punct_char(const DoxterToken* t, char c)
+{
+  return t->kind == DOXTER_PUNCT && t->text.length == 1 && t->text.ptr[0] == c;
+}
+
+static bool s_tok_is_punct_slice(const DoxterToken* t, const char* s)
+{
+  size_t n = strlen(s);
+  return t->kind == DOXTER_PUNCT && t->text.length == n && memcmp(t->text.ptr, s, n) == 0;
+}
+
+static bool s_need_space_between(const DoxterToken* a, const DoxterToken* b)
+{
+  if (!a || !b) return false;
+
+  /* "#define X" */
+  if (a->kind == DOXTER_MACRO_DIRECTIVE) return true;
+
+  /* No space after openers */
+  if (a->kind == DOXTER_PUNCT)
+  {
+    if (s_tok_is_punct_char(a, '(') || s_tok_is_punct_char(a, '[') || s_tok_is_punct_char(a, '{')) return false;
+    if (s_tok_is_punct_char(a, '.') || s_tok_is_punct_slice(a, "->") || s_tok_is_punct_slice(a, "::")) return false;
+  }
+
+  /* No space before closers / separators */
+  if (b->kind == DOXTER_PUNCT)
+  {
+    if (s_tok_is_punct_char(b, ')') || s_tok_is_punct_char(b, ']') || s_tok_is_punct_char(b, '}')) return false;
+    if (s_tok_is_punct_char(b, ',') || s_tok_is_punct_char(b, ';')) return false;
+  }
+
+  /* Space after comma */
+  if (a->kind == DOXTER_PUNCT && s_tok_is_punct_char(a, ',')) return true;
+
+  /* Word-word */
+  if (s_tok_is_word(a->kind) && s_tok_is_word(b->kind)) return true;
+
+  /* ident '(' => no space */
+  if (a->kind == DOXTER_IDENT && b->kind == DOXTER_PUNCT && s_tok_is_punct_char(b, '(')) return false;
+
+  return false;
+}
+
+static void s_doxter_emit_decl_highlighted(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
+{
+  const u32 first = sym->first_token_index;
+  const u32 count = sym->num_tokens;
+
+  const DoxterToken* prev = NULL;
+
+  for (u32 i = 0; i < count; ++i)
+  {
+    const DoxterToken* t = (const DoxterToken*) x_array_get(project->tokens, first + i).ptr;
+
+    if (prev && s_need_space_between(prev, t))
+    {
+      x_strbuilder_append_char(out, ' ');
+    }
+
+    s_emit_token_highlighted(out, t);
+
+    /* Optional canonical newlines */
+    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, ';'))
+    {
+      x_strbuilder_append_char(out, '\n');
+      prev = NULL;
+      continue;
+    }
+
+    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, '{'))
+    {
+      x_strbuilder_append_char(out, '\n');
+      prev = NULL;
+      continue;
+    }
+
+    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, '}'))
+    {
+      x_strbuilder_append_char(out, '\n');
+      prev = NULL;
+      continue;
+    }
+
+    prev = t;
+  }
+}
+
+// --------------------------------------------------------
 // Project index rendering
 // --------------------------------------------------------
 
@@ -888,8 +1060,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
   {
     if (s_template_ctx.symbol)
     {
-      XSlice t = x_slice_trim(s_template_ctx.symbol->declaration);
-      x_strbuilder_append_substring(out, t.ptr, t.length);
+      s_doxter_emit_decl_highlighted(project, s_template_ctx.symbol, out);
     }
     return;
   }

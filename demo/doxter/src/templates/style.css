@@ -12,6 +12,17 @@
   --radius:       {{BORDER_RADIUS}}px;
 }
 
+/* Syntax Highlight */
+pre code { white-space: pre; }
+.tok.kw  { font-weight: 600; }
+.tok.pp  { font-weight: 700; }
+.tok.id  { }
+.tok.num { }
+.tok.str { }
+.tok.chr { }
+.tok.pun { opacity: 0.9; }
+.tok.doc { opacity: 0.85; font-style: italic; }
+
 * {
   box-sizing: border-box;
 }
