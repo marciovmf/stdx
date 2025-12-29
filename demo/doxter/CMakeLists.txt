@@ -163,6 +163,7 @@ doxter_add_embedded_header(doxter
   OUTPUT "${GEN_DIR}/doxter_template.h"
   GUARD  "DOXTER_TEMPLATE_H"
   INPUTS
+
   ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/index_item.html
   ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/module_index.html
   ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/module_item.html
@@ -174,4 +175,18 @@ doxter_add_embedded_header(doxter
   ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/style.css
   ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/symbol.html
 )
-
+# ---------------------------------------------------------
+# This is how the doxter_font.h file was generated.
+# There is no need to run it on every build.
+# ---------------------------------------------------------
+if (DEFINED DOXTER_GENERATE_FONT_H)
+ doxter_add_embedded_header(doxter
+   OUTPUT "${GEN_DIR}/doxter_fonts.h"
+   GUARD  "DOXTER_FONTS_H"
+   INPUTS
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/JetBrainsMono-Bold.woff2
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/JetBrainsMono-Italic.woff2
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/JetBrainsMono-Medium.woff2
+   ${CMAKE_CURRENT_SOURCE_DIR}/src/templates/JetBrainsMono-Regular.woff2
+ )
+endif()

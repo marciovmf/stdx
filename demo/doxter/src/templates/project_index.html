@@ -7,21 +7,21 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="layout">
-  <nav>
-    <h1>Modules</h1>
-    <ul>
-      {{MODULE_LIST}}
-    </ul>
-  </nav>
-  <main>
-    <header class="page-header">
-      <h1>Project API Overview</h1>
-      <div class="subtitle">
-        One page per header. Click a module to view its documentation.
-      </div>
-    </header>
-  </main>
-</div>
+  <div class="layout">
+    <nav class="sidebar">
+      <details open>
+        <summary>Modules</summary>
+        <ul>
+          {{MODULE_LIST}}
+        </ul>
+      </details>
+    </nav>
+    <main class="content">
+      <header class="page-header">
+        <h1>Project API Overview</h1>
+        <p class="subtitle">Select a module to view its documentation.</p>
+      </header>
+    </main>
+  </div>
 </body>
 </html>

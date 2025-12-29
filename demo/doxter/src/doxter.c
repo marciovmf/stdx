@@ -21,6 +21,7 @@
 #include "markdown.h"
 #include "doxter.h"
 #include "doxter_template.h"
+#include "doxter_fonts.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,6 +32,9 @@
 // Types
 // --------------------------------------------------------
 
+/**
+ * Holds parsed command line information
+ */
 typedef struct DoxterCmdLine
 {
   const char*   project_name;
@@ -40,9 +44,14 @@ typedef struct DoxterCmdLine
   bool          skip_static;
   bool          skip_undocumented;
   bool          skip_empty_defines;
+  bool          markdown_gobal_comments;
+  bool          markdown_index_page;
   u32           num_input_files;
 } DoxterCmdLine;
 
+/**
+ * Valid comment tags
+ */
 typedef enum
 {
   DOX_TAG_TEXT,
@@ -51,6 +60,10 @@ typedef enum
   DOX_TAG_UNKNOWN
 } DoxterTagKind;
 
+/**
+ * A Tag is a special word prefixed with @ that can appear within a doxter
+ * comment block. Valid tags are @brief, @param and @return.
+ */
 typedef struct
 {
   DoxterTagKind kind;
@@ -62,6 +75,10 @@ typedef struct
 // Helpers 
 // --------------------------------------------------------
 
+/**
+ * Identify the type of template being rendered. Rendering functions can behave
+ * differently depending on the TemplateRole
+ */
 typedef enum
 {
   DOX_TMPL_ROLE_NONE,
@@ -77,6 +94,10 @@ typedef enum
   DOX_TMPL_ROLE_STYLE_CSS
 } DoxterTemplateRole;
 
+/**
+ *  Holds all necessary information for rendering
+ *  a given documentation page.
+ */
 typedef struct
 {
   DoxterTemplateRole      role;
@@ -91,7 +112,6 @@ typedef struct
   XSlice                  return_desc;
 } DoxterTemplateCtx;
 
-static DoxterTemplateCtx s_template_ctx;
 
 static const char *s_type_to_string(DoxterType type)
 {
@@ -253,6 +273,8 @@ static bool s_comment_next_tag(XSlice *comment, DoxterTag *out_tag)
 // Templating
 // --------------------------------------------------------
 
+static DoxterTemplateCtx s_template_ctx;
+
 static void s_template_ctx_push(DoxterTemplateCtx *backup)
 {
   *backup = s_template_ctx;
@@ -329,7 +351,7 @@ static void s_append_anchor(const DoxterSymbol *sym, XStrBuilder *out)
 
   {
     const char *ptr = name.ptr;
-    uint32_t i;
+    u32 i;
     for (i = 0; i < name.length; ++i)
     {
       char ch = ptr[i];
@@ -488,6 +510,9 @@ typedef struct
   DoxterProject   *project;
 } DoxIndexCtx;
 
+/*
+ * Render index page for an entire source file
+ */
 static void s_render_index_for_type(DoxterProject *proj,
     u32 source_index,
     DoxterType type,
@@ -518,10 +543,9 @@ static void s_render_index_for_type(DoxterProject *proj,
   }
 }
 
-// --------------------------------------------------------
-// File list rendering for per-page navigation
-// --------------------------------------------------------
-
+/*
+ * File list rendering for per-page navigation
+ */
 static void s_render_file_list(DoxterProject *proj, XStrBuilder *out)
 {
   if (proj->source_count == 0 || !proj->templates.file_item_html)
@@ -529,8 +553,7 @@ static void s_render_file_list(DoxterProject *proj, XStrBuilder *out)
     return;
   }
 
-  uint32_t i;
-  for (i = 0; i < proj->source_count; ++i)
+  for (u32 i = 0; i < proj->source_count; ++i)
   {
     const DoxterSourceInfo* mctx = &proj->sources[i];
 
@@ -573,7 +596,7 @@ static bool s_is_c_keyword(XSlice s)
     "extern","float","for","goto","if","inline","int","long","register","restrict","return",
     "short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void",
     "volatile","while","_Alignas","_Alignof","_Atomic","_Bool","_Complex","_Generic",
-    "_Imaginary","_Noreturn","_Static_assert","_Thread_local","bool"
+    "_Imaginary","_Noreturn","_Static_assert","_Thread_local", "bool", "__FILE__", "__LINE__"
   };
 
   for (size_t i = 0; i < sizeof(kw) / sizeof(kw[0]); ++i)
@@ -589,7 +612,7 @@ static bool s_is_c_keyword(XSlice s)
 
 static void s_emit_tok_span_begin(XStrBuilder* out, const char* cls)
 {
-  x_strbuilder_append(out, "<span class=\"tok ");
+  x_strbuilder_append(out, "<span class=\"tok_");
   x_strbuilder_append(out, cls);
   x_strbuilder_append(out, "\">");
 }
@@ -748,6 +771,11 @@ static void s_render_project_file_list(DoxterProject *proj,
   }
 }
 
+static inline bool s_placeholder_match(const char* a, u32 hash_a, const char* b, u32 hash_b)
+{
+  return ((hash_a == hash_b) && (strcmp(a, b) == 0));
+}
+
 /**
  * Finds the apropriate value for replacing the template's placeholder and
  * outputs it to the passed in StringBuilder.
@@ -758,6 +786,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     XStrBuilder *out)
 {
   const DoxterSourceInfo* source = NULL;
+  u32 hash = x_cstr_hash(placeholder);
 
   if (project && project->source_count > 0 && source_index < project->source_count)
   {
@@ -765,7 +794,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
   }
 
   /* Param item */
-  if (strcmp(placeholder, "PARAM_NAME") == 0)
+  if (s_placeholder_match(placeholder, hash, "PARAM_NAME", HASH_PARAM_NAME))
   {
     x_strbuilder_append_substring(out,
         s_template_ctx.param_name.ptr,
@@ -773,7 +802,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "PARAM_DESC") == 0)
+  if (s_placeholder_match(placeholder, hash, "PARAM_DESC", HASH_PARAM_DESC))
   {
     x_strbuilder_append_substring(out,
         s_template_ctx.param_desc.ptr,
@@ -782,7 +811,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
   }
 
   /* Params block */
-  if (strcmp(placeholder, "PARAMS_ITEMS") == 0)
+  if (s_placeholder_match(placeholder, hash, "PARAMS_ITEMS", HASH_PARAMS_ITEMS))
   {
     x_strbuilder_append_substring(out,
         s_template_ctx.params_items.ptr,
@@ -791,7 +820,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
   }
 
   /* Return block */
-  if (strcmp(placeholder, "RETURN_DESC") == 0)
+  if (s_placeholder_match(placeholder, hash, "RETURN_DESC", HASH_RETURN_DESC))
   {
     x_strbuilder_append_substring(out,
         s_template_ctx.return_desc.ptr,
@@ -800,7 +829,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
   }
 
   /* File item (side bar / lists) */
-  if (strcmp(placeholder, "MODULE_NAME") == 0)
+  if (s_placeholder_match(placeholder, hash, "MODULE_NAME", HASH_MODULE_NAME))
   {
     if (s_template_ctx.source && s_template_ctx.source->base_name)
     {
@@ -809,7 +838,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "MODULE_HREF") == 0)
+  if (s_placeholder_match(placeholder, hash, "MODULE_HREF", HASH_MODULE_HREF))
   {
     if (s_template_ctx.source && s_template_ctx.source->output_name)
     {
@@ -818,73 +847,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  /* CSS */
-  if (s_template_ctx.role == DOX_TMPL_ROLE_STYLE_CSS && s_template_ctx.config)
-  {
-    const DoxterConfig *cfg = s_template_ctx.config;
-
-    if (strcmp(placeholder, "COLOR_PAGE_BACKGROUND") == 0)
-    {
-      x_strbuilder_append(out, cfg->color_page_background);
-      return;
-    }
-    if (strcmp(placeholder, "COLOR_SIDEBAR_BACKGROUND") == 0)
-    {
-      x_strbuilder_append(out, cfg->color_sidebar_background);
-      return;
-    }
-    if (strcmp(placeholder, "COLOR_MAIN_TEXT") == 0)
-    {
-      x_strbuilder_append(out, cfg->color_main_text);
-      return;
-    }
-    if (strcmp(placeholder, "COLOR_SECONDARY_TEXT") == 0)
-    {
-      x_strbuilder_append(out, cfg->color_secondary_text);
-      return;
-    }
-    if (strcmp(placeholder, "COLOR_HIGHLIGHT") == 0)
-    {
-      x_strbuilder_append(out, cfg->color_highlight);
-      return;
-    }
-    if (strcmp(placeholder, "COLOR_LIGHT_BORDERS") == 0)
-    {
-      x_strbuilder_append(out, cfg->color_light_borders);
-      return;
-    }
-    if (strcmp(placeholder, "COLOR_CODE_BLOCKS") == 0)
-    {
-      x_strbuilder_append(out, cfg->color_code_blocks);
-      return;
-    }
-    if (strcmp(placeholder, "COLOR_CODE_BLOCK_BORDER") == 0)
-    {
-      x_strbuilder_append(out, cfg->color_code_block_border);
-      return;
-    }
-    if (strcmp(placeholder, "MONO_FONTS") == 0)
-    {
-      x_strbuilder_append(out, cfg->mono_fonts);
-      return;
-    }
-    if (strcmp(placeholder, "SERIF_FONTS") == 0)
-    {
-      x_strbuilder_append(out, cfg->serif_fonts);
-      return;
-    }
-    if (strcmp(placeholder, "BORDER_RADIUS") == 0)
-    {
-      x_strbuilder_append_format(out, "%d", cfg->border_radius);
-      return;
-    }
-
-    printf("Unknown key for css file: '%s'\n", placeholder);
-    return;
-  }
-
-  /* File index page / project page */
-  if (strcmp(placeholder, "FILE_NAME") == 0)
+  if (s_placeholder_match(placeholder, hash, "FILE_NAME", HASH_FILE_NAME))
   {
     if (s_template_ctx.role == DOX_TMPL_ROLE_PROJECT_INDEX)
     {
@@ -897,7 +860,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "TITLE") == 0)
+  if (s_placeholder_match(placeholder, hash, "TITLE", HASH_TITLE))
   {
     if (s_template_ctx.role == DOX_TMPL_ROLE_PROJECT_INDEX)
     {
@@ -906,7 +869,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "FILE_BRIEF") == 0)
+  if (s_placeholder_match(placeholder, hash, "FILE_BRIEF", HASH_FILE_BRIEF))
   {
     if (!source)
       return;
@@ -918,22 +881,24 @@ static void s_template_resolve_placeholder(const char *placeholder,
       return;
 
     XSlice b = file_comment->comment;
-    const char* markdown = md_to_html(b.ptr, b.length);
-    u32 len = (u32) (markdown ? strlen(markdown) : 0);
+    if (b.length == 0)
+      return;
 
-    if (b.length > 0)
+    if (project->config.markdown_gobal_comments)
     {
+      const char* markdown = md_to_html(b.ptr, b.length);
+      u32 len = (u32) (markdown ? strlen(markdown) : 0);
       x_strbuilder_append_substring(out, markdown, len);
     }
     else
     {
-      x_strbuilder_append(out,
-          "Generated C API reference. Symbols documented with /** ... */ blocks.");
+      x_strbuilder_append_substring(out, b.ptr, b.length);
     }
+
     return;
   }
 
-  if (strcmp(placeholder, "INDEX_ITEMS") == 0)
+  if (s_placeholder_match(placeholder, hash, "INDEX_ITEMS", HASH_INDEX_ITEMS))
   {
     s_render_index_for_type(project, source_index, DOXTER_FUNCTION, out);
     s_render_index_for_type(project, source_index, DOXTER_MACRO,    out);
@@ -943,37 +908,37 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "INDEX_FUNCTIONS") == 0)
+  if (s_placeholder_match(placeholder, hash, "INDEX_FUNCTIONS", HASH_INDEX_FUNCTIONS))
   {
     s_render_index_for_type(project, source_index, DOXTER_FUNCTION, out);
     return;
   }
 
-  if (strcmp(placeholder, "INDEX_MACROS") == 0)
+  if (s_placeholder_match(placeholder, hash, "INDEX_MACROS", HASH_INDEX_MACROS))
   {
     s_render_index_for_type(project, source_index, DOXTER_MACRO, out);
     return;
   }
 
-  if (strcmp(placeholder, "INDEX_STRUCTS") == 0)
+  if (s_placeholder_match(placeholder, hash, "INDEX_STRUCTS", HASH_INDEX_STRUCTS))
   {
     s_render_index_for_type(project, source_index, DOXTER_STRUCT, out);
     return;
   }
 
-  if (strcmp(placeholder, "INDEX_ENUMS") == 0)
+  if (s_placeholder_match(placeholder, hash, "INDEX_ENUMS", HASH_INDEX_ENUMS))
   {
     s_render_index_for_type(project, source_index, DOXTER_ENUM, out);
     return;
   }
 
-  if (strcmp(placeholder, "INDEX_TYPEDEFS") == 0)
+  if (s_placeholder_match(placeholder, hash, "INDEX_TYPEDEFS", HASH_INDEX_TYPEDEFS))
   {
     s_render_index_for_type(project, source_index, DOXTER_TYPEDEF, out);
     return;
   }
 
-  if (strcmp(placeholder, "SYMBOLS") == 0)
+  if (s_placeholder_match(placeholder, hash, "SYMBOLS", HASH_SYMBOLS))
   {
     if (!source || !project->templates.symbol_html)
       return;
@@ -1002,7 +967,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "MODULE_LIST") == 0)
+  if (s_placeholder_match(placeholder, hash, "MODULE_LIST", HASH_MODULE_LIST))
   {
     if (s_template_ctx.role == DOX_TMPL_ROLE_PROJECT_INDEX)
     {
@@ -1016,7 +981,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
   }
 
   /* Symbol / index item */
-  if (strcmp(placeholder, "ANCHOR") == 0)
+  if (s_placeholder_match(placeholder, hash, "ANCHOR", HASH_ANCHOR))
   {
     if (s_template_ctx.symbol)
     {
@@ -1025,7 +990,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "NAME") == 0)
+  if (s_placeholder_match(placeholder, hash, "NAME", HASH_NAME))
   {
     if (s_template_ctx.symbol)
     {
@@ -1036,7 +1001,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "KIND") == 0)
+  if (s_placeholder_match(placeholder, hash, "KIND", HASH_KIND))
   {
     if (s_template_ctx.symbol)
     {
@@ -1045,7 +1010,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "LINE") == 0)
+  if (s_placeholder_match(placeholder, hash, "LINE", HASH_LINE))
   {
     if (s_template_ctx.symbol)
     {
@@ -1056,7 +1021,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "DECL") == 0)
+  if (s_placeholder_match(placeholder, hash, "DECL", HASH_DECL))
   {
     if (s_template_ctx.symbol)
     {
@@ -1065,7 +1030,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "BRIEF") == 0)
+  if (s_placeholder_match(placeholder, hash, "BRIEF", HASH_BRIEF))
   {
     if (s_template_ctx.symbol)
     {
@@ -1075,7 +1040,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "PARAMS_BLOCK") == 0)
+  if (s_placeholder_match(placeholder, hash, "PARAMS_BLOCK", HASH_PARAMS_BLOCK))
   {
     if (s_template_ctx.symbol)
     {
@@ -1084,12 +1049,128 @@ static void s_template_resolve_placeholder(const char *placeholder,
     return;
   }
 
-  if (strcmp(placeholder, "RETURN_BLOCK") == 0)
+  if (s_placeholder_match(placeholder, hash, "RETURN_BLOCK", HASH_RETURN_BLOCK))
   {
     if (s_template_ctx.symbol)
     {
       s_render_return_block(s_template_ctx.symbol, &project->templates, out);
     }
+    return;
+  }
+
+  /* CSS */
+  if (s_template_ctx.role == DOX_TMPL_ROLE_STYLE_CSS && s_template_ctx.config)
+  {
+    const DoxterConfig *cfg = s_template_ctx.config;
+
+    if (s_placeholder_match(placeholder, hash, "COLOR_PAGE_BACKGROUND", HASH_COLOR_PAGE_BACKGROUND))
+    {
+      x_strbuilder_append(out, cfg->color_page_background);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_SIDEBAR_BACKGROUND", HASH_COLOR_SIDEBAR_BACKGROUND))
+    {
+      x_strbuilder_append(out, cfg->color_sidebar_background);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_MAIN_TEXT", HASH_COLOR_MAIN_TEXT))
+    {
+      x_strbuilder_append(out, cfg->color_main_text);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_SECONDARY_TEXT", HASH_COLOR_SECONDARY_TEXT))
+    {
+      x_strbuilder_append(out, cfg->color_secondary_text);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_HIGHLIGHT", HASH_COLOR_HIGHLIGHT))
+    {
+      x_strbuilder_append(out, cfg->color_highlight);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_LIGHT_BORDERS", HASH_COLOR_LIGHT_BORDERS))
+    {
+      x_strbuilder_append(out, cfg->color_light_borders);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_CODE_BLOCKS", HASH_COLOR_CODE_BLOCKS))
+    {
+      x_strbuilder_append(out, cfg->color_code_blocks);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_CODE_BLOCK_BORDER", HASH_COLOR_CODE_BLOCK_BORDER))
+    {
+      x_strbuilder_append(out, cfg->color_code_block_border);
+      return;
+    }
+
+    if (s_placeholder_match(placeholder, hash, "COLOR_TOK_PP", HASH_COLOR_TOK_PP))
+    {
+      x_strbuilder_append(out, cfg->color_tok_pp);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_TOK_KW", HASH_COLOR_TOK_KW))
+    {
+      x_strbuilder_append(out, cfg->color_tok_kw);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_TOK_ID", HASH_COLOR_TOK_ID))
+    {
+      x_strbuilder_append(out, cfg->color_tok_id);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_TOK_NUM", HASH_COLOR_TOK_NUM))
+    {
+      x_strbuilder_append(out, cfg->color_tok_num);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_TOK_STR", HASH_COLOR_TOK_STR))
+    {
+      x_strbuilder_append(out, cfg->color_tok_str);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_TOK_CRT", HASH_COLOR_TOK_CRT))
+    {
+      x_strbuilder_append(out, cfg->color_tok_crt);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_TOK_PUN", HASH_COLOR_TOK_PUN))
+    {
+      x_strbuilder_append(out, cfg->color_tok_pun);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "COLOR_TOK_DOC", HASH_COLOR_TOK_DOC))
+    {
+      x_strbuilder_append(out, cfg->color_tok_doc);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "FONT_UI", HASH_FONT_UI))
+    {
+      x_strbuilder_append(out, cfg->font_ui);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "FONT_HEADING", HASH_FONT_HEADING))
+    {
+      x_strbuilder_append(out, cfg->font_heading);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "FONT_CODE", HASH_FONT_CODE))
+    {
+      x_strbuilder_append(out, cfg->font_code);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "FONT_SYMBOL", HASH_FONT_SYMBOL))
+    {
+      x_strbuilder_append(out, cfg->font_symbol);
+      return;
+    }
+    if (s_placeholder_match(placeholder, hash, "BORDER_RADIUS", HASH_BORDER_RADIUS))
+    {
+      x_strbuilder_append_format(out, "%d", cfg->border_radius);
+      return;
+    }
+
+    printf("Unknown key for css file: '%s'\n", placeholder);
     return;
   }
 
@@ -1132,24 +1213,32 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* cfg)
     x_ini_get(&ini, "theme", "color_code_blocks", cfg->color_code_blocks);
   cfg->color_code_block_border =
     x_ini_get(&ini, "theme", "color_code_block_border", cfg->color_code_block_border);
-  cfg->mono_fonts =
-    x_ini_get(&ini, "theme", "mono_fonts", cfg->mono_fonts);
-  cfg->serif_fonts =
-    x_ini_get(&ini, "theme", "serif_fonts", cfg->serif_fonts);
-  cfg->project_name =
-    x_ini_get(&ini, "project", "name", cfg->project_name);
-  cfg->project_url =
-    x_ini_get(&ini, "project", "url", cfg->project_url);
-  cfg->border_radius =
-    x_ini_get_i32(&ini, "theme", "border_radius", cfg->border_radius);
-  cfg->option_skip_static_functions =
-    x_ini_get_i32(&ini, "options", "option_skip_static_functions", cfg->option_skip_static_functions);
-  cfg->option_markdown_index_page =
-    x_ini_get_i32(&ini, "options", "option_markdown_index_page", cfg->option_markdown_index_page);
-  cfg->option_skip_empty_defines =
-    x_ini_get_i32(&ini, "options", "option_skip_empty_defines", cfg->option_skip_empty_defines);
-  cfg->option_skip_undocumented_symbols =
-    x_ini_get_i32(&ini, "options", "option_skip_undocumented_symbols", cfg->option_skip_undocumented_symbols);
+
+  cfg->color_tok_pp  = x_ini_get(&ini, "theme", "color_tok_pp", cfg->color_tok_pp);
+  cfg->color_tok_kw  = x_ini_get(&ini, "theme", "color_tok_kw", cfg->color_tok_kw);
+  cfg->color_tok_id  = x_ini_get(&ini, "theme", "color_tok_id", cfg->color_tok_id);
+  cfg->color_tok_num = x_ini_get(&ini, "theme", "color_tok_num", cfg->color_tok_num);
+  cfg->color_tok_str = x_ini_get(&ini, "theme", "color_tok_str", cfg->color_tok_str);
+  cfg->color_tok_crt = x_ini_get(&ini, "theme", "color_tok_crt", cfg->color_tok_crt);
+  cfg->color_tok_pun = x_ini_get(&ini, "theme", "color_tok_pun", cfg->color_tok_pun);
+  cfg->color_tok_doc = x_ini_get(&ini, "theme", "color_tok_doc", cfg->color_tok_doc);
+
+  cfg->font_ui       = x_ini_get(&ini, "theme", "font_ui", cfg->font_ui);
+  cfg->font_code     = x_ini_get(&ini, "theme", "font_code", cfg->font_code);
+  cfg->font_heading  = x_ini_get(&ini, "theme", "font_heading", cfg->font_heading);
+  cfg->font_symbol   = x_ini_get(&ini, "theme", "font_symbol", cfg->font_symbol);
+
+  cfg->project_name  = x_ini_get(&ini, "project", "name", cfg->project_name);
+  cfg->project_url   = x_ini_get(&ini, "project", "url", cfg->project_url);
+  cfg->border_radius = x_ini_get_i32(&ini, "theme", "border_radius", cfg->border_radius);
+  cfg->skip_static_functions =
+    x_ini_get_i32(&ini, "project", "skip_static_functions", cfg->skip_static_functions);
+  cfg->markdown_index_page =
+    x_ini_get_i32(&ini, "project", "markdown_index_page", cfg->markdown_index_page);
+  cfg->skip_empty_defines =
+    x_ini_get_i32(&ini, "project", "skip_empty_defines", cfg->skip_empty_defines);
+  cfg->skip_undocumented =
+    x_ini_get_i32(&ini, "project", "skip_undocumented", cfg->skip_undocumented);
 
   return true;
 }
@@ -1157,7 +1246,7 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* cfg)
 /**
  * Parse the command line
  */
-static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
+static bool s_cmdline_parse(i32 argc, char** argv, DoxterCmdLine* out)
 {
   memset(out, 0, sizeof(DoxterCmdLine));
   out->output_directory = ".";
@@ -1226,16 +1315,16 @@ static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
       out->skip_empty_defines = 1;
       i++;
     }
-    //else if (strcmp(a, "--md-global-comments") == 0)
-    //{
-    //  out->option_markdown_gobal_comments = 1; // keep your existing field name if it's spelled this way
-    //  i++;
-    //}
-    //else if (strcmp(a, "--md-index") == 0)
-    //{
-    //  out->option_markdown_index_page = 1;
-    //  i++;
-    //}
+    else if (strcmp(a, "--md-global-comments") == 0)
+    {
+      out->markdown_gobal_comments = 1;
+      i++;
+    }
+    else if (strcmp(a, "--md-index") == 0)
+    {
+      out->markdown_index_page = 1;
+      i++;
+    }
     else
     {
       fprintf(stderr, "Invalid command line: Unknown option '%s'.\n", a);
@@ -1279,16 +1368,28 @@ static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
   proj->config.color_light_borders              = "e1e4e8";
   proj->config.color_code_blocks                = "f6f8fa";
   proj->config.color_code_block_border          = "d0d7de";
-  proj->config.mono_fonts                       = "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace";
-  proj->config.serif_fonts                      = "\"serif_fonts\", \"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, sans-serif";
+
+  proj->config.color_tok_pp                     = "6f42c1";
+  proj->config.color_tok_kw                     = "005cc5";
+  proj->config.color_tok_id                     = "24292f";
+  proj->config.color_tok_num                    = "b31d28";
+  proj->config.color_tok_str                    = "032f62";
+  proj->config.color_tok_crt                    = "032f62";
+  proj->config.color_tok_pun                    = "6a737d";
+  proj->config.color_tok_doc                    = "22863a";
+
+  proj->config.font_code                        = "JetBrains Mono";
+  proj->config.font_ui                          = "JetBrains Mono";
+  proj->config.font_symbol                      = "JetBrains Mono";
+  proj->config.font_heading                     = "JetBrains Mono";
   proj->config.border_radius                    = 10;
   proj->config.project_name                     = "Doxter";
   proj->config.project_url                      = "http://github.com/marciovmf/doxter";
-  proj->config.option_skip_static_functions     = 1;
-  proj->config.option_markdown_index_page       = 1;
-  proj->config.option_markdown_gobal_comments   = 1;
-  proj->config.option_markdown_index_page       = 1;
-  proj->config.option_skip_undocumented_symbols = 1;
+  proj->config.skip_static_functions     = 1;
+  proj->config.markdown_index_page       = 1;
+  proj->config.markdown_gobal_comments   = 1;
+  proj->config.markdown_index_page       = 1;
+  proj->config.skip_undocumented         = 1;
 
   // If provided, load the doxter file
   if (args->doxter_file && x_fs_is_file(args->doxter_file))
@@ -1333,7 +1434,7 @@ static void s_doxter_project_destroy(DoxterProject* proj)
 // --------------------------------------------------------
 // Main
 // --------------------------------------------------------
-int main(int argc, char **argv)
+i32 main(i32 argc, char **argv)
 {
   DoxterProject* proj;
   DoxterCmdLine args;
@@ -1485,8 +1586,44 @@ int main(int argc, char **argv)
     had_error = true;
   }
 
+  // --------------------------------------------------------
+  // Generate Fonts
+  // --------------------------------------------------------
+  x_fs_path(&full_path, args.output_directory, "JetBrainsMono-Bold.woff2");
+  if (!x_fs_is_file(full_path.buf))
+  {
+    XFile* f = x_io_open(full_path.buf, "wb+");
+    x_io_write(f, JETBRAINSMONO_BOLD_WOFF2, sizeof(JETBRAINSMONO_BOLD_WOFF2));
+    x_io_close(f);
+  }
+
+  x_fs_path(&full_path, args.output_directory, "JetBrainsMono-Italic.woff2");
+  if (!x_fs_is_file(full_path.buf))
+  {
+    XFile* f = x_io_open(full_path.buf, "wb+");
+    x_io_write(f, JETBRAINSMONO_ITALIC_WOFF2, sizeof(JETBRAINSMONO_ITALIC_WOFF2));
+    x_io_close(f);
+  }
+
+  x_fs_path(&full_path, args.output_directory, "JetBrainsMono-Medium.woff2");
+  if (!x_fs_is_file(full_path.buf))
+  {
+    XFile* f = x_io_open(full_path.buf, "wb+");
+    x_io_write(f, JETBRAINSMONO_MEDIUM_WOFF2, sizeof(JETBRAINSMONO_MEDIUM_WOFF2));
+    x_io_close(f);
+  }
+
+  x_fs_path(&full_path, args.output_directory, "JetBrainsMono-Regular.woff2");
+  if (!x_fs_is_file(full_path.buf))
+  {
+    XFile* f = x_io_open(full_path.buf, "wb+");
+    x_io_write(f, JETBRAINSMONO_REGULAR_WOFF2, sizeof(JETBRAINSMONO_REGULAR_WOFF2));
+    x_io_close(f);
+  }
+
   x_strbuilder_destroy(sb);
   s_doxter_project_destroy(proj);
 
   return had_error ? 1 : 0;
 }
+
