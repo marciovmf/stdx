@@ -70,11 +70,13 @@ extern "C" {
 
   typedef struct
   {
-    FILE* file;              // Log file pointer (optional)
-    int outputs;             // Which outputs enabled (console/file/both)
-    XLogLevel level;          // Minimum level to log
+    FILE* console;           /* Console output stream (stdout/stderr). Defaults to stdout. */
+    FILE* file;              /* Log file pointer (optional) */
+    bool file_owned;         /* True if logger opened the file and should close it */
+    int outputs;             /* Which outputs enabled (console/file/both) */
+    XLogLevel level;         /* Minimum level to log */
 #ifdef _WIN32
-    bool vt_enabled;         // Windows VT ANSI mode enabled?
+    bool vt_enabled;         /* Windows VT ANSI mode enabled? */
 #endif
   } XLogger;
 
@@ -113,6 +115,19 @@ extern "C" {
   void logger_close(void);
 
   /**
+   * @brief Set the output stream used for console logging.
+   *
+   * This does not affect file logging configured via logger_init() (XLOG_OUTPUT_FILE).
+   * Passing NULL resets to stdout.
+   */
+  void logger_set_console(FILE* out);
+
+  /**
+   * @brief Get the current console output stream (never NULL; defaults to stdout).
+   */
+  FILE* logger_get_console(void);
+
+  /**
    * @brief Emit a formatted log message with full context information.
    * @param level Log severity level.
    * @param fg Foreground color.
@@ -124,6 +139,26 @@ extern "C" {
    * @param fmt printf-style format string.
    */
   void logger_log(
+      XLogLevel level,
+      XLogColor fg,
+      XLogColor bg,
+      XLogComponent components,
+      const char* file,
+      int line,
+      const char* func,
+      const char* fmt,
+      ...
+      );
+
+  /**
+   * @brief Emit a formatted log message with full context information, overriding the console output stream.
+   *
+   * If console output is enabled (XLOG_OUTPUT_CONSOLE), the message is written to `out` when non-NULL.
+   * If `out` is NULL, the logger's default console stream is used.
+   * File output configured via logger_init() is still honored when XLOG_OUTPUT_FILE is enabled.
+   */
+  void logger_log_to(
+      FILE* out,
       XLogLevel level,
       XLogColor fg,
       XLogColor bg,
@@ -157,8 +192,8 @@ extern "C" {
    *
    * Automatically injects source file, line, and function information.
    */
-#define x_log_raw(level, fg, bg, components, fmt, ...) \
-  logger_log(level, fg, bg, components, __FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
+#define x_log_raw(out, level, fg, bg, components, fmt, ...) \
+  logger_log_to(out, level, fg, bg, components, __FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
 
   /**
    * @brief Emit a debug-level log message.
@@ -216,6 +251,7 @@ extern "C" {
 #define WIN32_LEAN_AND_MEAN
 #endif 
 #include <windows.h>
+#endif /* _WIN32 */
 
 #ifdef __cplusplus
 extern "C" {
@@ -223,7 +259,9 @@ extern "C" {
 
   static XLogger g_logger =
   {
+    .console = NULL,
     .file = NULL,
+    .file_owned = false,
     .outputs = XLOG_OUTPUT_CONSOLE,
     .level = XLOG_LEVEL_DEBUG,
 #ifdef _WIN32
@@ -235,29 +273,34 @@ extern "C" {
 
   static int map_color_to_ansi(XLogColor color, bool fg)
   {
-    (void)(fg);
+    const int base = fg ? 30 : 40;
 
-    const int ANSI_BACKGROUND = 10;
-    switch (color) {
-      case XLOG_COLOR_BLACK:          return 30 + ANSI_BACKGROUND;
-      case XLOG_COLOR_RED:            return 31 + ANSI_BACKGROUND;
-      case XLOG_COLOR_GREEN:          return 32 + ANSI_BACKGROUND;
-      case XLOG_COLOR_YELLOW:         return 33 + ANSI_BACKGROUND;
-      case XLOG_COLOR_BLUE:           return 34 + ANSI_BACKGROUND;
-      case XLOG_COLOR_MAGENTA:        return 35 + ANSI_BACKGROUND;
-      case XLOG_COLOR_CYAN:           return 36 + ANSI_BACKGROUND;
-      case XLOG_COLOR_WHITE:          return 37 + ANSI_BACKGROUND;
-      case XLOG_COLOR_BRIGHT_BLACK:   return 90 + ANSI_BACKGROUND;
-      case XLOG_COLOR_BRIGHT_RED:     return 91 + ANSI_BACKGROUND;
-      case XLOG_COLOR_BRIGHT_GREEN:   return 92 + ANSI_BACKGROUND;
-      case XLOG_COLOR_BRIGHT_YELLOW:  return 93 + ANSI_BACKGROUND;
-      case XLOG_COLOR_BRIGHT_BLUE:    return 94 + ANSI_BACKGROUND;
-      case XLOG_COLOR_BRIGHT_MAGENTA: return 95 + ANSI_BACKGROUND;
-      case XLOG_COLOR_BRIGHT_CYAN:    return 96 + ANSI_BACKGROUND;
-      case XLOG_COLOR_BRIGHT_WHITE:   return 97 + ANSI_BACKGROUND;
-      default:                   return 39 + ANSI_BACKGROUND; // reset to default
+    switch (color)
+    {
+      case XLOG_COLOR_BLACK:          return base + 0;
+      case XLOG_COLOR_RED:            return base + 1;
+      case XLOG_COLOR_GREEN:          return base + 2;
+      case XLOG_COLOR_YELLOW:         return base + 3;
+      case XLOG_COLOR_BLUE:           return base + 4;
+      case XLOG_COLOR_MAGENTA:        return base + 5;
+      case XLOG_COLOR_CYAN:           return base + 6;
+      case XLOG_COLOR_WHITE:          return base + 7;
+
+      /* Bright colors map to 90-97 (fg) and 100-107 (bg). */
+      case XLOG_COLOR_BRIGHT_BLACK:   return (fg ? 90 : 100) + 0;
+      case XLOG_COLOR_BRIGHT_RED:     return (fg ? 90 : 100) + 1;
+      case XLOG_COLOR_BRIGHT_GREEN:   return (fg ? 90 : 100) + 2;
+      case XLOG_COLOR_BRIGHT_YELLOW:  return (fg ? 90 : 100) + 3;
+      case XLOG_COLOR_BRIGHT_BLUE:    return (fg ? 90 : 100) + 4;
+      case XLOG_COLOR_BRIGHT_MAGENTA: return (fg ? 90 : 100) + 5;
+      case XLOG_COLOR_BRIGHT_CYAN:    return (fg ? 90 : 100) + 6;
+      case XLOG_COLOR_BRIGHT_WHITE:   return (fg ? 90 : 100) + 7;
+
+      default:                        return fg ? 39 : 49; /* default fg/bg */
     }
   }
+
+#ifdef _WIN32
 
   /* Enable VT processing on Windows 10+ */
   static inline void enable_windows_vt(void)
@@ -315,45 +358,44 @@ extern "C" {
   }
 
   /* Output message with Windows Console API colors */
-  static inline void x_log_output_console_winapi(XLogColor fg, XLogColor bg, const char* msg)
+  static inline void x_log_output_console_winapi(FILE* out, XLogColor fg, XLogColor bg, const char* msg)
   {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    HANDLE hConsole = GetStdHandle((out == stderr) ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
     if (hConsole == INVALID_HANDLE_VALUE)
     {
-      fputs(msg, stdout);
+      fputs(msg, out);
       return;
     }
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     if (!GetConsoleScreenBufferInfo(hConsole, &csbi))
     {
-      fputs(msg, stdout);
+      fputs(msg, out);
       return;
     }
     WORD oldAttrs = csbi.wAttributes;
     WORD color = map_color_to_win_attr(fg, true)|map_color_to_win_attr(bg, false);
     SetConsoleTextAttribute(hConsole, color);
-    fputs(msg, stdout);
+    fputs(msg, out);
     SetConsoleTextAttribute(hConsole, oldAttrs);
   }
+#endif /* _WIN32 */
 
-#else // _WIN32
+#ifndef _WIN32
 
   /* Output message with ANSI colors */
-  static inline void x_log_output_console_ansi(XLogColor fg, XLogColor bg const char *msg)
+  static inline void x_log_output_console_ansi(FILE* out, XLogColor fg, XLogColor bg, const char* msg)
   {
-    //const char* color = ansi_color_code(level);
-    char* color = "\x1b[%d;%dm";
     char color[32];
     snprintf(color, sizeof(color),
         "\x1b[%d;%dm",
         map_color_to_ansi(fg, true),
         map_color_to_ansi(bg, false));
-    fprintf(stdout, "%s%s\x1b[0m", color, msg);
+    fprintf(out, "%s%s\x1b[0m", color, msg);
   }
-#endif
+#endif /* !_WIN32 */
 
   /* Common console output */
-  static inline void x_log_output_console(XLogColor fg, XLogColor bg, const char *msg)
+  static inline void x_log_output_console(FILE* out, XLogColor fg, XLogColor bg, const char* msg)
   {
 #ifdef _WIN32
     //const char* color_code = ansi_color_code(level);
@@ -362,7 +404,7 @@ extern "C" {
     if (g_logger.vt_enabled)
     {
       /* Use ANSI */
-      fprintf(stdout,
+      fprintf(out,
           "\x1b[%d;%dm%s\x1b[0m",
           map_color_to_ansi(fg, true),
           map_color_to_ansi(bg, false),
@@ -371,10 +413,10 @@ extern "C" {
     else
     {
       /* Use Windows Console API */
-      x_log_output_console_winapi(fg, bg, msg);
+      x_log_output_console_winapi(out, fg, bg, msg);
     }
 #else
-    x_log_output_console_ansi(msg, level);
+    x_log_output_console_ansi(out, fg, bg, msg);
 #endif
   }
 
@@ -388,7 +430,17 @@ extern "C" {
     }
   }
 
-  void logger_log(XLogLevel level, XLogColor fg, XLogColor bg, XLogComponent components, const char* file, int line, const char* func, const char* fmt, ...)
+  void logger_set_console(FILE* out)
+  {
+    g_logger.console = (out != NULL) ? out : stdout;
+  }
+
+  FILE* logger_get_console(void)
+  {
+    return (g_logger.console != NULL) ? g_logger.console : stdout;
+  }
+
+  static void s_x_logger_vlog_to(FILE* out, XLogLevel level, XLogColor fg, XLogColor bg, XLogComponent components, const char* file, int line, const char* func, const char* fmt, va_list args)
   {
     static const char* x_log_level_strings[] =
     {
@@ -400,7 +452,9 @@ extern "C" {
     };
 
     if (level < g_logger.level)
+    {
       return;
+    }
 
     char timebuf[30] = {0};
     if (components & XLOG_TIMESTAMP)
@@ -430,16 +484,12 @@ extern "C" {
 
     /* Format the message body */
     char msgbuf[1024];
-    va_list args;
-    va_start(args, fmt);
 
 #ifdef _WIN32
     vsnprintf_s(msgbuf, sizeof(msgbuf), _TRUNCATE, fmt, args);
 #else
     vsnprintf(msgbuf, sizeof(msgbuf), fmt, args);
 #endif
-    va_end(args);
-
 
     char finalbuf[1280];
     snprintf(finalbuf, sizeof(finalbuf), "%s%s%s%s",
@@ -449,7 +499,8 @@ extern "C" {
 
     if (g_logger.outputs & XLOG_OUTPUT_CONSOLE)
     {
-      x_log_output_console(fg, bg, finalbuf);
+      FILE* console_out = (out != NULL) ? out : logger_get_console();
+      x_log_output_console(console_out, fg, bg, finalbuf);
     }
 
     if (g_logger.outputs & XLOG_OUTPUT_FILE)
@@ -458,11 +509,31 @@ extern "C" {
     }
   }
 
+  void logger_log_to(FILE* out, XLogLevel level, XLogColor fg, XLogColor bg, XLogComponent components, const char* file, int line, const char* func, const char* fmt, ...)
+  {
+    va_list args;
+    va_start(args, fmt);
+    s_x_logger_vlog_to(out, level, fg, bg, components, file, line, func, fmt, args);
+    va_end(args);
+  }
+
+  void logger_log(XLogLevel level, XLogColor fg, XLogColor bg, XLogComponent components, const char* file, int line, const char* func, const char* fmt, ...)
+  {
+    va_list args;
+    va_start(args, fmt);
+    s_x_logger_vlog_to(NULL, level, fg, bg, components, file, line, func, fmt, args);
+    va_end(args);
+  }
+
   /* Initialize logger */
   void logger_init(XLogOutputFlags outputs, XLogLevel level, const char *filename)
   {
     g_logger.outputs = outputs;
     g_logger.level = level;
+    if (g_logger.console == NULL)
+    {
+      g_logger.console = stdout;
+    }
     printf("log initialized\n");
 
 #ifdef _WIN32
@@ -472,9 +543,11 @@ extern "C" {
     if ((outputs & XLOG_OUTPUT_FILE) && filename != NULL)
     {
       g_logger.file = fopen(filename, "a");
+      g_logger.file_owned = (g_logger.file != NULL);
       if (!g_logger.file)
       {
         fprintf(stderr, "ERROR: Failed to open log file '%s'\n", filename);
+        g_logger.file_owned = false;
         g_logger.outputs &= ~XLOG_OUTPUT_FILE; /* disable file output */
       }
     }
@@ -483,11 +556,12 @@ extern "C" {
   /* Close logger and free resources */
   void logger_close(void)
   {
-    if (g_logger.file)
+    if (g_logger.file && g_logger.file_owned)
     {
       fclose(g_logger.file);
-      g_logger.file = NULL;
     }
+    g_logger.file = NULL;
+    g_logger.file_owned = false;
   }
 
 #ifdef __cplusplus
