@@ -17,7 +17,6 @@
 #include <stdx_string.h>
 #include <stdx_hashtable.h>
 #include <stdx_log.h>
-
 #define MD_IMPL
 #include "markdown.h"
 #include "doxter.h"
@@ -27,10 +26,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-
-#ifndef DEFAULT_CONFIG_FILE_NAME
-#define DEFAULT_CONFIG_FILE_NAME "doxter.ini"
-#endif
 
 // --------------------------------------------------------
 // Types
@@ -506,29 +501,20 @@ static void s_render_index_for_type(DoxterProject *proj,
   {
     DoxterSymbol *sym = (DoxterSymbol *) x_array_get(proj->symbols, symbol_i).ptr;
 
-    if (sym->name.length == 0)
-    {
-      continue;
-    }
+    if (sym->name.length == 0) continue;
+    if (sym->type != type) continue;
 
-    if (sym->type != type)
-    {
-      continue;
-    }
+    DoxterTemplateCtx backup;
+    s_template_ctx_push(&backup);
+    s_template_ctx.role = DOX_TMPL_ROLE_INDEX_ITEM;
+    s_template_ctx.symbol = sym;
 
-    {
-      DoxterTemplateCtx backup;
-      s_template_ctx_push(&backup);
-      s_template_ctx.role = DOX_TMPL_ROLE_INDEX_ITEM;
-      s_template_ctx.symbol = sym;
+    s_render_template(proj->templates.index_item_html,
+        proj,
+        source_index,
+        out);
 
-      s_render_template(proj->templates.index_item_html,
-          proj,
-          source_index,
-          out);
-
-      s_template_ctx_pop(&backup);
-    }
+    s_template_ctx_pop(&backup);
   }
 }
 
@@ -543,24 +529,22 @@ static void s_render_file_list(DoxterProject *proj, XStrBuilder *out)
     return;
   }
 
+  uint32_t i;
+  for (i = 0; i < proj->source_count; ++i)
   {
-    uint32_t i;
-    for (i = 0; i < proj->source_count; ++i)
-    {
-      const DoxterSourceInfo* mctx = &proj->sources[i];
+    const DoxterSourceInfo* mctx = &proj->sources[i];
 
-      DoxterTemplateCtx backup;
-      s_template_ctx_push(&backup);
-      s_template_ctx.role = DOX_TMPL_ROLE_FILE_ITEM;
-      s_template_ctx.source = mctx;
+    DoxterTemplateCtx backup;
+    s_template_ctx_push(&backup);
+    s_template_ctx.role = DOX_TMPL_ROLE_FILE_ITEM;
+    s_template_ctx.source = mctx;
 
-      s_render_template(proj->templates.file_item_html,
-          proj,
-          s_template_ctx.source_index,
-          out);
+    s_render_template(proj->templates.file_item_html,
+        proj,
+        s_template_ctx.source_index,
+        out);
 
-      s_template_ctx_pop(&backup);
-    }
+    s_template_ctx_pop(&backup);
   }
 }
 
@@ -753,17 +737,13 @@ static void s_template_resolve_placeholder(const char *placeholder,
   if (strcmp(placeholder, "FILE_BRIEF") == 0)
   {
     if (!source)
-    {
       return;
-    }
 
     DoxterSymbol* file_comment =
       (DoxterSymbol*) x_array_get(project->symbols, source->first_symbol_index).ptr;
 
     if (!file_comment)
-    {
       return;
-    }
 
     XSlice b = file_comment->comment;
     const char* markdown = md_to_html(b.ptr, b.length);
@@ -824,9 +804,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
   if (strcmp(placeholder, "SYMBOLS") == 0)
   {
     if (!source || !project->templates.symbol_html)
-    {
       return;
-    }
 
     const u32 first = source->first_symbol_index;
     const u32 count = first + source->num_symbols;
@@ -835,23 +813,19 @@ static void s_template_resolve_placeholder(const char *placeholder,
       DoxterSymbol *sym = (DoxterSymbol *) x_array_get(project->symbols, symbol_i).ptr;
 
       if (sym->name.length == 0)
-      {
         continue;
-      }
 
-      {
-        DoxterTemplateCtx backup;
-        s_template_ctx_push(&backup);
-        s_template_ctx.role = DOX_TMPL_ROLE_SYMBOL;
-        s_template_ctx.symbol = sym;
+      DoxterTemplateCtx backup;
+      s_template_ctx_push(&backup);
+      s_template_ctx.role = DOX_TMPL_ROLE_SYMBOL;
+      s_template_ctx.symbol = sym;
 
-        s_render_template(project->templates.symbol_html,
-            project,
-            source_index,
-            out);
+      s_render_template(project->templates.symbol_html,
+          project,
+          source_index,
+          out);
 
-        s_template_ctx_pop(&backup);
-      }
+      s_template_ctx_pop(&backup);
     }
     return;
   }
@@ -958,13 +932,12 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* cfg)
 {
   XIni ini;
   XIniError iniError;
-  if (path == NULL)
-    return false;
+  if (path == NULL) return false;
 
   if (!x_ini_load_file(path, &ini, &iniError))
   {
     printf("Failed to load '%s'Error %d: %s on line %d, %d. ",
-        DEFAULT_CONFIG_FILE_NAME,
+        path,
         iniError.code,
         iniError.message,
         iniError.line,
@@ -1002,6 +975,8 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* cfg)
     x_ini_get_i32(&ini, "options", "option_skip_static_functions", cfg->option_skip_static_functions);
   cfg->option_markdown_index_page =
     x_ini_get_i32(&ini, "options", "option_markdown_index_page", cfg->option_markdown_index_page);
+  cfg->option_skip_empty_defines =
+    x_ini_get_i32(&ini, "options", "option_skip_empty_defines", cfg->option_skip_empty_defines);
   cfg->option_skip_undocumented_symbols =
     x_ini_get_i32(&ini, "options", "option_skip_undocumented_symbols", cfg->option_skip_undocumented_symbols);
 
@@ -1014,7 +989,6 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* cfg)
 static bool s_cmdline_parse(int argc, char** argv, DoxterCmdLine* out)
 {
   memset(out, 0, sizeof(DoxterCmdLine));
-
   out->output_directory = ".";
 
   if (argc < 2)
@@ -1284,9 +1258,7 @@ int main(int argc, char **argv)
     ctx.source_index = source_i;
 
     s_render_template(proj->templates.file_index_html,
-        proj,
-        source_i,
-        sb);
+        proj, source_i, sb);
 
     char *html = x_strbuilder_to_string(sb);
     x_fs_path(&full_path, args.output_directory, source->output_name);
@@ -1326,25 +1298,20 @@ int main(int argc, char **argv)
   // --------------------------------------------------------
 
   x_strbuilder_clear(sb);
+  DoxterTemplateCtx backup;
+  s_template_ctx_push(&backup);
+  s_template_ctx.role = DOX_TMPL_ROLE_STYLE_CSS;
+  s_template_ctx.config = &proj->config;
+
+  s_render_template(proj->templates.style_css,
+      proj, 0, sb); s_template_ctx_pop(&backup);
+
+  char *css = x_strbuilder_to_string(sb);
+  x_fs_path(&full_path, args.output_directory, "style.css");
+  if (!x_io_write_text(full_path.buf, css))
   {
-    DoxterTemplateCtx backup;
-    s_template_ctx_push(&backup);
-    s_template_ctx.role = DOX_TMPL_ROLE_STYLE_CSS;
-    s_template_ctx.config = &proj->config;
-    s_render_template(proj->templates.style_css,
-        proj,
-        0,
-        sb);
-    s_template_ctx_pop(&backup);
-  }
-  {
-    char *css = x_strbuilder_to_string(sb);
-    x_fs_path(&full_path, args.output_directory, "style.css");
-    if (!x_io_write_text(full_path.buf, css))
-    {
-      fprintf(stderr, "Failed to write project css file '%s'\\n", full_path.buf);
-      had_error = true;
-    }
+    fprintf(stderr, "Failed to write project css file '%s'\\n", full_path.buf);
+    had_error = true;
   }
 
   x_strbuilder_destroy(sb);

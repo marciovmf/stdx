@@ -723,6 +723,11 @@ static DoxterSymbol* s_find_symbol(XArray* symbols, XSlice name)
 
 static bool s_filter_symbol(DoxterSymbol* sym, DoxterConfig* cfg)
 {
+  if (cfg->option_skip_empty_defines && sym->is_empty_macro)
+  {
+    return false;
+  }
+
   if (cfg->option_skip_static_functions && sym->is_static)
   {
     return false;
@@ -1039,13 +1044,11 @@ i32 doxter_source_parse(DoxterProject* proj, u32 source_index)
           if (macro_name.length == 0 && mt.kind == DOXTER_IDENT)
           {
             macro_name = mt.text;
+            empty_macro = true;
             continue;
           }
 
-          if (macro_name.length > 0)
-          {
-            empty_macro = false;
-          }
+          empty_macro = false;
         }
       }
 
