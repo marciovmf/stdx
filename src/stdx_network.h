@@ -76,14 +76,12 @@ extern "C" {
 
 /**
 * @brief Initialize the networking subsystem.
-* @param None.
 * @return True on success, false on failure.
 */
 bool    x_net_init(void);
 
 /**
 * @brief Shut down the networking subsystem and release associated resources.
-* @param None.
 * @return Nothing.
 */
 void    x_net_shutdown(void);
@@ -120,28 +118,24 @@ XSocket x_net_socket(XAddressFamily family, XSocketType type);
 
 /**
 * @brief Create an IPv4 TCP socket.
-* @param None.
 * @return New socket handle, or an invalid socket value on failure.
 */
 XSocket x_net_socket_tcp4(void);
 
 /**
 * @brief Create an IPv6 TCP socket.
-* @param None.
 * @return New socket handle, or an invalid socket value on failure.
 */
 XSocket x_net_socket_tcp6(void);
 
 /**
 * @brief Create an IPv4 UDP socket.
-* @param None.
 * @return New socket handle, or an invalid socket value on failure.
 */
 XSocket x_net_socket_udp4(void);
 
 /**
 * @brief Create an IPv6 UDP socket.
-* @param None.
 * @return New socket handle, or an invalid socket value on failure.
 */
 XSocket x_net_socket_udp6(void);
@@ -396,7 +390,6 @@ bool    x_net_enable_broadcast(XSocket sock, bool enable);
 
 /**
 * @brief Get the number of network adapters available on the system.
-* @param None.
 * @return Number of adapters, or -1 on error.
 */
 int32_t x_net_get_adapter_count(void);
@@ -419,7 +412,6 @@ bool    x_net_get_adapter_info(const int8_t* name, XNetAdapterInfo* out_info);
 
 /**
 * @brief Get the last network error code for the current thread/process.
-* @param None.
 * @return Last error code (WSAGetLastError() on Windows, errno on POSIX).
 */
 int32_t x_net_get_last_error(void);
