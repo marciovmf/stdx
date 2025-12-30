@@ -3,8 +3,6 @@
 #include <stdx_string.h>
 #include <stdx_io.h>
 #include <stdio.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -20,9 +18,10 @@ typedef struct DoxterTokenizer
   bool pp_line_continuation;  // last returned token was "\" while in_pp
 } DoxterTokenizer;
 
-static XSlice s_cleanup_comment(XSlice comment)
+static XSlice s_cleanup_comment(DoxterProject* proj, XSlice comment)
 {
   comment = x_slice_trim(comment);
+
   if (x_slice_starts_with_cstr(comment, "/**"))
   {
     comment.ptr += 3;
@@ -30,7 +29,13 @@ static XSlice s_cleanup_comment(XSlice comment)
   }
 
   if (x_slice_ends_with_cstr(comment, "*/"))
-  { comment.length -= 2; }
+  {
+    comment.length -= 2;
+  }
+
+  // Worst-case output is <= input length (+1 for NUL).
+  char* out = x_arena_alloc(proj->scratch, comment.length + 1);
+  size_t out_len = 0;
 
   XSlice c = comment;
   XSlice line;
@@ -39,31 +44,58 @@ static XSlice s_cleanup_comment(XSlice comment)
   {
     const char* p = line.ptr;
     const char* end = line.ptr + line.length;
-    size_t offset = 0;
-    while(p < end && (*p == ' ' || *p == '\t' || *p == '\r'))
-    { offset++; p++; }
 
-    while(p < end && *p == '*')
-    { offset++; p++; }
-
-    if(p < end && *p == ' ')
-    { offset++; p++; }
-
-    size_t line_len = line.length - offset;
-    memmove((void*) line.ptr, p, line_len);
-
+    // Skip leading whitespace.
+    while (p < end && (*p == ' ' || *p == '\t' || *p == '\r'))
     {
-      char* p = (char*) (line.ptr + line_len);
-      const char* end = line.ptr + line.length;
-      while (p < end)
-      {
-        *p = ' ';
-        p++;
-      }
+      p++;
+    }
+
+    // Skip leading '*' characters (matches your current behavior).
+    while (p < end && *p == '*')
+    {
+      p++;
+    }
+
+    // Skip one space after '*' if present.
+    if (p < end && *p == ' ')
+    {
+      p++;
+    }
+
+    // Copy rest of the line.
+    size_t n = (size_t)(end - p);
+    if (n > 0)
+    {
+      memcpy(out + out_len, p, n);
+      out_len += n;
+    }
+
+    // Preserve newline between lines
+    if (c.length > 0)
+    {
+      out[out_len++] = '\n';
     }
   }
 
-  return comment;
+  // Trim trailing whitespace/newlines to mimic x_slice_trim-ish end behavior.
+  while (out_len > 0)
+  {
+    char ch = out[out_len - 1];
+    if (ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n')
+    {
+      out_len--;
+      continue;
+    }
+    break;
+  }
+
+  out[out_len] = '\0';
+
+  XSlice result;
+  result.ptr = out;
+  result.length = out_len;
+  return result;
 }
 
 static bool s_char_is_space(char c)
@@ -949,7 +981,7 @@ i32 doxter_source_parse(DoxterProject* proj, u32 source_index)
   DoxterToken t = s_tokenizer_next_token(&tmp, &tok_line, &tok_col);
   if (t.kind == DOXTER_DOX_COMMENT && t.text.ptr == source.ptr)
   {
-    XSlice file_comment =  s_cleanup_comment(t.text);
+    XSlice file_comment =  s_cleanup_comment(proj, t.text);
 
     DoxterSymbol sym;
     memset(&sym, 0, sizeof(sym));
@@ -1219,6 +1251,7 @@ i32 doxter_source_parse(DoxterProject* proj, u32 source_index)
     prev_sig = t;
   }
 
+  free(input);
   source_info->num_symbols = count;
   return count;
 }
