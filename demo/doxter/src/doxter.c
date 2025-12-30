@@ -596,15 +596,14 @@ static bool s_is_c_keyword(XSlice s)
     "extern","float","for","goto","if","inline","int","long","register","restrict","return",
     "short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void",
     "volatile","while","_Alignas","_Alignof","_Atomic","_Bool","_Complex","_Generic",
-    "_Imaginary","_Noreturn","_Static_assert","_Thread_local", "bool", "__FILE__", "__LINE__"
+    "_Imaginary","_Noreturn","_Static_assert","_Thread_local", "bool", "__FILE__", "__LINE__",
+    "int32_t", "uint32_t", "int8_t", "uint8_t", "int16_t", "uint16_t"
   };
 
   for (size_t i = 0; i < sizeof(kw) / sizeof(kw[0]); ++i)
   {
     if (x_slice_eq_cstr(s, kw[i]))
-    {
       return true;
-    }
   }
 
   return false;
@@ -670,10 +669,10 @@ static bool s_need_space_between(const DoxterToken* a, const DoxterToken* b)
 {
   if (!a || !b) return false;
 
-  /* "#define X" */
+  // "#define X"
   if (a->kind == DOXTER_MACRO_DIRECTIVE) return true;
 
-  /* No space after openers */
+  // No space after openers
   if (a->kind == DOXTER_PUNCT)
   {
     if (s_tok_is_punct_char(a, '(') || s_tok_is_punct_char(a, '[') || s_tok_is_punct_char(a, '{')) return false;
@@ -687,16 +686,57 @@ static bool s_need_space_between(const DoxterToken* a, const DoxterToken* b)
     if (s_tok_is_punct_char(b, ',') || s_tok_is_punct_char(b, ';')) return false;
   }
 
-  /* Space after comma */
+  // Pointer/reference glue:
+  // - Space before '*' (and '&') when it follows a "type-ish" thing.
+  // - Never force a space after '*' (so: int *a, void *fn, char **p).
+  // This fixes: void*somefunc -> void *somefunc, int*a -> int *a
+  if (b->kind == DOXTER_PUNCT && (s_tok_is_punct_char(b, '*') || s_tok_is_punct_char(b, '&')))
+  {
+    // No space after openers: "(*fn)" / "(&x)"
+    if (a->kind == DOXTER_PUNCT)
+    {
+      if (s_tok_is_punct_char(a, '(') || s_tok_is_punct_char(a, '[') || s_tok_is_punct_char(a, '{')) return false;
+    }
+
+    // "void *", "int *", "T (*fn)", "T (*)[N]"
+    if (s_tok_is_word(a->kind)) return true;
+    if (a->kind == DOXTER_PUNCT && (s_tok_is_punct_char(a, ')') || s_tok_is_punct_char(a, ']'))) return true;
+
+    return false;
+  }
+
+  // Space after comma
   if (a->kind == DOXTER_PUNCT && s_tok_is_punct_char(a, ',')) return true;
 
-  /* Word-word */
+  // Word-word
   if (s_tok_is_word(a->kind) && s_tok_is_word(b->kind)) return true;
 
-  /* ident '(' => no space */
+  // ident '(' => no space
   if (a->kind == DOXTER_IDENT && b->kind == DOXTER_PUNCT && s_tok_is_punct_char(b, '(')) return false;
 
   return false;
+}
+
+static int s_find_return_ptr_star_run_end(const DoxterToken* tokens, int i, int end)
+{
+  /* If tokens[i] is '*', and the following pattern is: '*'* IDENT '('
+     return the index of the last '*' in the run, otherwise return -1. */
+  int j;
+
+  if (i >= end) return -1;
+  if (!(tokens[i].kind == DOXTER_PUNCT && s_tok_is_punct_char(&tokens[i], '*'))) return -1;
+
+  j = i;
+  while (j < end && tokens[j].kind == DOXTER_PUNCT && s_tok_is_punct_char(&tokens[j], '*'))
+  {
+    j++;
+  }
+
+  if (j + 1 >= end) return -1;
+  if (tokens[j].kind != DOXTER_IDENT) return -1;
+  if (!(tokens[j + 1].kind == DOXTER_PUNCT && s_tok_is_punct_char(&tokens[j + 1], '('))) return -1;
+
+  return j - 1; /* last '*' */
 }
 
 static void s_doxter_emit_decl_highlighted(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
@@ -705,37 +745,109 @@ static void s_doxter_emit_decl_highlighted(DoxterProject* project, const DoxterS
   const u32 count = sym->num_tokens;
 
   const DoxterToken* prev = NULL;
+  bool force_space_before = false;
 
   for (u32 i = 0; i < count; ++i)
   {
     const DoxterToken* t = (const DoxterToken*) x_array_get(project->tokens, first + i).ptr;
+    const DoxterToken* t_next = (i + 1 >= count) ? NULL :
+      (const DoxterToken*) x_array_get(project->tokens, first + i + 1).ptr;
 
-    if (prev && s_need_space_between(prev, t))
+    bool need_space = false;
+
+    if (force_space_before)
+    {
+      need_space = true;
+      force_space_before = false;
+    }
+    else if (prev && s_need_space_between(prev, t))
+    {
+      need_space = true;
+    }
+
+    // Return-type pointer star run:
+    // glue '*' to the return type and force a single space before function name.
+    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, '*'))
+    {
+      // Look ahead: '*'* IDENT '('
+      u32 j = i;
+
+      while (j < count)
+      {
+        const DoxterToken* tj = (const DoxterToken*) x_array_get(project->tokens, first + j).ptr;
+        if (!(tj->kind == DOXTER_PUNCT && s_tok_is_punct_char(tj, '*')))
+        {
+          break;
+        }
+        j++;
+      }
+
+      if (j + 1 < count)
+      {
+        const DoxterToken* t_ident = (const DoxterToken*) x_array_get(project->tokens, first + j).ptr;
+        const DoxterToken* t_paren = (const DoxterToken*) x_array_get(project->tokens, first + j + 1).ptr;
+
+        if (t_ident->kind == DOXTER_IDENT &&
+            t_paren->kind == DOXTER_PUNCT &&
+            s_tok_is_punct_char(t_paren, '('))
+        {
+          // This '*' is part of the return type's pointer run.
+          need_space = false;
+
+          // If this is the last '*' in the run, force a space before the function name.
+          if (j == i + 1)
+          {
+            force_space_before = true;
+          }
+        }
+      }
+    }
+
+    if (need_space)
     {
       x_strbuilder_append_char(out, ' ');
     }
 
     s_emit_token_highlighted(out, t);
 
-    /* Optional canonical newlines */
+    // Optional canonical newlines
+    //
+    // always add new line and ident after ';'. 
     if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, ';'))
     {
-      x_strbuilder_append_char(out, '\n');
+      if (t_next && t_next->kind == DOXTER_PUNCT && s_tok_is_punct_char(t_next, '}'))
+        x_strbuilder_append_cstr(out, "\n");
+      else if (t_next && t_next->kind != DOXTER_END)
+        x_strbuilder_append_cstr(out, "\n\t");
       prev = NULL;
+      force_space_before = false;
       continue;
     }
 
+    // always add new line and ident after '{'
     if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, '{'))
     {
-      x_strbuilder_append_char(out, '\n');
+      x_strbuilder_append_cstr(out, "\n\t");
       prev = NULL;
+      force_space_before = false;
       continue;
     }
 
+    // always add new line and ident after ','
+    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, ',') && sym->type != DOXTER_MACRO)
+    {
+      x_strbuilder_append_cstr(out, "\n\t");
+      prev = NULL;
+      force_space_before = false;
+      continue;
+    }
+
+    // always add space after '}'
     if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, '}'))
     {
-      x_strbuilder_append_char(out, '\n');
+      x_strbuilder_append_char(out, ' ');
       prev = NULL;
+      force_space_before = false;
       continue;
     }
 
