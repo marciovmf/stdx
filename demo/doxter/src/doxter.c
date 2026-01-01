@@ -28,6 +28,8 @@
 #include <stdbool.h>
 #include <string.h>
 
+#define INDENTATION "  "
+
 // --------------------------------------------------------
 // Types
 // --------------------------------------------------------
@@ -355,10 +357,8 @@ static void s_append_anchor(const DoxterSymbol *sym, XStrBuilder *out)
     for (i = 0; i < name.length; ++i)
     {
       char ch = ptr[i];
-      if ((ch >= 'A' && ch <= 'Z') ||
-          (ch >= 'a' && ch <= 'z') ||
-          (ch >= '0' && ch <= '9') ||
-          ch == '_' || ch == '-')
+      if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z') ||
+          (ch >= '0' && ch <= '9') || ch == '_' || ch == '-')
       {
         x_strbuilder_append_char(out, ch);
       }
@@ -621,7 +621,7 @@ static void s_emit_tok_span_end(XStrBuilder* out)
   x_strbuilder_append(out, "</span>");
 }
 
-static void s_emit_token_highlighted(XStrBuilder* out, const DoxterToken* t)
+static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, const DoxterToken* t)
 {
   const char* cls = "unk";
 
@@ -637,7 +637,23 @@ static void s_emit_token_highlighted(XStrBuilder* out, const DoxterToken* t)
     default:                     cls = "unk"; break;
   }
 
+
   s_emit_tok_span_begin(out, cls);
+
+#if 0
+  DoxterSymbol ref;
+  bool is_href = false;
+  if (t->kind == DOXTER_IDENT || t->kind == DOXTER_MACRO_DIRECTIVE)
+  {
+    //printf("checking anchor for %s\n", t->text.ptr);
+    if (x_hashtable_get(project->symbol_map, &t->start, &ref))
+    {
+      x_strbuilder_append_format(out, "<a href=\"%s\">", ref.anchor.buf);
+      printf("-- anchor for %s = %s\n", t->start, ref.anchor.buf);
+      is_href = true;
+    }
+  }
+#endif
 
   /* Macro directive tokens are stored as "define"/"include"/etc. Add the '#'. */
   if (t->kind == DOXTER_MACRO_DIRECTIVE)
@@ -645,8 +661,12 @@ static void s_emit_token_highlighted(XStrBuilder* out, const DoxterToken* t)
     s_append_html_escaped(out, x_slice_from_cstr("#"));
   }
 
+
   s_append_html_escaped(out, t->text);
   s_emit_tok_span_end(out);
+#if 0
+  if(is_href) x_strbuilder_append_cstr(out, "</a>");
+#endif
 }
 
 static bool s_tok_is_word(DoxterTokenKind k)
@@ -665,193 +685,342 @@ static bool s_tok_is_punct_slice(const DoxterToken* t, const char* s)
   return t->kind == DOXTER_PUNCT && t->text.length == n && memcmp(t->text.ptr, s, n) == 0;
 }
 
-static bool s_need_space_between(const DoxterToken* a, const DoxterToken* b)
+
+
+
+static bool s_join_need_space_simple(const DoxterToken* prev, const DoxterToken* cur, bool glue_star_to_ident)
 {
-  if (!a || !b) return false;
-
-  // "#define X"
-  if (a->kind == DOXTER_MACRO_DIRECTIVE) return true;
-
-  // No space after openers
-  if (a->kind == DOXTER_PUNCT)
+  if (!prev || !cur)
   {
-    if (s_tok_is_punct_char(a, '(') || s_tok_is_punct_char(a, '[') || s_tok_is_punct_char(a, '{')) return false;
-    if (s_tok_is_punct_char(a, '.') || s_tok_is_punct_slice(a, "->") || s_tok_is_punct_slice(a, "::")) return false;
+    return false;
   }
 
-  /* No space before closers / separators */
-  if (b->kind == DOXTER_PUNCT)
+  /* Always separate after preprocessor directive (we print "#define" as one token). */
+  if (prev->kind == DOXTER_MACRO_DIRECTIVE)
   {
-    if (s_tok_is_punct_char(b, ')') || s_tok_is_punct_char(b, ']') || s_tok_is_punct_char(b, '}')) return false;
-    if (s_tok_is_punct_char(b, ',') || s_tok_is_punct_char(b, ';')) return false;
+    return true;
   }
 
-  // Pointer/reference glue:
-  // - Space before '*' (and '&') when it follows a "type-ish" thing.
-  // - Never force a space after '*' (so: int *a, void *fn, char **p).
-  // This fixes: void*somefunc -> void *somefunc, int*a -> int *a
-  if (b->kind == DOXTER_PUNCT && (s_tok_is_punct_char(b, '*') || s_tok_is_punct_char(b, '&')))
+  /* No space after openers. */
+  if (prev->kind == DOXTER_PUNCT)
   {
-    // No space after openers: "(*fn)" / "(&x)"
-    if (a->kind == DOXTER_PUNCT)
+    if (s_tok_is_punct_char(prev, '(') || s_tok_is_punct_char(prev, '[') || s_tok_is_punct_char(prev, '{'))
     {
-      if (s_tok_is_punct_char(a, '(') || s_tok_is_punct_char(a, '[') || s_tok_is_punct_char(a, '{')) return false;
+      return false;
     }
 
-    // "void *", "int *", "T (*fn)", "T (*)[N]"
-    if (s_tok_is_word(a->kind)) return true;
-    if (a->kind == DOXTER_PUNCT && (s_tok_is_punct_char(a, ')') || s_tok_is_punct_char(a, ']'))) return true;
+    if (s_tok_is_punct_char(prev, '.') || s_tok_is_punct_slice(prev, "->") || s_tok_is_punct_slice(prev, "::"))
+    {
+      return false;
+    }
+
+    /* Never put a space after '*' or '&' when we are gluing them to identifiers (params style). */
+    if (glue_star_to_ident && (s_tok_is_punct_char(prev, '*') || s_tok_is_punct_char(prev, '&')))
+    {
+      return false;
+    }
+  }
+
+  /* No space before closers and separators. */
+  if (cur->kind == DOXTER_PUNCT)
+  {
+    if (s_tok_is_punct_char(cur, ')') || s_tok_is_punct_char(cur, ']') || s_tok_is_punct_char(cur, '}'))
+    {
+      return false;
+    }
+
+    if (s_tok_is_punct_char(cur, ',') || s_tok_is_punct_char(cur, ';'))
+    {
+      return false;
+    }
+  }
+
+  /* Pointer/ref: space before '*' / '&' when following a word, but optionally glue after. */
+  if (cur->kind == DOXTER_PUNCT && (s_tok_is_punct_char(cur, '*') || s_tok_is_punct_char(cur, '&')))
+  {
+    if (prev->kind == DOXTER_PUNCT)
+    {
+      if (s_tok_is_punct_char(prev, '(') || s_tok_is_punct_char(prev, '[') || s_tok_is_punct_char(prev, '{'))
+      {
+        return false;
+      }
+    }
+
+    if (s_tok_is_word(prev->kind)) { return true; }
+
+    if (prev->kind == DOXTER_PUNCT && (s_tok_is_punct_char(prev, ')') || s_tok_is_punct_char(prev, ']')))
+    {
+      return true;
+    }
 
     return false;
   }
 
-  // Space after comma
-  if (a->kind == DOXTER_PUNCT && s_tok_is_punct_char(a, ',')) return true;
+  /* Space after comma. */
+  if (prev->kind == DOXTER_PUNCT && s_tok_is_punct_char(prev, ','))
+  {
+    return true;
+  }
 
-  // Word-word
-  if (s_tok_is_word(a->kind) && s_tok_is_word(b->kind)) return true;
+  /* Space between two word-ish tokens. */
+  if (s_tok_is_word(prev->kind) && s_tok_is_word(cur->kind))
+  {
+    return true;
+  }
 
-  // ident '(' => no space
-  if (a->kind == DOXTER_IDENT && b->kind == DOXTER_PUNCT && s_tok_is_punct_char(b, '(')) return false;
+  /* No space between identifier and '(' (call / declaration name). */
+  if (prev->kind == DOXTER_IDENT && cur->kind == DOXTER_PUNCT && s_tok_is_punct_char(cur, '('))
+  {
+    return false;
+  }
 
   return false;
 }
 
-static int s_find_return_ptr_star_run_end(const DoxterToken* tokens, int i, int end)
+static void s_emit_span_tokens(
+    DoxterProject* project,
+    DoxterTokenSpan ts,
+    bool glue_star_to_ident,
+    XStrBuilder* out)
 {
-  /* If tokens[i] is '*', and the following pattern is: '*'* IDENT '('
-     return the index of the last '*' in the run, otherwise return -1. */
-  int j;
+  const DoxterToken* prev = NULL;
 
-  if (i >= end) return -1;
-  if (!(tokens[i].kind == DOXTER_PUNCT && s_tok_is_punct_char(&tokens[i], '*'))) return -1;
-
-  j = i;
-  while (j < end && tokens[j].kind == DOXTER_PUNCT && s_tok_is_punct_char(&tokens[j], '*'))
+  for (u32 i = 0; i < ts.count; ++i)
   {
-    j++;
+    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, ts.first + i).ptr;
+
+    if (prev && s_join_need_space_simple(prev, t, glue_star_to_ident))
+    {
+      x_strbuilder_append_char(out, ' ');
+    }
+
+    s_emit_token_highlighted(project, out, t);
+    prev = t;
   }
-
-  if (j + 1 >= end) return -1;
-  if (tokens[j].kind != DOXTER_IDENT) return -1;
-  if (!(tokens[j + 1].kind == DOXTER_PUNCT && s_tok_is_punct_char(&tokens[j + 1], '('))) return -1;
-
-  return j - 1; /* last '*' */
 }
 
-static void s_doxter_emit_decl_highlighted(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
+static bool s_params_has_multiple_args(DoxterProject* project, DoxterTokenSpan params_ts)
+{
+  int paren_depth = 0;
+
+  for (u32 i = 0; i < params_ts.count; ++i)
+  {
+    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, params_ts.first + i).ptr;
+
+    if (t->kind == DOXTER_PUNCT && t->text.length == 1)
+    {
+      char c = t->text.ptr[0];
+
+      if (c == '(')
+      {
+        paren_depth++;
+      }
+      else if (c == ')')
+      {
+        paren_depth--;
+      }
+      else if (c == ',' && paren_depth == 1)
+      {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+static void s_emit_function_params( DoxterProject* project,
+    DoxterTokenSpan params_ts, bool multiline, XStrBuilder* out)
+{
+  const DoxterToken* prev = NULL;
+  int paren_depth = 0;
+
+  for (u32 i = 0; i < params_ts.count; ++i)
+  {
+    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, params_ts.first + i).ptr;
+
+    if (prev && s_join_need_space_simple(prev, t, true /* glue star to ident for params */))
+    {
+      x_strbuilder_append_char(out, ' ');
+    }
+
+    s_emit_token_highlighted(project, out, t);
+
+    if (t->kind == DOXTER_PUNCT && t->text.length == 1)
+    {
+      char c = t->text.ptr[0];
+
+      if (c == '(')
+      {
+        paren_depth++;
+        if (multiline && paren_depth == 1)
+        {
+          x_strbuilder_append_cstr(out, "\n");
+          x_strbuilder_append_cstr(out, INDENTATION );
+
+          prev = NULL;
+          continue;
+        }
+      }
+      else if (c == ')')
+      {
+        paren_depth--;
+      }
+      else if (c == ',' && multiline && paren_depth == 1)
+      {
+        x_strbuilder_append_cstr(out, "\n");
+        x_strbuilder_append_cstr(out, INDENTATION );
+        prev = NULL;
+        continue;
+      }
+    }
+
+    prev = t;
+  }
+}
+
+static void s_emit_decl_function(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
+{
+  s_emit_span_tokens(project, sym->stmt.fn.return_ts, false, out);
+
+  /* Always separate return part and name. This enforces: "char * x_func". */
+  x_strbuilder_append_char(out, ' ');
+
+  const DoxterToken* name = (const DoxterToken*)x_array_get(project->tokens, sym->stmt.fn.name_tok).ptr;
+  s_emit_token_highlighted(project, out, name);
+
+  bool multiline = s_params_has_multiple_args(project, sym->stmt.fn.params_ts);
+  s_emit_function_params(project, sym->stmt.fn.params_ts, multiline, out);
+
+  x_strbuilder_append_char(out, ';');
+}
+
+static void s_emit_decl_macro(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
+{
+  /* Emit deterministically using parser spans. */
+  if (sym->stmt.macro.name_tok != 0)
+  {
+    DoxterTokenSpan pre;
+    pre.first = sym->first_token_index;
+    pre.count = (sym->stmt.macro.name_tok - sym->first_token_index) + 1;
+    s_emit_span_tokens(project, pre, true, out);
+
+    if (sym->stmt.macro.args_ts.count > 0)
+    {
+      s_emit_span_tokens(project, sym->stmt.macro.args_ts, true, out);
+    }
+
+    if (sym->stmt.macro.value_ts.count > 0)
+    {
+      /* Keep your readability rule for function-like macros. */
+      if (sym->stmt.macro.args_ts.count > 0)
+      {
+        x_strbuilder_append_char(out, ' ');
+      }
+      else
+      {
+        x_strbuilder_append_char(out, ' ');
+      }
+
+      s_emit_span_tokens(project, sym->stmt.macro.value_ts, true, out);
+    }
+
+    return;
+  }
+
+  /* Fallback: emit raw tokens. */
+  {
+    DoxterTokenSpan ts;
+    ts.first = sym->first_token_index;
+    ts.count = sym->num_tokens;
+    s_emit_span_tokens(project, ts, true, out);
+  }
+}
+
+static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
 {
   const u32 first = sym->first_token_index;
   const u32 count = sym->num_tokens;
 
   const DoxterToken* prev = NULL;
-  bool force_space_before = false;
+  int brace_depth = 0;
 
   for (u32 i = 0; i < count; ++i)
   {
-    const DoxterToken* t = (const DoxterToken*) x_array_get(project->tokens, first + i).ptr;
-    const DoxterToken* t_next = (i + 1 >= count) ? NULL :
-      (const DoxterToken*) x_array_get(project->tokens, first + i + 1).ptr;
+    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, first + i).ptr;
 
-    bool need_space = false;
-
-    if (force_space_before)
-    {
-      need_space = true;
-      force_space_before = false;
-    }
-    else if (prev && s_need_space_between(prev, t))
-    {
-      need_space = true;
-    }
-
-    // Return-type pointer star run:
-    // glue '*' to the return type and force a single space before function name.
-    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, '*'))
-    {
-      // Look ahead: '*'* IDENT '('
-      u32 j = i;
-
-      while (j < count)
-      {
-        const DoxterToken* tj = (const DoxterToken*) x_array_get(project->tokens, first + j).ptr;
-        if (!(tj->kind == DOXTER_PUNCT && s_tok_is_punct_char(tj, '*')))
-        {
-          break;
-        }
-        j++;
-      }
-
-      if (j + 1 < count)
-      {
-        const DoxterToken* t_ident = (const DoxterToken*) x_array_get(project->tokens, first + j).ptr;
-        const DoxterToken* t_paren = (const DoxterToken*) x_array_get(project->tokens, first + j + 1).ptr;
-
-        if (t_ident->kind == DOXTER_IDENT &&
-            t_paren->kind == DOXTER_PUNCT &&
-            s_tok_is_punct_char(t_paren, '('))
-        {
-          // This '*' is part of the return type's pointer run.
-          need_space = false;
-
-          // If this is the last '*' in the run, force a space before the function name.
-          if (j == i + 1)
-          {
-            force_space_before = true;
-          }
-        }
-      }
-    }
-
-    if (need_space)
+    if (prev && s_join_need_space_simple(prev, t, true))
     {
       x_strbuilder_append_char(out, ' ');
     }
 
-    s_emit_token_highlighted(out, t);
+    s_emit_token_highlighted(project, out, t);
 
-    // Optional canonical newlines
-    //
-    // always add new line and ident after ';'. 
-    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, ';'))
+    if (t->kind == DOXTER_PUNCT && t->text.length == 1)
     {
-      if (t_next && t_next->kind == DOXTER_PUNCT && s_tok_is_punct_char(t_next, '}'))
+      char c = t->text.ptr[0];
+
+      if (c == '{')
+      {
+        brace_depth++;
+        if (brace_depth == 1)
+        {
+          x_strbuilder_append_cstr(out, "\n");
+          x_strbuilder_append_cstr(out, INDENTATION );
+          prev = NULL;
+          continue;
+        }
+      }
+      else if (c == '}')
+      {
+        brace_depth--;
+      }
+      else if (c == ';' && brace_depth == 1)
+      {
         x_strbuilder_append_cstr(out, "\n");
-      else if (t_next && t_next->kind != DOXTER_END)
-        x_strbuilder_append_cstr(out, "\n\t");
-      prev = NULL;
-      force_space_before = false;
-      continue;
-    }
-
-    // always add new line and ident after '{'
-    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, '{'))
-    {
-      x_strbuilder_append_cstr(out, "\n\t");
-      prev = NULL;
-      force_space_before = false;
-      continue;
-    }
-
-    // always add new line and ident after ','
-    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, ',') && sym->type != DOXTER_MACRO)
-    {
-      x_strbuilder_append_cstr(out, "\n\t");
-      prev = NULL;
-      force_space_before = false;
-      continue;
-    }
-
-    // always add space after '}'
-    if (t->kind == DOXTER_PUNCT && s_tok_is_punct_char(t, '}'))
-    {
-      x_strbuilder_append_char(out, ' ');
-      prev = NULL;
-      force_space_before = false;
-      continue;
+        x_strbuilder_append_cstr(out, INDENTATION );
+        prev = NULL;
+        continue;
+      }
+      else if (c == ',' && sym->type == DOXTER_ENUM && brace_depth == 1)
+      {
+        x_strbuilder_append_cstr(out, "\n");
+        x_strbuilder_append_cstr(out, INDENTATION );
+        prev = NULL;
+        continue;
+      }
     }
 
     prev = t;
+  }
+}
+
+static void s_doxter_emit_decl_highlighted(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
+{
+  switch (sym->type)
+  {
+    case DOXTER_FUNCTION:
+      s_emit_decl_function(project, sym, out);
+      break;
+
+    case DOXTER_MACRO:
+      s_emit_decl_macro(project, sym, out);
+      break;
+
+    case DOXTER_STRUCT:
+    case DOXTER_UNION:
+    case DOXTER_ENUM:
+      s_emit_decl_record(project, sym, out);
+      break;
+
+    case DOXTER_TYPEDEF:
+    default:
+      {
+        DoxterTokenSpan ts;
+        ts.first = sym->first_token_index;
+        ts.count = sym->num_tokens;
+        s_emit_span_tokens(project, ts, true, out);
+      } break;
   }
 }
 
@@ -1466,7 +1635,7 @@ static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
   XArena* arena = x_arena_create(arena_size);
   DoxterProject* proj = (DoxterProject*) malloc (sizeof(DoxterProject));
   proj->scratch                                 = arena;
-  proj->symbol_map                              = x_hashtable_create(XSlice, DoxterSymbol);
+  proj->symbol_map                              = x_hashtable_create(char*, DoxterSymbol);
   proj->symbols                                 = x_array_create(sizeof(DoxterSymbol), 256);
   proj->tokens                                  = x_array_create(sizeof(DoxterToken), 64);
   proj->source_count                            = 0;
@@ -1595,25 +1764,53 @@ i32 main(i32 argc, char **argv)
   for (u32 source_i = 0; source_i < proj->source_count; source_i++)
   {
     DoxterSourceInfo* source_info = &(proj->sources[source_i]);
-    for (u32 i_symbol = source_info->first_symbol_index;
-        i_symbol < source_info->num_symbols;
-        i_symbol++)
+    u32 start = source_info->first_symbol_index;
+    u32 end   = start + source_info->num_symbols;
+
+    for (u32 i_symbol = start; i_symbol < end; i_symbol++)
     {
       DoxterSymbol* sym = x_array_get(proj->symbols, i_symbol).ptr;
       x_smallstr_clear(&sym->anchor);
       if (sym->type == DOXTER_FILE)
       {
         x_smallstr_appendf(&sym->anchor, "%s%c", source_info->base_name, 0);
-        x_hashtable_set(proj->symbol_map, &sym->name, sym);
+        x_hashtable_set(proj->symbol_map, &sym->name.ptr, sym);
       }
       else
       {
         x_smallstr_appendf(&sym->anchor, "%s/#%.*s%c",
             source_info->base_name, (u32) sym->name.length, sym->name.ptr, 0);
-        x_hashtable_set(proj->symbol_map, &sym->name, sym);
+        x_hashtable_set(proj->symbol_map, &sym->name.ptr, sym);
       }
     }
   }
+
+#if 0
+  for (u32 source_i = 0; source_i < proj->source_count; source_i++)
+  {
+    DoxterSourceInfo* source_info = &(proj->sources[source_i]);
+    printf("-- SOURCE '%s'\n", source_info->path);
+
+    u32 start = source_info->first_symbol_index;
+    u32 end   = start + source_info->num_symbols;
+
+    for (u32 i_symbol = start; i_symbol < end; i_symbol++)
+    {
+      DoxterSymbol* sym = x_array_get(proj->symbols, i_symbol).ptr;
+      //printf("-- '%s'\n", sym->name.ptr);
+
+      DoxterSymbol out_sym;
+      if (sym->name.length == 0)
+        continue;
+
+      if (x_hashtable_get(proj->symbol_map, &sym->name.ptr, &out_sym))
+      {
+        printf("-- '%s' => %s\n", sym->name.ptr, out_sym.name.ptr);
+      }
+    }
+  }
+#endif
+
 
   // --------------------------------------------------------
   // process each header and generate corresponding HTML page

@@ -102,6 +102,78 @@ typedef enum DoxterType
   DOXTER_FILE       = 7
 } DoxterType;
 
+typedef struct DoxterTokenSpan
+{
+  u32 first; /* index into DoxterProject.tokens */
+  u32 count; /* number of tokens */
+} DoxterTokenSpan;
+
+typedef struct DoxterSymbolFunction
+{
+  u32 name_tok;
+  DoxterTokenSpan return_ts;  /* return type + pointer stars tied to return */
+  DoxterTokenSpan params_ts;
+} DoxterSymbolFunction;
+
+typedef struct DoxterSymbolMacro
+{
+  u32 name_tok;              /* macro name token index */
+  DoxterTokenSpan args_ts;   /* function-like macro args "(...)" including parens; empty if object-like */
+  DoxterTokenSpan value_ts;  /* replacement list tokens (may be empty) */
+} DoxterSymbolMacro;
+
+typedef struct DoxterSymbolRecord
+{
+  u32 name_tok;              /* struct/union/enum tag token index (0 if anonymous) */
+  DoxterTokenSpan body_ts;   /* tokens for "{ ... }" including braces; empty if forward decl */
+} DoxterSymbolRecord;
+
+typedef struct DoxterSymbolTypedef
+{
+  u32 name_tok;              /* typedef name token index (0 if unknown) */
+  DoxterTokenSpan value_ts;  /* typedef RHS tokens (excluding name); optional */
+} DoxterSymbolTypedef;
+
+struct DoxterSymbol
+{
+  uint32_t line;
+  uint32_t column;
+  XSlice declaration;
+  XSlice comment;
+  XSlice name;
+  bool is_typedef;
+  bool is_static;
+  bool is_empty_macro;
+  u32 num_tokens;
+  u32 first_token_index;
+  XSmallstr anchor;
+  DoxterType type;
+
+  union
+  {
+    DoxterSymbolFunction fn;
+    DoxterSymbolMacro macro;
+    DoxterSymbolRecord record;     /* struct/union/enum */
+    DoxterSymbolTypedef tdef;
+  } stmt;
+};
+
+struct DoxterComment
+{
+  uint32_t line;
+  uint32_t column;
+  XSlice   declaration;   // Full /** ... */ comment text including tags
+  XSlice   target;        // C code of whatever is being documented (without body)
+  XSlice   name;          // Identifier extracted from target (only the symbol name)
+  XSlice   doc_brief;
+  XSlice   doc_return;
+  XSlice   doc_arg[DOXTER_COMMENT_MAX_ARGS];
+  XSlice   doc_arg_name[DOXTER_COMMENT_MAX_ARGS];
+  bool     is_typedef;
+  uint32_t doc_arg_count;
+  DoxterType type;
+};
+
 struct DoxterConfig
 {
   const char* color_page_background;
@@ -140,39 +212,6 @@ struct DoxterConfig
   u8 markdown_index_page;
 };
 
-struct DoxterSymbol
-{
-  uint32_t    line;           // declaration starting line
-  uint32_t    column;         // declaration staing column
-  XSlice      declaration;    // Actual C code of the declaration. Functions do not include { } body. Structs, macros, enums, typedefs etc should incude full code.
-  XSlice      comment;        // /** ... */ right before the declaration, if any
-  XSlice      name;           // Symbol name of declaration
-  bool        is_typedef;     // true if it is a typedef
-  bool        is_static;      // true if it is static
-  bool        is_empty_macro; // true is it is an empty define macro like #define SOMENAME, without any value
-  u32         num_tokens;
-  u32         first_token_index; // indexes DoxterProject.tokens array.
-
-  XSmallstr   anchor;
-  DoxterType  type;       
-};
-
-struct DoxterComment
-{
-  uint32_t line;
-  uint32_t column;
-  XSlice   declaration;   // Full /** ... */ comment text including tags
-  XSlice   target;        // C code of whatever is being documented (without body)
-  XSlice   name;          // Identifier extracted from target (only the symbol name)
-  XSlice   doc_brief;
-  XSlice   doc_return;
-  XSlice   doc_arg[DOXTER_COMMENT_MAX_ARGS];
-  XSlice   doc_arg_name[DOXTER_COMMENT_MAX_ARGS];
-  bool     is_typedef;
-  uint32_t doc_arg_count;
-  DoxterType type;
-};
-
 typedef struct
 {
   char *project_index_html;
@@ -195,7 +234,6 @@ typedef struct
   u32   num_symbols;        // number of symbols for this source in DoxterProject.symbols
   u32   first_symbol_index; // index of first symbol in DoxterProject.symbols
 } DoxterSourceInfo;
-
 
 typedef struct
 {
