@@ -113,6 +113,8 @@ build_and_run_tests()
 # Demos
 #----------------------------------------------------------------------------
 
+# Bake
+add_subdirectory(demo/bake)
 # Webserver
 add_subdirectory(demo/webserver)
 # Doxter
