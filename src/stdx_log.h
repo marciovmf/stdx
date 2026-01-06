@@ -27,6 +27,14 @@
 #define X_LOG_VERSION_PATCH 0
 #define X_LOG_VERSION (X_LOG_VERSION_MAJOR * 10000 + X_LOG_VERSION_MINOR * 100 + X_LOG_VERSION_PATCH)
 
+#ifndef X_LOG_BUFFER_SIZE
+/**
+ * Default buffer size for log messages.
+ * Can be overriden before including this header
+ */
+#define X_LOG_BUFFER_SIZE (1024 * 4)
+#endif  // X_LOG_BUFFER_SIZE
+
 #ifdef _WIN32
 #ifndef _CRT_SECURE_NO_WARNINGS
 #define _CRT_SECURE_NO_WARNINGS
@@ -483,7 +491,7 @@ extern "C" {
     }
 
     /* Format the message body */
-    char msgbuf[1024];
+    char msgbuf[X_LOG_BUFFER_SIZE];
 
 #ifdef _WIN32
     vsnprintf_s(msgbuf, sizeof(msgbuf), _TRUNCATE, fmt, args);
