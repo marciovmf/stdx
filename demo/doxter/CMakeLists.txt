@@ -47,5 +47,6 @@ add_executable(doxter
 
 target_include_directories(doxter
   PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../../src"
+  PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../md2html/src"
   "${GEN_DIR}"
 )

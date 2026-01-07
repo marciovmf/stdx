@@ -18,15 +18,11 @@
 #include <stdx_hashtable.h>
 #include <stdx_log.h>
 #define MD_IMPL
-#include "markdown.h"
+#include <markdown.h>
+
 #include "doxter.h"
 #include "doxter_template.h"
 #include "doxter_fonts.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
 
 #define INDENTATION "  "
 
