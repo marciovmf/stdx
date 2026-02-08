@@ -751,13 +751,17 @@ extern "C" {
 
   size_t x_fs_cwd_get(XFSPath* path)
   {
+    if (!path)
+      return 0;
+    path->length = 0;
 #ifdef _WIN32
     DWORD size = GetCurrentDirectory(X_FS_PAHT_MAX_LENGTH, path->buf);
-    return (size_t)size;
+    path->length = size;
 #else
     char* result = getcwd(path->buf, X_FS_PAHT_MAX_LENGTH);
-    return result ? strlen(path->buf) : 0;
+    path->length = strlen(path->buf);
 #endif
+    return path->length;
   }
 
   size_t x_fs_cwd_set(const char* path)

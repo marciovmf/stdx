@@ -1,19 +1,15 @@
-/**
+/*
  * STDX - IO (file I/O utility functions)
  * Part of the STDX General Purpose C Library by marciovmf
- * <https://github.com/marciovmf/stdx>
+ * https://github.com/marciovmf/stdx
  * License: MIT
  *
- * ## Overview
- * Provides basic file io operations. 
- *
- * To compile the implementation define `X_IMPL_IO`
+ * To compile the implementation define X_IMPL_IO
  * in **one** source file before including this header.
  *
- * ## How to compile
- *
  * To customize how this module allocates memory, define
- * `X_IO_ALLOC` / `X_IO_FREE` before including.
+ * X_IO_ALLOC / X_IO_FREE before including.
+ * 
  */
 #ifndef X_IO_H
 #define X_IO_H
@@ -38,126 +34,22 @@ extern "C" {
 
   typedef struct XFile_t XFile;
 
-  /**
-   * @brief Open a file with the specified mode.
-   * @param filename Path to the file to open.
-   * @param mode Standard C file mode string (e.g. "r", "rb", "w", "a").
-   * @return Pointer to an XFile on success, or NULL on failure.
-   */
-  X_IO_API XFile *x_io_open(const char *filename, const char *mode);
-
-  /**
-   * @brief Close a file and release all associated resources.
-   * @param file File handle to close.
-   */
-  X_IO_API void x_io_close(XFile *file);
-
-  /**
-   * @brief Read raw bytes from a file.
-   * @param file File handle to read from.
-   * @param buffer Destination buffer.
-   * @param size Maximum number of bytes to read.
-   * @return Number of bytes actually read.
-   */
-  X_IO_API size_t x_io_read(XFile *file, void *buffer, size_t size);
-
-  /**
-   * @brief Read the entire contents of a file into memory.
-   * @param file Open file handle.
-   * @param out_size Optional pointer to receive file size in bytes.
-   * @return Heap-allocated buffer containing file data, null-terminated.
-   */
-  X_IO_API char *x_io_read_all(XFile *file, size_t *out_size);
-
-  /**
-   * @brief Read an entire text file into memory.
-   * @param filename Path to the file to read.
-   * @param out_size Optional pointer to receive text size in bytes.
-   * @return Heap-allocated, null-terminated text buffer, or NULL on failure.
-   */
-  X_IO_API char *x_io_read_text(const char *filename, size_t *out_size);
-
-  /**
-   * @brief Write raw bytes to a file.
-   * @param file File handle to write to.
-   * @param data Source buffer.
-   * @param size Number of bytes to write.
-   * @return Number of bytes actually written.
-   */
-  X_IO_API size_t x_io_write(XFile *file, const void *data, size_t size);
-
-  /**
-   * @brief Write a null-terminated text string to a file, overwriting it.
-   * @param filename Path to the file.
-   * @param text Null-terminated text to write.
-   * @return true on success, false on failure.
-   */
-  X_IO_API bool x_io_write_text(const char *filename, const char *text);
-
-  /**
-   * @brief Append a null-terminated text string to a file.
-   * @param filename Path to the file.
-   * @param text Null-terminated text to append.
-   * @return true on success, false on failure.
-   */
-  X_IO_API bool x_io_append_text(const char *filename, const char *text);
-
-  /**
-   * @brief Change the current file position.
-   * @param file File handle.
-   * @param offset Offset relative to origin.
-   * @param origin Seek origin (e.g. SEEK_SET, SEEK_CUR, SEEK_END).
-   * @return true on success, false on failure.
-   */
-  X_IO_API bool x_io_seek(XFile *file, long offset, int32_t origin);
-
-  /**
-   * @brief Get the current file position.
-   * @param file File handle.
-   * @return Current position in bytes, or -1 on error.
-   */
-  X_IO_API long x_io_tell(XFile *file);
-
-  /**
-   * @brief Rewind the file position to the beginning.
-   * @param file File handle.
-   * @return true on success, false on failure.
-   */
-  X_IO_API bool x_io_rewind(XFile *file);
-
-  /**
-   * @brief Flush any buffered output to the file.
-   * @param file File handle.
-   * @return true on success, false on failure.
-   */
-  X_IO_API bool x_io_flush(XFile *file);
-
-  /**
-   * @brief Check whether end-of-file has been reached.
-   * @param file File handle.
-   * @return true if EOF is set, false otherwise.
-   */
-  X_IO_API bool x_io_eof(XFile *file);
-
-  /**
-   * @brief Check whether an error has occurred on the file.
-   * @param file File handle.
-   * @return true if an error is set, false otherwise.
-   */
-  X_IO_API bool x_io_error(XFile *file);
-
-  /**
-   * @brief Clear error and EOF indicators on a file.
-   * @param file File handle.
-   */
-  X_IO_API void x_io_clearerr(XFile *file);
-
-  /**
-   * @brief Retrieve the underlying file descriptor.
-   * @param file File handle.
-   * @return Platform file descriptor, or -1 if unavailable.
-   */
-  X_IO_API int32_t x_io_fileno(XFile *file);
+  X_IO_API XFile *x_io_open(const char *filename, const char *mode);           // Open a file with mode ("r", "rb", "w", etc.)
+  X_IO_API void x_io_close(XFile *file);                                       // Close a file and free internal memory
+  X_IO_API size_t x_io_read(XFile *file, void *buffer, size_t size);           // Read up to `size` bytes into buffer. Returns bytes read.
+  X_IO_API char *x_io_read_all(XFile *file, size_t *out_size);                 // Read the entire file into a buffer. Returns buffer (null-terminated, but not for text safety). Caller must free.
+  X_IO_API char *x_io_read_text(const char *filename, size_t* out_size);       // Convenience: open, read, close. Returns null-terminated text.
+  X_IO_API size_t x_io_write(XFile *file, const void *data, size_t size);      // Write `size` bytes to file. Returns number of bytes written.
+  X_IO_API bool x_io_write_text(const char *filename, const char *text);       // Write null-terminated text to a file (overwrite).
+  X_IO_API bool x_io_append_text(const char *filename, const char *text);      // Append null-terminated text to file.
+  X_IO_API bool x_io_seek(XFile *file, long offset, int32_t origin);           // Seek within file.
+  X_IO_API long x_io_tell(XFile *file);                                        // Return current file position.
+  X_IO_API bool x_io_rewind(XFile *file);                                      // Rewind file to beginning.
+  X_IO_API bool x_io_flush(XFile *file);                                       // Flush file buffer.
+  X_IO_API bool x_io_eof(XFile *file);                                         // Check end-of-file.
+  X_IO_API bool x_io_error(XFile *file);                                       // Check for file error.
+  X_IO_API void x_io_clearerr(XFile *file);                                    // Clear file error and EOF flags.
+  X_IO_API int32_t x_io_fileno(XFile *file);                                   // Return underlying file descriptor.
 
 #ifdef __cplusplus
 }
@@ -169,22 +61,7 @@ extern "C" {
 #include <string.h>
 
 #ifndef X_IO_ALLOC
-/**
- * @brief Internal macro for allocating memory.
- * To override how this header allocates memory, define this macro with a
- * different implementation before including this header.
- * @param sz  The size of memory to alloc.
- */
 #define X_IO_ALLOC(sz)        malloc(sz)
-#endif
-
-#ifndef X_IO_FREE
-/**
- * @brief Internal macro for freeing memory.
- * To override how this header frees memory, define this macro with a
- * different implementation before including this header.
- * @param p  The address of memory region to free.
- */
 #define X_IO_FREE(p)          free(p)
 #endif
 
