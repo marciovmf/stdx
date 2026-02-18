@@ -377,8 +377,6 @@ extern "C" {
    */
   const char* x_fs_path_cstr(const XFSPath* p);
 
-  XSlice x_fs_path_as_slice(const XFSPath* path);
-
   /**
    * @brief Append a single component to a path.
    * @param p Path to append to.
@@ -671,6 +669,7 @@ extern "C" {
     DIR* dir;
     struct dirent* entry;
     struct stat fileStat;
+    char base_path[X_FS_PAHT_MAX_LENGTH];
 #endif
   }; 
 
@@ -689,6 +688,23 @@ extern "C" {
     int32_t offset, len;
 #endif
   };
+
+#ifdef _WIN32
+  static time_t s_x_fs_filetime_to_time_t_(const FILETIME* ft)
+  {
+    ULARGE_INTEGER ull;
+    ull.LowPart = ft->dwLowDateTime;
+    ull.HighPart = ft->dwHighDateTime;
+
+    /* FILETIME is 100-ns intervals since 1601-01-01 (UTC). Convert to Unix epoch. */
+    const uint64_t EPOCH_DIFF_100NS = 11644473600ULL * 10000000ULL;
+    if (ull.QuadPart < EPOCH_DIFF_100NS)
+      return (time_t)0;
+
+    uint64_t t = (uint64_t)((ull.QuadPart - EPOCH_DIFF_100NS) / 10000000ULL);
+    return (time_t)t;
+  }
+#endif
 
   int32_t x_fs_path_join_one_slice(XFSPath* out, const XSlice segment)
   {
@@ -967,7 +983,7 @@ extern "C" {
     // Fill DirectoryEntry with the first entry
     strncpy(entry->name, dir_handle->findData.cFileName, MAX_PATH);
     entry->size = ((size_t)dir_handle->findData.nFileSizeHigh << 32) | dir_handle->findData.nFileSizeLow;
-    entry->last_modified = *(time_t*)&dir_handle->findData.ftLastWriteTime;
+    entry->last_modified = s_x_fs_filetime_to_time_t_(&dir_handle->findData.ftLastWriteTime);
     entry->is_directory = (dir_handle->findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
 #else
@@ -978,6 +994,8 @@ extern "C" {
       return NULL;
     }
 
+    snprintf(dir_handle->base_path, sizeof(dir_handle->base_path), "%s", path);
+
     // Read the first entry and fill DirectoryEntry
     dir_handle->entry = readdir(dir_handle->dir);
     if (dir_handle->entry)
@@ -987,10 +1005,17 @@ extern "C" {
       // Get file stats to fill size and last modified time
       char fullPath[MAX_PATH];
       snprintf(fullPath, sizeof(fullPath), "%s/%s", path, entry->name);
-      stat(fullPath, &dir_handle->fileStat);
-      entry->size = dir_handle->fileStat.st_size;
-      entry->last_modified = dir_handle->fileStat.st_mtime;
-      entry->is_directory = (dir_handle->entry->d_type == DT_DIR);
+      if (stat(fullPath, &dir_handle->fileStat) == 0)
+      {
+        entry->size = (size_t)dir_handle->fileStat.st_size;
+        entry->last_modified = dir_handle->fileStat.st_mtime;
+      }
+      else
+      {
+        entry->size = 0;
+        entry->last_modified = 0;
+      }
+      entry->is_directory = S_ISDIR(dir_handle->fileStat.st_mode) ? 1 : 0;
     }
 #endif
 
@@ -1004,7 +1029,7 @@ extern "C" {
     {
       strncpy(entry->name, dir_handle->findData.cFileName, MAX_PATH);
       entry->size = ((size_t)dir_handle->findData.nFileSizeHigh << 32) | dir_handle->findData.nFileSizeLow;
-      entry->last_modified = *(time_t*)&dir_handle->findData.ftLastWriteTime; // Convert to time_t
+      entry->last_modified = s_x_fs_filetime_to_time_t_(&dir_handle->findData.ftLastWriteTime);
       entry->is_directory = (dir_handle->findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
       return true;
     }
@@ -1016,11 +1041,18 @@ extern "C" {
 
       // Get file stats to fill size and last modified time
       char fullPath[MAX_PATH];
-      snprintf(fullPath, sizeof(fullPath), "%s/%s", dir_handle->entry->d_name, entry->name);
-      stat(fullPath, &dir_handle->fileStat);
-      entry->size = dir_handle->fileStat.st_size;
-      entry->last_modified = dir_handle->fileStat.st_mtime;
-      entry->is_directory = (dir_handle->entry->d_type == DT_DIR);
+      snprintf(fullPath, sizeof(fullPath), "%s/%s", dir_handle->base_path, entry->name);
+      if (stat(fullPath, &dir_handle->fileStat) == 0)
+      {
+        entry->size = (size_t)dir_handle->fileStat.st_size;
+        entry->last_modified = dir_handle->fileStat.st_mtime;
+      }
+      else
+      {
+        entry->size = 0;
+        entry->last_modified = 0;
+      }
+      entry->is_directory = S_ISDIR(dir_handle->fileStat.st_mode) ? 1 : 0;
       return true;
     }
 #endif
@@ -1972,119 +2004,107 @@ extern "C" {
 #endif
   }
 
+  XSlice x_fs_path_stem_as_slice(const XFSPath* input)
+  {
+    return x_fs_path_stem_cstr(x_fs_path_cstr(input));
+  }
+
+  size_t x_fs_path_stem(const XFSPath* input, XFSPath* out)
+  {
+    if (out == input)
+    {
+      XFSPath tmp;
+      x_fs_path_init(&tmp);
+
+      size_t n = x_fs_path_from_slice(x_fs_path_stem_as_slice(input), &tmp);
+      if (n == 0)
+      {
+        return 0;
+      }
+
+      *out = tmp;
+      return n;
+    }
+
+    return x_fs_path_from_slice(x_fs_path_stem_as_slice(input), out);
+  }
+
+  XSlice x_fs_path_basename_as_slice(const XFSPath* input)
+  {
+    return x_fs_path_basename_cstr(x_fs_path_cstr(input));
+  }
+
+  size_t x_fs_path_basename(const XFSPath* input, XFSPath* out)
+  {
+    if (out == input)
+    {
+      XFSPath tmp;
+      x_fs_path_init(&tmp);
+
+      size_t n = x_fs_path_from_slice(x_fs_path_basename_as_slice(input), &tmp);
+      if (n == 0)
+      {
+        return 0;
+      }
+
+      *out = tmp;
+      return n;
+    }
+
+    return x_fs_path_from_slice(x_fs_path_basename_as_slice(input), out);
+  }
+
+  XSlice x_fs_path_dirname_as_slice(const XFSPath* input)
+  {
+    return x_fs_path_dirname_cstr(x_fs_path_cstr(input));
+  }
+
+  size_t x_fs_path_dirname(const XFSPath* input, XFSPath* out)
+  {
+    if (out == input)
+    {
+      XFSPath tmp;
+      x_fs_path_init(&tmp);
+
+      size_t n = x_fs_path_from_slice(x_fs_path_dirname_as_slice(input), &tmp);
+      if (n == 0)
+      {
+        return 0;
+      }
+
+      *out = tmp;
+      return n;
+    }
+
+    return x_fs_path_from_slice(x_fs_path_dirname_as_slice(input), out);
+  }
+
+  XSlice x_fs_path_extension_as_slice(const XFSPath* input)
+  {
+    return x_fs_path_extension_cstr(x_fs_path_cstr(input));
+  }
+
+  size_t x_fs_path_extension(const XFSPath* input, XFSPath* out)
+  {
+    if (out == input)
+    {
+      XFSPath tmp;
+      x_fs_path_init(&tmp);
+
+      size_t n = x_fs_path_from_slice(x_fs_path_extension_as_slice(input), &tmp);
+      if (n == 0)
+      {
+        return 0;
+      }
+
+      *out = tmp;
+      return n;
+    }
+
+    return x_fs_path_from_slice(x_fs_path_extension_as_slice(input), out);
+  }
+
 #ifdef __cplusplus
-}
-
-XSlice x_fs_path_as_slice(const XFSPath* path)
-{
-  XSlice s;
-  s.ptr = x_fs_path_cstr(path);
-  s.length = path ? path->length : 0;
-  return s;
-}
-
-
-XSlice x_fs_path_stem_as_slice(const XFSPath* input)
-{
-  return x_fs_path_stem_cstr(x_fs_path_cstr(input));
-}
-
-size_t x_fs_path_stem(const XFSPath* input, XFSPath* out)
-{
-  if (out == input)
-  {
-    XFSPath tmp;
-    x_fs_path_init(&tmp);
-
-    size_t n = x_fs_path_from_slice(x_fs_path_stem_as_slice(input), &tmp);
-    if (n == 0)
-    {
-      return 0;
-    }
-
-    *out = tmp;
-    return n;
-  }
-
-  return x_fs_path_from_slice(x_fs_path_stem_as_slice(input), out);
-}
-
-
-XSlice x_fs_path_basename_as_slice(const XFSPath* input)
-{
-  return x_fs_path_basename_cstr(x_fs_path_cstr(input));
-}
-
-size_t x_fs_path_basename(const XFSPath* input, XFSPath* out)
-{
-  if (out == input)
-  {
-    XFSPath tmp;
-    x_fs_path_init(&tmp);
-
-    size_t n = x_fs_path_from_slice(x_fs_path_basename_as_slice(input), &tmp);
-    if (n == 0)
-    {
-      return 0;
-    }
-
-    *out = tmp;
-    return n;
-  }
-
-  return x_fs_path_from_slice(x_fs_path_basename_as_slice(input), out);
-}
-
-
-XSlice x_fs_path_dirname_as_slice(const XFSPath* input)
-{
-  return x_fs_path_dirname_cstr(x_fs_path_cstr(input));
-}
-
-size_t x_fs_path_dirname(const XFSPath* input, XFSPath* out)
-{
-  if (out == input)
-  {
-    XFSPath tmp;
-    x_fs_path_init(&tmp);
-
-    size_t n = x_fs_path_from_slice(x_fs_path_dirname_as_slice(input), &tmp);
-    if (n == 0)
-    {
-      return 0;
-    }
-
-    *out = tmp;
-    return n;
-  }
-
-  return x_fs_path_from_slice(x_fs_path_dirname_as_slice(input), out);
-}
-
-
-XSlice x_fs_path_extension_as_slice(const XFSPath* input)
-{
-  return x_fs_path_extension_cstr(x_fs_path_cstr(input));
-}
-
-size_t x_fs_path_extension(const XFSPath* input, XFSPath* out)
-{
-  if (out == input)
-  {
-    XFSPath tmp;
-    x_fs_path_init(&tmp);
-
-    size_t n = x_fs_path_from_slice(x_fs_path_extension_as_slice(input), &tmp);
-    if (n == 0)
-    {
-      return 0;
-    }
-
-    *out = tmp;
-    return n;
-  }
-
-  return x_fs_path_from_slice(x_fs_path_extension_as_slice(input), out);
 }
 
 #endif
