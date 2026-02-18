@@ -58,21 +58,21 @@ int test_x_fs_path_normalize(void)
 
 int test_x_fs_path_basename(void)
 {
-  XSlice base = x_fs_path_basename("/usr/local/bin/gcc");
+  XSlice base = x_fs_path_basename_cstr("/usr/local/bin/gcc");
   ASSERT_TRUE(x_slice_eq(base, x_slice("gcc")));
   return 0;
 }
 
 int test_x_fs_path_dirname(void)
 {
-  XSlice dirname = x_fs_path_dirname("/usr/local/bin/gcc");
+  XSlice dirname = x_fs_path_dirname_cstr("/usr/local/bin/gcc");
   ASSERT_TRUE(x_slice_eq(dirname, x_slice("/usr/local/bin")));
   return 0;
 }
 
 int test_x_fs_path_extension(void)
 {
-  XSlice ext = x_fs_path_extension("/foo/bar/biz/bald/foo.tar.gz");
+  XSlice ext = x_fs_path_extension_cstr("/foo/bar/biz/bald/foo.tar.gz");
   ASSERT_FALSE(x_slice_is_empty(ext));
   ASSERT_TRUE(x_slice_eq_cstr(ext, "gz"));
   return 0;
@@ -177,12 +177,12 @@ int test_x_fs_path_functions(void)
   ASSERT_FALSE(x_fs_path_is_directory_cstr("nonexistent.txt"));
   ASSERT_FALSE(x_fs_path_is_file_cstr("."));
 
-  XSlice name = x_fs_path_basename("/usr/bin/clang");
+  XSlice name = x_fs_path_basename_cstr("/usr/bin/clang");
   ASSERT_TRUE(strncmp(name.ptr, "clang", name.length) == 0);
-  XSlice ext = x_fs_path_extension("program.c");
+  XSlice ext = x_fs_path_extension_cstr("program.c");
   ASSERT_TRUE(strncmp(ext.ptr, "c", ext.length) == 0);
 
-  XSlice parent = x_fs_path_dirname("/usr/bin/clang");
+  XSlice parent = x_fs_path_dirname_cstr("/usr/bin/clang");
   ASSERT_TRUE(strncmp(parent.ptr, "/usr/bin", parent.length) == 0);
 
   XFSPath path;
@@ -256,6 +256,33 @@ int test_x_fs_temp_folder(void)
   return 0;
 }
 
+int test_x_fs_path_join_slice(void)
+{
+  XFSPath out = {0};
+  x_smallstr_clear(&out);
+
+  XFSPath a;
+  x_smallstr_clear(&a);
+  ASSERT_TRUE(x_fs_path_set(&a, "dir") != 0);
+
+  XFSPath b;
+  x_smallstr_clear(&b);
+  ASSERT_TRUE(x_fs_path_set(&b, "file.txt") != 0);
+
+  XSlice sa = x_fs_path_as_slice(&a);
+  XSlice sb = x_fs_path_as_slice(&b);
+
+  ASSERT_TRUE(x_fs_path_join_slice(&out, &sa, &sb) != 0);
+
+#ifdef _WIN32
+  ASSERT_TRUE(x_fs_path_compare_cstr(&out, "dir\\file.txt") == 0);
+#else
+  ASSERT_TRUE(x_fs_path_compare_cstr(&out, "dir/file.txt") == 0);
+#endif
+
+  return 0;
+}
+
 
 // ---------------------------------------------------------------------------
 // Test filesystem watching
@@ -294,6 +321,7 @@ int main()
     X_TEST(test_x_fs_temp_folder),
 
     X_TEST(test_x_fs_watch_empty),
+    X_TEST(test_x_fs_path_join_slice),
 
   };
 

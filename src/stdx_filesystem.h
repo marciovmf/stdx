@@ -52,11 +52,11 @@
 #endif
 
 #ifdef _WIN32
-#define PATH_SEPARATOR '\\'
-#define ALT_SEPARATOR '/'
+#define X_FS_PATH_SEPARATOR '\\'
+#define X_FS_ALT_PATH_SEPARATOR '/'
 #else
-#define PATH_SEPARATOR '/'
-#define ALT_SEPARATOR '\\'
+#define X_FS_PATH_SEPARATOR '/'
+#define X_FS_ALT_PATH_SEPARATOR '\\'
 #endif
 
 #ifdef __cplusplus
@@ -229,21 +229,30 @@ extern "C" {
    * @param input Path as a C string.
    * @return Slice pointing into input containing the stem.
    */
-  XSlice x_fs_path_stem(const char* input);
+  XSlice x_fs_path_stem_cstr(const char* input);
+  XSlice x_fs_path_stem_as_slice(const XFSPath* input);
+  size_t x_fs_path_stem(const XFSPath* input, XFSPath* out);
+
 
   /**
    * @brief Get the basename (final component) from a path string.
    * @param input Path as a C string.
    * @return Slice pointing into input containing the basename.
    */
-  XSlice x_fs_path_basename(const char* input);
+  XSlice x_fs_path_basename_cstr(const char* input);
+  XSlice x_fs_path_basename_as_slice(const XFSPath* input);
+  size_t x_fs_path_basename(const XFSPath* input, XFSPath* out);
+
 
   /**
    * @brief Get the directory name (everything before the final component) from a path string.
    * @param input Path as a C string.
    * @return Slice pointing into input containing the directory portion.
    */
-  XSlice x_fs_path_dirname(const char* input);
+  XSlice x_fs_path_dirname_cstr(const char* input);
+  XSlice x_fs_path_dirname_as_slice(const XFSPath* input);
+  size_t x_fs_path_dirname(const XFSPath* input, XFSPath* out);
+
 
   /**
    * @brief Build a path from one or more C string components (variadic), writing to out.
@@ -252,7 +261,18 @@ extern "C" {
    */
   bool x_fs_path_(XFSPath* out, ...);
 
-  /**
+  
+
+  /* Join path segments (NULL-terminated varargs). Used by x_fs_path_join(). */
+  size_t x_fs_path_join_(XFSPath* path, ...);
+
+  /* Join path segments from XSlice pointers (NULL-terminated varargs). Used by x_fs_path_join_slice(). */
+  size_t x_fs_path_join_slice_(XFSPath* path, ...);
+
+  /* Full-path view as XSlice. Valid while the XFSPath is not modified. */
+  XSlice x_fs_path_as_slice(const XFSPath* path);
+  
+/**
    * @brief Check whether a path exists on disk.
    * @param path Path to check.
    * @return True if it exists, false otherwise.
@@ -357,6 +377,8 @@ extern "C" {
    */
   const char* x_fs_path_cstr(const XFSPath* p);
 
+  XSlice x_fs_path_as_slice(const XFSPath* path);
+
   /**
    * @brief Append a single component to a path.
    * @param p Path to append to.
@@ -410,7 +432,10 @@ extern "C" {
    * @param input Path as a C string.
    * @return Slice pointing into input containing the extension (may be empty).
    */
-  XSlice x_fs_path_extension(const char* input);
+  XSlice x_fs_path_extension_cstr(const char* input);
+  XSlice x_fs_path_extension_as_slice(const XFSPath* input);
+  size_t x_fs_path_extension(const XFSPath* input, XFSPath* out);
+
 
   /**
    * @brief Convert a slice into an XFSPath.
@@ -674,7 +699,7 @@ extern "C" {
 
     bool needs_sep = false;
 
-    if (out->length > 0 && out->buf[out->length - 1] != PATH_SEPARATOR)
+    if (out->length > 0 && out->buf[out->length - 1] != X_FS_PATH_SEPARATOR)
     {
       needs_sep = true;
     }
@@ -685,7 +710,7 @@ extern "C" {
     if (total_needed > X_SMALLSTR_MAX_LENGTH) return false;
 
     // Add separator if needed
-    if (needs_sep) out->buf[out->length++] = PATH_SEPARATOR;
+    if (needs_sep) out->buf[out->length++] = X_FS_PATH_SEPARATOR;
 
     // Append segment
     memcpy(&out->buf[out->length], segment.ptr, seg_len);
@@ -706,7 +731,7 @@ extern "C" {
 
     bool needs_sep = false;
 
-    if (out->length > 0 && out->buf[out->length - 1] != PATH_SEPARATOR)
+    if (out->length > 0 && out->buf[out->length - 1] != X_FS_PATH_SEPARATOR)
     {
       needs_sep = true;
     }
@@ -717,7 +742,7 @@ extern "C" {
 
     // Add separator if needed
     if (needs_sep) {
-      out->buf[out->length++] = PATH_SEPARATOR;
+      out->buf[out->length++] = X_FS_PATH_SEPARATOR;
     }
 
     // Append segment
@@ -796,7 +821,7 @@ extern "C" {
   {
     XFSPath program_path, cwd;
     size_t bytesCopied = x_fs_path_from_executable(&program_path);
-    XSlice dirname = x_fs_path_dirname((const char*) &program_path);
+    XSlice dirname = x_fs_path_dirname_cstr((const char*) &program_path);
     x_fs_path_from_slice(dirname, &cwd);
     x_fs_cwd_set((const char*) &cwd);
     return bytesCopied;
@@ -1185,13 +1210,13 @@ extern "C" {
 
   static inline int32_t is_path_separator(char c)
   {
-    return (c == ALT_SEPARATOR || c == PATH_SEPARATOR);
+    return (c == X_FS_ALT_PATH_SEPARATOR || c == X_FS_PATH_SEPARATOR);
   }
 
   static inline int32_t pathchar_eq(char a, char b)
   {
-    if (a == ALT_SEPARATOR) a = PATH_SEPARATOR;
-    if (b == ALT_SEPARATOR) b = PATH_SEPARATOR;
+    if (a == X_FS_ALT_PATH_SEPARATOR) a = X_FS_PATH_SEPARATOR;
+    if (b == X_FS_ALT_PATH_SEPARATOR) b = X_FS_PATH_SEPARATOR;
     return a == b;
   }
 
@@ -1204,7 +1229,7 @@ extern "C" {
 
   static inline char normalized_path_char(char c)
   {
-    return (c == ALT_SEPARATOR) ? PATH_SEPARATOR : c;
+    return (c == X_FS_ALT_PATH_SEPARATOR) ? X_FS_PATH_SEPARATOR : c;
   }
 
   // Helper: trim trailing separators (does not modify original)
@@ -1275,9 +1300,9 @@ extern "C" {
 
   size_t x_fs_path_append(XFSPath* p, const char* comp)
   {
-    if (p->length > 0 && p->buf[p->length - 1] != PATH_SEPARATOR)
+    if (p->length > 0 && p->buf[p->length - 1] != X_FS_PATH_SEPARATOR)
     {
-      if (x_smallstr_append_char(p, PATH_SEPARATOR) != 0) return 0;
+      if (x_smallstr_append_char(p, X_FS_PATH_SEPARATOR) != 0) return 0;
     }
     return x_smallstr_append_cstr(p, comp);
   }
@@ -1300,13 +1325,13 @@ extern "C" {
     const char* segment = NULL;
     while (join_success && (segment = va_arg(args, const char*)) != NULL)
     {
-      join_success &= x_fs_path_join_one(path, segment);
+      join_success &= (x_fs_path_join_one(path, segment) > 0);
     }
     va_end(args);
 
     if (!join_success)
       return 0;
-    return (int) path->length;
+    return path->length;
   }
 
   size_t x_fs_path_join_slice_(XFSPath* path, ...)
@@ -1322,13 +1347,21 @@ extern "C" {
     const XSlice* segment = NULL;
     while (join_success && (segment = va_arg(args, const XSlice*)) != NULL)
     {
-      join_success &= x_fs_path_join_one_slice(path, *segment);
+      join_success &= (x_fs_path_join_one_slice(path, *segment) > 0);
     }
     va_end(args);
 
     if (!join_success)
       return 0;
-    return (int) path->length;
+    return path->length;
+  }
+
+  XSlice x_fs_path_as_slice(const XFSPath* path)
+  {
+    XSlice s;
+    s.ptr = path ? path->buf : 0;
+    s.length = path ? path->length : 0;
+    return s;
   }
 
   XFSPath* x_fs_path_normalize(XFSPath* input)
@@ -1342,8 +1375,8 @@ extern "C" {
     // Normalize separators in the input XSmallstr buffer (in place)
     for (size_t i = 0; i < input->length; ++i)
     {
-      if (input->buf[i] == ALT_SEPARATOR)
-        input->buf[i] = PATH_SEPARATOR;
+      if (input->buf[i] == X_FS_ALT_PATH_SEPARATOR)
+        input->buf[i] = X_FS_PATH_SEPARATOR;
     }
 
     size_t i = 0;
@@ -1351,14 +1384,14 @@ extern "C" {
 
     // Handle Windows drive prefix (e.g., C:\)
     if (in_len >= 2 && input->buf[1] == ':' && 
-        (input->buf[2] == PATH_SEPARATOR || input->buf[2] == '\0'))
+        (input->buf[2] == X_FS_PATH_SEPARATOR || input->buf[2] == '\0'))
     {
       x_smallstr_append_char(&temp, input->buf[0]);
       x_smallstr_append_char(&temp, ':');
       i = 2;
-    } else if (in_len > 0 && input->buf[0] == PATH_SEPARATOR)
+    } else if (in_len > 0 && input->buf[0] == X_FS_PATH_SEPARATOR)
     {
-      x_smallstr_append_char(&temp, PATH_SEPARATOR);
+      x_smallstr_append_char(&temp, X_FS_PATH_SEPARATOR);
       i = 1;
     }
 
@@ -1368,7 +1401,7 @@ extern "C" {
     while (i <= in_len)
     {
       size_t start = i;
-      while (i < in_len && input->buf[i] != PATH_SEPARATOR) ++i;
+      while (i < in_len && input->buf[i] != X_FS_PATH_SEPARATOR) ++i;
 
       size_t len = i - start;
 
@@ -1385,9 +1418,9 @@ extern "C" {
         }
       } else
       {
-        if (temp.length > 0 && temp.buf[temp.length - 1] != PATH_SEPARATOR)
+        if (temp.length > 0 && temp.buf[temp.length - 1] != X_FS_PATH_SEPARATOR)
         {
-          x_smallstr_append_char(&temp, PATH_SEPARATOR);
+          x_smallstr_append_char(&temp, X_FS_PATH_SEPARATOR);
         }
         component_starts[depth++] = temp.length;
         for (size_t j = 0; j < len; ++j)
@@ -1396,7 +1429,7 @@ extern "C" {
         }
       }
 
-      if (i < in_len && input->buf[i] == PATH_SEPARATOR) ++i;
+      if (i < in_len && input->buf[i] == X_FS_PATH_SEPARATOR) ++i;
       else break;
     }
 
@@ -1411,7 +1444,7 @@ extern "C" {
     return input;
   }
 
-  XSlice x_fs_path_stem(const char* input)
+  XSlice x_fs_path_stem_cstr(const char* input)
   {
     XSlice empty = {0};
     if (!input)
@@ -1426,7 +1459,7 @@ extern "C" {
     return x_slice_init(input, p - input);
   }
 
-  XSlice x_fs_path_basename(const char* input)
+  XSlice x_fs_path_basename_cstr(const char* input)
   {
     XSlice empty = {0};
     if (!input)
@@ -1436,7 +1469,7 @@ extern "C" {
     return x_slice(last_sep ? last_sep + 1 : input);
   }
 
-  XSlice x_fs_path_dirname(const char* input)
+  XSlice x_fs_path_dirname_cstr(const char* input)
   {
     XSlice empty =
     {0};
@@ -1464,10 +1497,10 @@ extern "C" {
     return (XSlice){.ptr = input, .length = len };
   }
 
-  XSlice x_fs_path_extension(const char* input)
+  XSlice x_fs_path_extension_cstr(const char* input)
   {
     const char* dot = strrchr(input, '.');
-    if (!dot || strrchr(input, PATH_SEPARATOR) > dot)
+    if (!dot || strrchr(input, X_FS_PATH_SEPARATOR) > dot)
       return x_slice("");
 
     return x_slice(dot + 1);
@@ -1941,6 +1974,119 @@ extern "C" {
 
 #ifdef __cplusplus
 }
+
+XSlice x_fs_path_as_slice(const XFSPath* path)
+{
+  XSlice s;
+  s.ptr = x_fs_path_cstr(path);
+  s.length = path ? path->length : 0;
+  return s;
+}
+
+
+XSlice x_fs_path_stem_as_slice(const XFSPath* input)
+{
+  return x_fs_path_stem_cstr(x_fs_path_cstr(input));
+}
+
+size_t x_fs_path_stem(const XFSPath* input, XFSPath* out)
+{
+  if (out == input)
+  {
+    XFSPath tmp;
+    x_fs_path_init(&tmp);
+
+    size_t n = x_fs_path_from_slice(x_fs_path_stem_as_slice(input), &tmp);
+    if (n == 0)
+    {
+      return 0;
+    }
+
+    *out = tmp;
+    return n;
+  }
+
+  return x_fs_path_from_slice(x_fs_path_stem_as_slice(input), out);
+}
+
+
+XSlice x_fs_path_basename_as_slice(const XFSPath* input)
+{
+  return x_fs_path_basename_cstr(x_fs_path_cstr(input));
+}
+
+size_t x_fs_path_basename(const XFSPath* input, XFSPath* out)
+{
+  if (out == input)
+  {
+    XFSPath tmp;
+    x_fs_path_init(&tmp);
+
+    size_t n = x_fs_path_from_slice(x_fs_path_basename_as_slice(input), &tmp);
+    if (n == 0)
+    {
+      return 0;
+    }
+
+    *out = tmp;
+    return n;
+  }
+
+  return x_fs_path_from_slice(x_fs_path_basename_as_slice(input), out);
+}
+
+
+XSlice x_fs_path_dirname_as_slice(const XFSPath* input)
+{
+  return x_fs_path_dirname_cstr(x_fs_path_cstr(input));
+}
+
+size_t x_fs_path_dirname(const XFSPath* input, XFSPath* out)
+{
+  if (out == input)
+  {
+    XFSPath tmp;
+    x_fs_path_init(&tmp);
+
+    size_t n = x_fs_path_from_slice(x_fs_path_dirname_as_slice(input), &tmp);
+    if (n == 0)
+    {
+      return 0;
+    }
+
+    *out = tmp;
+    return n;
+  }
+
+  return x_fs_path_from_slice(x_fs_path_dirname_as_slice(input), out);
+}
+
+
+XSlice x_fs_path_extension_as_slice(const XFSPath* input)
+{
+  return x_fs_path_extension_cstr(x_fs_path_cstr(input));
+}
+
+size_t x_fs_path_extension(const XFSPath* input, XFSPath* out)
+{
+  if (out == input)
+  {
+    XFSPath tmp;
+    x_fs_path_init(&tmp);
+
+    size_t n = x_fs_path_from_slice(x_fs_path_extension_as_slice(input), &tmp);
+    if (n == 0)
+    {
+      return 0;
+    }
+
+    *out = tmp;
+    return n;
+  }
+
+  return x_fs_path_from_slice(x_fs_path_extension_as_slice(input), out);
+}
+
 #endif
 
 #endif  // X_IMPL_FILESYSTEM
