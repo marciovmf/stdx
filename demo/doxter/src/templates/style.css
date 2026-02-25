@@ -61,7 +61,7 @@ a:focus-visible {
 /* Layout */
 .layout {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr);
+  grid-template-columns: minmax(280px, 25%) minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -110,6 +110,7 @@ a:focus-visible {
   font-weight: 700;
 }
 
+
 /* Breadcrumb-ish */
 .file-name {
   font-size: 0.9rem;
@@ -137,6 +138,9 @@ a:focus-visible {
 .sidebar li { margin: 0.15rem 0; }
 
 .sidebar li a {
+}
+
+.sidebar li a {
   color: var(--fg);
   font-size: 0.9rem;
   display: block;
@@ -149,10 +153,18 @@ a:focus-visible {
   text-overflow: ellipsis;
 }
 
-.sidebar li a:hover {
+.sidebar li a:hover,
+.sidebar li a:focus-visible
+{
   background: rgba(0, 103, 184, 0.10);
   color: var(--accent);
   text-decoration: none;
+
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Collapsible sidebar sections */
@@ -246,10 +258,10 @@ a:focus-visible {
 .symbol:target::before {
   content: "";
   position: absolute;
-  left: -12px;
+  left: -70px;
   top: 1.75rem;
   bottom: 1.75rem;
-  width: 4px;
+  width: 2px;
   border-radius: 999px;
   background: var(--accent);
 }
