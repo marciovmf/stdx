@@ -629,7 +629,7 @@ static bool s_symbol_map_get_by_slice(DoxterProject *project, XSlice text, Doxte
   return x_hashtable_get(project->symbol_map, &key, out_sym);
 }
 
-static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, const DoxterToken* t)
+static void ___s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, const DoxterToken* t, const DoxterSymbol* current_symbol)
 {
   const char* cls = "unk";
   bool is_href = false;
@@ -656,6 +656,67 @@ static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, c
     {
       x_strbuilder_append_format(out, "<a href=\"%s\">", ref.anchor.buf);
       is_href = true;
+    }
+  }
+
+  /* Macro directive tokens are stored as "define"/"include"/etc. Add the '#'. */
+  if (t->kind == DOXTER_MACRO_DIRECTIVE)
+  {
+    s_append_html_escaped(out, x_slice_from_cstr("#"));
+  }
+
+  s_append_html_escaped(out, t->text);
+
+  if (is_href)
+  {
+    x_strbuilder_append_cstr(out, "</a>");
+  }
+
+  s_emit_tok_span_end(out);
+}
+
+static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, const DoxterToken* t, const DoxterSymbol* current_symbol)
+{
+  const char* cls = "unk";
+  bool is_href = false;
+
+  switch (t->kind)
+  {
+    case DOXTER_MACRO_DIRECTIVE: cls = "pp"; break;
+    case DOXTER_IDENT:           cls = s_is_c_keyword(t->text) ? "kw" : "id"; break;
+    case DOXTER_NUMBER:          cls = "num"; break;
+    case DOXTER_STRING:          cls = "str"; break;
+    case DOXTER_CHAR:            cls = "chr"; break;
+    case DOXTER_PUNCT:           cls = "pun"; break;
+    case DOXTER_DOX_COMMENT:     cls = "doc"; break;
+    default:                     cls = "unk"; break;
+  }
+
+  s_emit_tok_span_begin(out, cls);
+
+  /* Only link identifiers that are not C keywords and are not the current symbol name. */
+  if (t->kind == DOXTER_IDENT && !s_is_c_keyword(t->text))
+  {
+    bool is_self = false;
+
+    if (current_symbol && current_symbol->name.length > 0)
+    {
+      /* Compare by content: token slice vs current symbol name slice */
+      if (current_symbol->name.length == t->text.length &&
+          memcmp(current_symbol->name.ptr, t->text.ptr, t->text.length) == 0)
+      {
+        is_self = true;
+      }
+    }
+
+    if (!is_self)
+    {
+      DoxterSymbol ref;
+      if (s_symbol_map_get_by_slice(project, t->text, &ref))
+      {
+        x_strbuilder_append_format(out, "<a href=\"%s\">", ref.anchor.buf);
+        is_href = true;
+      }
     }
   }
 
@@ -800,7 +861,7 @@ static void s_emit_span_tokens(
       x_strbuilder_append_char(out, ' ');
     }
 
-    s_emit_token_highlighted(project, out, t);
+    s_emit_token_highlighted(project, out, t, NULL);
     prev = t;
   }
 }
@@ -850,7 +911,7 @@ static void s_emit_function_params( DoxterProject* project,
       x_strbuilder_append_char(out, ' ');
     }
 
-    s_emit_token_highlighted(project, out, t);
+    s_emit_token_highlighted(project, out, t, NULL);
 
     if (t->kind == DOXTER_PUNCT && t->text.length == 1)
     {
@@ -893,7 +954,7 @@ static void s_emit_decl_function(DoxterProject* project, const DoxterSymbol* sym
   x_strbuilder_append_char(out, ' ');
 
   const DoxterToken* name = (const DoxterToken*)x_array_get(project->tokens, sym->stmt.fn.name_tok).ptr;
-  s_emit_token_highlighted(project, out, name);
+  s_emit_token_highlighted(project, out, name, sym);
 
   bool multiline = s_params_has_multiple_args(project, sym->stmt.fn.params_ts);
   s_emit_function_params(project, sym->stmt.fn.params_ts, multiline, out);
@@ -960,7 +1021,7 @@ static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, 
       x_strbuilder_append_char(out, ' ');
     }
 
-    s_emit_token_highlighted(project, out, t);
+    s_emit_token_highlighted(project, out, t, sym);
 
     if (t->kind == DOXTER_PUNCT && t->text.length == 1)
     {
@@ -1861,6 +1922,7 @@ i32 main(i32 argc, char **argv)
     DoxterSourceInfo* source_info = &(proj->sources[source_i]);
     u32 start = source_info->first_symbol_index;
     u32 end   = start + source_info->num_symbols;
+    XSmallstr key;
 
     for (u32 i_symbol = start; i_symbol < end; i_symbol++)
     {
@@ -1869,7 +1931,6 @@ i32 main(i32 argc, char **argv)
       if (sym->type == DOXTER_FILE)
       {
         x_smallstr_appendf(&sym->anchor, "%s%c", source_info->output_name, 0);
-        XSmallstr key;
         memset(&key, 0, sizeof(key));
         x_smallstr_from_slice(sym->name, &key);
         x_hashtable_set(proj->symbol_map, &key, sym);
@@ -1879,7 +1940,6 @@ i32 main(i32 argc, char **argv)
         x_smallstr_appendf(&sym->anchor, "%s#%.*s%c",
             source_info->output_name, (u32) sym->name.length, sym->name.ptr, 0);
 
-        XSmallstr key;
         memset(&key, 0, sizeof(key));
         x_smallstr_from_slice(sym->name, &key);
         x_hashtable_set(proj->symbol_map, &key, sym);
