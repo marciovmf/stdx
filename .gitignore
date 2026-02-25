@@ -54,3 +54,6 @@ bin
 .clangd
 project.lua
 src/tags
+demo/doxter/.vs
+demo/build
+demo/doxter/docs
