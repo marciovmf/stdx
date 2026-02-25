@@ -899,10 +899,10 @@ static void s_debug_print_token_at( DoxterProject* proj, const char* label, u32 
 
   DoxterToken* t = x_array_get(proj->tokens, tok_index).ptr;
   printf(
-    "    %s: '%.*s'\n",
-    label,
-    (int)t->text.length,
-    t->text.ptr);
+      "    %s: '%.*s'\n",
+      label,
+      (int)t->text.length,
+      t->text.ptr);
 }
 
 void doxter_debug_print_symbol( DoxterProject* proj, const DoxterSymbol* sym)
@@ -922,58 +922,58 @@ void doxter_debug_print_symbol( DoxterProject* proj, const DoxterSymbol* sym)
   }
 
   printf(
-    "  tokens: [%u .. %u)\n",
-    sym->first_token_index,
-    sym->first_token_index + sym->num_tokens);
+      "  tokens: [%u .. %u)\n",
+      sym->first_token_index,
+      sym->first_token_index + sym->num_tokens);
 
   /* Type-specific payload */
 
   switch (sym->type)
   {
     case DOXTER_FUNCTION:
-    {
-      const DoxterSymbolFunction* fn = &sym->stmt.fn;
-      printf("  FUNCTION\n");
+      {
+        const DoxterSymbolFunction* fn = &sym->stmt.fn;
+        printf("  FUNCTION\n");
 
-      s_debug_print_token_at(proj, "name_tok", fn->name_tok);
-      s_debug_print_token_span(proj, "params_span", fn->params_ts);
-      s_debug_print_token_span(proj, "return_span", fn->return_ts);
-    } break;
+        s_debug_print_token_at(proj, "name_tok", fn->name_tok);
+        s_debug_print_token_span(proj, "params_span", fn->params_ts);
+        s_debug_print_token_span(proj, "return_span", fn->return_ts);
+      } break;
 
     case DOXTER_MACRO:
-    {
-      const DoxterSymbolMacro* m = &sym->stmt.macro;
-      printf("  MACRO\n");
+      {
+        const DoxterSymbolMacro* m = &sym->stmt.macro;
+        printf("  MACRO\n");
 
-      s_debug_print_token_at(proj, "name_tok", m->name_tok);
-      s_debug_print_token_span(proj, "args_span", m->args_ts);
-      s_debug_print_token_span(proj, "value_span", m->value_ts);
-    } break;
+        s_debug_print_token_at(proj, "name_tok", m->name_tok);
+        s_debug_print_token_span(proj, "args_span", m->args_ts);
+        s_debug_print_token_span(proj, "value_span", m->value_ts);
+      } break;
 
     case DOXTER_STRUCT:
     case DOXTER_UNION:
     case DOXTER_ENUM:
-    {
-      const DoxterSymbolRecord* r = &sym->stmt.record;
-      printf("  RECORD\n");
+      {
+        const DoxterSymbolRecord* r = &sym->stmt.record;
+        printf("  RECORD\n");
 
-      s_debug_print_token_at(proj, "tag_tok", r->name_tok);
-      s_debug_print_token_span(proj, "body_span", r->body_ts);
-    } break;
+        s_debug_print_token_at(proj, "tag_tok", r->name_tok);
+        s_debug_print_token_span(proj, "body_span", r->body_ts);
+      } break;
 
     case DOXTER_TYPEDEF:
-    {
-      const DoxterSymbolTypedef* td = &sym->stmt.tdef;
-      printf("  TYPEDEF\n");
+      {
+        const DoxterSymbolTypedef* td = &sym->stmt.tdef;
+        printf("  TYPEDEF\n");
 
-      s_debug_print_token_at(proj, "name_tok", td->name_tok);
-      s_debug_print_token_span(proj, "value_span", td->value_ts);
-    } break;
+        s_debug_print_token_at(proj, "name_tok", td->name_tok);
+        s_debug_print_token_span(proj, "value_span", td->value_ts);
+      } break;
 
     default:
-    {
-      printf("  (no structured payload)\n");
-    } break;
+      {
+        printf("  (no structured payload)\n");
+      } break;
   }
 
   printf("\n");
@@ -1295,23 +1295,30 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, u32 line, u32 col,
   if (saw_struct)
   {
     out->type = DOXTER_STRUCT;
-    out->name = struct_name;
+    /*
+      typedef struct/enum/union naming:
+      - For "typedef struct { ... } Name;" the exported name is after '}'.
+      - For "typedef struct Tag Name;" the exported name is the typedef alias.
+      In both cases, the last IDENT before ';' is the typedef name.
+    */
+    out->name = saw_typedef ? last_ident : struct_name;
     return out->name.length > 0;
   }
 
   if (saw_enum)
   {
     out->type = DOXTER_ENUM;
-    out->name = enum_name;
+    out->name = saw_typedef ? last_ident : enum_name;
     return out->name.length > 0;
   }
 
   if (saw_union)
   {
     out->type = DOXTER_UNION;
-    out->name = union_name;
+    out->name = saw_typedef ? last_ident : union_name;
     return out->name.length > 0;
   }
+
 
   if (saw_typedef)
   {
@@ -1362,12 +1369,12 @@ static bool s_symbol_push(DoxterProject* proj, DoxterSymbol* sym)
 }
 
 static void s_reset_stmt_state(
-  const char** stmt_start,
-  u32* stmt_line,
-  u32* stmt_col,
-  bool* seen_equal,
-  DoxterToken* prev_sig,
-  DoxterToken* prev_sig2)
+    const char** stmt_start,
+    u32* stmt_line,
+    u32* stmt_col,
+    bool* seen_equal,
+    DoxterToken* prev_sig,
+    DoxterToken* prev_sig2)
 {
   *stmt_start = NULL;
   *stmt_line = 0;
@@ -1378,12 +1385,12 @@ static void s_reset_stmt_state(
 }
 
 static void s_emit_symbol_from_stmt(
-  DoxterProject* proj,
-  XSlice stmt,
-  XSlice pending_doc,
-  u32 stmt_line,
-  u32 stmt_col,
-  i32* count)
+    DoxterProject* proj,
+    XSlice stmt,
+    XSlice pending_doc,
+    u32 stmt_line,
+    u32 stmt_col,
+    i32* count)
 {
   stmt = x_slice_trim(stmt);
 
@@ -1691,10 +1698,10 @@ i32 doxter_source_parse(DoxterProject* proj, u32 source_index)
 
     prev_sig2 = prev_sig;
     prev_sig = t;
+    }
+
+    free(input);
+
+    source_info->num_symbols = count;
+    return count;
   }
-
-  free(input);
-
-  source_info->num_symbols = count;
-  return count;
-}
