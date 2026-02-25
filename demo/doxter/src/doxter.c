@@ -21,8 +21,8 @@
 #include <markdown.h>
 
 #include "doxter.h"
-#include "doxter_template.h"
-#include "doxter_fonts.h"
+#include "generated/doxter_template.h"
+#include "generated/doxter_fonts.h"
 
 #define INDENTATION "  "
 
@@ -1366,30 +1366,21 @@ static void s_template_resolve_placeholder(const char *placeholder,
   if (s_placeholder_match(placeholder, hash,
         DOX_PH_PROJECT_NAME_STR, DOX_PH_PROJECT_NAME_HASH))
   {
-    if (s_template_ctx.symbol)
-    {
-      x_strbuilder_append(out, project->config.project_name);
-    }
+    x_strbuilder_append(out, project->config.project_name);
     return;
   }
 
   if (s_placeholder_match(placeholder, hash,
         DOX_PH_PROJECT_URL_STR, DOX_PH_PROJECT_URL_HASH))
   {
-    if (s_template_ctx.symbol)
-    {
-      x_strbuilder_append(out, project->config.project_url);
-    }
+    x_strbuilder_append(out, project->config.project_url);
     return;
   }
 
   if (s_placeholder_match(placeholder, hash,
         DOX_PH_PROJECT_BRIEF_STR, DOX_PH_PROJECT_BRIEF_HASH))
   {
-    if (s_template_ctx.symbol)
-    {
-      x_strbuilder_append(out, project->config.project_brief);
-    }
+    x_strbuilder_append(out, project->config.project_brief);
     return;
   }
 
@@ -1605,6 +1596,8 @@ static bool s_load_doxter_file(const char* path, DoxterConfig* cfg)
 
   cfg->project_name  = x_ini_get(&ini, "project", "name", cfg->project_name);
   cfg->project_url   = x_ini_get(&ini, "project", "url", cfg->project_url);
+  cfg->project_brief = x_ini_get(&ini, "project", "brief", cfg->project_brief);
+
   cfg->border_radius = x_ini_get_i32(&ini, "theme", "border_radius", cfg->border_radius);
   cfg->skip_static_functions =
     x_ini_get_i32(&ini, "project", "skip_static_functions", cfg->skip_static_functions);
@@ -1760,6 +1753,7 @@ static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
   proj->config.border_radius                    = 10;
   proj->config.project_name                     = "Doxter";
   proj->config.project_url                      = "http://github.com/marciovmf/doxter";
+  proj->config.project_brief                    = "Project documentation";
   proj->config.skip_static_functions     = 1;
   proj->config.markdown_index_page       = 1;
   proj->config.markdown_gobal_comments   = 1;
