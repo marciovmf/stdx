@@ -134,14 +134,17 @@ static bool s_project_source_add(DoxterProject *proj, const char* input_file_nam
   DoxterSourceInfo *m = &proj->sources[proj->source_count];
   m->path = x_arena_strdup(proj->scratch, input_file_name);
 
-  XSmallstr tmp;
-  XSlice base_name = x_fs_path_basename(input_file_name);
-  x_smallstr_from_slice(base_name, &tmp);
+  XFSPath tmp = {0};
+
+  // basename
+  x_fs_path(&tmp, input_file_name);
+  x_fs_path_basename(&tmp, &tmp);
   m->base_name = x_arena_strdup(proj->scratch, tmp.buf);
 
-  XSlice html_name = x_fs_path_stem(base_name.ptr);
-  x_smallstr_from_slice(html_name, &tmp);
-  x_smallstr_append_cstr(&tmp, ".html");
+  // extract basename and change extension to html
+  x_fs_path(&tmp, input_file_name);
+  x_fs_path_change_extension(&tmp, ".html");
+  x_fs_path_basename(&tmp, &tmp);
   m->output_name = x_arena_strdup(proj->scratch, tmp.buf);
 
   proj->source_count++;
@@ -1906,6 +1909,7 @@ i32 main(i32 argc, char **argv)
         proj, source_i, sb);
 
     char *html = x_strbuilder_to_string(sb);
+
     x_fs_path(&full_path, args.output_directory, source->output_name);
     if (!x_io_write_text(full_path.buf, html))
     {
@@ -1944,11 +1948,13 @@ i32 main(i32 argc, char **argv)
   s_template_ctx_push(&backup);
   s_template_ctx.role = DOX_TMPL_ROLE_STYLE_CSS;
   s_template_ctx.config = &proj->config;
+  x_fs_path(&full_path, args.output_directory, "style.css");
 
   s_render_template(proj->templates.style_css,
       proj, 0, sb); s_template_ctx_pop(&backup);
 
   char *css = x_strbuilder_to_string(sb);
+
   if (!x_io_write_text(full_path.buf, css))
   {
     fprintf(stderr, "Failed to write project css file '%s'\\n", full_path.buf);
