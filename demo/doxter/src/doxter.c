@@ -620,9 +620,19 @@ static void s_emit_tok_span_end(XStrBuilder* out)
   x_strbuilder_append(out, "</span>");
 }
 
+static bool s_symbol_map_get_by_slice(DoxterProject *project, XSlice text, DoxterSymbol *out_sym)
+{
+  XSmallstr key;
+  memset(&key, 0, sizeof(key));
+  x_smallstr_from_slice(text, &key);
+
+  return x_hashtable_get(project->symbol_map, &key, out_sym);
+}
+
 static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, const DoxterToken* t)
 {
   const char* cls = "unk";
+  bool is_href = false;
 
   switch (t->kind)
   {
@@ -636,23 +646,18 @@ static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, c
     default:                     cls = "unk"; break;
   }
 
-
   s_emit_tok_span_begin(out, cls);
 
-#if 0
-  DoxterSymbol ref;
-  bool is_href = false;
-  if (t->kind == DOXTER_IDENT || t->kind == DOXTER_MACRO_DIRECTIVE)
+  /* Only link identifiers that are not C keywords */
+  if (t->kind == DOXTER_IDENT && !s_is_c_keyword(t->text))
   {
-    //printf("checking anchor for %s\n", t->text.ptr);
-    if (x_hashtable_get(project->symbol_map, &t->start, &ref))
+    DoxterSymbol ref;
+    if (s_symbol_map_get_by_slice(project, t->text, &ref))
     {
       x_strbuilder_append_format(out, "<a href=\"%s\">", ref.anchor.buf);
-      printf("-- anchor for %s = %s\n", t->start, ref.anchor.buf);
       is_href = true;
     }
   }
-#endif
 
   /* Macro directive tokens are stored as "define"/"include"/etc. Add the '#'. */
   if (t->kind == DOXTER_MACRO_DIRECTIVE)
@@ -660,12 +665,14 @@ static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, c
     s_append_html_escaped(out, x_slice_from_cstr("#"));
   }
 
-
   s_append_html_escaped(out, t->text);
+
+  if (is_href)
+  {
+    x_strbuilder_append_cstr(out, "</a>");
+  }
+
   s_emit_tok_span_end(out);
-#if 0
-  if(is_href) x_strbuilder_append_cstr(out, "</a>");
-#endif
 }
 
 static bool s_tok_is_word(DoxterTokenKind k)
@@ -1722,7 +1729,7 @@ static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
   XArena* arena = x_arena_create(arena_size);
   DoxterProject* proj = (DoxterProject*) malloc (sizeof(DoxterProject));
   proj->scratch                                 = arena;
-  proj->symbol_map                              = x_hashtable_create(char*, DoxterSymbol);
+  proj->symbol_map                              = x_hashtable_create(XSmallstr, DoxterSymbol);
   proj->symbols                                 = x_array_create(sizeof(DoxterSymbol), 256);
   proj->tokens                                  = x_array_create(sizeof(DoxterToken), 64);
   proj->source_count                            = 0;
@@ -1861,14 +1868,22 @@ i32 main(i32 argc, char **argv)
       x_smallstr_clear(&sym->anchor);
       if (sym->type == DOXTER_FILE)
       {
-        x_smallstr_appendf(&sym->anchor, "%s%c", source_info->base_name, 0);
-        x_hashtable_set(proj->symbol_map, &sym->name.ptr, sym);
+        x_smallstr_appendf(&sym->anchor, "%s%c", source_info->output_name, 0);
+        XSmallstr key;
+        memset(&key, 0, sizeof(key));
+        x_smallstr_from_slice(sym->name, &key);
+        x_hashtable_set(proj->symbol_map, &key, sym);
       }
       else
       {
-        x_smallstr_appendf(&sym->anchor, "%s/#%.*s%c",
-            source_info->base_name, (u32) sym->name.length, sym->name.ptr, 0);
-        x_hashtable_set(proj->symbol_map, &sym->name.ptr, sym);
+        x_smallstr_appendf(&sym->anchor, "%s#%.*s%c",
+            source_info->output_name, (u32) sym->name.length, sym->name.ptr, 0);
+
+        XSmallstr key;
+        memset(&key, 0, sizeof(key));
+        x_smallstr_from_slice(sym->name, &key);
+        x_hashtable_set(proj->symbol_map, &key, sym);
+
       }
     }
   }
