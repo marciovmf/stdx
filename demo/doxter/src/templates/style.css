@@ -338,11 +338,15 @@ dt code {
 }
 
 /* Links inside code blocks (cross-page types) */
-.symbol-decl a,
-.symbol-decl a:hover {
+.symbol-decl a {
   color: inherit;
-  text-decoration: underline;
+  text-decoration: underline transparent;
   text-underline-offset: 2px;
+}
+
+.symbol-decl a:hover {
+  text-decoration-color: currentColor;
+  color: inherit;
 }
 
 .params,

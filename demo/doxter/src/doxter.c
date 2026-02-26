@@ -629,52 +629,6 @@ static bool s_symbol_map_get_by_slice(DoxterProject *project, XSlice text, Doxte
   return x_hashtable_get(project->symbol_map, &key, out_sym);
 }
 
-static void ___s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, const DoxterToken* t, const DoxterSymbol* current_symbol)
-{
-  const char* cls = "unk";
-  bool is_href = false;
-
-  switch (t->kind)
-  {
-    case DOXTER_MACRO_DIRECTIVE: cls = "pp"; break;
-    case DOXTER_IDENT:           cls = s_is_c_keyword(t->text) ? "kw" : "id"; break;
-    case DOXTER_NUMBER:          cls = "num"; break;
-    case DOXTER_STRING:          cls = "str"; break;
-    case DOXTER_CHAR:            cls = "chr"; break;
-    case DOXTER_PUNCT:           cls = "pun"; break;
-    case DOXTER_DOX_COMMENT:     cls = "doc"; break;
-    default:                     cls = "unk"; break;
-  }
-
-  s_emit_tok_span_begin(out, cls);
-
-  /* Only link identifiers that are not C keywords */
-  if (t->kind == DOXTER_IDENT && !s_is_c_keyword(t->text))
-  {
-    DoxterSymbol ref;
-    if (s_symbol_map_get_by_slice(project, t->text, &ref))
-    {
-      x_strbuilder_append_format(out, "<a href=\"%s\">", ref.anchor.buf);
-      is_href = true;
-    }
-  }
-
-  /* Macro directive tokens are stored as "define"/"include"/etc. Add the '#'. */
-  if (t->kind == DOXTER_MACRO_DIRECTIVE)
-  {
-    s_append_html_escaped(out, x_slice_from_cstr("#"));
-  }
-
-  s_append_html_escaped(out, t->text);
-
-  if (is_href)
-  {
-    x_strbuilder_append_cstr(out, "</a>");
-  }
-
-  s_emit_tok_span_end(out);
-}
-
 static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, const DoxterToken* t, const DoxterSymbol* current_symbol)
 {
   const char* cls = "unk";
@@ -751,8 +705,6 @@ static bool s_tok_is_punct_slice(const DoxterToken* t, const char* s)
   size_t n = strlen(s);
   return t->kind == DOXTER_PUNCT && t->text.length == n && memcmp(t->text.ptr, s, n) == 0;
 }
-
-
 
 
 static bool s_join_need_space_simple(const DoxterToken* prev, const DoxterToken* cur, bool glue_star_to_ident)
@@ -848,6 +800,7 @@ static void s_emit_span_tokens(
     DoxterProject* project,
     DoxterTokenSpan ts,
     bool glue_star_to_ident,
+    const DoxterSymbol* current_symbol,
     XStrBuilder* out)
 {
   const DoxterToken* prev = NULL;
@@ -856,12 +809,22 @@ static void s_emit_span_tokens(
   {
     const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, ts.first + i).ptr;
 
+    if (current_symbol &&
+        current_symbol->type == DOXTER_ENUM &&
+        t->kind == DOXTER_PUNCT &&
+        t->text.length == 1 &&
+        t->text.ptr[0] == '}')
+    {
+      x_strbuilder_append_char(out, '\n');
+      prev = NULL;
+    }
+
     if (prev && s_join_need_space_simple(prev, t, glue_star_to_ident))
     {
       x_strbuilder_append_char(out, ' ');
     }
 
-    s_emit_token_highlighted(project, out, t, NULL);
+    s_emit_token_highlighted(project, out, t, current_symbol);
     prev = t;
   }
 }
@@ -948,7 +911,7 @@ static void s_emit_function_params( DoxterProject* project,
 
 static void s_emit_decl_function(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
 {
-  s_emit_span_tokens(project, sym->stmt.fn.return_ts, false, out);
+  s_emit_span_tokens(project, sym->stmt.fn.return_ts, false, sym, out);
 
   /* Always separate return part and name. This enforces: "char * x_func". */
   x_strbuilder_append_char(out, ' ');
@@ -970,11 +933,11 @@ static void s_emit_decl_macro(DoxterProject* project, const DoxterSymbol* sym, X
     DoxterTokenSpan pre;
     pre.first = sym->first_token_index;
     pre.count = (sym->stmt.macro.name_tok - sym->first_token_index) + 1;
-    s_emit_span_tokens(project, pre, true, out);
+    s_emit_span_tokens(project, pre, true, sym, out);
 
     if (sym->stmt.macro.args_ts.count > 0)
     {
-      s_emit_span_tokens(project, sym->stmt.macro.args_ts, true, out);
+      s_emit_span_tokens(project, sym->stmt.macro.args_ts, true, sym, out);
     }
 
     if (sym->stmt.macro.value_ts.count > 0)
@@ -989,7 +952,7 @@ static void s_emit_decl_macro(DoxterProject* project, const DoxterSymbol* sym, X
         x_strbuilder_append_char(out, ' ');
       }
 
-      s_emit_span_tokens(project, sym->stmt.macro.value_ts, true, out);
+      s_emit_span_tokens(project, sym->stmt.macro.value_ts, true, sym, out);
     }
 
     return;
@@ -1000,7 +963,7 @@ static void s_emit_decl_macro(DoxterProject* project, const DoxterSymbol* sym, X
     DoxterTokenSpan ts;
     ts.first = sym->first_token_index;
     ts.count = sym->num_tokens;
-    s_emit_span_tokens(project, ts, true, out);
+    s_emit_span_tokens(project, ts, true, sym, out);
   }
 }
 
@@ -1015,6 +978,15 @@ static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, 
   for (u32 i = 0; i < count; ++i)
   {
     const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, first + i).ptr;
+
+    /* Ensure last enum item doesn't glue to '}' when there's no trailing comma. */
+    if (sym->type == DOXTER_ENUM && brace_depth == 1 &&
+        t->kind == DOXTER_PUNCT && t->text.length == 1 && t->text.ptr[0] == '}' &&
+        prev != NULL)
+    {
+      x_strbuilder_append_cstr(out, "\n");
+      prev = NULL;
+    }
 
     if (prev && s_join_need_space_simple(prev, t, true))
     {
@@ -1032,8 +1004,22 @@ static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, 
         brace_depth++;
         if (brace_depth == 1)
         {
+          bool next_is_closing_brace = false;
+
+          if ((i + 1) < count)
+          {
+            const DoxterToken* n = (const DoxterToken*)x_array_get(project->tokens, first + i + 1).ptr;
+            if (n->kind == DOXTER_PUNCT && n->text.length == 1 && n->text.ptr[0] == '}')
+            {
+              next_is_closing_brace = true;
+            }
+          }
+
           x_strbuilder_append_cstr(out, "\n");
-          x_strbuilder_append_cstr(out, INDENTATION );
+          if (!next_is_closing_brace)
+          {
+            x_strbuilder_append_cstr(out, INDENTATION);
+          }
           prev = NULL;
           continue;
         }
@@ -1044,15 +1030,43 @@ static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, 
       }
       else if (c == ';' && brace_depth == 1)
       {
+        bool next_is_closing_brace = false;
+
+        if ((i + 1) < count)
+        {
+          const DoxterToken* n = (const DoxterToken*)x_array_get(project->tokens, first + i + 1).ptr;
+          if (n->kind == DOXTER_PUNCT && n->text.length == 1 && n->text.ptr[0] == '}')
+          {
+            next_is_closing_brace = true;
+          }
+        }
+
         x_strbuilder_append_cstr(out, "\n");
-        x_strbuilder_append_cstr(out, INDENTATION );
+        if (!next_is_closing_brace)
+        {
+          x_strbuilder_append_cstr(out, INDENTATION);
+        }
         prev = NULL;
         continue;
       }
       else if (c == ',' && sym->type == DOXTER_ENUM && brace_depth == 1)
       {
+        bool next_is_closing_brace = false;
+
+        if ((i + 1) < count)
+        {
+          const DoxterToken* n = (const DoxterToken*)x_array_get(project->tokens, first + i + 1).ptr;
+          if (n->kind == DOXTER_PUNCT && n->text.length == 1 && n->text.ptr[0] == '}')
+          {
+            next_is_closing_brace = true;
+          }
+        }
+
         x_strbuilder_append_cstr(out, "\n");
-        x_strbuilder_append_cstr(out, INDENTATION );
+        if (!next_is_closing_brace)
+        {
+          x_strbuilder_append_cstr(out, INDENTATION);
+        }
         prev = NULL;
         continue;
       }
@@ -1086,7 +1100,7 @@ static void s_doxter_emit_decl_highlighted(DoxterProject* project, const DoxterS
         DoxterTokenSpan ts;
         ts.first = sym->first_token_index;
         ts.count = sym->num_tokens;
-        s_emit_span_tokens(project, ts, true, out);
+        s_emit_span_tokens(project, ts, true, sym, out);
       } break;
   }
 }
