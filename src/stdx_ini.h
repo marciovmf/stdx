@@ -1,8 +1,13 @@
 /**
  * STDX - Minimal INI parser
  * Part of the STDX General Purpose C Library by marciovmf
- * <https://github.com/marciovmf/stdx>
  * License: MIT
+ * <https://github.com/marciovmf/stdx>
+ *
+ * ## Overview
+ *
+ * One flat string pool owns all normalized C strings (section names, keys, values).
+ * Sections and entries are indexed by arrays for direct and iterative access.
  *
  * ## How to compile
  *
@@ -12,13 +17,6 @@
  * To customize how this module allocates memory, define
  * `X_INI_ALLOC` / `X_INI_REALLOC` / `X_INI_FREE` before including.
  *
- * ## Overview
- *
- * One flat string pool owns all normalized C strings (section names, keys, values).
- * Sections and entries are indexed by arrays for direct and iterative access.
- *
- * To customize how this module allocates memory, define
- * `X_INI_ALLOC` / `X_INI_REALLOC` / `X_INI_FREE` before including.
  */
 
 #ifndef X_INI_H

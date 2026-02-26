@@ -4,15 +4,16 @@
  * <https://github.com/marciovmf/stdx>
  * License: MIT
  *
+ * ## Overview
+ *
+ * Provides a portable threading abstraction for C programs.
+ * Includes Time based comparisson, measurement and arithmetic ooperations
+ *
  * ## How to compile
  *
  * To compile the implementation define `X_IMPL_TIME`
  * in **one** source file before including this header.
  *
- * ## Overview
- *
- * Provides a portable threading abstraction for C programs.
- * Includes Time based comparisson, measurement and arithmetic ooperations
  */
 
 #ifndef X_TIME_H

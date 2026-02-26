@@ -1,13 +1,15 @@
-/*
+/**
  * STDX - Lightweight String Utilities
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
  * License: MIT
+ * <https://github.com/marciovmf/stdx>
  *
- * To compile the implementation define X_IMPL_STRING
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_STRING`
  * in **one** source file before including this header.
  *
- * Notes:
+ * ## Overview
  *  This header provides:
  *   - C string helpers: case-insensitive prefix/suffix matching
  *   - XSmallstr: fixed-capacity, stack-allocated strings

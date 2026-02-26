@@ -1,8 +1,8 @@
 /**
  * STDX - IO (file I/O utility functions)
  * Part of the STDX General Purpose C Library by marciovmf
- * <https://github.com/marciovmf/stdx>
  * License: MIT
+ * <https://github.com/marciovmf/stdx>
  *
  * ## Overview
  *
@@ -20,6 +20,10 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+
+#ifndef X_CPUID_API
+#define X_CPUID_API
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -73,7 +77,7 @@ extern "C" {
    * @return Structure containing CPU topology, cache sizes,
    * brand string, and supported feature flags.
    */
-  XCPUInfo x_cpu_info(void);
+  X_CPUID_API XCPUInfo x_cpu_info(void);
 
 #ifdef __cplusplus
 }
@@ -140,14 +144,14 @@ static void x_cpuid(
 #endif
 }
 
-static inline uint32_t x_cpuid_max_leaf(uint32_t leaf_type)
+X_CPUID_API static inline uint32_t x_cpuid_max_leaf(uint32_t leaf_type)
 {
   uint32_t a = 0;
   x_cpuid(leaf_type, 0, &a, NULL, NULL, NULL);
   return a;
 }
 
-XCPUInfo x_cpu_info()
+X_CPUID_API XCPUInfo x_cpu_info()
 {
   XCPUInfo info = {0};
 

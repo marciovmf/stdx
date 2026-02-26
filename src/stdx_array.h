@@ -1,8 +1,8 @@
 /**
  * STDX - Array
  * Part of the STDX General Purpose C Library by marciovmf
- * <https://github.com/marciovmf/stdx>
  * License: MIT
+ * <https://github.com/marciovmf/stdx>
  *
  * ## Overview
  *

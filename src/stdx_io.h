@@ -1,14 +1,20 @@
-/*
+/**
  * STDX - IO (file I/O utility functions)
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
  * License: MIT
+ * <https://github.com/marciovmf/stdx>
  *
- * To compile the implementation define X_IMPL_IO
+ * ## Overview
+ *
+ * Provides utility functions for reading and writing files.
+ *
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_IO`
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * X_IO_ALLOC / X_IO_FREE before including.
+ * `X_IO_ALLOC` / `X_IO_FREE` before including.
  * 
  */
 #ifndef X_IO_H
