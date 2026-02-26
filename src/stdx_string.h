@@ -1399,8 +1399,7 @@ X_STRING_API size_t x_smallstr_length(const XSmallstr* smallString)
 
 X_STRING_API void x_smallstr_clear(XSmallstr* smallString)
 {
-  memset(smallString->buf, 0, X_SMALLSTR_MAX_LENGTH * sizeof(char));
-  smallString->length = 0;
+  memset(smallString, 0, sizeof(XSmallstr));
 }
 
 X_STRING_API size_t x_smallstr_append_cstr(XSmallstr* s, const char* cstr)

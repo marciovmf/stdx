@@ -636,14 +636,25 @@ static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, c
 
   switch (t->kind)
   {
+    case DOXTER_IDENT: {
+                         if (current_symbol && x_slice_eq(current_symbol->name, t->text))
+                         {
+                           cls = "id";
+                           break;
+                         }
+
+                         XSmallstr key;
+                         x_smallstr_from_slice(t->text, &key);
+                         cls = s_is_c_keyword(t->text) || x_hashtable_has(project->symbol_map, &key) ? "kw" :  "id";
+                         break;
+                       }
     case DOXTER_MACRO_DIRECTIVE: cls = "pp"; break;
-    case DOXTER_IDENT:           cls = s_is_c_keyword(t->text) ? "kw" : "id"; break;
     case DOXTER_NUMBER:          cls = "num"; break;
     case DOXTER_STRING:          cls = "str"; break;
     case DOXTER_CHAR:            cls = "chr"; break;
     case DOXTER_PUNCT:           cls = "pun"; break;
     case DOXTER_DOX_COMMENT:     cls = "doc"; break;
-    default:                     cls = "unk"; break;
+    default:           cls = "unk"; break;
   }
 
   s_emit_tok_span_begin(out, cls);
