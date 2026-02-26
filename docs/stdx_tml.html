@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_tml.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_tml.h">stdx_tml.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_tml_load">x_tml_load</a></li>
+<li><a href="#x_tml_unload">x_tml_unload</a></li>
+<li><a href="#x_tml_root">x_tml_root</a></li>
+<li><a href="#x_tml_get_section">x_tml_get_section</a></li>
+<li><a href="#x_tml_child_count">x_tml_child_count</a></li>
+<li><a href="#x_tml_child_at">x_tml_child_at</a></li>
+<li><a href="#x_tml_find_child">x_tml_find_child</a></li>
+<li><a href="#x_tml_section_name">x_tml_section_name</a></li>
+<li><a href="#x_tml_entry_count">x_tml_entry_count</a></li>
+<li><a href="#x_tml_entry_key_at">x_tml_entry_key_at</a></li>
+<li><a href="#x_tml_get_bool">x_tml_get_bool</a></li>
+<li><a href="#x_tml_get_i64">x_tml_get_i64</a></li>
+<li><a href="#x_tml_get_f64">x_tml_get_f64</a></li>
+<li><a href="#x_tml_get_str">x_tml_get_str</a></li>
+<li><a href="#x_tml_get_array_len">x_tml_get_array_len</a></li>
+<li><a href="#x_tml_get_array_f64">x_tml_get_array_f64</a></li>
+<li><a href="#x_tml_get_array_i64">x_tml_get_array_i64</a></li>
+<li><a href="#x_tml_get_array_str">x_tml_get_array_str</a></li>
+<li><a href="#x_tml_has_key">x_tml_has_key</a></li>
+<li><a href="#x_tml_dump">x_tml_dump</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_TML_ALLOC">X_TML_ALLOC</a></li>
+<li><a href="#X_TML_FREE">X_TML_FREE</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XTml">XTml</a></li>
+<li><a href="#XTmlCursor">XTmlCursor</a></li>
+<li><a href="#XTmlStrSlice">XTmlStrSlice</a></li>
+<li><a href="#XTmlValue">XTmlValue</a></li>
+<li><a href="#XTmlKV">XTmlKV</a></li>
+<li><a href="#XTmlNode">XTmlNode</a></li>
+<li><a href="#s_tml_counts">s_tml_counts</a></li>
+<li><a href="#s_stack_entry">s_stack_entry</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          <li><a href="#XTmlValKind">XTmlValKind</a></li>
+<li><a href="#XTML_OPEN_DEFAULT">XTML_OPEN_DEFAULT</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_tml.h">
+      <header class="page-header">
+        <h1>stdx_tml.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Tree Markup Language (TML)
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+https://github.com/marciovmf/stdx</p>
+<p>To compile the implementation define X<em>IMPL</em>IO
+in <b>one</b> source file before including this header.</p>
+<p> TML is a minimal, indentation-based hierarchical data format.
+ It borrows the readability of YAML but is parsed in a single pass,
+ with one arena allocation for all internal data.</p>
+<p> Syntax overview:
+ - Indentation defines hierarchy. The first indented line sets the unit (2 or 4 spaces).
+ - Tabs are invalid.
+ - Lines ending with ':' define a new section (node).
+ - Key/value pairs use either ':' or '=' separators:
+ - Lists are defined with '-' as anonymous entries:
+ - Triple quotes (""") define multi-line strings.</p>
+<pre><code>The first newline after """ and the last before """ are ignored.
+</code></pre>
+<p> - Comma-separated lists are parsed once into typed arrays (i64/f64/str).
+ - Comments start with '#'.</p>
+<p> The TML parser performs:
+ - Single memory allocation (arena-style).
+ - Linear-time parsing with no dynamic allocations.
+ - Typed key/value decoding (bool, int, float, string, array).</p>
+<p>Example:</p>
+<p>level:
+name: "Caverns"
+seed: 12345
+enabled: true
+objects:</p>
+<ul><li>position: 1.0, 2.0, 0.0</li></ul><p>scale: 1.0, 1.0, 1.0</p>
+<ul><li>position: 7.0, 0.0, 0.0</li></ul><p>scale: 1.0, 1.0, 1.0</p>
+</div>
+      </header>
+
+      <article id="XTml" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XTml</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XTml</span> <span class="tok_id">XTml</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XTmlCursor" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XTmlCursor</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XTmlCursor</span><span class="tok_pun">{</span>
+  <span class="tok_kw">int</span> <span class="tok_id">node</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XTmlCursor</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XTmlValKind" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XTmlValKind</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span> <span class="tok_id">XTmlValKind</span><span class="tok_pun">{</span>
+  <span class="tok_id">XTML_V_NONE</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">XTML_V_STR</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">,</span>
+  <span class="tok_id">XTML_V_I64</span><span class="tok_pun">=</span><span class="tok_num">2</span><span class="tok_pun">,</span>
+  <span class="tok_id">XTML_V_F64</span><span class="tok_pun">=</span><span class="tok_num">3</span><span class="tok_pun">,</span>
+  <span class="tok_id">XTML_V_BOOL</span><span class="tok_pun">=</span><span class="tok_num">4</span><span class="tok_pun">,</span>
+  <span class="tok_id">XTML_V_ARR</span><span class="tok_pun">=</span><span class="tok_num">5</span>
+<span class="tok_pun">}</span><span class="tok_id">XTmlValKind</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XTmlStrSlice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XTmlStrSlice</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XTmlStrSlice</span><span class="tok_pun">{</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">len</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XTmlStrSlice</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XTML_OPEN_DEFAULT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XTML_OPEN_DEFAULT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">enum</span><span class="tok_pun">{</span>
+  <span class="tok_id">XTML_OPEN_DEFAULT</span><span class="tok_pun">=</span><span class="tok_num">0u</span>
+<span class="tok_pun">}</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_tml_load" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_load</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_load</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">buf</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">size</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">flags</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_tml</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_unload" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_unload</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_tml_unload</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_root" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_root</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">x_tml_root</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_get_section" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_get_section</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_get_section</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">parent</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dot_path</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_child_count" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_child_count</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_child_count</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_count</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_child_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_child_at</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_child_at</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_pun">*</span><span class="tok_id">out_child</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_find_child" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_find_child</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_find_child</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">name</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">name_len</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_pun">*</span><span class="tok_id">out_child</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_section_name" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_section_name</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_section_name</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_name</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_entry_count" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_entry_count</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_entry_count</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_count</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_entry_key_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_entry_key_at</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_entry_key_at</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_key_len</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_get_bool" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_get_bool</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_get_bool</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int</span> <span class="tok_pun">*</span><span class="tok_id">out_bool</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_get_i64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_get_i64</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_get_i64</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_id">int64_t</span> <span class="tok_pun">*</span><span class="tok_id">out_i64</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_get_f64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_get_f64</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_get_f64</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">double</span> <span class="tok_pun">*</span><span class="tok_id">out_f64</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_get_str" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_get_str</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_get_str</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_get_array_len" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_get_array_len</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_get_array_len</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_get_array_f64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_get_array_f64</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_get_array_f64</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">double</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_vals</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_get_array_i64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_get_array_i64</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_get_array_i64</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">int64_t</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_vals</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_get_array_str" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_get_array_str</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_get_array_str</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_tml.html#XTmlStrSlice">XTmlStrSlice</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_vals</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_has_key" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_has_key</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_has_key</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlCursor">XTmlCursor</a></span> <span class="tok_id">cur</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_tml_dump" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tml_dump</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_tml_dump</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTml">XTml</a></span> <span class="tok_pun">*</span><span class="tok_id">tml</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">f</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="X_TML_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TML_ALLOC</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">malloc</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_TML_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TML_FREE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XTmlValue" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XTmlValue</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XTmlValue</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlValKind">XTmlValKind</a></span> <span class="tok_id">kind</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">off</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">len</span><span class="tok_pun">;</span>
+  <span class="tok_id">int64_t</span> <span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span><span class="tok_pun">;</span>
+  <span class="tok_kw">double</span> <span class="tok_id">f64</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">boolean</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">arr_start</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">arr_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">arr_is_f64</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">arr_is_i64</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">arr_is_str</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XTmlValue</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XTmlKV" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XTmlKV</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XTmlKV</span><span class="tok_pun">{</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">key_off</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">key_len</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#XTmlValue">XTmlValue</a></span> <span class="tok_id">val</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XTmlKV</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XTmlNode" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XTmlNode</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XTmlNode</span><span class="tok_pun">{</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">name_off</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">name_len</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">name_hash</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">parent</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">first_child</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">next_sibling</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">kv_start</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">kv_count</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XTmlNode</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="s_tml_counts" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">s_tml_counts</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">s_tml_counts</span><span class="tok_pun">{</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">headers</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">kvs</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">comma_tokens</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">triple_blocks</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">s_tml_counts</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="s_stack_entry" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">s_stack_entry</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">s_stack_entry</span><span class="tok_pun">{</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">depth</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">node</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">s_stack_entry</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

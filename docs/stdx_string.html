@@ -1,0 +1,3254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_string.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_string.h">stdx_string.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_set_locale">x_set_locale</a></li>
+<li><a href="#x_cstr_hash">x_cstr_hash</a></li>
+<li><a href="#x_cstr_str">x_cstr_str</a></li>
+<li><a href="#x_cstr_ends_with">x_cstr_ends_with</a></li>
+<li><a href="#x_cstr_starts_with">x_cstr_starts_with</a></li>
+<li><a href="#x_cstr_ends_with_ci">x_cstr_ends_with_ci</a></li>
+<li><a href="#x_cstr_starts_with_ci">x_cstr_starts_with_ci</a></li>
+<li><a href="#x_wcstr_starts_with">x_wcstr_starts_with</a></li>
+<li><a href="#x_wcstr_ends_with">x_wcstr_ends_with</a></li>
+<li><a href="#x_wcstr_starts_with_ci">x_wcstr_starts_with_ci</a></li>
+<li><a href="#x_wcstr_ends_with_ci">x_wcstr_ends_with_ci</a></li>
+<li><a href="#x_wcstr_cicmp">x_wcstr_cicmp</a></li>
+<li><a href="#x_cstr_to_wcstr">x_cstr_to_wcstr</a></li>
+<li><a href="#x_wcstr_to_utf8">x_wcstr_to_utf8</a></li>
+<li><a href="#x_wcstr_to_cstr">x_wcstr_to_cstr</a></li>
+<li><a href="#x_utf8_to_wcstr">x_utf8_to_wcstr</a></li>
+<li><a href="#x_utf8_strlen">x_utf8_strlen</a></li>
+<li><a href="#x_utf8_strcmp">x_utf8_strcmp</a></li>
+<li><a href="#x_utf8_tolower">x_utf8_tolower</a></li>
+<li><a href="#x_utf8_toupper">x_utf8_toupper</a></li>
+<li><a href="#x_utf8_is_single_char">x_utf8_is_single_char</a></li>
+<li><a href="#x_utf8_decode">x_utf8_decode</a></li>
+<li><a href="#x_utf8_codepoint_length">x_utf8_codepoint_length</a></li>
+<li><a href="#x_smallstr_init">x_smallstr_init</a></li>
+<li><a href="#x_smallstr_format">x_smallstr_format</a></li>
+<li><a href="#x_smallstr_from_cstr">x_smallstr_from_cstr</a></li>
+<li><a href="#x_smallstr_from_slice">x_smallstr_from_slice</a></li>
+<li><a href="#x_smallstr_to_slice">x_smallstr_to_slice</a></li>
+<li><a href="#x_smallstr_length">x_smallstr_length</a></li>
+<li><a href="#x_smallstr_clear">x_smallstr_clear</a></li>
+<li><a href="#x_smallstr_append_cstr">x_smallstr_append_cstr</a></li>
+<li><a href="#x_smallstr_append_char">x_smallstr_append_char</a></li>
+<li><a href="#x_smallstr_substring">x_smallstr_substring</a></li>
+<li><a href="#x_smallstr_trim_left">x_smallstr_trim_left</a></li>
+<li><a href="#x_smallstr_trim_right">x_smallstr_trim_right</a></li>
+<li><a href="#x_smallstr_trim">x_smallstr_trim</a></li>
+<li><a href="#x_smallstr_cmp_ci">x_smallstr_cmp_ci</a></li>
+<li><a href="#x_smallstr_replace_all">x_smallstr_replace_all</a></li>
+<li><a href="#x_smallstr_utf8_len">x_smallstr_utf8_len</a></li>
+<li><a href="#x_smallstr_cmp">x_smallstr_cmp</a></li>
+<li><a href="#x_smallstr_cmp_cstr">x_smallstr_cmp_cstr</a></li>
+<li><a href="#x_smallstr_cstr">x_smallstr_cstr</a></li>
+<li><a href="#x_smallstr_utf8_substring">x_smallstr_utf8_substring</a></li>
+<li><a href="#x_smallstr_utf8_trim_left">x_smallstr_utf8_trim_left</a></li>
+<li><a href="#x_smallstr_utf8_trim_right">x_smallstr_utf8_trim_right</a></li>
+<li><a href="#x_smallstr_utf8_trim">x_smallstr_utf8_trim</a></li>
+<li><a href="#x_wsmallstr_init">x_wsmallstr_init</a></li>
+<li><a href="#x_wsmallstr_cmp">x_wsmallstr_cmp</a></li>
+<li><a href="#x_wsmallstr_cmp_cstr">x_wsmallstr_cmp_cstr</a></li>
+<li><a href="#x_wsmallstr_cmp_ci">x_wsmallstr_cmp_ci</a></li>
+<li><a href="#x_wsmallstr_length">x_wsmallstr_length</a></li>
+<li><a href="#x_wsmallstr_clear">x_wsmallstr_clear</a></li>
+<li><a href="#x_wsmallstr_append">x_wsmallstr_append</a></li>
+<li><a href="#x_wsmallstr_substring">x_wsmallstr_substring</a></li>
+<li><a href="#x_wsmallstr_trim">x_wsmallstr_trim</a></li>
+<li><a href="#x_wsmallstr_find">x_wsmallstr_find</a></li>
+<li><a href="#x_slice_eq">x_slice_eq</a></li>
+<li><a href="#x_slice_eq_cstr">x_slice_eq_cstr</a></li>
+<li><a href="#x_slice_eq_ci">x_slice_eq_ci</a></li>
+<li><a href="#x_slice_cmp">x_slice_cmp</a></li>
+<li><a href="#x_slice_cmp_ci">x_slice_cmp_ci</a></li>
+<li><a href="#x_slice_substr">x_slice_substr</a></li>
+<li><a href="#x_slice_trim_left">x_slice_trim_left</a></li>
+<li><a href="#x_slice_trim_right">x_slice_trim_right</a></li>
+<li><a href="#x_slice_trim">x_slice_trim</a></li>
+<li><a href="#x_slice_find">x_slice_find</a></li>
+<li><a href="#x_slice_find_white_space">x_slice_find_white_space</a></li>
+<li><a href="#x_slice_rfind">x_slice_rfind</a></li>
+<li><a href="#x_slice_split_at">x_slice_split_at</a></li>
+<li><a href="#x_slice_split_at_white_space">x_slice_split_at_white_space</a></li>
+<li><a href="#x_slice_next_token_white_space">x_slice_next_token_white_space</a></li>
+<li><a href="#x_slice_next_token">x_slice_next_token</a></li>
+<li><a href="#x_slice_starts_with_cstr">x_slice_starts_with_cstr</a></li>
+<li><a href="#x_slice_ends_with_cstr">x_slice_ends_with_cstr</a></li>
+<li><a href="#x_slice_utf8_substr">x_slice_utf8_substr</a></li>
+<li><a href="#x_slice_utf8_trim_left">x_slice_utf8_trim_left</a></li>
+<li><a href="#x_slice_utf8_trim_right">x_slice_utf8_trim_right</a></li>
+<li><a href="#x_slice_utf8_trim">x_slice_utf8_trim</a></li>
+<li><a href="#x_slice_utf8_find">x_slice_utf8_find</a></li>
+<li><a href="#x_slice_utf8_rfind">x_slice_utf8_rfind</a></li>
+<li><a href="#x_slice_utf8_split_at">x_slice_utf8_split_at</a></li>
+<li><a href="#x_slice_utf8_next_token">x_slice_utf8_next_token</a></li>
+<li><a href="#x_slice_utf8_starts_with_cstr">x_slice_utf8_starts_with_cstr</a></li>
+<li><a href="#x_slice_utf8_ends_with_cstr">x_slice_utf8_ends_with_cstr</a></li>
+<li><a href="#x_wslice_empty">x_wslice_empty</a></li>
+<li><a href="#x_wslice_eq">x_wslice_eq</a></li>
+<li><a href="#x_wslice_cmp">x_wslice_cmp</a></li>
+<li><a href="#x_wslice_substr">x_wslice_substr</a></li>
+<li><a href="#x_wslice_trim_left">x_wslice_trim_left</a></li>
+<li><a href="#x_wslice_trim_right">x_wslice_trim_right</a></li>
+<li><a href="#x_wslice_trim">x_wslice_trim</a></li>
+<li><a href="#x_wslice_split_at">x_wslice_split_at</a></li>
+<li><a href="#x_wslice_next_token">x_wslice_next_token</a></li>
+<li><a href="#x_slice_from_cstr">x_slice_from_cstr</a></li>
+<li><a href="#x_slice_from_smallstr">x_slice_from_smallstr</a></li>
+<li><a href="#x_smallstr_append_slice">x_smallstr_append_slice</a></li>
+<li><a href="#x_smallstr_append_n">x_smallstr_append_n</a></li>
+<li><a href="#x_smallstr_vappendf">x_smallstr_vappendf</a></li>
+<li><a href="#x_smallstr_appendf">x_smallstr_appendf</a></li>
+<li><a href="#x_slice_contains_char">x_slice_contains_char</a></li>
+<li><a href="#x_slice_contains_utf8">x_slice_contains_utf8</a></li>
+<li><a href="#x_smallstr_contains_char">x_smallstr_contains_char</a></li>
+<li><a href="#x_smallstr_join">x_smallstr_join</a></li>
+<li><a href="#x_smallstr_capacity">x_smallstr_capacity</a></li>
+<li><a href="#x_smallstr_is_empty">x_smallstr_is_empty</a></li>
+<li><a href="#x_smallstr_try_append_cstr">x_smallstr_try_append_cstr</a></li>
+<li><a href="#x_wide_to_utf8">x_wide_to_utf8</a></li>
+<li><a href="#smallstr">smallstr</a></li>
+<li><a href="#x_smallstr_find">x_smallstr_find</a></li>
+<li><a href="#x_smallstr_rfind">x_smallstr_rfind</a></li>
+<li><a href="#x_smallstr_split_at">x_smallstr_split_at</a></li>
+<li><a href="#x_wsmallstr_from_wcstr">x_wsmallstr_from_wcstr</a></li>
+<li><a href="#x_wsmallstr_next_token">x_wsmallstr_next_token</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_STRING_VERSION_MAJOR">X_STRING_VERSION_MAJOR</a></li>
+<li><a href="#X_STRING_VERSION_MINOR">X_STRING_VERSION_MINOR</a></li>
+<li><a href="#X_STRING_VERSION_PATCH">X_STRING_VERSION_PATCH</a></li>
+<li><a href="#X_STRING_VERSION">X_STRING_VERSION</a></li>
+<li><a href="#X_SMALLSTR_MAX_LENGTH">X_SMALLSTR_MAX_LENGTH</a></li>
+<li><a href="#x_slice_empty">x_slice_empty</a></li>
+<li><a href="#x_slice_is_empty">x_slice_is_empty</a></li>
+<li><a href="#x_slice_init">x_slice_init</a></li>
+<li><a href="#x_slice">x_slice</a></li>
+<li><a href="#x_wslice_init">x_wslice_init</a></li>
+<li><a href="#x_wslice">x_wslice</a></li>
+<li><a href="#X_STRVIEW">X_STRVIEW</a></li>
+<li><a href="#strncasecmp">strncasecmp</a></li>
+<li><a href="#strnicmp">strnicmp</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XSlice">XSlice</a></li>
+<li><a href="#XWStrview">XWStrview</a></li>
+<li><a href="#XSmallstr">XSmallstr</a></li>
+<li><a href="#XWSmallstr">XWSmallstr</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          <li><a href="#XUtf8Error">XUtf8Error</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_string.h">
+      <header class="page-header">
+        <h1>stdx_string.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Lightweight String Utilities
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_STRING</code>
+in <b>one</b> source file before including this header.</p>
+<h2 id="overview">Overview</h2>
+<p> This header provides:
+  - C string helpers: case-insensitive prefix/suffix matching
+  - XSmallstr: fixed-capacity, stack-allocated strings
+  - XSlice: immutable, non-owning views into C strings
+  - Tokenization and trimming
+  - UTF-8-aware string length calculation
+  - Fast substring and search operations
+  - Case-sensitive and case-insensitive comparisons</p>
+</div>
+      </header>
+
+      <article id="X_STRING_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRING_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRING_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_STRING_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRING_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRING_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_STRING_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRING_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRING_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_STRING_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRING_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRING_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#X_STRING_VERSION_MAJOR">X_STRING_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_string.html#X_STRING_VERSION_MINOR">X_STRING_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_string.html#X_STRING_VERSION_PATCH">X_STRING_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_SMALLSTR_MAX_LENGTH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_SMALLSTR_MAX_LENGTH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_SMALLSTR_MAX_LENGTH</span> <span class="tok_num">256</span></code></pre>
+  
+  
+</article>
+<article id="XSlice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XSlice</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XSlice</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XWStrview" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XWStrview</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XWStrview</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XSmallstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XSmallstr</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_kw">char</span> <span class="tok_id">buf</span><span class="tok_pun">[</span><span class="tok_kw"><a href="stdx_string.html#X_SMALLSTR_MAX_LENGTH">X_SMALLSTR_MAX_LENGTH</a></span><span class="tok_pun">+</span><span class="tok_num">1</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XSmallstr</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XWSmallstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XWSmallstr</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_id">wchar_t</span> <span class="tok_id">buf</span><span class="tok_pun">[</span><span class="tok_kw"><a href="stdx_string.html#X_SMALLSTR_MAX_LENGTH">X_SMALLSTR_MAX_LENGTH</a></span><span class="tok_pun">+</span><span class="tok_num">1</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XWSmallstr</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XUtf8Error" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XUtf8Error</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span> <span class="tok_id">XUtf8Error</span><span class="tok_pun">{</span>
+  <span class="tok_id">X_UTF8_OK</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_UTF8_ERR_EOF</span><span class="tok_pun">=</span><span class="tok_pun">-</span><span class="tok_num">1</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_UTF8_ERR_INVALID</span><span class="tok_pun">=</span><span class="tok_pun">-</span><span class="tok_num">2</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_UTF8_ERR_OVERLONG</span><span class="tok_pun">=</span><span class="tok_pun">-</span><span class="tok_num">3</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_UTF8_ERR_RANGE</span><span class="tok_pun">=</span><span class="tok_pun">-</span><span class="tok_num">4</span>
+<span class="tok_pun">}</span><span class="tok_id">XUtf8Error</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_set_locale" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_set_locale</span></h2>
+  <p class="brief">Sets the process locale used by locale-aware string operations.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_set_locale</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">locale</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>locale</code></dt>
+<dd>Parameter.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>No return value.</p>
+</section>
+
+</article>
+<article id="x_cstr_hash" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_cstr_hash</span></h2>
+  <p class="brief">Computes a 32-bit FNV hash for a null-terminated C-string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_cstr_hash</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>32 bit FNV hash</p>
+</section>
+
+</article>
+<article id="x_cstr_str" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_cstr_str</span></h2>
+  <p class="brief">Searches for a substring within a null-terminated C-string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_cstr_str</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">haystack</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">needle</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>haystack</code></dt>
+<dd>Input string to search in.</dd>
+<dt><code>needle</code></dt>
+<dd>Substring to search for.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>pointer within haystack where needle is found</p>
+</section>
+
+</article>
+<article id="x_cstr_ends_with" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_cstr_ends_with</span></h2>
+  <p class="brief">Checks whether the string ends with the specified suffix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_cstr_ends_with</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+<dt><code>suffix</code></dt>
+<dd>Suffix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_cstr_starts_with" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_cstr_starts_with</span></h2>
+  <p class="brief">Checks whether a null-terminated C-string starts with the given prefix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_cstr_starts_with</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+<dt><code>prefix</code></dt>
+<dd>Prefix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_cstr_ends_with_ci" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_cstr_ends_with_ci</span></h2>
+  <p class="brief">Case-insensitive check whether the string ends with the specified suffix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_cstr_ends_with_ci</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+<dt><code>suffix</code></dt>
+<dd>Suffix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_cstr_starts_with_ci" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_cstr_starts_with_ci</span></h2>
+  <p class="brief">Checks whether a null-terminated C-string starts with the given prefix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_cstr_starts_with_ci</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+<dt><code>prefix</code></dt>
+<dd>Prefix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_wcstr_starts_with" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wcstr_starts_with</span></h2>
+  <p class="brief">Checks whether the string starts with the specified prefix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wcstr_starts_with</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+<dt><code>prefix</code></dt>
+<dd>Prefix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_wcstr_ends_with" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wcstr_ends_with</span></h2>
+  <p class="brief">Checks whether a null-terminated wide C-string ends with the given suffix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wcstr_ends_with</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+<dt><code>suffix</code></dt>
+<dd>Suffix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_wcstr_starts_with_ci" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wcstr_starts_with_ci</span></h2>
+  <p class="brief">Case-insensitive check whether the string starts with the specified prefix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wcstr_starts_with_ci</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+<dt><code>prefix</code></dt>
+<dd>Prefix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_wcstr_ends_with_ci" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wcstr_ends_with_ci</span></h2>
+  <p class="brief">Checks whether a null-terminated wide C-string ends with the given suffix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wcstr_ends_with_ci</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+<dt><code>suffix</code></dt>
+<dd>Suffix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_wcstr_cicmp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wcstr_cicmp</span></h2>
+  <p class="brief">Case-insensitively compares two wide C-strings.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wcstr_cicmp</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_cstr_to_wcstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_cstr_to_wcstr</span></h2>
+  <p class="brief">Utility for null-terminated C-strings.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_cstr_to_wcstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">,</span>
+  <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>src</code></dt>
+<dd>Source buffer or string.</dd>
+<dt><code>dest</code></dt>
+<dd>Destination buffer.</dd>
+<dt><code>max</code></dt>
+<dd>Capacity of the destination buffer (in elements).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_wcstr_to_utf8" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wcstr_to_utf8</span></h2>
+  <p class="brief">Converts between string encodings.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_wcstr_to_utf8</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">wide</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>wide</code></dt>
+<dd>Destination wide-character buffer.</dd>
+<dt><code>utf8</code></dt>
+<dd>Source UTF-8 string.</dd>
+<dt><code>max</code></dt>
+<dd>Capacity of the destination buffer (in elements).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_wcstr_to_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wcstr_to_cstr</span></h2>
+  <p class="brief">Utility for null-terminated wide C-strings.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_wcstr_to_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>src</code></dt>
+<dd>Source buffer or string.</dd>
+<dt><code>dest</code></dt>
+<dd>Destination buffer.</dd>
+<dt><code>max</code></dt>
+<dd>Capacity of the destination buffer (in elements).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_utf8_to_wcstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_to_wcstr</span></h2>
+  <p class="brief">Converts between string encodings.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_utf8_to_wcstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
+  <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">wide</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>utf8</code></dt>
+<dd>Source UTF-8 string.</dd>
+<dt><code>wide</code></dt>
+<dd>Destination wide-character buffer.</dd>
+<dt><code>max</code></dt>
+<dd>Capacity of the destination buffer (in elements).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_utf8_strlen" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_strlen</span></h2>
+  <p class="brief">Returns the number of UTF-8 codepoints in a null-terminated string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_utf8_strlen</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>utf8</code></dt>
+<dd>Source UTF-8 string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of UTF-8 codepoints.</p>
+</section>
+
+</article>
+<article id="x_utf8_strcmp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_strcmp</span></h2>
+  <p class="brief">Compares two null-terminated UTF-8 strings.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_utf8_strcmp</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Negative, zero, or positive according to lexicographic order.</p>
+</section>
+
+</article>
+<article id="x_utf8_tolower" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_tolower</span></h2>
+  <p class="brief">Converts ASCII letters to lower case; leaves multibyte UTF-8 unchanged.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_utf8_tolower</span><span class="tok_pun">(</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>dest</code></dt>
+<dd>Destination buffer.</dd>
+<dt><code>src</code></dt>
+<dd>Source buffer or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_utf8_toupper" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_toupper</span></h2>
+  <p class="brief">Converts ASCII letters to upper case; leaves multibyte UTF-8 unchanged.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_utf8_toupper</span><span class="tok_pun">(</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>dest</code></dt>
+<dd>Destination buffer.</dd>
+<dt><code>src</code></dt>
+<dd>Source buffer or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_utf8_is_single_char" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_is_single_char</span></h2>
+  <p class="brief">Checks whether the string contains exactly one UTF-8 codepoint.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_utf8_is_single_char</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_utf8_decode" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_decode</span></h2>
+  <p class="brief">Decodes a single UTF-8 codepoint from the specified byte span.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_utf8_decode</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">end</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ptr</code></dt>
+<dd>Current read pointer within the byte span.</dd>
+<dt><code>end</code></dt>
+<dd>One-past-the-end pointer for the byte span.</dd>
+<dt><code>out_len</code></dt>
+<dd>Output: number of codepoints consumed on success or bytes to skip on error.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Decoded codepoint on success; negative X_UTF8_ERR_* on failure.</p>
+</section>
+
+</article>
+<article id="x_utf8_codepoint_length" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_codepoint_length</span></h2>
+  <p class="brief">Returns the expected byte length for a UTF-8 starter byte.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_utf8_codepoint_length</span><span class="tok_pun">(</span><span class="tok_kw">unsigned</span> <span class="tok_kw">char</span> <span class="tok_id">first_byte</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>first_byte</code></dt>
+<dd>Parameter.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>1..4 for a valid starter byte; negative error code if invalid.</p>
+</section>
+
+</article>
+<article id="x_smallstr_init" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_init</span></h2>
+  <p class="brief">Initializes a fixed-capacity small string from a source C-string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_init</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>str</code></dt>
+<dd>Input C-string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_smallstr_format" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_format</span></h2>
+  <p class="brief">Formats text into a small string; truncates if necessary.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_format</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
+  <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>fmt</code></dt>
+<dd>printf-style format string.</dd>
+<dt><code>param</code></dt>
+<dd>Variadic arguments list.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_smallstr_from_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_from_cstr</span></h2>
+  <p class="brief">Copies a null-terminated C-string into a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_from_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>cstr</code></dt>
+<dd>Source null-terminated C-string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_smallstr_from_slice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_from_slice</span></h2>
+  <p class="brief">Copies a string view into a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_from_slice</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>out</code></dt>
+<dd>Parameter.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_smallstr_to_slice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_to_slice</span></h2>
+  <p class="brief">Creates a non-owning view over a small string's contents.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_smallstr_to_slice</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_smallstr_length" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_length</span></h2>
+  <p class="brief">Returns the current byte length of the small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_length</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of elements in the string (excluding the final terminator).</p>
+</section>
+
+</article>
+<article id="x_smallstr_clear" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_clear</span></h2>
+  <p class="brief">Clears the small string to empty.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_smallstr_clear</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>No return value.</p>
+</section>
+
+</article>
+<article id="x_smallstr_append_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_append_cstr</span></h2>
+  <p class="brief">Appends a null-terminated C-string if space allows.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_append_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>cstr</code></dt>
+<dd>Source null-terminated C-string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_smallstr_append_char" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_append_char</span></h2>
+  <p class="brief">Appends a single character if space allows.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_append_char</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>c</code></dt>
+<dd>Character value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_smallstr_substring" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_substring</span></h2>
+  <p class="brief">Copies a byte-range substring into a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_substring</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>start</code></dt>
+<dd>Starting offset (0-based).</dd>
+<dt><code>len</code></dt>
+<dd>Number of units to copy or inspect.</dd>
+<dt><code>out</code></dt>
+<dd>Parameter.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_smallstr_trim_left" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_trim_left</span></h2>
+  <p class="brief">Trims leading ASCII whitespace in a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_smallstr_trim_left</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_smallstr_trim_right" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_trim_right</span></h2>
+  <p class="brief">Trims trailing ASCII whitespace in a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_smallstr_trim_right</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>No return value.</p>
+</section>
+
+</article>
+<article id="x_smallstr_trim" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_trim</span></h2>
+  <p class="brief">Trims leading and trailing ASCII whitespace in a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_smallstr_trim</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_smallstr_cmp_ci" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_cmp_ci</span></h2>
+  <p class="brief">Compares two small strings case-insensitively.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_cmp_ci</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Negative, zero, or positive according to lexicographic order.</p>
+</section>
+
+</article>
+<article id="x_smallstr_replace_all" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_replace_all</span></h2>
+  <p class="brief">Replaces all occurrences of a substring in a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_replace_all</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">find</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">replace</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>find</code></dt>
+<dd>Substring to be replaced.</dd>
+<dt><code>replace</code></dt>
+<dd>Replacement substring.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_smallstr_utf8_len" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_utf8_len</span></h2>
+  <p class="brief">Counts UTF-8 codepoints in a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_utf8_len</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of units written or measured (excluding the final terminator, if any).</p>
+</section>
+
+</article>
+<article id="x_smallstr_cmp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_cmp</span></h2>
+  <p class="brief">Compares two small strings.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_cmp</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Negative, zero, or positive according to lexicographic order.</p>
+</section>
+
+</article>
+<article id="x_smallstr_cmp_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_cmp_cstr</span></h2>
+  <p class="brief">Compares a small string with a null-terminated C-string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_cmp_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Negative, zero, or positive according to lexicographic order.</p>
+</section>
+
+</article>
+<article id="x_smallstr_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_cstr</span></h2>
+  <p class="brief">Returns a pointer to the small string's null-terminated buffer.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_smallstr_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_smallstr_utf8_substring" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_utf8_substring</span></h2>
+  <p class="brief">Copies a UTF-8 codepoint-range substring into a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_utf8_substring</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">start_cp</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len_cp</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>start_cp</code></dt>
+<dd>Starting UTF-8 codepoint offset (0-based).</dd>
+<dt><code>len_cp</code></dt>
+<dd>Number of UTF-8 codepoints to copy or inspect.</dd>
+<dt><code>out</code></dt>
+<dd>Parameter.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_smallstr_utf8_trim_left" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_utf8_trim_left</span></h2>
+  <p class="brief">Trims leading Unicode whitespace (by UTF-8 codepoints).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_smallstr_utf8_trim_left</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_smallstr_utf8_trim_right" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_utf8_trim_right</span></h2>
+  <p class="brief">Trims trailing Unicode whitespace (by UTF-8 codepoints).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_smallstr_utf8_trim_right</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>No return value.</p>
+</section>
+
+</article>
+<article id="x_smallstr_utf8_trim" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_utf8_trim</span></h2>
+  <p class="brief">Trims leading and trailing Unicode whitespace (by UTF-8 codepoints).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_smallstr_utf8_trim</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_init" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_init</span></h2>
+  <p class="brief">Initializes a wide-character small string from a wide C-string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_init</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>src</code></dt>
+<dd>Source buffer or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_cmp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_cmp</span></h2>
+  <p class="brief">Compares two wide small strings.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_cmp</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Negative, zero, or positive according to lexicographic order.</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_cmp_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_cmp_cstr</span></h2>
+  <p class="brief">Compares a wide small string with a wide C-string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_cmp_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_cmp_ci" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_cmp_ci</span></h2>
+  <p class="brief">Compares two wide small strings case-insensitively.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_cmp_ci</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Negative, zero, or positive according to lexicographic order.</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_length" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_length</span></h2>
+  <p class="brief">Returns the current length (in wide characters).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_wsmallstr_length</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of elements in the string (excluding the final terminator).</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_clear" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_clear</span></h2>
+  <p class="brief">Clears the wide small string to empty.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_wsmallstr_clear</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>No return value.</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_append" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_append</span></h2>
+  <p class="brief">Appends a wide C-string if space allows.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_append</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">tail</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>tail</code></dt>
+<dd>Parameter.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_substring" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_substring</span></h2>
+  <p class="brief">Copies a wide-character substring into a destination small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_substring</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>start</code></dt>
+<dd>Starting offset (0-based).</dd>
+<dt><code>len</code></dt>
+<dd>Number of units to copy or inspect.</dd>
+<dt><code>out</code></dt>
+<dd>Parameter.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_trim" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_trim</span></h2>
+  <p class="brief">Trims leading and trailing whitespace in a wide small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_wsmallstr_trim</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>No return value.</p>
+</section>
+
+</article>
+<article id="x_wsmallstr_find" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_find</span></h2>
+  <p class="brief">Finds a wide character within a wide small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_find</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_id">wchar_t</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>c</code></dt>
+<dd>Character value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Index on success, or -1 if not found.</p>
+</section>
+
+</article>
+<article id="x_slice_empty" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_empty</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_slice_empty</span><span class="tok_pun">(</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">.</span><span class="tok_id">ptr</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_id">length</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">}</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_slice_is_empty" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_is_empty</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_slice_is_empty</span><span class="tok_pun">(</span><span class="tok_id">sv</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">sv</span><span class="tok_pun">)</span><span class="tok_pun">.</span><span class="tok_id">length</span><span class="tok_pun">==</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_slice_init" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_init</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_slice_init</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">,</span> <span class="tok_id">len</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">.</span><span class="tok_id">ptr</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_id">length</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_id">len</span><span class="tok_pun">)</span><span class="tok_pun">}</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_slice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_slice</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_slice</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#x_slice_init">x_slice_init</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_id">strlen</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_slice_eq" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_eq</span></h2>
+  <p class="brief">Compares two string views for equality.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_eq</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_slice_eq_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_eq_cstr</span></h2>
+  <p class="brief">Compares a string view with a C-string for equality.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_eq_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_eq_ci" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_eq_ci</span></h2>
+  <p class="brief">Compares two string views case-insensitively.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_eq_ci</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_slice_cmp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_cmp</span></h2>
+  <p class="brief">Lexicographically compares two string views.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_cmp</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Negative, zero, or positive according to lexicographic order.</p>
+</section>
+
+</article>
+<article id="x_slice_cmp_ci" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_cmp_ci</span></h2>
+  <p class="brief">Lexicographically compares two string views case-insensitively.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_cmp_ci</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_slice_substr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_substr</span></h2>
+  <p class="brief">Creates a sub-view by byte range from a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_substr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>start</code></dt>
+<dd>Starting offset (0-based).</dd>
+<dt><code>len</code></dt>
+<dd>Number of units to copy or inspect.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_slice_trim_left" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_trim_left</span></h2>
+  <p class="brief">Removes leading ASCII whitespace from a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_trim_left</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_trim_right" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_trim_right</span></h2>
+  <p class="brief">Removes trailing ASCII whitespace from a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_trim_right</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_slice_trim" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_trim</span></h2>
+  <p class="brief">Removes leading and trailing ASCII whitespace from a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_trim</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_find" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_find</span></h2>
+  <p class="brief">Finds the first occurrence of a character in a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_find</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>c</code></dt>
+<dd>Character value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Index on success, or -1 if not found.</p>
+</section>
+
+</article>
+<article id="x_slice_find_white_space" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_find_white_space</span></h2>
+  <p class="brief">Finds the next ASCII whitespace in a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_find_white_space</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Index on success, or -1 if not found.</p>
+</section>
+
+</article>
+<article id="x_slice_rfind" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_rfind</span></h2>
+  <p class="brief">Finds the last occurrence of a character in a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_rfind</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>c</code></dt>
+<dd>Character value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Index on success, or -1 if not found.</p>
+</section>
+
+</article>
+<article id="x_slice_split_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_split_at</span></h2>
+  <p class="brief">Splits a string view at the first occurrence of a delimiter.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_split_at</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>delim</code></dt>
+<dd>Delimiter character or codepoint.</dd>
+<dt><code>left</code></dt>
+<dd>Output: left side view.</dd>
+<dt><code>right</code></dt>
+<dd>Output: right side view.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_split_at_white_space" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_split_at_white_space</span></h2>
+  <p class="brief">Splits a string view at the first ASCII whitespace.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_split_at_white_space</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>left</code></dt>
+<dd>Output: left side view.</dd>
+<dt><code>right</code></dt>
+<dd>Output: right side view.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_next_token_white_space" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_next_token_white_space</span></h2>
+  <p class="brief">Extracts the next token delimited by ASCII whitespace.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_next_token_white_space</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>input</code></dt>
+<dd>Parameter.</dd>
+<dt><code>token</code></dt>
+<dd>Output: extracted token.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_next_token" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_next_token</span></h2>
+  <p class="brief">Extracts the next token delimited by a character.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_next_token</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>input</code></dt>
+<dd>Parameter.</dd>
+<dt><code>delim</code></dt>
+<dd>Delimiter character or codepoint.</dd>
+<dt><code>token</code></dt>
+<dd>Output: extracted token.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_starts_with_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_starts_with_cstr</span></h2>
+  <p class="brief">Checks whether a string view starts with the given C-string prefix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_starts_with_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>prefix</code></dt>
+<dd>Prefix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_slice_ends_with_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_ends_with_cstr</span></h2>
+  <p class="brief">Checks whether a string view ends with the given C-string suffix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_ends_with_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>prefix</code></dt>
+<dd>Prefix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_substr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_substr</span></h2>
+  <p class="brief">Creates a sub-view by byte range from a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_utf8_substr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">char_start</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">char_len</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>char_start</code></dt>
+<dd>Parameter.</dd>
+<dt><code>char_len</code></dt>
+<dd>Parameter.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_trim_left" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_trim_left</span></h2>
+  <p class="brief">Removes leading Unicode whitespace (by UTF-8 codepoints).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_utf8_trim_left</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_trim_right" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_trim_right</span></h2>
+  <p class="brief">Removes trailing ASCII whitespace from a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_utf8_trim_right</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_trim" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_trim</span></h2>
+  <p class="brief">Removes leading and trailing Unicode whitespace (by UTF-8 codepoints).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_utf8_trim</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_find" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_find</span></h2>
+  <p class="brief">Finds the first occurrence of a character in a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_utf8_find</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>codepoint</code></dt>
+<dd>Unicode codepoint value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Index on success, or -1 if not found.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_rfind" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_rfind</span></h2>
+  <p class="brief">Finds the last occurrence of a UTF-8 codepoint in a string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_utf8_rfind</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>codepoint</code></dt>
+<dd>Unicode codepoint value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Index on success, or -1 if not found.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_split_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_split_at</span></h2>
+  <p class="brief">Splits a string view at the first occurrence of a delimiter.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_utf8_split_at</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>delim</code></dt>
+<dd>Delimiter character or codepoint.</dd>
+<dt><code>left</code></dt>
+<dd>Output: left side view.</dd>
+<dt><code>right</code></dt>
+<dd>Output: right side view.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_next_token" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_next_token</span></h2>
+  <p class="brief">Extracts the next token delimited by a UTF-8 codepoint.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_utf8_next_token</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>input</code></dt>
+<dd>Parameter.</dd>
+<dt><code>codepoint</code></dt>
+<dd>Unicode codepoint value.</dd>
+<dt><code>token</code></dt>
+<dd>Output: extracted token.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_starts_with_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_starts_with_cstr</span></h2>
+  <p class="brief">Checks whether a string view starts with the given C-string prefix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_utf8_starts_with_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>prefix</code></dt>
+<dd>Prefix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_slice_utf8_ends_with_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_utf8_ends_with_cstr</span></h2>
+  <p class="brief">Checks whether a string view ends with the given C-string suffix.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_utf8_ends_with_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>prefix</code></dt>
+<dd>Prefix to match.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_wslice_init" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_init</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_wslice_init</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">,</span> <span class="tok_id">len</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">.</span><span class="tok_id">ptr</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_id">length</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_id">len</span><span class="tok_pun">)</span><span class="tok_pun">}</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_wslice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_wslice</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#x_wslice_init">x_wslice_init</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_id">wcslen</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_wslice_empty" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_empty</span></h2>
+  <p class="brief">Checks whether the wide string view is empty.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wslice_empty</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_wslice_eq" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_eq</span></h2>
+  <p class="brief">Compares two wide string views for equality.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wslice_eq</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the condition holds; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_wslice_cmp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_cmp</span></h2>
+  <p class="brief">Lexicographically compares two wide string views.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wslice_cmp</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First input view or string.</dd>
+<dt><code>b</code></dt>
+<dd>Second input view or string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific integer result.</p>
+</section>
+
+</article>
+<article id="x_wslice_substr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_substr</span></h2>
+  <p class="brief">Creates a sub-view by range from a wide string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">x_wslice_substr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>start</code></dt>
+<dd>Starting offset (0-based).</dd>
+<dt><code>len</code></dt>
+<dd>Number of units to copy or inspect.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_wslice_trim_left" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_trim_left</span></h2>
+  <p class="brief">Removes leading whitespace from a wide string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">x_wslice_trim_left</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_wslice_trim_right" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_trim_right</span></h2>
+  <p class="brief">Removes trailing whitespace from a wide string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">x_wslice_trim_right</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Resulting view after the operation.</p>
+</section>
+
+</article>
+<article id="x_wslice_trim" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_trim</span></h2>
+  <p class="brief">Removes leading and trailing whitespace from a wide string view.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">x_wslice_trim</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_wslice_split_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_split_at</span></h2>
+  <p class="brief">Splits a wide string view at the first occurrence of a delimiter.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wslice_split_at</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>String view input.</dd>
+<dt><code>delim</code></dt>
+<dd>Delimiter character or codepoint.</dd>
+<dt><code>left</code></dt>
+<dd>Output: left side view.</dd>
+<dt><code>right</code></dt>
+<dd>Output: right side view.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_wslice_next_token" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wslice_next_token</span></h2>
+  <p class="brief">Extracts the next token from a string view using the given delimiter.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wslice_next_token</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+  <span class="tok_id">wchar_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>input</code></dt>
+<dd>Parameter.</dd>
+<dt><code>delim</code></dt>
+<dd>Parameter.</dd>
+<dt><code>token</code></dt>
+<dd>Output: extracted token.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Function-specific result.</p>
+</section>
+
+</article>
+<article id="x_slice_from_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_from_cstr</span></h2>
+  <p class="brief">Creates a non-owning string view from a null-terminated C-string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_from_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Source null-terminated C-string (may be NULL).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>XSlice pointing to the provided string, or an empty view if s is NULL.</p>
+</section>
+
+</article>
+<article id="x_slice_from_smallstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_from_smallstr</span></h2>
+  <p class="brief">Creates a non-owning string view from a fixed-capacity small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_from_smallstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Source small string (may be NULL).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>XSlice referencing the contents of the small string, or an empty view if s is NULL.</p>
+</section>
+
+</article>
+<article id="x_smallstr_append_slice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_append_slice</span></h2>
+  <p class="brief">Appends the contents of a string view to a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_append_slice</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>sv</code></dt>
+<dd>Source string view to append.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New length of the small string in bytes after the operation (null-terminated).</p>
+</section>
+
+</article>
+<article id="x_smallstr_append_n" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_append_n</span></h2>
+  <p class="brief">Appends a fixed-length portion of a C-string to a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_append_n</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">n</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>cstr</code></dt>
+<dd>Source C-string (may be NULL).</dd>
+<dt><code>n</code></dt>
+<dd>Number of bytes to append from cstr.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New length of the small string in bytes after the operation.</p>
+</section>
+
+</article>
+<article id="x_smallstr_vappendf" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_vappendf</span></h2>
+  <p class="brief">Appends formatted text to a small string using a va_list.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_vappendf</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
+  <span class="tok_id">va_list</span> <span class="tok_id">args</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>fmt</code></dt>
+<dd>printf-style format string.</dd>
+<dt><code>args</code></dt>
+<dd>va_list argument list.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New length of the small string in bytes after the operation.</p>
+</section>
+
+</article>
+<article id="x_smallstr_appendf" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_appendf</span></h2>
+  <p class="brief">Appends formatted text to a small string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_appendf</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
+  <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>fmt</code></dt>
+<dd>printf-style format string.</dd>
+<dt><code>...</code></dt>
+<dd>Additional arguments for formatting.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New length of the small string in bytes after the operation.</p>
+</section>
+
+</article>
+<article id="x_slice_contains_char" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_contains_char</span></h2>
+  <p class="brief">Checks whether a string view contains the specified character.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_contains_char</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>Input string view.</dd>
+<dt><code>c</code></dt>
+<dd>Character to search for.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the character is found; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_slice_contains_utf8" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_contains_utf8</span></h2>
+  <p class="brief">Checks whether a string view contains the specified UTF-8 codepoint.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_contains_utf8</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sv</code></dt>
+<dd>Input string view.</dd>
+<dt><code>codepoint</code></dt>
+<dd>Unicode codepoint to search for.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the codepoint is found; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_smallstr_contains_char" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_contains_char</span></h2>
+  <p class="brief">Checks whether a small string contains the specified character.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_smallstr_contains_char</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Input small string.</dd>
+<dt><code>c</code></dt>
+<dd>Character to search for.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the character is found; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_smallstr_join" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_join</span></h2>
+  <p class="brief">Concatenates multiple string views into a small string, inserting a separator between them.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_join</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">dst</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">parts</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">count</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sep</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>dst</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>parts</code></dt>
+<dd>Array of string views to join.</dd>
+<dt><code>count</code></dt>
+<dd>Number of elements in the parts array.</dd>
+<dt><code>sep</code></dt>
+<dd>Separator view inserted between joined elements.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New length of the small string after concatenation.</p>
+</section>
+
+</article>
+<article id="x_smallstr_capacity" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_capacity</span></h2>
+  <p class="brief">Returns the maximum number of bytes (excluding terminator) a small string can hold.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_capacity</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>The compile-time capacity constant X_SMALLSTR_MAX_LENGTH.</p>
+</section>
+
+</article>
+<article id="x_smallstr_is_empty" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_is_empty</span></h2>
+  <p class="brief">Tests whether a small string is empty.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_smallstr_is_empty</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Input small string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the small string has zero length or is NULL; false otherwise.</p>
+</section>
+
+</article>
+<article id="x_smallstr_try_append_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_try_append_cstr</span></h2>
+  <p class="brief">Attempts to append a C-string to a small string up to its capacity.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_smallstr_try_append_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_appended</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>Destination small string.</dd>
+<dt><code>cstr</code></dt>
+<dd>Source null-terminated C-string.</dd>
+<dt><code>out_appended</code></dt>
+<dd>Optional pointer to receive bytes actually appended.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if any bytes were appended; false if none or on error.</p>
+</section>
+
+</article>
+<article id="X_STRVIEW" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRVIEW</span></h2>
+  <p class="brief">Creates a compile-time string view from a string literal.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRVIEW</span><span class="tok_pun">(</span><span class="tok_id">s</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">(</span><span class="tok_id">s</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_id">s</span><span class="tok_pun">)</span><span class="tok_pun">-</span><span class="tok_num">1u</span><span class="tok_pun">}</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>s</code></dt>
+<dd>String literal.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>XSlice representing the literal contents, excluding the null terminator.</p>
+</section>
+
+</article>
+<article id="strncasecmp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">strncasecmp</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">strncasecmp</span> <span class="tok_id">_strnicmp</span></code></pre>
+  
+  
+</article>
+<article id="strnicmp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">strnicmp</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">strnicmp</span> <span class="tok_id">_strnicmp</span></code></pre>
+  
+  
+</article>
+<article id="x_wide_to_utf8" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wide_to_utf8</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_wide_to_utf8</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">wide</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="smallstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">smallstr</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">smallstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">smallString</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_smallstr_find" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_find</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_find</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_smallstr_rfind" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_rfind</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_rfind</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_smallstr_split_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_smallstr_split_at</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_split_at</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_wsmallstr_from_wcstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_from_wcstr</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_from_wcstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_wsmallstr_next_token" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wsmallstr_next_token</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_next_token</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+  <span class="tok_id">wchar_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

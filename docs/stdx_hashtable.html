@@ -1,0 +1,830 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_hashtable.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_hashtable.h">stdx_hashtable.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_hashtable_create_full">x_hashtable_create_full</a></li>
+<li><a href="#x_hashtable_set">x_hashtable_set</a></li>
+<li><a href="#x_hashtable_get">x_hashtable_get</a></li>
+<li><a href="#x_hashtable_destroy">x_hashtable_destroy</a></li>
+<li><a href="#x_hashtable_count">x_hashtable_count</a></li>
+<li><a href="#stdx_str_eq">stdx_str_eq</a></li>
+<li><a href="#x_hashtable_has">x_hashtable_has</a></li>
+<li><a href="#x_hashtable_remove">x_hashtable_remove</a></li>
+<li><a href="#x_hashtable_hash_bytes">x_hashtable_hash_bytes</a></li>
+<li><a href="#x_hashtable_hash_cstr">x_hashtable_hash_cstr</a></li>
+<li><a href="#x_hashtable_clone_cstr">x_hashtable_clone_cstr</a></li>
+<li><a href="#x_hashtable_compare_cstr">x_hashtable_compare_cstr</a></li>
+<li><a href="#x_hashtable_free_cstr">x_hashtable_free_cstr</a></li>
+<li><a href="#x_hashtable_iter_begin">x_hashtable_iter_begin</a></li>
+<li><a href="#x_hashtable_iter_next">x_hashtable_iter_next</a></li>
+<li><a href="#x_hashtable_iter_next_const">x_hashtable_iter_next_const</a></li>
+<li><a href="#x_hashtable_iter_slot">x_hashtable_iter_slot</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_HASHTABLE_VERSION_MAJOR">X_HASHTABLE_VERSION_MAJOR</a></li>
+<li><a href="#X_HASHTABLE_VERSION_MINOR">X_HASHTABLE_VERSION_MINOR</a></li>
+<li><a href="#X_HASHTABLE_VERSION_PATCH">X_HASHTABLE_VERSION_PATCH</a></li>
+<li><a href="#X_HASHTABLE_VERSION">X_HASHTABLE_VERSION</a></li>
+<li><a href="#X_HASHTABLE_INITIAL_CAPACITY">X_HASHTABLE_INITIAL_CAPACITY</a></li>
+<li><a href="#X_HASHTABLE_LOAD_FACTOR">X_HASHTABLE_LOAD_FACTOR</a></li>
+<li><a href="#X_STR">X_STR</a></li>
+<li><a href="#X_TOSTR">X_TOSTR</a></li>
+<li><a href="#X_TYPE_NAME">X_TYPE_NAME</a></li>
+<li><a href="#x_hashtable_create">x_hashtable_create</a></li>
+<li><a href="#X_HASHTABLE_ALLOC">X_HASHTABLE_ALLOC</a></li>
+<li><a href="#X_HASHTABLE_FREE">X_HASHTABLE_FREE</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XHashEntry">XHashEntry</a></li>
+<li><a href="#XHashtable">XHashtable</a></li>
+<li><a href="#XHashtableIter">XHashtableIter</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          <li><a href="#XHashFnHash">XHashFnHash</a></li>
+<li><a href="#XHashFnCompare">XHashFnCompare</a></li>
+<li><a href="#XHashFnClone">XHashFnClone</a></li>
+<li><a href="#XHashFnDestroy">XHashFnDestroy</a></li>
+
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_hashtable.h">
+      <header class="page-header">
+        <h1>stdx_hashtable.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Generic Hashtable
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p> Provides a generic, type-agnostic hashtable implementation with<br/>
+ customizable hash and equality functions. Supports arbitrary key<br/>
+ and value types, optional custom allocators, and built-in iteration.
+ Includes helpers for common cases like string keys.</p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_HASHTABLE</code>
+in <b>one</b> source file before including this header.</p>
+<p>To customize how this module allocates memory, define
+<code>X_HASHTABLE_ALLOC</code> / <code>X_HASHTABLE_REALLOC</code> / <code>X_HASHTABLE_FREE</code> before including.</p>
+<h2 id="dependencies">Dependencies:</h2>
+<ul><li>stdx_arena.h</li></ul></div>
+      </header>
+
+      <article id="X_HASHTABLE_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HASHTABLE_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HASHTABLE_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_HASHTABLE_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HASHTABLE_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HASHTABLE_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_HASHTABLE_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HASHTABLE_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HASHTABLE_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_HASHTABLE_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HASHTABLE_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HASHTABLE_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#X_HASHTABLE_VERSION_MAJOR">X_HASHTABLE_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_hashtable.html#X_HASHTABLE_VERSION_MINOR">X_HASHTABLE_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_hashtable.html#X_HASHTABLE_VERSION_PATCH">X_HASHTABLE_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_HASHTABLE_INITIAL_CAPACITY" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HASHTABLE_INITIAL_CAPACITY</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HASHTABLE_INITIAL_CAPACITY</span> <span class="tok_num">16</span></code></pre>
+  
+  
+</article>
+<article id="X_HASHTABLE_LOAD_FACTOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HASHTABLE_LOAD_FACTOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HASHTABLE_LOAD_FACTOR</span> <span class="tok_num">0.75</span></code></pre>
+  
+  
+</article>
+<article id="XHashFnHash" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">XHashFnHash</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_id">size_t</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">XHashFnHash</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span> <span class="tok_id">size_t</span><span class="tok_pun">)</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHashFnCompare" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">XHashFnCompare</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">bool</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">XHashFnCompare</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span> <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHashFnClone" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">XHashFnClone</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">void</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">XHashFnClone</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">dst</span><span class="tok_pun">,</span> <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHashFnDestroy" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">XHashFnDestroy</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">void</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">XHashFnDestroy</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">)</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHashEntry" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XHashEntry</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">;</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">value</span><span class="tok_pun">;</span>
+  <span class="tok_kw">enum</span> <span class="tok_id">XEntryState</span><span class="tok_pun">{</span><span class="tok_id">X_HASH_ENTRY_FREE</span><span class="tok_pun">,</span> <span class="tok_id">X_HASH_ENTRY_OCCUPIED</span><span class="tok_pun">,</span> <span class="tok_id">X_HASH_ENTRY_DELETED</span><span class="tok_pun">,</span><span class="tok_pun">}</span><span class="tok_id">state</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XHashEntry</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHashtable" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XHashtable</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">key_size</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">value_size</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">count</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashEntry">XHashEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entries</span><span class="tok_pun">;</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">keys</span><span class="tok_pun">;</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">values</span><span class="tok_pun">;</span>
+  <span class="tok_kw">bool</span> <span class="tok_id">key_is_pointer</span><span class="tok_pun">;</span>
+  <span class="tok_kw">bool</span> <span class="tok_id">value_is_pointer</span><span class="tok_pun">;</span>
+  <span class="tok_kw">bool</span> <span class="tok_id">key_is_null_terminated</span><span class="tok_pun">;</span>
+  <span class="tok_kw">bool</span> <span class="tok_id">value_is_null_terminated</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnHash">XHashFnHash</a></span> <span class="tok_id">fn_key_hash</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnCompare">XHashFnCompare</a></span> <span class="tok_id">fn_key_compare</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnClone">XHashFnClone</a></span> <span class="tok_id">fn_key_copy</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnDestroy">XHashFnDestroy</a></span> <span class="tok_id">fn_key_free</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnClone">XHashFnClone</a></span> <span class="tok_id">fn_value_copy</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnDestroy">XHashFnDestroy</a></span> <span class="tok_id">fn_value_free</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XHashtable</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHashtableIter" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XHashtableIter</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">index</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XHashtableIter</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="X_STR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STR</span><span class="tok_pun">(</span><span class="tok_id">s</span><span class="tok_pun">)</span> <span class="tok_pun">#</span><span class="tok_id">s</span></code></pre>
+  
+  
+</article>
+<article id="X_TOSTR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TOSTR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TOSTR</span><span class="tok_pun">(</span><span class="tok_id">s</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_hashtable.html#X_STR">X_STR</a></span><span class="tok_pun">(</span><span class="tok_id">s</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_TYPE_NAME" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TYPE_NAME</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TYPE_NAME</span><span class="tok_pun">(</span><span class="tok_id">t</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_hashtable.html#X_TOSTR">X_TOSTR</a></span><span class="tok_pun">(</span><span class="tok_id">t</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_hashtable_create" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_create</span></h2>
+  <p class="brief">Create a hashtable with key/value type inference using compile-time type name strings.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_hashtable_create</span><span class="tok_pun">(</span><span class="tok_id">tk</span><span class="tok_pun">,</span> <span class="tok_id">tv</span><span class="tok_pun">)</span> <span class="tok_id">x_hashtable_create_</span><span class="tok_pun">(</span><span class="tok_pun">\</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_id">tk</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_id">strcmp</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#X_TYPE_NAME">X_TYPE_NAME</a></span><span class="tok_pun">(</span><span class="tok_id">tk</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_str">&quot;char*&quot;</span><span class="tok_pun">)</span><span class="tok_pun">==</span><span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">strchr</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#X_TYPE_NAME">X_TYPE_NAME</a></span><span class="tok_pun">(</span><span class="tok_id">tk</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_chr">'*'</span><span class="tok_pun">)</span><span class="tok_pun">!=</span><span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_pun">\</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_id">tv</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_id">strcmp</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#X_TYPE_NAME">X_TYPE_NAME</a></span><span class="tok_pun">(</span><span class="tok_id">tv</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_str">&quot;char*&quot;</span><span class="tok_pun">)</span><span class="tok_pun">==</span><span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">strchr</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#X_TYPE_NAME">X_TYPE_NAME</a></span><span class="tok_pun">(</span><span class="tok_id">tv</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_chr">'*'</span><span class="tok_pun">)</span><span class="tok_pun">!=</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>tk</code></dt>
+<dd>Key type (passed as a type token, e.g. int, XSmallstr, char*).</dd>
+<dt><code>tv</code></dt>
+<dd>Value type (passed as a type token, e.g. Foo, Bar*, char*).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to a newly created hashtable, or NULL on failure.</p>
+</section>
+
+</article>
+<article id="x_hashtable_create_full" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_create_full</span></h2>
+  <p class="brief">Create a fully-configurable hashtable with custom hashing, comparison, cloning, and destruction.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_hashtable_create_full</span><span class="tok_pun">(</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">key_size</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">value_size</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnHash">XHashFnHash</a></span> <span class="tok_id">fn_key_hash</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnCompare">XHashFnCompare</a></span> <span class="tok_id">fn_key_compare</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnClone">XHashFnClone</a></span> <span class="tok_id">fn_key_copy</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnDestroy">XHashFnDestroy</a></span> <span class="tok_id">fn_key_free</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnClone">XHashFnClone</a></span> <span class="tok_id">fn_value_copy</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnDestroy">XHashFnDestroy</a></span> <span class="tok_id">fn_value_free</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>key_size</code></dt>
+<dd>Size in bytes of the key type.</dd>
+<dt><code>value_size</code></dt>
+<dd>Size in bytes of the value type.</dd>
+<dt><code>fn_key_hash</code></dt>
+<dd>Function used to hash keys.</dd>
+<dt><code>fn_key_compare</code></dt>
+<dd>Function used to compare keys for equality.</dd>
+<dt><code>fn_key_copy</code></dt>
+<dd>Function used to clone/copy keys into the table.</dd>
+<dt><code>fn_key_free</code></dt>
+<dd>Function used to destroy/free keys owned by the table.</dd>
+<dt><code>fn_value_copy</code></dt>
+<dd>Function used to clone/copy values into the table.</dd>
+<dt><code>fn_value_free</code></dt>
+<dd>Function used to destroy/free values owned by the table.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to a newly created hashtable, or NULL on failure.</p>
+</section>
+
+</article>
+<article id="x_hashtable_set" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_set</span></h2>
+  <p class="brief">Insert or update a key/value pair in the hashtable.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_hashtable_set</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">value</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>table</code></dt>
+<dd>Hashtable instance.</dd>
+<dt><code>key</code></dt>
+<dd>Pointer to the key data.</dd>
+<dt><code>value</code></dt>
+<dd>Pointer to the value data.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure (e.g., allocation failure).</p>
+</section>
+
+</article>
+<article id="x_hashtable_get" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_get</span></h2>
+  <p class="brief">Retrieve a value from the hashtable by key.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_hashtable_get</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">out_value</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>table</code></dt>
+<dd>Hashtable instance.</dd>
+<dt><code>key</code></dt>
+<dd>Pointer to the key data.</dd>
+<dt><code>out_value</code></dt>
+<dd>Output buffer to receive the value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if the key was found and out_value was written, false otherwise.</p>
+</section>
+
+</article>
+<article id="x_hashtable_destroy" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_destroy</span></h2>
+  <p class="brief">Destroy a hashtable and free all associated resources.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_hashtable_destroy</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>table</code></dt>
+<dd>Hashtable instance to destroy.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_hashtable_count" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_count</span></h2>
+  <p class="brief">Get the number of stored entries in the hashtable.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>table</code></dt>
+<dd>Hashtable instance.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of key/value pairs currently stored.</p>
+</section>
+
+</article>
+<article id="stdx_str_eq" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">stdx_str_eq</span></h2>
+  <p class="brief">Compare two NUL-terminated strings for equality.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">bool</span> <span class="tok_id">stdx_str_eq</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>Pointer to the first string (const char*).</dd>
+<dt><code>b</code></dt>
+<dd>Pointer to the second string (const char*).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if equal, false otherwise.</p>
+</section>
+
+</article>
+<article id="x_hashtable_has" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_has</span></h2>
+  <p class="brief">Check whether the hashtable contains a key.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_hashtable_has</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>table</code></dt>
+<dd>Hashtable instance.</dd>
+<dt><code>key</code></dt>
+<dd>Pointer to the key data.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if the key exists, false otherwise.</p>
+</section>
+
+</article>
+<article id="x_hashtable_remove" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_remove</span></h2>
+  <p class="brief">Remove an entry from the hashtable by key.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_hashtable_remove</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>table</code></dt>
+<dd>Hashtable instance.</dd>
+<dt><code>key</code></dt>
+<dd>Pointer to the key data.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if an entry was removed, false if the key was not found.</p>
+</section>
+
+</article>
+<article id="x_hashtable_hash_bytes" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_hash_bytes</span></h2>
+  <p class="brief">Hash an arbitrary byte buffer.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_hash_bytes</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ptr</code></dt>
+<dd>Pointer to the bytes to hash.</dd>
+<dt><code>size</code></dt>
+<dd>Number of bytes to hash.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Hash value for the given byte buffer.</p>
+</section>
+
+</article>
+<article id="x_hashtable_hash_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_hash_cstr</span></h2>
+  <p class="brief">Hash a NUL-terminated C string (or string-like buffer) for hashtable use.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_hash_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ptr</code></dt>
+<dd>Pointer to the string data (typically const char*).</dd>
+<dt><code>size</code></dt>
+<dd>Size parameter (typically ignored for C strings, or used as a limit depending on implementation).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Hash value for the string.</p>
+</section>
+
+</article>
+<article id="x_hashtable_clone_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_clone_cstr</span></h2>
+  <p class="brief">Clone a NUL-terminated C string into destination storage.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_hashtable_clone_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>dest</code></dt>
+<dd>Destination storage receiving the cloned string (implementation-defined: may store char*).</dd>
+<dt><code>src</code></dt>
+<dd>Source string pointer (const char*).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_hashtable_compare_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_compare_cstr</span></h2>
+  <p class="brief">Compare two NUL-terminated C strings for hashtable key equality.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_hashtable_compare_cstr</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First string pointer (const char*).</dd>
+<dt><code>b</code></dt>
+<dd>Second string pointer (const char*).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if equal, false otherwise.</p>
+</section>
+
+</article>
+<article id="x_hashtable_free_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_free_cstr</span></h2>
+  <p class="brief">Free a cloned NUL-terminated C string previously allocated by x_hashtable_clone_cstr().</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_hashtable_free_cstr</span><span class="tok_pun">(</span><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>Pointer to the stored string (typically a char* or pointer slot containing it).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_hashtable_iter_begin" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_iter_begin</span></h2>
+  <p class="brief">Initialize an iterator for a hashtable.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_hashtable_iter_begin</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashtableIter">XHashtableIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>table</code></dt>
+<dd>Hashtable instance.</dd>
+<dt><code>it</code></dt>
+<dd>Iterator to initialize.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if the iterator was initialized (even if empty table), false on invalid args.</p>
+</section>
+
+</article>
+<article id="x_hashtable_iter_next" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_iter_next</span></h2>
+  <p class="brief">Advance iterator to the next occupied entry.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_hashtable_iter_next</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashtableIter">XHashtableIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_value</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>it</code></dt>
+<dd>Iterator.</dd>
+<dt><code>out_key</code></dt>
+<dd>Receives pointer to key (user-facing: dereferenced if stored as pointer/string).</dd>
+<dt><code>out_value</code></dt>
+<dd>Receives pointer to value (user-facing: dereferenced if stored as pointer/string).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if an entry was produced, false if iteration finished or invalid args.</p>
+</section>
+
+</article>
+<article id="x_hashtable_iter_next_const" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_iter_next_const</span></h2>
+  <p class="brief">Const-friendly variant of x_hashtable_iter_next().</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_hashtable_iter_next_const</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_hashtable.html#XHashtableIter">XHashtableIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_value</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_hashtable_iter_slot" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hashtable_iter_slot</span></h2>
+  <p class="brief">Get the raw slot index of the current entry (mainly for debugging).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_iter_slot</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtableIter">XHashtableIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>it</code></dt>
+<dd>Iterator.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Current slot index, or table->capacity if finished/invalid.</p>
+</section>
+
+</article>
+<article id="X_HASHTABLE_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HASHTABLE_ALLOC</span></h2>
+  <p class="brief">Internal macro for allocating memory.
+To override how this header allocates memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HASHTABLE_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">malloc</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to alloc.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_HASHTABLE_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HASHTABLE_FREE</span></h2>
+  <p class="brief">Internal macro for freeing memory.
+To override how this header frees memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HASHTABLE_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>p</code></dt>
+<dd>The address of memory region to free.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_test.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_test.h">stdx_test.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_tests_run">x_tests_run</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_TEST_VERSION_MAJOR">X_TEST_VERSION_MAJOR</a></li>
+<li><a href="#X_TEST_VERSION_MINOR">X_TEST_VERSION_MINOR</a></li>
+<li><a href="#X_TEST_VERSION_PATCH">X_TEST_VERSION_PATCH</a></li>
+<li><a href="#X_TEST_VERSION">X_TEST_VERSION</a></li>
+<li><a href="#X_TEST_SUCCESS">X_TEST_SUCCESS</a></li>
+<li><a href="#X_TEST_FAIL">X_TEST_FAIL</a></li>
+<li><a href="#XLOG_GREEN">XLOG_GREEN</a></li>
+<li><a href="#XLOG_WHITE">XLOG_WHITE</a></li>
+<li><a href="#XLOG_RED">XLOG_RED</a></li>
+<li><a href="#ASSERT_TRUE">ASSERT_TRUE</a></li>
+<li><a href="#ASSERT_FALSE">ASSERT_FALSE</a></li>
+<li><a href="#ASSERT_EQ">ASSERT_EQ</a></li>
+<li><a href="#X_TEST_FLOAT_EPSILON">X_TEST_FLOAT_EPSILON</a></li>
+<li><a href="#ASSERT_FLOAT_EQ">ASSERT_FLOAT_EQ</a></li>
+<li><a href="#ASSERT_NEQ">ASSERT_NEQ</a></li>
+<li><a href="#X_TEST">X_TEST</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#STDXTestCase">STDXTestCase</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          <li><a href="#STDXTestFunction">STDXTestFunction</a></li>
+
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_test.h">
+      <header class="page-header">
+        <h1>stdx_test.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Minimal Unit Test framework
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<ul><li>Lightweight, self-contained C test runner</li><li>Colored PASS/FAIL output using x_log</li><li>Assertion macros for booleans, equality, floats</li><li>Signal handling for crash diagnostics (SIGSEGV, SIGABRT, etc.)</li></ul><h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_TEST</code>
+in <b>one</b> source file before including this header.</p>
+<h2 id="usage">Usage</h2>
+<ul><li>Define your test functions to return int32_t (0 for pass, 1 for fail)</li><li>Use <code>ASSERT_*</code> macros for checks</li><li>Register with <code>X_TEST(name)</code> and run with <code>x_tests_run(...)</code></li><li>Define <code>X_IMPL_TEST</code> before including to enable main runner.</li></ul><h3 id="example">Example</h3>
+<pre><code>  int32_t test_example() {
+    ASSERT_TRUE(2 + 2 == 4);
+    return 0;
+  }
+
+  int32_t main() {
+    STDXTestCase tests[] = {
+      X_TEST(test_example)
+    };
+    return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
+  }
+</code></pre>
+<h2 id="dependencies">Dependencies</h2>
+<p>x_log.h</p>
+</div>
+      </header>
+
+      <article id="X_TEST_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TEST_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TEST_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_TEST_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TEST_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TEST_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_TEST_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TEST_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TEST_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_TEST_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TEST_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TEST_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_test.html#X_TEST_VERSION_MAJOR">X_TEST_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_test.html#X_TEST_VERSION_MINOR">X_TEST_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_test.html#X_TEST_VERSION_PATCH">X_TEST_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_TEST_SUCCESS" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TEST_SUCCESS</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TEST_SUCCESS</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_TEST_FAIL" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TEST_FAIL</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TEST_FAIL</span> <span class="tok_pun">-</span><span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="XLOG_GREEN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">XLOG_GREEN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">XLOG_GREEN</span><span class="tok_pun">(</span><span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_log.html#x_log_raw">x_log_raw</a></span><span class="tok_pun">(</span><span class="tok_id">stdout</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_GREEN</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_id">__VA_ARGS__</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XLOG_WHITE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">XLOG_WHITE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">XLOG_WHITE</span><span class="tok_pun">(</span><span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_log.html#x_log_raw">x_log_raw</a></span><span class="tok_pun">(</span><span class="tok_id">stdout</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_WHITE</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_id">__VA_ARGS__</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XLOG_RED" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">XLOG_RED</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">XLOG_RED</span><span class="tok_pun">(</span><span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_log.html#x_log_raw">x_log_raw</a></span><span class="tok_pun">(</span><span class="tok_id">stderr</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_RED</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_id">__VA_ARGS__</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="ASSERT_TRUE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">ASSERT_TRUE</span></h2>
+  <p class="brief">Assert that an expression evaluates to true; logs an error and returns 1 from the test on failure.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">ASSERT_TRUE</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span> <span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_pun">!</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_str">&quot;\t%s:%d: Assertion failed: %s\n&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_pun">#</span><span class="tok_id">expr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_kw">return</span> <span class="tok_num">1</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>expr</code></dt>
+<dd>Boolean expression to evaluate.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing (on failure, returns 1 from the calling function).</p>
+</section>
+
+</article>
+<article id="ASSERT_FALSE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">ASSERT_FALSE</span></h2>
+  <p class="brief">Assert that an expression evaluates to false; logs an error and returns 1 from the test on failure.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">ASSERT_FALSE</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_test.html#ASSERT_TRUE">ASSERT_TRUE</a></span><span class="tok_pun">(</span><span class="tok_pun">!</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>expr</code></dt>
+<dd>Boolean expression to evaluate.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing (on failure, returns 1 from the calling function).</p>
+</section>
+
+</article>
+<article id="ASSERT_EQ" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">ASSERT_EQ</span></h2>
+  <p class="brief">Assert that two values are equal; logs an error and returns 1 from the test on failure.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">ASSERT_EQ</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_id">expected</span><span class="tok_pun">)</span> <span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">)</span><span class="tok_pun">!=</span><span class="tok_pun">(</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_str">&quot;\t%s:%d: Assertion failed: %s == %s&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_kw">return</span> <span class="tok_num">1</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>actual</code></dt>
+<dd>Value produced by the code under test.</dd>
+<dt><code>expected</code></dt>
+<dd>Value the test expects.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing (on failure, returns 1 from the calling function).</p>
+</section>
+
+</article>
+<article id="X_TEST_FLOAT_EPSILON" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TEST_FLOAT_EPSILON</span></h2>
+  <p class="brief">Default epsilon used by ASSERT_FLOAT_EQ for approximate float comparisons.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TEST_FLOAT_EPSILON</span> <span class="tok_num">0.1f</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>None.</code></dt>
+<dd>@return Nothing.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="ASSERT_FLOAT_EQ" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">ASSERT_FLOAT_EQ</span></h2>
+  <p class="brief">Assert that two floating-point values are approximately equal within X_TEST_FLOAT_EPSILON.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">ASSERT_FLOAT_EQ</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_id">expected</span><span class="tok_pun">)</span> <span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_id">fabs</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">)</span><span class="tok_pun">-</span><span class="tok_pun">(</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">&gt;</span><span class="tok_kw"><a href="stdx_test.html#X_TEST_FLOAT_EPSILON">X_TEST_FLOAT_EPSILON</a></span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_str">&quot;\t%s:%d: Assertion failed: %s == %s&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_kw">return</span> <span class="tok_num">1</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>actual</code></dt>
+<dd>Floating-point value produced by the code under test.</dd>
+<dt><code>expected</code></dt>
+<dd>Floating-point value the test expects.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing (on failure, returns 1 from the calling function).</p>
+</section>
+
+</article>
+<article id="ASSERT_NEQ" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">ASSERT_NEQ</span></h2>
+  <p class="brief">Assert that two values are not equal; logs an error and returns 1 from the test on failure.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">ASSERT_NEQ</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_id">expected</span><span class="tok_pun">)</span> <span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">)</span><span class="tok_pun">==</span><span class="tok_pun">(</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_str">&quot;\t%s:%d: Assertion failed: %s != %s&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_kw">return</span> <span class="tok_num">1</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>actual</code></dt>
+<dd>Value produced by the code under test.</dd>
+<dt><code>expected</code></dt>
+<dd>Value the test expects it to differ from.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing (on failure, returns 1 from the calling function).</p>
+</section>
+
+</article>
+<article id="STDXTestFunction" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">STDXTestFunction</span></h2>
+  <p class="brief">Test function signature used by the STDX test runner.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">int32_t</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">STDXTestFunction</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">;</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>None.</code></dt>
+<dd>@return 0 on success, 1 (or non-zero) on failure.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="STDXTestCase" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">STDXTestCase</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">name</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_test.html#STDXTestFunction">STDXTestFunction</a></span> <span class="tok_id">func</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">STDXTestCase</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="X_TEST" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TEST</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TEST</span><span class="tok_pun">(</span><span class="tok_id">name</span><span class="tok_pun">)</span> <span class="tok_pun">{</span><span class="tok_pun">#</span><span class="tok_id">name</span><span class="tok_pun">,</span> <span class="tok_id">name</span><span class="tok_pun">}</span></code></pre>
+  
+  
+</article>
+<article id="x_tests_run" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_tests_run</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int</span> <span class="tok_id">x_tests_run</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_test.html#STDXTestCase">STDXTestCase</a></span> <span class="tok_pun">*</span><span class="tok_id">tests</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">num_tests</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>
