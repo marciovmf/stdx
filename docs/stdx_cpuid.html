@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_cpuid.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_cpuid.h">stdx_cpuid.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_cpu_info">x_cpu_info</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_CPUID_VERSION_MAJOR">X_CPUID_VERSION_MAJOR</a></li>
+<li><a href="#X_CPUID_VERSION_MINOR">X_CPUID_VERSION_MINOR</a></li>
+<li><a href="#X_CPUID_VERSION_PATCH">X_CPUID_VERSION_PATCH</a></li>
+<li><a href="#X_CPUID_VERSION">X_CPUID_VERSION</a></li>
+<li><a href="#X_CPUID_SUPPORTED">X_CPUID_SUPPORTED</a></li>
+<li><a href="#X_CPUID_SUPPORTED">X_CPUID_SUPPORTED</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XCPUInfo">XCPUInfo</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          <li><a href="#CPUFeature">CPUFeature</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_cpuid.h">
+      <header class="page-header">
+        <h1>stdx_cpuid.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - IO (file I/O utility functions)
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p>This module provides access to basic, read-only information about the
+host CPU as detected at runtime.</p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_CPUID</code>
+in <b>one</b> source file before including this header.</p>
+</div>
+      </header>
+
+      <article id="X_CPUID_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_CPUID_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_CPUID_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_CPUID_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_CPUID_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_CPUID_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_CPUID_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_CPUID_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_CPUID_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_CPUID_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_CPUID_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_CPUID_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_cpuid.html#X_CPUID_VERSION_MAJOR">X_CPUID_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_cpuid.html#X_CPUID_VERSION_MINOR">X_CPUID_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_cpuid.html#X_CPUID_VERSION_PATCH">X_CPUID_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_CPUID_SUPPORTED" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_CPUID_SUPPORTED</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_CPUID_SUPPORTED</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_CPUID_SUPPORTED" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_CPUID_SUPPORTED</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_CPUID_SUPPORTED</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="CPUFeature" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">CPUFeature</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span><span class="tok_pun">{</span>
+  <span class="tok_id">CPU_FEATURE_NONE</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_SSE</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_SSE2</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">1</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_SSE3</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">2</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_SSSE3</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">3</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_SSE41</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">4</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_SSE42</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">5</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_AVX</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">6</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_AVX2</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">7</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_AVX512F</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">8</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_NEON</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">16</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_AES</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">17</span><span class="tok_pun">,</span>
+  <span class="tok_id">CPU_FEATURE_CRC32</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">18</span><span class="tok_pun">,</span>
+<span class="tok_pun">}</span><span class="tok_id">CPUFeature</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XCPUInfo" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XCPUInfo</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_kw">int</span> <span class="tok_id">logical_cpus</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">physical_cores</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">sockets</span><span class="tok_pun">;</span>
+  <span class="tok_kw">bool</span> <span class="tok_id">hyperthreading</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">cache_size_l1_kb</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">cache_size_l2_kb</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">cache_size_l3_kb</span><span class="tok_pun">;</span>
+  <span class="tok_kw">char</span> <span class="tok_id">brand_string</span><span class="tok_pun">[</span><span class="tok_num">49</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_cpuid.html#CPUFeature">CPUFeature</a></span> <span class="tok_id">feature_flags</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XCPUInfo</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_cpu_info" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_cpu_info</span></h2>
+  <p class="brief">Query static information about the host CPU.
+All data is gathered once per call and returned by value.
+The caller owns the returned structure and no dynamic memory is involved.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_CPUID_API</span> <span class="tok_kw"><a href="stdx_cpuid.html#XCPUInfo">XCPUInfo</a></span> <span class="tok_id">x_cpu_info</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Structure containing CPU topology, cache sizes,
+brand string, and supported feature flags.</p>
+</section>
+
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

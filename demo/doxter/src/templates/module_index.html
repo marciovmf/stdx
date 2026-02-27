@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{PROJECT_NAME}}/{{FILE_NAME}} Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#{{FILE_NAME}}">{{FILE_NAME}}</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          {{INDEX_FUNCTIONS}}
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          {{INDEX_MACROS}}
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          {{INDEX_STRUCTS}}
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          {{INDEX_ENUMS}}
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          {{INDEX_TYPEDEFS}}
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          {{MODULE_LIST}}
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="{{FILE_NAME}}">
+      <header class="page-header">
+        <h1>{{FILE_NAME}}</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle">{{FILE_BRIEF}}</div>
+      </header>
+
+      {{SYMBOLS}}
+    </main>
+  </div>
+</body>
+</html>

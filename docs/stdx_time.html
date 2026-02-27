@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_time.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_time.h">stdx_time.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_timer_elapsed">x_timer_elapsed</a></li>
+<li><a href="#x_time_milliseconds">x_time_milliseconds</a></li>
+<li><a href="#x_time_microseconds">x_time_microseconds</a></li>
+<li><a href="#x_time_nanoseconds">x_time_nanoseconds</a></li>
+<li><a href="#x_time_diff">x_time_diff</a></li>
+<li><a href="#x_time_add">x_time_add</a></li>
+<li><a href="#x_time_sub">x_time_sub</a></li>
+<li><a href="#x_time_equals">x_time_equals</a></li>
+<li><a href="#x_time_less_than">x_time_less_than</a></li>
+<li><a href="#x_time_greater_than">x_time_greater_than</a></li>
+<li><a href="#x_time_sleep">x_time_sleep</a></li>
+<li><a href="#x_time_now">x_time_now</a></li>
+<li><a href="#x_timer_start">x_timer_start</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_TIME_VERSION_MAJOR">X_TIME_VERSION_MAJOR</a></li>
+<li><a href="#X_TIME_VERSION_MINOR">X_TIME_VERSION_MINOR</a></li>
+<li><a href="#X_TIME_VERSION_PATCH">X_TIME_VERSION_PATCH</a></li>
+<li><a href="#X_TIME_VERSION">X_TIME_VERSION</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XTime">XTime</a></li>
+<li><a href="#timespec">timespec</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_time.h">
+      <header class="page-header">
+        <h1>stdx_time.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Time Utilities
+Part of the STDX General Purpose C Library by marciovmf
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a>
+License: MIT</p>
+<h2 id="overview">Overview</h2>
+<p>Provides a portable threading abstraction for C programs.
+Includes Time based comparisson, measurement and arithmetic ooperations</p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_TIME</code>
+in <b>one</b> source file before including this header.</p>
+</div>
+      </header>
+
+      <article id="X_TIME_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TIME_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TIME_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_TIME_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TIME_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TIME_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_TIME_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TIME_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TIME_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_TIME_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TIME_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TIME_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_time.html#X_TIME_VERSION_MAJOR">X_TIME_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_time.html#X_TIME_VERSION_MINOR">X_TIME_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_time.html#X_TIME_VERSION_PATCH">X_TIME_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XTime" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XTime</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XTime_t</span><span class="tok_pun">{</span>
+  <span class="tok_kw">double</span> <span class="tok_id">seconds</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XTime</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="timespec" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">timespec</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">struct</span> <span class="tok_id">timespec</span> <span class="tok_id">start</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_timer_elapsed" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_timer_elapsed</span></h2>
+  <p class="brief">Get the elapsed time since a timer was started.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_timer_elapsed</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XTimer</span> <span class="tok_pun">*</span><span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>t</code></dt>
+<dd>Pointer to an initialized timer.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Elapsed time as an XTime value.</p>
+</section>
+
+</article>
+<article id="x_time_milliseconds" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_milliseconds</span></h2>
+  <p class="brief">Convert a time value to milliseconds.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">double</span> <span class="tok_id">x_time_milliseconds</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>t</code></dt>
+<dd>Time value to convert.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Time in milliseconds.</p>
+</section>
+
+</article>
+<article id="x_time_microseconds" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_microseconds</span></h2>
+  <p class="brief">Convert a time value to microseconds.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">double</span> <span class="tok_id">x_time_microseconds</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>t</code></dt>
+<dd>Time value to convert.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Time in microseconds.</p>
+</section>
+
+</article>
+<article id="x_time_nanoseconds" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_nanoseconds</span></h2>
+  <p class="brief">Convert a time value to nanoseconds.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">double</span> <span class="tok_id">x_time_nanoseconds</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>t</code></dt>
+<dd>Time value to convert.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Time in nanoseconds.</p>
+</section>
+
+</article>
+<article id="x_time_diff" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_diff</span></h2>
+  <p class="brief">Compute the difference between two time values.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_diff</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">end</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">start</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>end</code></dt>
+<dd>End time.</dd>
+<dt><code>start</code></dt>
+<dd>Start time.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Difference between end and start.</p>
+</section>
+
+</article>
+<article id="x_time_add" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_add</span></h2>
+  <p class="brief">Add two time values.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_add</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First time value.</dd>
+<dt><code>b</code></dt>
+<dd>Second time value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Sum of a and b.</p>
+</section>
+
+</article>
+<article id="x_time_sub" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_sub</span></h2>
+  <p class="brief">Subtract one time value from another.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_sub</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>Minuend time value.</dd>
+<dt><code>b</code></dt>
+<dd>Subtrahend time value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Result of a minus b.</p>
+</section>
+
+</article>
+<article id="x_time_equals" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_equals</span></h2>
+  <p class="brief">Compare two time values for equality.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_equals</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First time value.</dd>
+<dt><code>b</code></dt>
+<dd>Second time value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero if equal, zero otherwise.</p>
+</section>
+
+</article>
+<article id="x_time_less_than" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_less_than</span></h2>
+  <p class="brief">Test whether one time value is less than another.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_less_than</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First time value.</dd>
+<dt><code>b</code></dt>
+<dd>Second time value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero if a < b, zero otherwise.</p>
+</section>
+
+</article>
+<article id="x_time_greater_than" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_greater_than</span></h2>
+  <p class="brief">Test whether one time value is greater than another.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_greater_than</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First time value.</dd>
+<dt><code>b</code></dt>
+<dd>Second time value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero if a > b, zero otherwise.</p>
+</section>
+
+</article>
+<article id="x_time_sleep" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_sleep</span></h2>
+  <p class="brief">Sleep the current thread for the specified duration.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_time_sleep</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>t</code></dt>
+<dd>Duration to sleep.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_time_now" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_time_now</span></h2>
+  <p class="brief">Get the current wall-clock time.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_now</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Current time since the Unix epoch.</p>
+</section>
+
+</article>
+<article id="x_timer_start" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_timer_start</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_timer_start</span><span class="tok_pun">(</span><span class="tok_id">XTimer</span> <span class="tok_pun">*</span><span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

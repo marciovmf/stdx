@@ -1,8 +1,10 @@
-/*
+/**
  * STDX - Common
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
  * License: MIT
+ * <https://github.com/marciovmf/stdx>
+ *
+ * ## Overview
  *
  * Provides portable macros and types for different taks such as os detection,
  * architecture detection, compiler detection, bit manipulation, dll
@@ -209,18 +211,14 @@ extern "C" {
   typedef struct XPtr_t XPtr;
   struct XPtr_t
   {
-    int is_error;
-    union
-    {
-      void *ptr;
-      int error;
-    };
+    int error;
+    void *ptr;
   };
 
-#define X_PTR_OK(p)      ((XPtr){ .is_error = 0, .ptr = (p) })
-#define X_PTR_ERR(e)     ((XPtr){ .is_error = 1, .error = (e) })
-#define X_PTR_IS_ERR(r)  ((r).is_error)
-#define X_PTR_IS_OK(r)   (!(r).is_error)
+#define X_PTR_OK(p)      ((XPtr){ .error = 0, .ptr = (p) })
+#define X_PTR_ERR(e)     ((XPtr){ .error = (e), .ptr = 0 })
+#define X_PTR_IS_ERR(r)  ((r).error != 0)
+#define X_PTR_IS_OK(r)   ((r).error == 0)
 #define X_PTR_GET_PTR(r) ((r).is_error ? NULL : (r).ptr)
 #define X_PTR_GET_ERR(r) ((r).error)
 #define X_PTR_CAST(r, T) ((r).is_error ? NULL : (T)(r).ptr)

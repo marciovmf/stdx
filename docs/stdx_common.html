@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_common.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_common.h">stdx_common.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_COMMON_VERSION_MAJOR">X_COMMON_VERSION_MAJOR</a></li>
+<li><a href="#X_COMMON_VERSION_MINOR">X_COMMON_VERSION_MINOR</a></li>
+<li><a href="#X_COMMON_VERSION_PATCH">X_COMMON_VERSION_PATCH</a></li>
+<li><a href="#X_COMMON_VERSION">X_COMMON_VERSION</a></li>
+<li><a href="#X_COMPILER_NAME">X_COMPILER_NAME</a></li>
+<li><a href="#X_COMPILER_VERSION">X_COMPILER_VERSION</a></li>
+<li><a href="#X_COMPILER_NAME">X_COMPILER_NAME</a></li>
+<li><a href="#X_COMPILER_VERSION">X_COMPILER_VERSION</a></li>
+<li><a href="#X_COMPILER_NAME">X_COMPILER_NAME</a></li>
+<li><a href="#X_COMPILER_VERSION">X_COMPILER_VERSION</a></li>
+<li><a href="#X_COMPILER_NAME">X_COMPILER_NAME</a></li>
+<li><a href="#X_COMPILER_VERSION">X_COMPILER_VERSION</a></li>
+<li><a href="#X_INLINE">X_INLINE</a></li>
+<li><a href="#X_FORCEINLINE">X_FORCEINLINE</a></li>
+<li><a href="#X_NOINLINE">X_NOINLINE</a></li>
+<li><a href="#X_NORETURN">X_NORETURN</a></li>
+<li><a href="#X_ALIGN">X_ALIGN</a></li>
+<li><a href="#X_INLINE">X_INLINE</a></li>
+<li><a href="#X_FORCEINLINE">X_FORCEINLINE</a></li>
+<li><a href="#X_NOINLINE">X_NOINLINE</a></li>
+<li><a href="#X_NORETURN">X_NORETURN</a></li>
+<li><a href="#X_ALIGN">X_ALIGN</a></li>
+<li><a href="#X_ALIGN">X_ALIGN</a></li>
+<li><a href="#X_LIKELY">X_LIKELY</a></li>
+<li><a href="#X_UNLIKELY">X_UNLIKELY</a></li>
+<li><a href="#X_LIKELY">X_LIKELY</a></li>
+<li><a href="#X_UNLIKELY">X_UNLIKELY</a></li>
+<li><a href="#X_ARCH_X64">X_ARCH_X64</a></li>
+<li><a href="#X_ARCH_X86">X_ARCH_X86</a></li>
+<li><a href="#X_ARCH_ARM64">X_ARCH_ARM64</a></li>
+<li><a href="#X_ARCH_ARM32">X_ARCH_ARM32</a></li>
+<li><a href="#X_ARCH_UNKNOWN">X_ARCH_UNKNOWN</a></li>
+<li><a href="#X_OS_WINDOWS">X_OS_WINDOWS</a></li>
+<li><a href="#X_PLAT_EXPORT">X_PLAT_EXPORT</a></li>
+<li><a href="#X_PLAT_IMPORT">X_PLAT_IMPORT</a></li>
+<li><a href="#PLAT_EXPORT">PLAT_EXPORT</a></li>
+<li><a href="#X_STATIC_ASSERT">X_STATIC_ASSERT</a></li>
+<li><a href="#X_ASSERT">X_ASSERT</a></li>
+<li><a href="#X_ASSERT">X_ASSERT</a></li>
+<li><a href="#X_BIG_ENDIAN">X_BIG_ENDIAN</a></li>
+<li><a href="#X_LITTLE_ENDIAN">X_LITTLE_ENDIAN</a></li>
+<li><a href="#X_PATH_SEPARATOR">X_PATH_SEPARATOR</a></li>
+<li><a href="#X_PATH_SEPARATOR_ALTERNATIVE">X_PATH_SEPARATOR_ALTERNATIVE</a></li>
+<li><a href="#X_PATH_SEPARATOR">X_PATH_SEPARATOR</a></li>
+<li><a href="#X_PATH_SEPARATOR_ALTERNATIVE">X_PATH_SEPARATOR_ALTERNATIVE</a></li>
+<li><a href="#X_BIT_SET">X_BIT_SET</a></li>
+<li><a href="#X_BIT_CLEAR">X_BIT_CLEAR</a></li>
+<li><a href="#X_BIT_TOGGLE">X_BIT_TOGGLE</a></li>
+<li><a href="#X_BIT_CHECK">X_BIT_CHECK</a></li>
+<li><a href="#X_UNUSED">X_UNUSED</a></li>
+<li><a href="#X_VALUE_PTR">X_VALUE_PTR</a></li>
+<li><a href="#X_VALUE_TYPE_PTR">X_VALUE_TYPE_PTR</a></li>
+<li><a href="#X_PTR_OK">X_PTR_OK</a></li>
+<li><a href="#X_PTR_ERR">X_PTR_ERR</a></li>
+<li><a href="#X_PTR_IS_ERR">X_PTR_IS_ERR</a></li>
+<li><a href="#X_PTR_IS_OK">X_PTR_IS_OK</a></li>
+<li><a href="#X_PTR_GET_PTR">X_PTR_GET_PTR</a></li>
+<li><a href="#X_PTR_GET_ERR">X_PTR_GET_ERR</a></li>
+<li><a href="#X_PTR_CAST">X_PTR_CAST</a></li>
+<li><a href="#_CRT_SECURE_NO_WARNINGS">_CRT_SECURE_NO_WARNINGS</a></li>
+<li><a href="#X_ARRAY_COUNT">X_ARRAY_COUNT</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XPtr">XPtr</a></li>
+<li><a href="#XPtr_t">XPtr_t</a></li>
+<li><a href="#XSize">XSize</a></li>
+<li><a href="#XPoint">XPoint</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          <li><a href="#i8">i8</a></li>
+<li><a href="#u8">u8</a></li>
+<li><a href="#byte">byte</a></li>
+<li><a href="#i16">i16</a></li>
+<li><a href="#u16">u16</a></li>
+<li><a href="#i32">i32</a></li>
+<li><a href="#u32">u32</a></li>
+<li><a href="#i64">i64</a></li>
+<li><a href="#u64">u64</a></li>
+
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_common.h">
+      <header class="page-header">
+        <h1>stdx_common.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Common
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p>Provides portable macros and types for different taks such as os detection,
+architecture detection, compiler detection, bit manipulation, dll
+export/import macros, assertions and more.</p>
+</div>
+      </header>
+
+      <article id="X_COMMON_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMMON_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMMON_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_COMMON_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMMON_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMMON_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_COMMON_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMMON_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMMON_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_COMMON_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMMON_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMMON_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_common.html#X_COMMON_VERSION_MAJOR">X_COMMON_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_common.html#X_COMMON_VERSION_MINOR">X_COMMON_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_common.html#X_COMMON_VERSION_PATCH">X_COMMON_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_COMPILER_NAME" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMPILER_NAME</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMPILER_NAME</span> <span class="tok_str">&quot;GCC&quot;</span></code></pre>
+  
+  
+</article>
+<article id="X_COMPILER_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMPILER_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMPILER_VERSION</span> <span class="tok_id">__VERSION__</span></code></pre>
+  
+  
+</article>
+<article id="X_COMPILER_NAME" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMPILER_NAME</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMPILER_NAME</span> <span class="tok_str">&quot;Microsoft Visual C/C++ Compiler&quot;</span></code></pre>
+  
+  
+</article>
+<article id="X_COMPILER_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMPILER_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMPILER_VERSION</span> <span class="tok_id">_MSC_FULL_VER</span></code></pre>
+  
+  
+</article>
+<article id="X_COMPILER_NAME" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMPILER_NAME</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMPILER_NAME</span> <span class="tok_str">&quot;Clang&quot;</span></code></pre>
+  
+  
+</article>
+<article id="X_COMPILER_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMPILER_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMPILER_VERSION</span> <span class="tok_id">__clang_version__</span></code></pre>
+  
+  
+</article>
+<article id="X_COMPILER_NAME" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMPILER_NAME</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMPILER_NAME</span> <span class="tok_str">&quot;Unknown&quot;</span></code></pre>
+  
+  
+</article>
+<article id="X_COMPILER_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_COMPILER_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_COMPILER_VERSION</span> <span class="tok_str">&quot;Unknown&quot;</span></code></pre>
+  
+  
+</article>
+<article id="X_INLINE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INLINE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INLINE</span> <span class="tok_id">__inline</span></code></pre>
+  
+  
+</article>
+<article id="X_FORCEINLINE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_FORCEINLINE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FORCEINLINE</span> <span class="tok_id">__forceinline</span></code></pre>
+  
+  
+</article>
+<article id="X_NOINLINE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NOINLINE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NOINLINE</span> <span class="tok_id">__declspec</span><span class="tok_pun">(</span><span class="tok_id">noinline</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_NORETURN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NORETURN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NORETURN</span> <span class="tok_id">__declspec</span><span class="tok_pun">(</span><span class="tok_id">noreturn</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_ALIGN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ALIGN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ALIGN</span><span class="tok_pun">(</span><span class="tok_id">n</span><span class="tok_pun">)</span> <span class="tok_id">__declspec</span><span class="tok_pun">(</span><span class="tok_id">align</span><span class="tok_pun">(</span><span class="tok_id">n</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_INLINE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INLINE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INLINE</span> <span class="tok_kw">inline</span></code></pre>
+  
+  
+</article>
+<article id="X_FORCEINLINE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_FORCEINLINE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FORCEINLINE</span> <span class="tok_kw">inline</span> <span class="tok_id">__attribute__</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">always_inline</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_NOINLINE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NOINLINE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NOINLINE</span> <span class="tok_id">__attribute__</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">noinline</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_NORETURN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NORETURN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NORETURN</span> <span class="tok_id">__attribute__</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">noreturn</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_ALIGN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ALIGN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ALIGN</span><span class="tok_pun">(</span><span class="tok_id">n</span><span class="tok_pun">)</span> <span class="tok_id">__attribute__</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">aligned</span><span class="tok_pun">(</span><span class="tok_id">n</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_ALIGN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ALIGN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ALIGN</span><span class="tok_pun">(</span><span class="tok_id">n</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_LIKELY" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_LIKELY</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_LIKELY</span><span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span> <span class="tok_id">__builtin_expect</span><span class="tok_pun">(</span><span class="tok_pun">!</span><span class="tok_pun">!</span><span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_num">1</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_UNLIKELY" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_UNLIKELY</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_UNLIKELY</span><span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span> <span class="tok_id">__builtin_expect</span><span class="tok_pun">(</span><span class="tok_pun">!</span><span class="tok_pun">!</span><span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_LIKELY" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_LIKELY</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_LIKELY</span><span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_UNLIKELY" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_UNLIKELY</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_UNLIKELY</span><span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_ARCH_X64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARCH_X64</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARCH_X64</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_ARCH_X86" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARCH_X86</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARCH_X86</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_ARCH_ARM64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARCH_ARM64</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARCH_ARM64</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_ARCH_ARM32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARCH_ARM32</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARCH_ARM32</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_ARCH_UNKNOWN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARCH_UNKNOWN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARCH_UNKNOWN</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_OS_WINDOWS" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_OS_WINDOWS</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_OS_WINDOWS</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_PLAT_EXPORT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PLAT_EXPORT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PLAT_EXPORT</span> <span class="tok_id">__declspec</span><span class="tok_pun">(</span><span class="tok_id">dllexport</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_PLAT_IMPORT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PLAT_IMPORT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PLAT_IMPORT</span> <span class="tok_id">__declspec</span><span class="tok_pun">(</span><span class="tok_id">dllimport</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="PLAT_EXPORT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">PLAT_EXPORT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">PLAT_EXPORT</span> <span class="tok_id">__attribute__</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">visibility</span><span class="tok_pun">(</span><span class="tok_str">&quot;default&quot;</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_STATIC_ASSERT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STATIC_ASSERT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STATIC_ASSERT</span><span class="tok_pun">(</span><span class="tok_id">cond</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">)</span> <span class="tok_kw">typedef</span> <span class="tok_kw">char</span> <span class="tok_id">static_assert_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">msg</span><span class="tok_pun">[</span><span class="tok_pun">(</span><span class="tok_id">cond</span><span class="tok_pun">)</span><span class="tok_pun">?</span><span class="tok_num">1</span><span class="tok_pun">:</span><span class="tok_pun">-</span><span class="tok_num">1</span><span class="tok_pun">]</span></code></pre>
+  
+  
+</article>
+<article id="X_ASSERT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ASSERT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ASSERT</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span> <span class="tok_pun">\</span><span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_pun">!</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_id">fprintf</span><span class="tok_pun">(</span><span class="tok_id">stderr</span><span class="tok_pun">,</span> <span class="tok_str">&quot;Assertion failed: %s, file %s, line %d\n&quot;</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expr</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_id">abort</span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_ASSERT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ASSERT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ASSERT</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_BIG_ENDIAN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_BIG_ENDIAN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_BIG_ENDIAN</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_LITTLE_ENDIAN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_LITTLE_ENDIAN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_LITTLE_ENDIAN</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_PATH_SEPARATOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PATH_SEPARATOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PATH_SEPARATOR</span> <span class="tok_chr">'\\'</span></code></pre>
+  
+  
+</article>
+<article id="X_PATH_SEPARATOR_ALTERNATIVE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PATH_SEPARATOR_ALTERNATIVE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PATH_SEPARATOR_ALTERNATIVE</span> <span class="tok_chr">'/'</span></code></pre>
+  
+  
+</article>
+<article id="X_PATH_SEPARATOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PATH_SEPARATOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PATH_SEPARATOR</span> <span class="tok_chr">'/'</span></code></pre>
+  
+  
+</article>
+<article id="X_PATH_SEPARATOR_ALTERNATIVE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PATH_SEPARATOR_ALTERNATIVE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PATH_SEPARATOR_ALTERNATIVE</span> <span class="tok_chr">'\\'</span></code></pre>
+  
+  
+</article>
+<article id="X_BIT_SET" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_BIT_SET</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_BIT_SET</span><span class="tok_pun">(</span><span class="tok_id">var</span><span class="tok_pun">,</span> <span class="tok_id">bit</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">var</span><span class="tok_pun">)</span><span class="tok_pun">|</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_num">1U</span><span class="tok_pun">&lt;&lt;</span><span class="tok_pun">(</span><span class="tok_id">bit</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_BIT_CLEAR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_BIT_CLEAR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_BIT_CLEAR</span><span class="tok_pun">(</span><span class="tok_id">var</span><span class="tok_pun">,</span> <span class="tok_id">bit</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">var</span><span class="tok_pun">)</span> <span class="tok_pun">&amp;</span><span class="tok_pun">=</span><span class="tok_pun">~</span><span class="tok_pun">(</span><span class="tok_num">1U</span><span class="tok_pun">&lt;&lt;</span><span class="tok_pun">(</span><span class="tok_id">bit</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_BIT_TOGGLE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_BIT_TOGGLE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_BIT_TOGGLE</span><span class="tok_pun">(</span><span class="tok_id">var</span><span class="tok_pun">,</span> <span class="tok_id">bit</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">var</span><span class="tok_pun">)</span><span class="tok_pun">^</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_num">1U</span><span class="tok_pun">&lt;&lt;</span><span class="tok_pun">(</span><span class="tok_id">bit</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_BIT_CHECK" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_BIT_CHECK</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_BIT_CHECK</span><span class="tok_pun">(</span><span class="tok_id">var</span><span class="tok_pun">,</span> <span class="tok_id">bit</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">var</span><span class="tok_pun">)</span> <span class="tok_pun">&amp;</span><span class="tok_pun">(</span><span class="tok_num">1U</span><span class="tok_pun">&lt;&lt;</span><span class="tok_pun">(</span><span class="tok_id">bit</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">!=</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_UNUSED" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_UNUSED</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_UNUSED</span><span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_id">x</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_VALUE_PTR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_VALUE_PTR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_VALUE_PTR</span><span class="tok_pun">(</span><span class="tok_id">type</span><span class="tok_pun">,</span> <span class="tok_id">val</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">)</span> <span class="tok_pun">&amp;</span><span class="tok_pun">(</span><span class="tok_id">type</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">(</span><span class="tok_id">val</span><span class="tok_pun">)</span><span class="tok_pun">}</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_VALUE_TYPE_PTR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_VALUE_TYPE_PTR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_VALUE_TYPE_PTR</span><span class="tok_pun">(</span><span class="tok_id">type</span><span class="tok_pun">,</span> <span class="tok_id">val</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">type</span> <span class="tok_pun">*</span><span class="tok_pun">)</span> <span class="tok_pun">&amp;</span><span class="tok_pun">(</span><span class="tok_id">type</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">(</span><span class="tok_id">val</span><span class="tok_pun">)</span><span class="tok_pun">}</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XPtr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XPtr</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_kw"><a href="stdx_common.html#XPtr_t">XPtr_t</a></span> <span class="tok_id">XPtr</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XPtr_t" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XPtr_t</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">struct</span> <span class="tok_id">XPtr_t</span><span class="tok_pun">{</span>
+  <span class="tok_kw">int</span> <span class="tok_id">error</span><span class="tok_pun">;</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="X_PTR_OK" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PTR_OK</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PTR_OK</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_common.html#XPtr">XPtr</a></span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">.</span><span class="tok_id">error</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_id">ptr</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span><span class="tok_pun">}</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_PTR_ERR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PTR_ERR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PTR_ERR</span><span class="tok_pun">(</span><span class="tok_id">e</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_common.html#XPtr">XPtr</a></span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">.</span><span class="tok_id">error</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_id">e</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_id">ptr</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">}</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_PTR_IS_ERR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PTR_IS_ERR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PTR_IS_ERR</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span><span class="tok_pun">.</span><span class="tok_id">error</span><span class="tok_pun">!=</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_PTR_IS_OK" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PTR_IS_OK</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PTR_IS_OK</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span><span class="tok_pun">.</span><span class="tok_id">error</span><span class="tok_pun">==</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_PTR_GET_PTR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PTR_GET_PTR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PTR_GET_PTR</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span><span class="tok_pun">.</span><span class="tok_id">is_error</span><span class="tok_pun">?</span><span class="tok_id">NULL</span><span class="tok_pun">:</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span><span class="tok_pun">.</span><span class="tok_id">ptr</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_PTR_GET_ERR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PTR_GET_ERR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PTR_GET_ERR</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span><span class="tok_pun">.</span><span class="tok_id">error</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_PTR_CAST" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_PTR_CAST</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_PTR_CAST</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">,</span> <span class="tok_id">T</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span><span class="tok_pun">.</span><span class="tok_id">is_error</span><span class="tok_pun">?</span><span class="tok_id">NULL</span><span class="tok_pun">:</span><span class="tok_pun">(</span><span class="tok_id">T</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_id">r</span><span class="tok_pun">)</span><span class="tok_pun">.</span><span class="tok_id">ptr</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="_CRT_SECURE_NO_WARNINGS" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">_CRT_SECURE_NO_WARNINGS</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">_CRT_SECURE_NO_WARNINGS</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="i8" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">i8</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">int8_t</span> <span class="tok_id">i8</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="u8" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">u8</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">uint8_t</span> <span class="tok_id">u8</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="byte" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">byte</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">uint8_t</span> <span class="tok_id">byte</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="i16" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">i16</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">int16_t</span> <span class="tok_id">i16</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="u16" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">u16</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">uint16_t</span> <span class="tok_id">u16</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="i32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">i32</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">int32_t</span> <span class="tok_id">i32</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="u32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">u32</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">u32</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="i64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">i64</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_id">int64_t</span> <span class="tok_id">i64</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="u64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">u64</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_id">uint64_t</span> <span class="tok_id">u64</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XSize" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XSize</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XSize_t</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_common.html#i32">i32</a></span> <span class="tok_id">w</span><span class="tok_pun">,</span> <span class="tok_id">h</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XSize</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XPoint" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XPoint</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XPoint_t</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_common.html#i32">i32</a></span> <span class="tok_id">x</span><span class="tok_pun">,</span> <span class="tok_id">y</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XPoint</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="X_ARRAY_COUNT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARRAY_COUNT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_COUNT</span><span class="tok_pun">(</span><span class="tok_id">a</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_id">a</span><span class="tok_pun">)</span><span class="tok_pun">/</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">a</span><span class="tok_pun">)</span><span class="tok_pun">[</span><span class="tok_num">0</span><span class="tok_pun">]</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

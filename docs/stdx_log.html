@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_log.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_log.h">stdx_log.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#logger_init">logger_init</a></li>
+<li><a href="#logger_close">logger_close</a></li>
+<li><a href="#logger_set_console">logger_set_console</a></li>
+<li><a href="#logger_get_console">logger_get_console</a></li>
+<li><a href="#logger_log">logger_log</a></li>
+<li><a href="#logger_log_to">logger_log_to</a></li>
+<li><a href="#logger_print">logger_print</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_LOG_VERSION_MAJOR">X_LOG_VERSION_MAJOR</a></li>
+<li><a href="#X_LOG_VERSION_MINOR">X_LOG_VERSION_MINOR</a></li>
+<li><a href="#X_LOG_VERSION_PATCH">X_LOG_VERSION_PATCH</a></li>
+<li><a href="#X_LOG_VERSION">X_LOG_VERSION</a></li>
+<li><a href="#X_LOG_BUFFER_SIZE">X_LOG_BUFFER_SIZE</a></li>
+<li><a href="#X_LOG_BREAK">X_LOG_BREAK</a></li>
+<li><a href="#x_log_raw">x_log_raw</a></li>
+<li><a href="#x_log_debug">x_log_debug</a></li>
+<li><a href="#x_log_info">x_log_info</a></li>
+<li><a href="#x_log_warning">x_log_warning</a></li>
+<li><a href="#x_log_error">x_log_error</a></li>
+<li><a href="#x_log_fatal">x_log_fatal</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          <li><a href="#XLogLevel">XLogLevel</a></li>
+<li><a href="#XLogOutputFlags">XLogOutputFlags</a></li>
+<li><a href="#XLogComponent">XLogComponent</a></li>
+<li><a href="#XLogColor">XLogColor</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_log.h">
+      <header class="page-header">
+        <h1>stdx_log.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Logging Utilities
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p>Provides a flexible logging system with support for:</p>
+<ul><li>Logger initialization and cleanup</li><li>Log levels with color-coded output</li><li>Source location tagging (file, line, function)</li><li>Multiple log output targets selectable via flags</li><li>Convenience macros for common log levels (debug, info, warning, error, fatal)</li></ul><h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_LOG</code>
+in <b>one</b> source file before including this header.</p>
+</div>
+      </header>
+
+      <article id="X_LOG_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_LOG_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_LOG_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_LOG_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_LOG_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_LOG_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_LOG_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_LOG_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_LOG_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_LOG_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_LOG_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_LOG_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_log.html#X_LOG_VERSION_MAJOR">X_LOG_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_log.html#X_LOG_VERSION_MINOR">X_LOG_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_log.html#X_LOG_VERSION_PATCH">X_LOG_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_LOG_BUFFER_SIZE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_LOG_BUFFER_SIZE</span></h2>
+  <p class="brief">Default buffer size for log messages.
+Can be overriden before including this header</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_LOG_BUFFER_SIZE</span><span class="tok_pun">(</span><span class="tok_num">1024</span> <span class="tok_pun">*</span><span class="tok_num">4</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XLogLevel" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XLogLevel</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span><span class="tok_pun">{</span>
+  <span class="tok_id">XLOG_LEVEL_DEBUG</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_LEVEL_WARNING</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_LEVEL_ERROR</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_LEVEL_FATAL</span><span class="tok_pun">,</span>
+<span class="tok_pun">}</span><span class="tok_id">XLogLevel</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XLogOutputFlags" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XLogOutputFlags</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span><span class="tok_pun">{</span>
+  <span class="tok_id">XLOG_OUTPUT_NONE</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_OUTPUT_CONSOLE</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_OUTPUT_FILE</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">1</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_OUTPUT_BOTH</span><span class="tok_pun">=</span><span class="tok_id">XLOG_OUTPUT_CONSOLE</span><span class="tok_pun">|</span><span class="tok_id">XLOG_OUTPUT_FILE</span><span class="tok_pun">,</span>
+<span class="tok_pun">}</span><span class="tok_id">XLogOutputFlags</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XLogComponent" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XLogComponent</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span><span class="tok_pun">{</span>
+  <span class="tok_id">XLOG_PLAIN</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_TIMESTAMP</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_TAG</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">1</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_SOURCEINFO</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">&lt;&lt;</span><span class="tok_num">2</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_DEFAULT</span><span class="tok_pun">=</span><span class="tok_id">XLOG_TAG</span><span class="tok_pun">|</span><span class="tok_id">XLOG_TIMESTAMP</span><span class="tok_pun">|</span><span class="tok_id">XLOG_SOURCEINFO</span>
+<span class="tok_pun">}</span><span class="tok_id">XLogComponent</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XLogColor" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XLogColor</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span><span class="tok_pun">{</span>
+  <span class="tok_id">XLOG_COLOR_DEFAULT</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_RED</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_GREEN</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_YELLOW</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BLUE</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_MAGENTA</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_CYAN</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_WHITE</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BRIGHT_BLACK</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BRIGHT_RED</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BRIGHT_GREEN</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BRIGHT_YELLOW</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BRIGHT_BLUE</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BRIGHT_MAGENTA</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BRIGHT_CYAN</span><span class="tok_pun">,</span>
+  <span class="tok_id">XLOG_COLOR_BRIGHT_WHITE</span><span class="tok_pun">,</span>
+<span class="tok_pun">}</span><span class="tok_id">XLogColor</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="logger_init" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">logger_init</span></h2>
+  <p class="brief">Initialize the logging system.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_init</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogOutputFlags">XLogOutputFlags</a></span> <span class="tok_id">outputs</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>outputs</code></dt>
+<dd>Bitmask specifying enabled log outputs (console, file, etc.).</dd>
+<dt><code>level</code></dt>
+<dd>Minimum log level to emit.</dd>
+<dt><code>filename</code></dt>
+<dd>Optional file path for file output, or NULL if unused.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="logger_close" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">logger_close</span></h2>
+  <p class="brief">Shutdown the logging system and release resources.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_close</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="logger_set_console" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">logger_set_console</span></h2>
+  <p class="brief">Set the output stream used for console logging.
+
+This does not affect file logging configured via logger_init() (XLOG_OUTPUT_FILE).
+Passing NULL resets to stdout.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_set_console</span><span class="tok_pun">(</span><span class="tok_id">FILE</span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="logger_get_console" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">logger_get_console</span></h2>
+  <p class="brief">Get the current console output stream (never NULL; defaults to stdout).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">FILE</span> <span class="tok_pun">*</span> <span class="tok_id">logger_get_console</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="logger_log" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">logger_log</span></h2>
+  <p class="brief">Emit a formatted log message with full context information.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_log</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">fg</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">bg</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogComponent">XLogComponent</a></span> <span class="tok_id">components</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int</span> <span class="tok_id">line</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">func</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
+  <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>level</code></dt>
+<dd>Log severity level.</dd>
+<dt><code>fg</code></dt>
+<dd>Foreground color.</dd>
+<dt><code>bg</code></dt>
+<dd>Background color.</dd>
+<dt><code>components</code></dt>
+<dd>Bitmask controlling which components (timestamp, file, line, etc.) are included.</dd>
+<dt><code>file</code></dt>
+<dd>Source file name.</dd>
+<dt><code>line</code></dt>
+<dd>Source line number.</dd>
+<dt><code>func</code></dt>
+<dd>Source function name.</dd>
+<dt><code>fmt</code></dt>
+<dd>printf-style format string.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="logger_log_to" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">logger_log_to</span></h2>
+  <p class="brief">Emit a formatted log message with full context information, overriding the console output stream.
+
+If console output is enabled (XLOG_OUTPUT_CONSOLE), the message is written to `out` when non-NULL.
+If `out` is NULL, the logger's default console stream is used.
+File output configured via logger_init() is still honored when XLOG_OUTPUT_FILE is enabled.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_log_to</span><span class="tok_pun">(</span>
+  <span class="tok_id">FILE</span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">fg</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">bg</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogComponent">XLogComponent</a></span> <span class="tok_id">components</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int</span> <span class="tok_id">line</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">func</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
+  <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="logger_print" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">logger_print</span></h2>
+  <p class="brief">Emit a formatted log message without source context.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_print</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
+  <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>level</code></dt>
+<dd>Log severity level.</dd>
+<dt><code>fmt</code></dt>
+<dd>printf-style format string.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_LOG_BREAK" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_LOG_BREAK</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_LOG_BREAK</span><span class="tok_pun">(</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_log_raw" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_log_raw</span></h2>
+  <p class="brief">Emit a raw log message with explicit formatting and components.
+
+Automatically injects source file, line, and function information.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_log_raw</span><span class="tok_pun">(</span><span class="tok_id">out</span><span class="tok_pun">,</span> <span class="tok_id">level</span><span class="tok_pun">,</span> <span class="tok_id">fg</span><span class="tok_pun">,</span> <span class="tok_id">bg</span><span class="tok_pun">,</span> <span class="tok_id">components</span><span class="tok_pun">,</span> <span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#logger_log_to">logger_log_to</a></span><span class="tok_pun">(</span><span class="tok_id">out</span><span class="tok_pun">,</span> <span class="tok_id">level</span><span class="tok_pun">,</span> <span class="tok_id">fg</span><span class="tok_pun">,</span> <span class="tok_id">bg</span><span class="tok_pun">,</span> <span class="tok_id">components</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_id">__func__</span><span class="tok_pun">,</span> <span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_log_debug" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_log_debug</span></h2>
+  <p class="brief">Emit a debug-level log message.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_log_debug</span><span class="tok_pun">(</span><span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#logger_log">logger_log</a></span><span class="tok_pun">(</span><span class="tok_id">XLOG_LEVEL_DEBUG</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLUE</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_DEFAULT</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_id">__func__</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">fmt</span> <span class="tok_str">&quot;\n&quot;</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_log_info" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_log_info</span></h2>
+  <p class="brief">Emit an informational log message with timestamp.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_log_info</span><span class="tok_pun">(</span><span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#logger_log">logger_log</a></span><span class="tok_pun">(</span><span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_WHITE</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_TIMESTAMP</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_id">__func__</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">fmt</span> <span class="tok_str">&quot;\n&quot;</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_log_warning" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_log_warning</span></h2>
+  <p class="brief">Emit a warning-level log message.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_log_warning</span><span class="tok_pun">(</span><span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#logger_log">logger_log</a></span><span class="tok_pun">(</span><span class="tok_id">XLOG_LEVEL_WARNING</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_YELLOW</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_DEFAULT</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_id">__func__</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">fmt</span> <span class="tok_str">&quot;\n&quot;</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_log_error" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_log_error</span></h2>
+  <p class="brief">Emit an error-level log message.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_log_error</span><span class="tok_pun">(</span><span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#logger_log">logger_log</a></span><span class="tok_pun">(</span><span class="tok_id">XLOG_LEVEL_ERROR</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_RED</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_DEFAULT</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_id">__func__</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">fmt</span> <span class="tok_str">&quot;\n&quot;</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_log_fatal" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_log_fatal</span></h2>
+  <p class="brief">Emit a fatal log message and trigger a break action.
+
+Calls X_LOG_BREAK() after logging.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_log_fatal</span><span class="tok_pun">(</span><span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_pun">\</span><span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#logger_log">logger_log</a></span><span class="tok_pun">(</span><span class="tok_id">XLOG_LEVEL_FATAL</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_WHITE</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_RED</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_DEFAULT</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_id">__func__</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">fmt</span> <span class="tok_str">&quot;\n&quot;</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#X_LOG_BREAK">X_LOG_BREAK</a></span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

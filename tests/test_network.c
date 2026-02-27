@@ -152,7 +152,7 @@ int main()
     X_TEST(test_multicast_ipv6),
   };
 
-  int result = stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+  int result = x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
   x_net_shutdown();
   return result;
 }

@@ -1,0 +1,1 @@
+demo\doxter\doxter.exe -f doxter.ini -d docs src\stdx_arena.h src\stdx_array.h src\stdx_common.h src\stdx_cpuid.h src\stdx_filesystem.h src\stdx_hashtable.h src\stdx_ini.h src\stdx_io.h src\stdx_log.h src\stdx_network.h src\stdx_strbuilder.h src\stdx_string.h src\stdx_test.h src\stdx_thread.h src\stdx_time.h src\stdx_tml.h

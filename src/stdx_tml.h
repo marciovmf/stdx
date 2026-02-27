@@ -1,10 +1,8 @@
-/* 
+/** 
  * STDX - Tree Markup Language (TML)
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
- *
- * Author: marciof
  * License: MIT
+ * https://github.com/marciovmf/stdx
  *
  * To compile the implementation define X_IMPL_IO
  * in **one** source file before including this header.

@@ -1,0 +1,1517 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_network.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_network.h">stdx_network.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_net_init">x_net_init</a></li>
+<li><a href="#x_net_shutdown">x_net_shutdown</a></li>
+<li><a href="#x_net_socket_is_valid">x_net_socket_is_valid</a></li>
+<li><a href="#x_net_close">x_net_close</a></li>
+<li><a href="#x_net_set_nonblocking">x_net_set_nonblocking</a></li>
+<li><a href="#x_net_socket">x_net_socket</a></li>
+<li><a href="#x_net_socket_tcp4">x_net_socket_tcp4</a></li>
+<li><a href="#x_net_socket_tcp6">x_net_socket_tcp6</a></li>
+<li><a href="#x_net_socket_udp4">x_net_socket_udp4</a></li>
+<li><a href="#x_net_socket_udp6">x_net_socket_udp6</a></li>
+<li><a href="#x_net_bind">x_net_bind</a></li>
+<li><a href="#x_net_bind_any">x_net_bind_any</a></li>
+<li><a href="#x_net_bind_any_udp">x_net_bind_any_udp</a></li>
+<li><a href="#x_net_bind_any_udp6">x_net_bind_any_udp6</a></li>
+<li><a href="#x_net_listen">x_net_listen</a></li>
+<li><a href="#x_net_accept">x_net_accept</a></li>
+<li><a href="#x_net_connect">x_net_connect</a></li>
+<li><a href="#x_net_send">x_net_send</a></li>
+<li><a href="#x_net_recv">x_net_recv</a></li>
+<li><a href="#x_net_sendto">x_net_sendto</a></li>
+<li><a href="#x_net_recvfrom">x_net_recvfrom</a></li>
+<li><a href="#x_net_select">x_net_select</a></li>
+<li><a href="#x_net_poll">x_net_poll</a></li>
+<li><a href="#x_net_resolve">x_net_resolve</a></li>
+<li><a href="#x_net_parse_ip">x_net_parse_ip</a></li>
+<li><a href="#x_net_format_address">x_net_format_address</a></li>
+<li><a href="#x_net_address_clear">x_net_address_clear</a></li>
+<li><a href="#x_net_address_any">x_net_address_any</a></li>
+<li><a href="#x_net_address_from_ip_port">x_net_address_from_ip_port</a></li>
+<li><a href="#x_net_address_equal">x_net_address_equal</a></li>
+<li><a href="#x_net_address_to_string">x_net_address_to_string</a></li>
+<li><a href="#x_net_dns_resolve">x_net_dns_resolve</a></li>
+<li><a href="#x_net_join_multicast_ipv4">x_net_join_multicast_ipv4</a></li>
+<li><a href="#x_net_leave_multicast_ipv4">x_net_leave_multicast_ipv4</a></li>
+<li><a href="#x_net_join_multicast_ipv6">x_net_join_multicast_ipv6</a></li>
+<li><a href="#x_net_leave_multicast_ipv6">x_net_leave_multicast_ipv6</a></li>
+<li><a href="#x_net_join_multicast_ipv4_addr">x_net_join_multicast_ipv4_addr</a></li>
+<li><a href="#x_net_leave_multicast_ipv4_addr">x_net_leave_multicast_ipv4_addr</a></li>
+<li><a href="#x_net_enable_broadcast">x_net_enable_broadcast</a></li>
+<li><a href="#x_net_get_adapter_count">x_net_get_adapter_count</a></li>
+<li><a href="#x_net_list_adapters">x_net_list_adapters</a></li>
+<li><a href="#x_net_get_adapter_info">x_net_get_adapter_info</a></li>
+<li><a href="#x_net_get_last_error">x_net_get_last_error</a></li>
+<li><a href="#x_net_get_last_error_message">x_net_get_last_error_message</a></li>
+<li><a href="#x_net_get_adapter_count_win32">x_net_get_adapter_count_win32</a></li>
+<li><a href="#x_net_list_adapters_win32">x_net_list_adapters_win32</a></li>
+<li><a href="#x_net_get_adapter_info_win32">x_net_get_adapter_info_win32</a></li>
+<li><a href="#x_net_get_adapter_count_posix">x_net_get_adapter_count_posix</a></li>
+<li><a href="#x_net_list_adapters_posix">x_net_list_adapters_posix</a></li>
+<li><a href="#x_net_get_adapter_info_posix">x_net_get_adapter_info_posix</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_NETWORK_VERSION_MAJOR">X_NETWORK_VERSION_MAJOR</a></li>
+<li><a href="#X_NETWORK_VERSION_MINOR">X_NETWORK_VERSION_MINOR</a></li>
+<li><a href="#X_NETWORK_VERSION_PATCH">X_NETWORK_VERSION_PATCH</a></li>
+<li><a href="#X_NETWORK_VERSION">X_NETWORK_VERSION</a></li>
+<li><a href="#INVALID_SOCKET">INVALID_SOCKET</a></li>
+<li><a href="#X_NET_ALLOC">X_NET_ALLOC</a></li>
+<li><a href="#X_NET_FREE">X_NET_FREE</a></li>
+<li><a href="#X_NET_POLLIN">X_NET_POLLIN</a></li>
+<li><a href="#X_NET_POLLOUT">X_NET_POLLOUT</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XAddress">XAddress</a></li>
+<li><a href="#XNetAdapter">XNetAdapter</a></li>
+<li><a href="#XNetAdapterInfo">XNetAdapterInfo</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          <li><a href="#XAddressFamily">XAddressFamily</a></li>
+<li><a href="#XSocketType">XSocketType</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          <li><a href="#XSocket">XSocket</a></li>
+<li><a href="#socklen_t">socklen_t</a></li>
+
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_network.h">
+      <header class="page-header">
+        <h1>stdx_network.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p> STDX - Cross-Platform Networking API
+ Part of the STDX General Purpose C Library by marciovmf
+ License: MIT
+ <a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<ul><li>Provides a high-level, cross-platform socket networking API.</li><li>On windows, this library links with <em>iphlpapi.lib</em> and <em>ws2_32.lib</em></li></ul><h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_NET</code>
+in <b>one</b> source file before including this header.</p>
+<p>To customize how this module allocates memory, define
+<code>X_NET_ALLOC</code> / <code>X_NET_FREE</code> before including.</p>
+</div>
+      </header>
+
+      <article id="X_NETWORK_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NETWORK_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NETWORK_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_NETWORK_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NETWORK_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NETWORK_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_NETWORK_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NETWORK_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NETWORK_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_NETWORK_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NETWORK_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NETWORK_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_network.html#X_NETWORK_VERSION_MAJOR">X_NETWORK_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_network.html#X_NETWORK_VERSION_MINOR">X_NETWORK_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_network.html#X_NETWORK_VERSION_PATCH">X_NETWORK_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XSocket" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">XSocket</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_id">SOCKET</span> <span class="tok_id">XSocket</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="socklen_t" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">socklen_t</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">int32_t</span> <span class="tok_id">socklen_t</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="INVALID_SOCKET" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">INVALID_SOCKET</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">INVALID_SOCKET</span><span class="tok_pun">(</span><span class="tok_pun">-</span><span class="tok_num">1</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XAddress" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XAddress</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XAddress</span> <span class="tok_id">XAddress</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XAddressFamily" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XAddressFamily</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span><span class="tok_pun">{</span>
+  <span class="tok_id">X_NET_AF_IPV4</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_NET_AF_IPV6</span><span class="tok_pun">=</span><span class="tok_num">2</span><span class="tok_pun">,</span>
+<span class="tok_pun">}</span><span class="tok_id">XAddressFamily</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XSocketType" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XSocketType</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span><span class="tok_pun">{</span>
+  <span class="tok_id">X_NET_SOCK_STREAM</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_NET_SOCK_DGRAM</span><span class="tok_pun">=</span><span class="tok_num">2</span><span class="tok_pun">,</span>
+<span class="tok_pun">}</span><span class="tok_id">XSocketType</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XNetAdapter" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XNetAdapter</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_kw">int8_t</span> <span class="tok_id">name</span><span class="tok_pun">[</span><span class="tok_num">128</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XNetAdapter</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XNetAdapterInfo" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XNetAdapterInfo</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
+  <span class="tok_kw">int8_t</span> <span class="tok_id">name</span><span class="tok_pun">[</span><span class="tok_num">128</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int8_t</span> <span class="tok_id">description</span><span class="tok_pun">[</span><span class="tok_num">256</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int8_t</span> <span class="tok_id">mac</span><span class="tok_pun">[</span><span class="tok_num">18</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int8_t</span> <span class="tok_id">ipv4</span><span class="tok_pun">[</span><span class="tok_num">16</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int8_t</span> <span class="tok_id">ipv6</span><span class="tok_pun">[</span><span class="tok_num">46</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_id">uint64_t</span> <span class="tok_id">speed_bps</span><span class="tok_pun">;</span>
+  <span class="tok_kw">bool</span> <span class="tok_id">is_wireless</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">mtu</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">ifindex</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XNetAdapterInfo</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_net_init" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_init</span></h2>
+  <p class="brief">Initialize the networking subsystem.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_init</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_shutdown" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_shutdown</span></h2>
+  <p class="brief">Shut down the networking subsystem and release associated resources.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_net_shutdown</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_net_socket_is_valid" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_socket_is_valid</span></h2>
+  <p class="brief">Check whether a socket handle represents a valid socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_socket_is_valid</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle to validate.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if the socket is valid, false otherwise.</p>
+</section>
+
+</article>
+<article id="x_net_close" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_close</span></h2>
+  <p class="brief">Close a socket handle.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_net_close</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle to close.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_net_set_nonblocking" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_set_nonblocking</span></h2>
+  <p class="brief">Enable or disable non-blocking mode on a socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_set_nonblocking</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">nonblocking</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle to configure.</dd>
+<dt><code>nonblocking</code></dt>
+<dd>Non-zero to enable non-blocking mode, 0 to disable it.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>0 on success, or -1 on error.</p>
+</section>
+
+</article>
+<article id="x_net_socket" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_socket</span></h2>
+  <p class="brief">Create a socket with the specified address family and socket type.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">x_net_socket</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddressFamily">XAddressFamily</a></span> <span class="tok_id">family</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocketType">XSocketType</a></span> <span class="tok_id">type</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>family</code></dt>
+<dd>Address family (e.g., IPv4/IPv6).</dd>
+<dt><code>type</code></dt>
+<dd>Socket type (e.g., TCP/UDP).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New socket handle, or an invalid socket value on failure.</p>
+</section>
+
+</article>
+<article id="x_net_socket_tcp4" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_socket_tcp4</span></h2>
+  <p class="brief">Create an IPv4 TCP socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">x_net_socket_tcp4</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New socket handle, or an invalid socket value on failure.</p>
+</section>
+
+</article>
+<article id="x_net_socket_tcp6" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_socket_tcp6</span></h2>
+  <p class="brief">Create an IPv6 TCP socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">x_net_socket_tcp6</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New socket handle, or an invalid socket value on failure.</p>
+</section>
+
+</article>
+<article id="x_net_socket_udp4" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_socket_udp4</span></h2>
+  <p class="brief">Create an IPv4 UDP socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">x_net_socket_udp4</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New socket handle, or an invalid socket value on failure.</p>
+</section>
+
+</article>
+<article id="x_net_socket_udp6" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_socket_udp6</span></h2>
+  <p class="brief">Create an IPv6 UDP socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">x_net_socket_udp6</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New socket handle, or an invalid socket value on failure.</p>
+</section>
+
+</article>
+<article id="x_net_bind" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_bind</span></h2>
+  <p class="brief">Bind a socket to a specific local address.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_bind</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle to bind.</dd>
+<dt><code>addr</code></dt>
+<dd>Local address to bind to.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_bind_any" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_bind_any</span></h2>
+  <p class="brief">Bind a socket to any local address of the given family and port.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_bind_any</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddressFamily">XAddressFamily</a></span> <span class="tok_id">family</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint16_t</span> <span class="tok_id">port</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle to bind.</dd>
+<dt><code>family</code></dt>
+<dd>Address family to bind (e.g., IPv4/IPv6).</dd>
+<dt><code>port</code></dt>
+<dd>Local port to bind to.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_bind_any_udp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_bind_any_udp</span></h2>
+  <p class="brief">Bind a UDP socket to any local IPv4 address (system-chosen port/address if applicable).</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_bind_any_udp</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>UDP socket handle to bind.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_bind_any_udp6" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_bind_any_udp6</span></h2>
+  <p class="brief">Bind a UDP socket to any local IPv6 address (system-chosen port/address if applicable).</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_bind_any_udp6</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>UDP socket handle to bind.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_listen" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_listen</span></h2>
+  <p class="brief">Mark a bound socket as listening for incoming connections.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_listen</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">backlog</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>backlog</code></dt>
+<dd>Maximum pending connection queue length.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_accept" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_accept</span></h2>
+  <p class="brief">Accept an incoming connection on a listening socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">x_net_accept</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">out_addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Listening socket handle.</dd>
+<dt><code>out_addr</code></dt>
+<dd>Optional output address receiving the peer address (may be NULL if supported).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>New connected socket handle, or an invalid socket value on failure.</p>
+</section>
+
+</article>
+<article id="x_net_connect" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_connect</span></h2>
+  <p class="brief">Connect a socket to a remote address.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_connect</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle to connect.</dd>
+<dt><code>addr</code></dt>
+<dd>Remote address to connect to.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>0 on success, -1 on error, or a platform-defined in-progress code for non-blocking sockets.</p>
+</section>
+
+</article>
+<article id="x_net_send" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_send</span></h2>
+  <p class="brief">Send data on a connected socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_net_send</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Connected socket handle.</dd>
+<dt><code>buf</code></dt>
+<dd>Data to send.</dd>
+<dt><code>len</code></dt>
+<dd>Number of bytes to send.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of bytes sent (may be less than len), or 0 on error/connection closed depending on implementation.</p>
+</section>
+
+</article>
+<article id="x_net_recv" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_recv</span></h2>
+  <p class="brief">Receive data from a connected socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_net_recv</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Connected socket handle.</dd>
+<dt><code>buf</code></dt>
+<dd>Output buffer to receive data.</dd>
+<dt><code>len</code></dt>
+<dd>Maximum number of bytes to read.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of bytes received, or 0 on connection closed/error depending on implementation.</p>
+</section>
+
+</article>
+<article id="x_net_sendto" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_sendto</span></h2>
+  <p class="brief">Send data to a specific address (datagram sockets).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_net_sendto</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>buf</code></dt>
+<dd>Data to send.</dd>
+<dt><code>len</code></dt>
+<dd>Number of bytes to send.</dd>
+<dt><code>addr</code></dt>
+<dd>Destination address.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of bytes sent, or 0 on error depending on implementation.</p>
+</section>
+
+</article>
+<article id="x_net_recvfrom" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_recvfrom</span></h2>
+  <p class="brief">Receive data from a socket and optionally retrieve the sender address.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_net_recvfrom</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">out_addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>buf</code></dt>
+<dd>Output buffer to receive data.</dd>
+<dt><code>len</code></dt>
+<dd>Maximum number of bytes to read.</dd>
+<dt><code>out_addr</code></dt>
+<dd>Output address receiving the sender address.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of bytes received, or 0 on error/no data depending on implementation.</p>
+</section>
+
+</article>
+<article id="x_net_select" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_select</span></h2>
+  <p class="brief">Wait for readability on multiple sockets.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_select</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_pun">*</span><span class="tok_id">read_sockets</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">read_count</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">timeout_ms</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>read_sockets</code></dt>
+<dd>Array of sockets to wait on for readability.</dd>
+<dt><code>read_count</code></dt>
+<dd>Number of sockets in read_sockets.</dd>
+<dt><code>timeout_ms</code></dt>
+<dd>Timeout in milliseconds (-1 for infinite, 0 for non-blocking poll).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of sockets ready for reading, 0 on timeout, or -1 on error.</p>
+</section>
+
+</article>
+<article id="x_net_poll" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_poll</span></h2>
+  <p class="brief">Wait for specific events on a socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_poll</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">events</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">timeout_ms</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>events</code></dt>
+<dd>Bitmask of events to wait for (implementation-defined).</dd>
+<dt><code>timeout_ms</code></dt>
+<dd>Timeout in milliseconds (-1 for infinite, 0 for non-blocking poll).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Event bitmask of occurred events, 0 on timeout, or -1 on error.</p>
+</section>
+
+</article>
+<article id="x_net_resolve" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_resolve</span></h2>
+  <p class="brief">Resolve a host and service/port into a network address.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_resolve</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">host</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">port</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddressFamily">XAddressFamily</a></span> <span class="tok_id">family</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">out_addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>host</code></dt>
+<dd>Hostname or address string.</dd>
+<dt><code>port</code></dt>
+<dd>Service name or port string.</dd>
+<dt><code>family</code></dt>
+<dd>Address family to resolve (e.g., IPv4/IPv6/unspecified).</dd>
+<dt><code>out_addr</code></dt>
+<dd>Output address receiving the resolved result.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_parse_ip" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_parse_ip</span></h2>
+  <p class="brief">Parse an IP string into a raw binary address.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_parse_ip</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddressFamily">XAddressFamily</a></span> <span class="tok_id">family</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">ip</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">out_addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>family</code></dt>
+<dd>Address family (IPv4 or IPv6).</dd>
+<dt><code>ip</code></dt>
+<dd>IP address string.</dd>
+<dt><code>out_addr</code></dt>
+<dd>Output buffer receiving the raw address bytes.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>0 on success, or -1 on failure.</p>
+</section>
+
+</article>
+<article id="x_net_format_address" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_format_address</span></h2>
+  <p class="brief">Format an address as a human-readable string.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_format_address</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">addr</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">out_str</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">maxlen</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>addr</code></dt>
+<dd>Address to format.</dd>
+<dt><code>out_str</code></dt>
+<dd>Output buffer receiving the formatted string.</dd>
+<dt><code>maxlen</code></dt>
+<dd>Size of out_str in bytes/chars.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of characters written (excluding terminator), or -1 on failure.</p>
+</section>
+
+</article>
+<article id="x_net_address_clear" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_address_clear</span></h2>
+  <p class="brief">Clear an XAddress structure (set to zero).</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_net_address_clear</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>addr</code></dt>
+<dd>Address structure to clear.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_net_address_any" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_address_any</span></h2>
+  <p class="brief">Create an "any" address for binding on the given family and port.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_net_address_any</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">out_addr</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">family</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint16_t</span> <span class="tok_id">port</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>out_addr</code></dt>
+<dd>Output address to fill.</dd>
+<dt><code>family</code></dt>
+<dd>Address family (implementation expects a family code).</dd>
+<dt><code>port</code></dt>
+<dd>Port to set.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_net_address_from_ip_port" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_address_from_ip_port</span></h2>
+  <p class="brief">Build an XAddress from an IP string and port.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_address_from_ip_port</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">ip</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint16_t</span> <span class="tok_id">port</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">out_addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ip</code></dt>
+<dd>IP address string.</dd>
+<dt><code>port</code></dt>
+<dd>Port number.</dd>
+<dt><code>out_addr</code></dt>
+<dd>Output address to fill.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>0 on success, or -1 on failure.</p>
+</section>
+
+</article>
+<article id="x_net_address_equal" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_address_equal</span></h2>
+  <p class="brief">Compare two XAddress values for equality.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_address_equal</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>a</code></dt>
+<dd>First address.</dd>
+<dt><code>b</code></dt>
+<dd>Second address.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero if equal, 0 if not equal.</p>
+</section>
+
+</article>
+<article id="x_net_address_to_string" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_address_to_string</span></h2>
+  <p class="brief">Convert an XAddress to a string representation (typically "IP:port").</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_address_to_string</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">addr</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">buf</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">buf_len</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>addr</code></dt>
+<dd>Address to format.</dd>
+<dt><code>buf</code></dt>
+<dd>Output buffer receiving the string.</dd>
+<dt><code>buf_len</code></dt>
+<dd>Size of buf in bytes/chars.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of characters written (excluding terminator), or -1 on failure.</p>
+</section>
+
+</article>
+<article id="x_net_dns_resolve" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_dns_resolve</span></h2>
+  <p class="brief">Resolve a DNS hostname to an address.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_dns_resolve</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">hostname</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddressFamily">XAddressFamily</a></span> <span class="tok_id">family</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">out_addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>hostname</code></dt>
+<dd>Hostname to resolve.</dd>
+<dt><code>family</code></dt>
+<dd>Address family to resolve (e.g., IPv4/IPv6).</dd>
+<dt><code>out_addr</code></dt>
+<dd>Output address receiving the resolved result.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>0 on success, or -1 on failure.</p>
+</section>
+
+</article>
+<article id="x_net_join_multicast_ipv4" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_join_multicast_ipv4</span></h2>
+  <p class="brief">Join an IPv4 multicast group by textual group address.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_join_multicast_ipv4</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">group</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>group</code></dt>
+<dd>Multicast group address string (e.g., "239.0.0.1").</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_leave_multicast_ipv4" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_leave_multicast_ipv4</span></h2>
+  <p class="brief">Leave an IPv4 multicast group by textual group address.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_leave_multicast_ipv4</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">group</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>group</code></dt>
+<dd>Multicast group address string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_join_multicast_ipv6" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_join_multicast_ipv6</span></h2>
+  <p class="brief">Join an IPv6 multicast group.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_join_multicast_ipv6</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">multicast_ip</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">ifindex</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>multicast_ip</code></dt>
+<dd>Multicast group IPv6 address string.</dd>
+<dt><code>ifindex</code></dt>
+<dd>Network interface index to join on.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_leave_multicast_ipv6" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_leave_multicast_ipv6</span></h2>
+  <p class="brief">Leave an IPv6 multicast group.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_leave_multicast_ipv6</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">multicast_ip</span><span class="tok_pun">,</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">ifindex</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>multicast_ip</code></dt>
+<dd>Multicast group IPv6 address string.</dd>
+<dt><code>ifindex</code></dt>
+<dd>Network interface index to leave on.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_join_multicast_ipv4_addr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_join_multicast_ipv4_addr</span></h2>
+  <p class="brief">Join an IPv4 multicast group using an XAddress structure.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_join_multicast_ipv4_addr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">group_addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>group_addr</code></dt>
+<dd>Multicast group address.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_leave_multicast_ipv4_addr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_leave_multicast_ipv4_addr</span></h2>
+  <p class="brief">Leave an IPv4 multicast group using an XAddress structure.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_leave_multicast_ipv4_addr</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">group_addr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>group_addr</code></dt>
+<dd>Multicast group address.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_enable_broadcast" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_enable_broadcast</span></h2>
+  <p class="brief">Enable or disable broadcast capability on a socket.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_enable_broadcast</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span><span class="tok_pun">,</span>
+  <span class="tok_kw">bool</span> <span class="tok_id">enable</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sock</code></dt>
+<dd>Socket handle.</dd>
+<dt><code>enable</code></dt>
+<dd>True to enable broadcast, false to disable.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_get_adapter_count" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_get_adapter_count</span></h2>
+  <p class="brief">Get the number of network adapters available on the system.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_get_adapter_count</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of adapters, or -1 on error.</p>
+</section>
+
+</article>
+<article id="x_net_list_adapters" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_list_adapters</span></h2>
+  <p class="brief">List available network adapters.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_list_adapters</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XNetAdapter">XNetAdapter</a></span> <span class="tok_pun">*</span><span class="tok_id">out_adapters</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">max_adapters</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>out_adapters</code></dt>
+<dd>Output array receiving adapter entries.</dd>
+<dt><code>max_adapters</code></dt>
+<dd>Maximum number of adapters to write to out_adapters.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of adapters written, or -1 on error.</p>
+</section>
+
+</article>
+<article id="x_net_get_adapter_info" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_get_adapter_info</span></h2>
+  <p class="brief">Retrieve detailed information about a network adapter by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_net_get_adapter_info</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">name</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XNetAdapterInfo">XNetAdapterInfo</a></span> <span class="tok_pun">*</span><span class="tok_id">out_info</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>name</code></dt>
+<dd>Adapter name identifier.</dd>
+<dt><code>out_info</code></dt>
+<dd>Output structure receiving detailed adapter information.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_net_get_last_error" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_get_last_error</span></h2>
+  <p class="brief">Get the last network error code for the current thread/process.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_get_last_error</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Last error code (WSAGetLastError() on Windows, errno on POSIX).</p>
+</section>
+
+</article>
+<article id="x_net_get_last_error_message" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_get_last_error_message</span></h2>
+  <p class="brief">Write a human-readable message for the last network error into a buffer.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_get_last_error_message</span><span class="tok_pun">(</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">buf</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">buf_len</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>buf</code></dt>
+<dd>Output buffer to receive the message string.</dd>
+<dt><code>buf_len</code></dt>
+<dd>Size of buf in bytes/chars.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>0 on success, or -1 on failure (e.g., buffer too small).</p>
+</section>
+
+</article>
+<article id="X_NET_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NET_ALLOC</span></h2>
+  <p class="brief">Internal macro for allocating memory.
+To override how this header allocates memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NET_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">malloc</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to alloc.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_NET_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NET_FREE</span></h2>
+  <p class="brief">Internal macro for freeing memory.
+To override how this header frees memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NET_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>p</code></dt>
+<dd>The address of memory region to free.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_NET_POLLIN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NET_POLLIN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NET_POLLIN</span> <span class="tok_num">0x01</span></code></pre>
+  
+  
+</article>
+<article id="X_NET_POLLOUT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_NET_POLLOUT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_NET_POLLOUT</span> <span class="tok_num">0x02</span></code></pre>
+  
+  
+</article>
+<article id="x_net_get_adapter_count_win32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_get_adapter_count_win32</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_get_adapter_count_win32</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_net_list_adapters_win32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_list_adapters_win32</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_list_adapters_win32</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XNetAdapter">XNetAdapter</a></span> <span class="tok_pun">*</span><span class="tok_id">out_adapters</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">max_adapters</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_net_get_adapter_info_win32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_get_adapter_info_win32</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_get_adapter_info_win32</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">name</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XNetAdapterInfo">XNetAdapterInfo</a></span> <span class="tok_pun">*</span><span class="tok_id">out_info</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_net_get_adapter_count_posix" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_get_adapter_count_posix</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_get_adapter_count_posix</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_net_list_adapters_posix" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_list_adapters_posix</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_list_adapters_posix</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_network.html#XNetAdapter">XNetAdapter</a></span> <span class="tok_pun">*</span><span class="tok_id">out_adapters</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">max_adapters</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_net_get_adapter_info_posix" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_net_get_adapter_info_posix</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_net_get_adapter_info_posix</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">int8_t</span> <span class="tok_pun">*</span><span class="tok_id">name</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_network.html#XNetAdapterInfo">XNetAdapterInfo</a></span> <span class="tok_pun">*</span><span class="tok_id">out_info</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>
