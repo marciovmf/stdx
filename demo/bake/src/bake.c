@@ -409,8 +409,8 @@ static int s_run(const char* ini_path, const char* out_override)
   else
   {
     x_fs_path_join_slice(&out_path,
-        x_fs_path_dirname(ini_path),
-        x_fs_path_basename(ini_path));
+        x_fs_path_dirname_cstr(ini_path),
+        x_fs_path_basename_cstr(ini_path));
     x_fs_path_change_extension(&out_path, ".h");
     printf("%s\n", out_path.buf);
   }
@@ -432,7 +432,7 @@ static int s_run(const char* ini_path, const char* out_override)
 
   /* ini dir for @paths */
   XFSPath ini_dir;
-  x_fs_path_from_slice(x_fs_path_dirname(ini_path), &ini_dir);
+  x_fs_path_from_slice(x_fs_path_dirname_cstr(ini_path), &ini_dir);
 
   // if this is true, the ini file is justa file name, no path.
   if (x_fs_path_is_file(&ini_dir))
