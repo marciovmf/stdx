@@ -93,7 +93,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_tml.html">stdx_tml.h</a></li>
 
         </ul>
       </details>
@@ -282,7 +281,7 @@ Can be overriden before including this header</p>
   </div>
   <h2><span class="symbol-name">logger_set_console</span></h2>
   <p class="brief">Set the output stream used for console logging.
-
+ 
 This does not affect file logging configured via logger_init() (XLOG_OUTPUT_FILE).
 Passing NULL resets to stdout.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_set_console</span><span class="tok_pun">(</span><span class="tok_id">FILE</span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
@@ -346,7 +345,7 @@ Passing NULL resets to stdout.</p>
   </div>
   <h2><span class="symbol-name">logger_log_to</span></h2>
   <p class="brief">Emit a formatted log message with full context information, overriding the console output stream.
-
+ 
 If console output is enabled (XLOG_OUTPUT_CONSOLE), the message is written to `out` when non-NULL.
 If `out` is NULL, the logger's default console stream is used.
 File output configured via logger_init() is still honored when XLOG_OUTPUT_FILE is enabled.</p>
@@ -403,7 +402,7 @@ File output configured via logger_init() is still honored when XLOG_OUTPUT_FILE 
   </div>
   <h2><span class="symbol-name">x_log_raw</span></h2>
   <p class="brief">Emit a raw log message with explicit formatting and components.
-
+ 
 Automatically injects source file, line, and function information.</p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_log_raw</span><span class="tok_pun">(</span><span class="tok_id">out</span><span class="tok_pun">,</span> <span class="tok_id">level</span><span class="tok_pun">,</span> <span class="tok_id">fg</span><span class="tok_pun">,</span> <span class="tok_id">bg</span><span class="tok_pun">,</span> <span class="tok_id">components</span><span class="tok_pun">,</span> <span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#logger_log_to">logger_log_to</a></span><span class="tok_pun">(</span><span class="tok_id">out</span><span class="tok_pun">,</span> <span class="tok_id">level</span><span class="tok_pun">,</span> <span class="tok_id">fg</span><span class="tok_pun">,</span> <span class="tok_id">bg</span><span class="tok_pun">,</span> <span class="tok_id">components</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_id">__func__</span><span class="tok_pun">,</span> <span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span></code></pre>
   
@@ -455,7 +454,7 @@ Automatically injects source file, line, and function information.</p>
   </div>
   <h2><span class="symbol-name">x_log_fatal</span></h2>
   <p class="brief">Emit a fatal log message and trigger a break action.
-
+ 
 Calls X_LOG_BREAK() after logging.</p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_log_fatal</span><span class="tok_pun">(</span><span class="tok_id">fmt</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_pun">\</span><span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#logger_log">logger_log</a></span><span class="tok_pun">(</span><span class="tok_id">XLOG_LEVEL_FATAL</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_WHITE</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_RED</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_DEFAULT</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_id">__func__</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">fmt</span> <span class="tok_str">&quot;\n&quot;</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_kw"><a href="stdx_log.html#X_LOG_BREAK">X_LOG_BREAK</a></span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span><span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
   

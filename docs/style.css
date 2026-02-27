@@ -1,4 +1,5 @@
 :root {
+  --body-bg:      #CCC;
   --bg:           #ffffff;
   --sidebar-bg:   #f8f9fb;
   --fg:           #1b1b1b;
@@ -10,10 +11,10 @@
   --radius:       10px;
 
   /* Font roles (more granular than --mono/--sans) */
-  --font-ui:       JetBrains Mono;
-  --font-heading:  JetBrains Mono;
-  --font-code:     JetBrains Mono;
-  --font-symbol:   JetBrains Mono;
+  --font-ui:       Segoe UI;
+  --font-heading:  Segoe UI;
+  --font-code:     Segoe UI;
+  --font-symbol:   Segoe UI;
 
   /* Syntax highlight palette */
   --tok-pp:  #6f42c1;
@@ -25,6 +26,9 @@
   --tok-pun: #6a737d;
   --tok-doc: #22863a;
 
+  --content-max:  980px;
+  --sidebar-max:  360px;
+  --layout-max:  calc(var(--sidebar-max) + var(--content-max) + 6rem);
 }
 
 * { box-sizing: border-box; }
@@ -37,7 +41,7 @@ html {
 body {
   margin: 0;
   font-family: var(--font-ui);
-  background: var(--bg);
+  background: var(--body-bg);
   color: var(--fg);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -61,8 +65,13 @@ a:focus-visible {
 /* Layout */
 .layout {
   display: grid;
-  grid-template-columns: minmax(280px, 25%) minmax(0, 1fr);
+  grid-template-columns: minmax(280px, var(--sidebar-max)) minmax(0, 1fr);
   min-height: 100vh;
+
+  width: 100%;
+  max-width: var(--layout-max);
+  margin: 0 auto; /* centers whole page on ultrawide */
+  background: var(--bg);
 }
 
 /* Sidebar */
@@ -85,8 +94,10 @@ a:focus-visible {
 .content {
   min-width: 0; /* prevents grid overflow issues */
   padding: 2.25rem 3rem 4rem;
-  max-width: 1040px;
-  margin: 0 auto;
+
+  width: 100%;
+  max-width: var(--content-max);
+  margin: 0 auto; /* centers the article column */
 }
 
 /* Sidebar headings */
