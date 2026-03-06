@@ -13,6 +13,7 @@ bool has_data = false;
 // Utility functions
 static void* producer(void* _)
 {
+  (void)_;
   x_thread_mutex_lock(lock_a);
   buffer = THREAD_PRODUCED_VALUE;
   has_data = true;
@@ -23,6 +24,7 @@ static void* producer(void* _)
 
 static void* consumer(void* _)
 {
+  (void) _;
   x_thread_mutex_lock(lock_a);
   while (!has_data)
   {
@@ -63,5 +65,5 @@ int main()
     X_TEST(test_producer_consumer),
   };
 
-  return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
 }

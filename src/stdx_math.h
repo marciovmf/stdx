@@ -108,7 +108,6 @@ extern "C" {
   Vec3  vec3_lerp(Vec3 a,Vec3 b,float t);
   Vec3  vec3_smoothstep(Vec3 a,Vec3 b,float t);
   Vec3  vec3_make(float x,float y,float z);
-  Vec3  vec3_add(Vec3 a, Vec3 b);
 
   /**
    * 4D vector operations, used mainly for homogeneous coords.
@@ -146,6 +145,9 @@ extern "C" {
    * 4×4 matrix functions (column-major, right-handed by default).
    * note Multiply column vectors: p' = M * p
    */
+
+#define mat4() ((Mat4){0})
+
   Mat4  mat4_identity(void);
   Mat4  mat4_make(float xx,float xy,float xz,float xw,
       float yx,float yy,float yz,float yw,
@@ -166,7 +168,10 @@ extern "C" {
   Mat4  mat4_from_quat(Quat q);
   Mat4  mat4_compose(Vec3 t, Quat r, Vec3 s);
   float mat4_det(Mat4 m); /* 4×4 determinant */
-  Mat4  mat4_inverse_affine(Mat4 m); /* Quick inverse for rigid/uniform TRS */
+  float mat4_minor(Mat4 m, int row, int col);
+  float mat4_cofactor(Mat4 m, int row, int col);
+  Mat4  mat4_inverse_affine(Mat4 m); /* Fast inverse for affine TRS without shear */
+  Mat4 mat4_inverse_affine_uniform_scale(Mat4 m);
   Mat4  mat4_inverse_full(Mat4 m, bool *ok);
   Mat4  mat4_look_at_rh(Vec3 eye, Vec3 target, Vec3 up); /**< Right-handed view */
   Mat4  mat4_look_at_lh(Vec3 eye, Vec3 target, Vec3 up); /**< Left-handed view */
@@ -227,8 +232,15 @@ extern "C" {
 
 float float_clamp(float x, float a, float b){ return x<a?a:(x>b?b:x); }
 float float_lerp(float a,float b,float t){ return a + (b-a)*t; }
-float float_smoothstep(float a,float b,float t){
-  t = float_clamp((t-a)/(b-a),0.0f,1.0f); return t*t*(3.0f-2.0f*t);
+float float_smoothstep(float a,float b,float t)
+{
+  if (float_eq(a, b))
+  {
+    return (t < a) ? 0.0f : 1.0f;
+  }
+
+  t = float_clamp((t - a) / (b - a), 0.0f, 1.0f);
+  return t * t * (3.0f - 2.0f * t);
 }
 bool  float_eq(float a,float b){ return fabsf(a-b) <= STDXM_EPS; }
 bool  float_is_zero(float a){ return fabsf(a) <= STDXM_EPS; }
@@ -252,7 +264,7 @@ Vec2  vec2_clamp(Vec2 v, float a,float b){ return vec2_make(float_clamp(v.x,a,b)
 float vec2_dot(Vec2 a, Vec2 b){ return a.x*b.x + a.y*b.y; }
 float vec2_len(Vec2 a){ return sqrtf(vec2_dot(a,a)); }
 float vec2_len2(Vec2 a){ return vec2_dot(a,a); }
-Vec2  vec2_norm(Vec2 a){ float L=vec2_len(a); return (L>0)?vec2_div(a,L):vec2_make(0,0); }
+Vec2  vec2_norm(Vec2 a){ float L=vec2_len(a); return (L>STDXM_EPS)?vec2_div(a,L):vec2_make(0,0); }
 Vec2  vec2_lerp(Vec2 a,Vec2 b,float t){ return vec2_make(float_lerp(a.x,b.x,t), float_lerp(a.y,b.y,t)); }
 Vec2  vec2_smoothstep(Vec2 a,Vec2 b,float t){ return vec2_make(float_smoothstep(a.x,b.x,t), float_smoothstep(a.y,b.y,t)); }
 bool  vec2_cmp(Vec2 a, Vec2 b){ return float_eq(a.x,b.x)&&float_eq(a.y,b.y); }
@@ -279,7 +291,7 @@ Vec3  vec3_cross(Vec3 a, Vec3 b){
 
 float vec3_len(Vec3 a){ return sqrtf(vec3_dot(a,a)); }
 float vec3_len2(Vec3 a){ return vec3_dot(a,a); }
-Vec3  vec3_norm(Vec3 a){ float L=vec3_len(a); return (L>0)?vec3_div(a,L):vec3_make(0,0,0); }
+Vec3  vec3_norm(Vec3 a){ float L=vec3_len(a); return (L>STDXM_EPS)?vec3_div(a,L):vec3_make(0,0,0); }
 bool  vec3_cmp(Vec3 a, Vec3 b){ return float_eq(a.x,b.x)&&float_eq(a.y,b.y)&&float_eq(a.z,b.z); }
 Vec3  vec3_lerp(Vec3 a,Vec3 b,float t){ return vec3_make(float_lerp(a.x,b.x,t), float_lerp(a.y,b.y,t), float_lerp(a.z,b.z,t)); }
 Vec3  vec3_smoothstep(Vec3 a,Vec3 b,float t){
@@ -542,75 +554,185 @@ Mat4 mat4_orthographic_lh_zo(float l,float r,float b,float t,float n,float f){
 
 static float stdxm__m3det(float a00,float a01,float a02,
     float a10,float a11,float a12,
-    float a20,float a21,float a22){
+    float a20,float a21,float a22)
+{
   return a00*(a11*a22 - a12*a21) - a01*(a10*a22 - a12*a20) + a02*(a10*a21 - a11*a20);
 }
 
-float mat4_det(Mat4 m){
-  float c0 = stdxm__m3det(m.m[5],m.m[6],m.m[7],  m.m[9],m.m[10],m.m[11],  m.m[13],m.m[14],m.m[15]);
-  float c1 = stdxm__m3det(m.m[1],m.m[2],m.m[3],  m.m[9],m.m[10],m.m[11],  m.m[13],m.m[14],m.m[15]);
-  float c2 = stdxm__m3det(m.m[1],m.m[2],m.m[3],  m.m[5],m.m[6],m.m[7],    m.m[13],m.m[14],m.m[15]);
-  float c3 = stdxm__m3det(m.m[1],m.m[2],m.m[3],  m.m[5],m.m[6],m.m[7],    m.m[9],m.m[10],m.m[11]);
-  return  m.m[0]*c0 - m.m[4]*c1 + m.m[8]*c2 - m.m[12]*c3;
+float mat4_det(Mat4 m)
+{
+  return
+    m.m[0]  * mat4_cofactor(m, 0, 0) +
+    m.m[4]  * mat4_cofactor(m, 0, 1) +
+    m.m[8]  * mat4_cofactor(m, 0, 2) +
+    m.m[12] * mat4_cofactor(m, 0, 3);
 }
 
-Mat4 mat4_inverse_affine_uniform_scale(Mat4 m){
-  Mat3 R={{ m.m[0],m.m[1],m.m[2],  m.m[4],m.m[5],m.m[6],  m.m[8],m.m[9],m.m[10] }};
-  /* Rt */
-  Mat3 Rt={{ R.m[0],R.m[3],R.m[6], R.m[1],R.m[4],R.m[7], R.m[2],R.m[5],R.m[8] }};
-  Vec3 t=vec3_make(m.m[12],m.m[13],m.m[14]);
-  Mat4 M=mat4_identity();
-  M.m[0]=Rt.m[0]; M.m[4]=Rt.m[3]; M.m[8] =Rt.m[6];
-  M.m[1]=Rt.m[1]; M.m[5]=Rt.m[4]; M.m[9] =Rt.m[7];
-  M.m[2]=Rt.m[2]; M.m[6]=Rt.m[5]; M.m[10]=Rt.m[8];
-  Vec3 tt = vec3_make(
-      -(M.m[0]*t.x + M.m[4]*t.y + M.m[8]*t.z),
-      -(M.m[1]*t.x + M.m[5]*t.y + M.m[9]*t.z),
-      -(M.m[2]*t.x + M.m[6]*t.y + M.m[10]*t.z)
-      );
-  M.m[12]=tt.x; M.m[13]=tt.y; M.m[14]=tt.z; return M;
+static float stdxm__m4minor_det(Mat4 m, int row, int col)
+{
+  float a[9];
+  int k = 0;
+  int c;
+  int r;
+
+  for (c = 0; c < 4; ++c)
+  {
+    if (c == col)
+    {
+      continue;
+    }
+
+    for (r = 0; r < 4; ++r)
+    {
+      if (r == row)
+      {
+        continue;
+      }
+
+      a[k++] = m.m[c * 4 + r];
+    }
+  }
+
+  return stdxm__m3det(
+    a[0], a[1], a[2],
+    a[3], a[4], a[5],
+    a[6], a[7], a[8]
+  );
 }
 
-/* replace your current mat4_inverse_affine with this one */
+float mat4_minor(Mat4 m, int row, int col)
+{
+  if (row < 0 || row > 3 || col < 0 || col > 3)
+  {
+    return 0.0f;
+  }
+
+  return stdxm__m4minor_det(m, row, col);
+}
+
+float mat4_cofactor(Mat4 m, int row, int col)
+{
+  float minor;
+
+  if (row < 0 || row > 3 || col < 0 || col > 3)
+  {
+    return 0.0f;
+  }
+
+  minor = stdxm__m4minor_det(m, row, col);
+  return (((row + col) & 1) != 0) ? -minor : minor;
+}
+
+Mat4 mat4_inverse_affine_uniform_scale(Mat4 m)
+{
+  Vec3 X = vec3_make(m.m[0], m.m[1], m.m[2]);
+  Vec3 Y = vec3_make(m.m[4], m.m[5], m.m[6]);
+  Vec3 Z = vec3_make(m.m[8], m.m[9], m.m[10]);
+  Vec3 t = vec3_make(m.m[12], m.m[13], m.m[14]);
+
+  float sx = vec3_len(X);
+  float sy = vec3_len(Y);
+  float sz = vec3_len(Z);
+
+  if (sx <= STDXM_EPS || sy <= STDXM_EPS || sz <= STDXM_EPS)
+  {
+    return mat4_identity();
+  }
+
+  /* For uniform scale these should be approximately equal. */
+  {
+    float s = sx;
+    Vec3 x = vec3_div(X, s);
+    Vec3 y = vec3_div(Y, s);
+    Vec3 z = vec3_div(Z, s);
+    float invs = 1.0f / s;
+    Mat4 M = mat4_identity();
+    Vec3 tt;
+
+    M.m[0]  = x.x * invs;
+    M.m[1]  = y.x * invs;
+    M.m[2]  = z.x * invs;
+
+    M.m[4]  = x.y * invs;
+    M.m[5]  = y.y * invs;
+    M.m[6]  = z.y * invs;
+
+    M.m[8]  = x.z * invs;
+    M.m[9]  = y.z * invs;
+    M.m[10] = z.z * invs;
+
+    tt = vec3_make(
+      -(M.m[0] * t.x + M.m[4] * t.y + M.m[8]  * t.z),
+      -(M.m[1] * t.x + M.m[5] * t.y + M.m[9]  * t.z),
+      -(M.m[2] * t.x + M.m[6] * t.y + M.m[10] * t.z)
+    );
+
+    M.m[12] = tt.x;
+    M.m[13] = tt.y;
+    M.m[14] = tt.z;
+    return M;
+  }
+}
+
 Mat4 mat4_inverse_affine(Mat4 m){
-  /* linear columns and translation */
   Vec3 X = (Vec3){ m.m[0], m.m[1], m.m[2] };
   Vec3 Y = (Vec3){ m.m[4], m.m[5], m.m[6] };
   Vec3 Z = (Vec3){ m.m[8], m.m[9], m.m[10] };
   Vec3 t = (Vec3){ m.m[12], m.m[13], m.m[14] };
 
-  float sx = vec3_len(X), sy = vec3_len(Y), sz = vec3_len(Z);
-  if (sx <= STDXM_EPS || sy <= STDXM_EPS || sz <= STDXM_EPS) return mat4_identity();
+  float sx = vec3_len(X);
+  float sy = vec3_len(Y);
+  float sz = vec3_len(Z);
+
+  if (sx <= STDXM_EPS || sy <= STDXM_EPS || sz <= STDXM_EPS){
+    return mat4_identity();
+  }
 
   Vec3 x = vec3_div(X, sx);
   Vec3 y = vec3_div(Y, sy);
   Vec3 z = vec3_div(Z, sz);
 
-  /* match decompose: make rotation proper by flipping one axis+scale if needed */
   float det =
     x.x * (y.y * z.z - y.z * z.y) -
     x.y * (y.x * z.z - y.z * z.x) +
     x.z * (y.x * z.y - y.y * z.x);
+
   if (det < 0.0f){
-    if (fabsf(sx) >= fabsf(sy) && fabsf(sx) >= fabsf(sz)){ sx = -sx; x = vec3_neg(x); }
-    else if (fabsf(sy) >= fabsf(sx) && fabsf(sy) >= fabsf(sz)){ sy = -sy; y = vec3_neg(y); }
-    else { sz = -sz; z = vec3_neg(z); }
+    if (fabsf(sx) >= fabsf(sy) && fabsf(sx) >= fabsf(sz)){
+      sx = -sx;
+      x = vec3_neg(x);
+    } else if (fabsf(sy) >= fabsf(sx) && fabsf(sy) >= fabsf(sz)){
+      sy = -sy;
+      y = vec3_neg(y);
+    } else {
+      sz = -sz;
+      z = vec3_neg(z);
+    }
   }
 
-  /* L^{-1} = S^{-1} R^T, column-major layout: m[col*4 + row] */
   Mat4 inv = mat4_identity();
 
-  inv.m[0]  = x.x / sx;  inv.m[4]  = y.x / sy;  inv.m[8]  = z.x / sz;  /* row 0 */
-  inv.m[1]  = x.y / sx;  inv.m[5]  = y.y / sy;  inv.m[9]  = z.y / sz;  /* row 1 */
-  inv.m[2]  = x.z / sx;  inv.m[6]  = y.z / sy;  inv.m[10] = z.z / sz;  /* row 2 */
+  inv.m[0]  = x.x / sx;
+  inv.m[1]  = y.x / sy;
+  inv.m[2]  = z.x / sz;
 
-  /* translation: -(S^{-1} R^T) * t */
+  inv.m[4]  = x.y / sx;
+  inv.m[5]  = y.y / sy;
+  inv.m[6]  = z.y / sz;
+
+  inv.m[8]  = x.z / sx;
+  inv.m[9]  = y.z / sy;
+  inv.m[10] = z.z / sz;
+
   Vec3 tt = (Vec3){
-    -(inv.m[0]*t.x + inv.m[4]*t.y + inv.m[8]*t.z),
-      -(inv.m[1]*t.x + inv.m[5]*t.y + inv.m[9]*t.z),
-      -(inv.m[2]*t.x + inv.m[6]*t.y + inv.m[10]*t.z)
+    -(inv.m[0] * t.x + inv.m[4] * t.y + inv.m[8]  * t.z),
+    -(inv.m[1] * t.x + inv.m[5] * t.y + inv.m[9]  * t.z),
+    -(inv.m[2] * t.x + inv.m[6] * t.y + inv.m[10] * t.z)
   };
-  inv.m[12] = tt.x; inv.m[13] = tt.y; inv.m[14] = tt.z;
+
+  inv.m[12] = tt.x;
+  inv.m[13] = tt.y;
+  inv.m[14] = tt.z;
 
   return inv;
 }
@@ -844,41 +966,37 @@ Vec3  quat_to_euler_xyz(Quat q){
   return e;
 }
 
-Mat4 mat4_inverse_full(Mat4 m, bool *ok){
-  float det =
-    m.m[0]*stdxm__m3det(m.m[5],m.m[6],m.m[7],  m.m[9],m.m[10],m.m[11],  m.m[13],m.m[14],m.m[15]) -
-    m.m[4]*stdxm__m3det(m.m[1],m.m[2],m.m[3],  m.m[9],m.m[10],m.m[11],  m.m[13],m.m[14],m.m[15]) +
-    m.m[8]*stdxm__m3det(m.m[1],m.m[2],m.m[3],  m.m[5],m.m[6],m.m[7],    m.m[13],m.m[14],m.m[15]) -
-    m.m[12]*stdxm__m3det(m.m[1],m.m[2],m.m[3], m.m[5],m.m[6],m.m[7],    m.m[9],m.m[10],m.m[11]);
+Mat4 mat4_inverse_full(Mat4 m, bool *ok)
+{
+  Mat4 r = {0};
+  float det;
+  float invdet;
+  int row;
+  int col;
 
-  if (ok) *ok = (fabsf(det) > STDXM_EPS);
-  if (fabsf(det) <= STDXM_EPS) return mat4_identity();
+  det = mat4_det(m);
 
-  float invdet = 1.0f/det;
-  Mat4 r={{0}};
+  if (ok)
+  {
+    *ok = fabsf(det) > STDXM_EPS;
+  }
 
-  /* Cofactors */
-  r.m[0]  =  stdxm__m3det(m.m[5],m.m[6],m.m[7],  m.m[9],m.m[10],m.m[11], m.m[13],m.m[14],m.m[15]) * invdet;
-  r.m[1]  = -stdxm__m3det(m.m[1],m.m[2],m.m[3],  m.m[9],m.m[10],m.m[11], m.m[13],m.m[14],m.m[15]) * invdet;
-  r.m[2]  =  stdxm__m3det(m.m[1],m.m[2],m.m[3],  m.m[5],m.m[6],m.m[7],   m.m[13],m.m[14],m.m[15]) * invdet;
-  r.m[3]  = -stdxm__m3det(m.m[1],m.m[2],m.m[3],  m.m[5],m.m[6],m.m[7],   m.m[9],m.m[10],m.m[11]) * invdet;
+  if (fabsf(det) <= STDXM_EPS)
+  {
+    return mat4_identity();
+  }
 
-  r.m[4]  = -stdxm__m3det(m.m[4],m.m[6],m.m[7],  m.m[8],m.m[10],m.m[11], m.m[12],m.m[14],m.m[15]) * invdet;
-  r.m[5]  =  stdxm__m3det(m.m[0],m.m[2],m.m[3],  m.m[8],m.m[10],m.m[11], m.m[12],m.m[14],m.m[15]) * invdet;
-  r.m[6]  = -stdxm__m3det(m.m[0],m.m[2],m.m[3],  m.m[4],m.m[6],m.m[7],   m.m[12],m.m[14],m.m[15]) * invdet;
-  r.m[7]  =  stdxm__m3det(m.m[0],m.m[2],m.m[3],  m.m[4],m.m[6],m.m[7],   m.m[8],m.m[10],m.m[11])  * invdet;
+  invdet = 1.0f / det;
 
-  r.m[8]  =  stdxm__m3det(m.m[4],m.m[5],m.m[7],  m.m[8],m.m[9],m.m[11],  m.m[12],m.m[13],m.m[15]) * invdet;
-  r.m[9]  = -stdxm__m3det(m.m[0],m.m[1],m.m[3],  m.m[8],m.m[9],m.m[11],  m.m[12],m.m[13],m.m[15]) * invdet;
-  r.m[10] =  stdxm__m3det(m.m[0],m.m[1],m.m[3],  m.m[4],m.m[5],m.m[7],   m.m[12],m.m[13],m.m[15]) * invdet;
-  r.m[11] = -stdxm__m3det(m.m[0],m.m[1],m.m[3],  m.m[4],m.m[5],m.m[7],   m.m[8],m.m[9],m.m[11])   * invdet;
+  for (row = 0; row < 4; ++row)
+  {
+    for (col = 0; col < 4; ++col)
+    {
+      r.m[col * 4 + row] = mat4_cofactor(m, col, row) * invdet;
+    }
+  }
 
-  r.m[12] = -stdxm__m3det(m.m[4],m.m[5],m.m[6],  m.m[8],m.m[9],m.m[10],  m.m[12],m.m[13],m.m[14]) * invdet;
-  r.m[13] =  stdxm__m3det(m.m[0],m.m[1],m.m[2],  m.m[8],m.m[9],m.m[10],  m.m[12],m.m[13],m.m[14]) * invdet;
-  r.m[14] = -stdxm__m3det(m.m[0],m.m[1],m.m[2],  m.m[4],m.m[5],m.m[6],   m.m[12],m.m[13],m.m[14]) * invdet;
-  r.m[15] =  stdxm__m3det(m.m[0],m.m[1],m.m[2],  m.m[4],m.m[5],m.m[6],   m.m[8],m.m[9],m.m[10])   * invdet;
-
-  return mat4_transpose(r);
+  return r;
 }
 
 #endif // X_IMPL_MATH

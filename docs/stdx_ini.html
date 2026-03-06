@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_ini.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_ini.h">stdx_ini.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_ini_load_file">x_ini_load_file</a></li>
+<li><a href="#x_ini_load_mem">x_ini_load_mem</a></li>
+<li><a href="#x_ini_free">x_ini_free</a></li>
+<li><a href="#x_ini_err_str">x_ini_err_str</a></li>
+<li><a href="#x_ini_get">x_ini_get</a></li>
+<li><a href="#x_ini_get_i32">x_ini_get_i32</a></li>
+<li><a href="#x_ini_get_f32">x_ini_get_f32</a></li>
+<li><a href="#x_ini_get_bool">x_ini_get_bool</a></li>
+<li><a href="#x_ini_section_count">x_ini_section_count</a></li>
+<li><a href="#x_ini_section_name">x_ini_section_name</a></li>
+<li><a href="#x_ini_key_count">x_ini_key_count</a></li>
+<li><a href="#x_ini_key_name">x_ini_key_name</a></li>
+<li><a href="#x_ini_value_at">x_ini_value_at</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_INI_VERSION_MAJOR">X_INI_VERSION_MAJOR</a></li>
+<li><a href="#X_INI_VERSION_MINOR">X_INI_VERSION_MINOR</a></li>
+<li><a href="#X_INI_VERSION_PATCH">X_INI_VERSION_PATCH</a></li>
+<li><a href="#X_INI_VERSION">X_INI_VERSION</a></li>
+<li><a href="#X_INI_DEFAULT_SECTIONS_CAP">X_INI_DEFAULT_SECTIONS_CAP</a></li>
+<li><a href="#X_INI_DEFAULT_ENTRIES_CAP">X_INI_DEFAULT_ENTRIES_CAP</a></li>
+<li><a href="#X_INI_MAX_LINE">X_INI_MAX_LINE</a></li>
+<li><a href="#X_INI_ALLOC">X_INI_ALLOC</a></li>
+<li><a href="#X_INI_REALLOC">X_INI_REALLOC</a></li>
+<li><a href="#X_INI_FREE">X_INI_FREE</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XIniError">XIniError</a></li>
+<li><a href="#XIniSection">XIniSection</a></li>
+<li><a href="#XIniEntry">XIniEntry</a></li>
+<li><a href="#XIni">XIni</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          <li><a href="#XIniErrorCode">XIniErrorCode</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_ini.h">
+      <header class="page-header">
+        <h1>stdx_ini.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Minimal INI parser
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p>One flat string pool owns all normalized C strings (section names, keys, values).
+Sections and entries are indexed by arrays for direct and iterative access.</p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation, define <code>X_IMPL_INI</code>
+in <b>one</b> source file before including this header.</p>
+<p>To customize how this module allocates memory, define
+<code>X_INI_ALLOC</code> / <code>X_INI_REALLOC</code> / <code>X_INI_FREE</code> before including.</p>
+</div>
+      </header>
+
+      <article id="X_INI_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_INI_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_VERSION_MINOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_INI_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_INI_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_ini.html#X_INI_VERSION_MAJOR">X_INI_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_ini.html#X_INI_VERSION_MINOR">X_INI_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_ini.html#X_INI_VERSION_PATCH">X_INI_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_INI_DEFAULT_SECTIONS_CAP" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_DEFAULT_SECTIONS_CAP</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_DEFAULT_SECTIONS_CAP</span> <span class="tok_num">16</span></code></pre>
+  
+  
+</article>
+<article id="X_INI_DEFAULT_ENTRIES_CAP" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_DEFAULT_ENTRIES_CAP</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_DEFAULT_ENTRIES_CAP</span> <span class="tok_num">64</span></code></pre>
+  
+  
+</article>
+<article id="X_INI_MAX_LINE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_MAX_LINE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_MAX_LINE</span> <span class="tok_num">4096</span></code></pre>
+  
+  
+</article>
+<article id="XIniErrorCode" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XIniErrorCode</span></h2>
+  <p class="brief">Ini parsing status.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span> <span class="tok_id">XIniErrorCode</span><span class="tok_pun">{</span>
+  <span class="tok_id">XINI_OK</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">XINI_ERR_IO</span><span class="tok_pun">,</span>
+  <span class="tok_id">XINI_ERR_MEMORY</span><span class="tok_pun">,</span>
+  <span class="tok_id">XINI_ERR_SYNTAX</span><span class="tok_pun">,</span>
+  <span class="tok_id">XINI_ERR_EXPECT_EQUALS</span><span class="tok_pun">,</span>
+  <span class="tok_id">XINI_ERR_EXPECT_RBRACKET</span><span class="tok_pun">,</span>
+  <span class="tok_id">XINI_ERR_UNTERMINATED_STRING</span>
+<span class="tok_pun">}</span><span class="tok_id">XIniErrorCode</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XIniError" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XIniError</span></h2>
+  <p class="brief">Ini error information</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XIniError</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_ini.html#XIniErrorCode">XIniErrorCode</a></span> <span class="tok_id">code</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">line</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">column</span><span class="tok_pun">;</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">message</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XIniError</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XIniSection" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XIniSection</span></h2>
+  <p class="brief">Ini section information</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XIniSection</span><span class="tok_pun">{</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">name</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">first_entry</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XIniSection</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XIniEntry" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XIniEntry</span></h2>
+  <p class="brief">Ini Entry</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XIniEntry</span><span class="tok_pun">{</span>
+  <span class="tok_kw">int</span> <span class="tok_id">section</span><span class="tok_pun">;</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">;</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">value</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XIniEntry</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XIni" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XIni</span></h2>
+  <p class="brief">Represents a parsed INI source</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XIni</span><span class="tok_pun">{</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">pool</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">pool_size</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">pool_cap</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_ini.html#XIniSection">XIniSection</a></span> <span class="tok_pun">*</span><span class="tok_id">sections</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">sections_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">sections_cap</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_ini.html#XIniEntry">XIniEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entries</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">entries_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">entries_cap</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">global_section</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XIni</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_ini_load_file" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_load_file</span></h2>
+  <p class="brief">Load and parse an INI file from disk.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_load_file</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">out_ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_ini.html#XIniError">XIniError</a></span> <span class="tok_pun">*</span><span class="tok_id">err</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>path</code></dt>
+<dd>Path to the INI file.</dd>
+<dt><code>out_ini</code></dt>
+<dd>Output structure receiving the parsed INI data.</dd>
+<dt><code>err</code></dt>
+<dd>Optional output error information (may be NULL).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_load_mem" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_load_mem</span></h2>
+  <p class="brief">Load and parse INI data from a memory buffer.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_load_mem</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">out_ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_ini.html#XIniError">XIniError</a></span> <span class="tok_pun">*</span><span class="tok_id">err</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>data</code></dt>
+<dd>Pointer to the INI data in memory.</dd>
+<dt><code>size</code></dt>
+<dd>Size of the data buffer in bytes.</dd>
+<dt><code>out_ini</code></dt>
+<dd>Output structure receiving the parsed INI data.</dd>
+<dt><code>err</code></dt>
+<dd>Optional output error information (may be NULL).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_free" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_free</span></h2>
+  <p class="brief">Free all resources associated with an INI structure.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_ini_free</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>INI structure to free.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_ini_err_str" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_err_str</span></h2>
+  <p class="brief">Get a human-readable string for an INI error code.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_ini_err_str</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_ini.html#XIniErrorCode">XIniErrorCode</a></span> <span class="tok_id">code</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>code</code></dt>
+<dd>Error code.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to a static, thread-safe error string.</p>
+</section>
+
+</article>
+<article id="x_ini_get" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_get</span></h2>
+  <p class="brief">Retrieve a string value from the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_ini_get</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">def_value</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code>section</code></dt>
+<dd>Section name.</dd>
+<dt><code>key</code></dt>
+<dd>Key name.</dd>
+<dt><code>def_value</code></dt>
+<dd>Default value returned if the key is not found.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the value string, or def_value if not found.</p>
+</section>
+
+</article>
+<article id="x_ini_get_i32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_get_i32</span></h2>
+  <p class="brief">Retrieve a 32-bit integer value from the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_ini_get_i32</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">def_value</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code>section</code></dt>
+<dd>Section name.</dd>
+<dt><code>key</code></dt>
+<dd>Key name.</dd>
+<dt><code>def_value</code></dt>
+<dd>Default value returned if the key is not found or cannot be parsed.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Parsed integer value, or def_value on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_get_f32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_get_f32</span></h2>
+  <p class="brief">Retrieve a 32-bit floating-point value from the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">float</span> <span class="tok_id">x_ini_get_f32</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">float</span> <span class="tok_id">def_value</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code>section</code></dt>
+<dd>Section name.</dd>
+<dt><code>key</code></dt>
+<dd>Key name.</dd>
+<dt><code>def_value</code></dt>
+<dd>Default value returned if the key is not found or cannot be parsed.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Parsed floating-point value, or def_value on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_get_bool" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_get_bool</span></h2>
+  <p class="brief">Retrieve a boolean value from the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_get_bool</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span>
+  <span class="tok_kw">bool</span> <span class="tok_id">def_value</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code>section</code></dt>
+<dd>Section name.</dd>
+<dt><code>key</code></dt>
+<dd>Key name.</dd>
+<dt><code>def_value</code></dt>
+<dd>Default value returned if the key is not found or cannot be parsed.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Parsed boolean value, or def_value on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_section_count" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_section_count</span></h2>
+  <p class="brief">Get the number of sections in the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_ini_section_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>Parsed INI data.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of sections.</p>
+</section>
+
+</article>
+<article id="x_ini_section_name" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_section_name</span></h2>
+  <p class="brief">Get the name of a section by index.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_ini_section_name</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int</span> <span class="tok_id">section_index</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code>section_index</code></dt>
+<dd>Zero-based section index.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Section name string.</p>
+</section>
+
+</article>
+<article id="x_ini_key_count" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_key_count</span></h2>
+  <p class="brief">Get the number of keys in a section.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_ini_key_count</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int</span> <span class="tok_id">section_index</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code>section_index</code></dt>
+<dd>Zero-based section index.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of keys in the section.</p>
+</section>
+
+</article>
+<article id="x_ini_key_name" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_key_name</span></h2>
+  <p class="brief">Get the name of a key by section and key index.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_ini_key_name</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int</span> <span class="tok_id">section_index</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int</span> <span class="tok_id">key_index</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code>section_index</code></dt>
+<dd>Zero-based section index.</dd>
+<dt><code>key_index</code></dt>
+<dd>Zero-based key index within the section.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Key name string.</p>
+</section>
+
+</article>
+<article id="x_ini_value_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_value_at</span></h2>
+  <p class="brief">Get the value of a key by section and key index.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_ini_value_at</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int</span> <span class="tok_id">section_index</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int</span> <span class="tok_id">key_index</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>ini</code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code>section_index</code></dt>
+<dd>Zero-based section index.</dd>
+<dt><code>key_index</code></dt>
+<dd>Zero-based key index within the section.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Value string at the specified position.</p>
+</section>
+
+</article>
+<article id="X_INI_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_ALLOC</span></h2>
+  <p class="brief">Internal macro for allocating memory.
+To override how this header allocates memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">malloc</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to alloc.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_INI_REALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_REALLOC</span></h2>
+  <p class="brief">Internal macro for resizing memory.
+To override how this header resizes memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_REALLOC</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">,</span> <span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">realloc</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to resize.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_INI_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_INI_FREE</span></h2>
+  <p class="brief">Internal macro for freeing memory.
+To override how this header frees memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>p</code></dt>
+<dd>The address of memory region to free.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

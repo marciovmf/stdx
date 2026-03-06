@@ -111,11 +111,15 @@ void send_file_response(XSocket client, const char* filepath)
 
 bool is_path_safe(const char* base_path, const char* requested_path)
 {
-  //  XFSPath docroot;
-  //  x_fs_path(&docroot, base_path);
-  //  if (x_fs_path_common_prefix(base_path, requested_path, &docroot) < docroot.length)
-  //    return false;
-  return true;
+  XFSPath docroot;
+  x_fs_path(&docroot, base_path);
+  x_fs_path_normalize(&docroot);
+  if (x_fs_path_common_prefix(base_path, requested_path, &docroot))
+  {
+    return true;
+  }
+
+  return false;
 }
 
 void send_directory_listing(XSocket client, const char* dirpath, const char* url_path)
@@ -221,7 +225,7 @@ void handle_client(const WSConfig* config, XSocket client)
 static void* client_thread(void* arg)
 {
   WSClientData* data = ((WSClientData*)arg);
-  x_log_info("client_thread -> doc_root = %s", data->config->docroot);
+  x_log_info("client_thread started for doc_root = %s", data->config->docroot);
   XSocket client = data->client;
   handle_client(data->config, client);
   x_net_close(client);
@@ -277,7 +281,7 @@ int main()
     return 1;
   }
 
-  if (!x_net_bind_any(server, X_NET_AF_IPV4, config.port) || !x_net_listen(server, 10))
+  if (!x_net_bind_any(server, X_NET_AF_IPV4, (uint16_t) config.port) || !x_net_listen(server, 10))
   {
     fprintf(stderr, "Failed to bind/listen on port %d.", config.port);
     return 1;

@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_arena.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_arena.h">stdx_arena.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_arena_create">x_arena_create</a></li>
+<li><a href="#x_arena_destroy">x_arena_destroy</a></li>
+<li><a href="#x_arena_reset">x_arena_reset</a></li>
+<li><a href="#x_arena_reset_keep_head">x_arena_reset_keep_head</a></li>
+<li><a href="#x_arena_trim">x_arena_trim</a></li>
+<li><a href="#x_arena_alloc">x_arena_alloc</a></li>
+<li><a href="#x_arena_alloc_zero">x_arena_alloc_zero</a></li>
+<li><a href="#x_arena_strdup">x_arena_strdup</a></li>
+<li><a href="#x_arena_slicedup">x_arena_slicedup</a></li>
+<li><a href="#x_arena_mark">x_arena_mark</a></li>
+<li><a href="#x_arena_release">x_arena_release</a></li>
+<li><a href="#x_arena_has_pointer">x_arena_has_pointer</a></li>
+<li><a href="#x_arena_chunk_count">x_arena_chunk_count</a></li>
+<li><a href="#x_arena_head_capacity">x_arena_head_capacity</a></li>
+<li><a href="#x_arena_head_used">x_arena_head_used</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_ARENA_VERSION_MAJOR">X_ARENA_VERSION_MAJOR</a></li>
+<li><a href="#X_ARENA_VERSION_MINOR">X_ARENA_VERSION_MINOR</a></li>
+<li><a href="#X_ARENA_VERSION_PATCH">X_ARENA_VERSION_PATCH</a></li>
+<li><a href="#X_ARENA_VERSION">X_ARENA_VERSION</a></li>
+<li><a href="#X_ARENA_ALLOC">X_ARENA_ALLOC</a></li>
+<li><a href="#X_ARENA_FREE">X_ARENA_FREE</a></li>
+<li><a href="#X_ARENA_ALIGN">X_ARENA_ALIGN</a></li>
+<li><a href="#X_ARENA_DEBUG_FILL">X_ARENA_DEBUG_FILL</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XArenaChunk">XArenaChunk</a></li>
+<li><a href="#XArena">XArena</a></li>
+<li><a href="#XArenaMark">XArenaMark</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_arena.h">
+      <header class="page-header">
+        <h1>stdx_arena.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Arena Allocator
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p>Minimal, cache-friendly bump allocator with chunk growth, alignment,
+fast O(1) steady-state allocations, optional marks (scoped rewinds),
+and trimming APIs to keep memory bounded after spikes.</p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_ARENA</code>
+in <b>one</b> source file before including this header.</p>
+<p>To customize how this module allocates memory, define
+<code>X_ARENA_ALLOC</code> / <code>X_ARENA_FRE</code>E before including.</p>
+</div>
+      </header>
+
+      <article id="X_ARENA_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARENA_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARENA_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_ARENA_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARENA_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARENA_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_ARENA_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARENA_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARENA_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_ARENA_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARENA_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARENA_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_arena.html#X_ARENA_VERSION_MAJOR">X_ARENA_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_arena.html#X_ARENA_VERSION_MINOR">X_ARENA_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_arena.html#X_ARENA_VERSION_PATCH">X_ARENA_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XArenaChunk" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XArenaChunk</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XArenaChunk</span> <span class="tok_id">XArenaChunk</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XArena" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XArena</span></h2>
+  <p class="brief">Arena</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XArena</span><span class="tok_pun">{</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">chunk_size</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArenaChunk">XArenaChunk</a></span> <span class="tok_pun">*</span><span class="tok_id">chunks</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArenaChunk">XArenaChunk</a></span> <span class="tok_pun">*</span><span class="tok_id">current</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XArena</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XArenaMark" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XArenaMark</span></h2>
+  <p class="brief">A mark is a lightweight snapshot for scoped unwinds.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XArenaMark</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArenaChunk">XArenaChunk</a></span> <span class="tok_pun">*</span><span class="tok_id">chunk</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">used</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XArenaMark</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_arena_create" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_create</span></h2>
+  <p class="brief">Create a new arena with the given default chunk size.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_create</span><span class="tok_pun">(</span><span class="tok_id">size_t</span> <span class="tok_id">chunk_size</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>pointer to the new arena or NULL if creation fails</p>
+</section>
+
+</article>
+<article id="x_arena_destroy" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_destroy</span></h2>
+  <p class="brief">Destroy the arena and free all memory.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_arena_destroy</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to destroy.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_arena_reset" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_reset</span></h2>
+  <p class="brief">Reset the arena: keep all chunks, set used = 0.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_arena_reset</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to reset.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_arena_reset_keep_head" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_reset_keep_head</span></h2>
+  <p class="brief">Keep only the head chunk, free the rest.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_arena_reset_keep_head</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to reset.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_arena_trim" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_trim</span></h2>
+  <p class="brief">Keep the first `keep_n` chunks, free the rest.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_arena_trim</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">keep_n</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to trim.</dd>
+<dt><code>keep_n</code></dt>
+<dd>The number of chuncks to preserve.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_arena_alloc" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_alloc</span></h2>
+  <p class="brief">Allocate memory from the arena (aligned to X_ARENA_ALIGN).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_alloc</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to alloc from.</dd>
+<dt><code>size</code></dt>
+<dd>The size in bytes to alloc.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the allocated memory region</p>
+</section>
+
+</article>
+<article id="x_arena_alloc_zero" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_alloc_zero</span></h2>
+  <p class="brief">Allocate zero-initialized memory from the arena.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_alloc_zero</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to alloc from.</dd>
+<dt><code>size</code></dt>
+<dd>The size in bytes to alloc.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the allocated memory region</p>
+</section>
+
+</article>
+<article id="x_arena_strdup" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_strdup</span></h2>
+  <p class="brief">Duplicate a C-string into the arena.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_strdup</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to allocate string from.</dd>
+<dt><code>cstr</code></dt>
+<dd>Pointer to a c string to duplicate into the arena.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the allocated memory region</p>
+</section>
+
+</article>
+<article id="x_arena_slicedup" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_slicedup</span></h2>
+  <p class="brief">Duplicate a slice into the arena.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_slicedup</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">,</span>
+  <span class="tok_kw">bool</span> <span class="tok_id">null_terminate</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to allocate string from.</dd>
+<dt><code>ptr</code></dt>
+<dd>Pointer to a beggining of the data to duplicate into the arena.</dd>
+<dt><code>len</code></dt>
+<dd>How much data to copy from `ptr` into the arena.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the allocated memory region</p>
+</section>
+
+</article>
+<article id="x_arena_mark" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_mark</span></h2>
+  <p class="brief">Makes a snapshot of the arena state.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw"><a href="stdx_arena.html#XArenaMark">XArenaMark</a></span> <span class="tok_id">x_arena_mark</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to take snapshot from.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>A snapshot of the current arena state.</p>
+</section>
+
+</article>
+<article id="x_arena_release" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_release</span></h2>
+  <p class="brief">Rewind the arena to a previous mark (frees newer chunks).</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_arena_release</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">,</span>
+  <span class="tok_kw"><a href="stdx_arena.html#XArenaMark">XArenaMark</a></span> <span class="tok_id">mark</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to apply the snapshot.</dd>
+<dt><code>mark</code></dt>
+<dd>The snapshot to apply.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_arena_has_pointer" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_has_pointer</span></h2>
+  <p class="brief">checks if a pointer points to arena owned memory</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_arena_has_pointer</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arena</code></dt>
+<dd>The arena to check for pointer ownership</dd>
+<dt><code>ptr</code></dt>
+<dd>The pointer to check</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if ptr points to an address owned by the arena.</p>
+</section>
+
+</article>
+<article id="X_ARENA_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARENA_ALLOC</span></h2>
+  <p class="brief">Internal macro for allocating memory.
+To override how this header allocates memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARENA_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">malloc</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to alloc.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_ARENA_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARENA_FREE</span></h2>
+  <p class="brief">Internal macro for freeing memory.
+To override how this header frees memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARENA_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>p</code></dt>
+<dd>The address of memory region to free.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_ARENA_ALIGN" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARENA_ALIGN</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARENA_ALIGN</span><span class="tok_pun">(</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_pun">&gt;</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_kw">double</span><span class="tok_pun">)</span><span class="tok_pun">?</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_pun">:</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_kw">double</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_ARENA_DEBUG_FILL" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARENA_DEBUG_FILL</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARENA_DEBUG_FILL</span> <span class="tok_num">0xDD</span></code></pre>
+  
+  
+</article>
+<article id="x_arena_chunk_count" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_chunk_count</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_arena_chunk_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_arena_head_capacity" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_head_capacity</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_arena_head_capacity</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_arena_head_used" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_arena_head_used</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_arena_head_used</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

@@ -303,10 +303,10 @@ int test_pointers_as_keys(void)
   int (*this_func)(void) = test_pointers_as_keys;
 
   XHashtable* ht = x_hashtable_create(int*, char*);
-  ASSERT_TRUE(x_hashtable_set(ht, this_func, "Hello, World!"));
-  ASSERT_TRUE(x_hashtable_set(ht, this_func, "test_pointers_as_keys()"));
+  ASSERT_TRUE(x_hashtable_set(ht, (const void*) this_func, "Hello, World!"));
+  ASSERT_TRUE(x_hashtable_set(ht, (const void*) this_func, "test_pointers_as_keys()"));
   char* out;
-  ASSERT_TRUE(x_hashtable_get(ht, test_pointers_as_keys, &out));
+  ASSERT_TRUE(x_hashtable_get(ht, (const void*) test_pointers_as_keys, &out));
   ASSERT_TRUE(strcmp(out, "test_pointers_as_keys()") == 0);
   return 0;
 }
@@ -325,5 +325,5 @@ int main()
     X_TEST(test_x_hashtable_rehash_ints)
   };
 
-  return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
 }

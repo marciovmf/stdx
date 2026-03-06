@@ -1,19 +1,22 @@
-/*
+/**
  * STDX - Arena Allocator
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
  * License: MIT
+ * <https://github.com/marciovmf/stdx>
+ *
+ * ## Overview
  *
  * Minimal, cache-friendly bump allocator with chunk growth, alignment,
  * fast O(1) steady-state allocations, optional marks (scoped rewinds),
  * and trimming APIs to keep memory bounded after spikes.
  *
- * To compile the implementation define X_IMPL_ARENA
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_ARENA`
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * X_ARENA_ALLOC / X_ARENA_FREE before including.
- *
+ * `X_ARENA_ALLOC` / `X_ARENA_FRE`E before including.
  */
 
 #ifndef X_ARENA_H
@@ -32,16 +35,23 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
+
   typedef struct XArenaChunk XArenaChunk;
 
-  typedef struct XArena_t
+  /**
+   * Arena
+   */
+  typedef struct XArena
   {
     size_t       chunk_size;   // Preferred chunk size for growth.
     XArenaChunk* chunks;       // Head of chunk list (most recent first).
     XArenaChunk* current;      // Allocation cursor (first with free space).
   } XArena;
 
-  // A mark is a lightweight snapshot for scoped unwinds.
+  /**
+   * A mark is a lightweight snapshot for scoped unwinds.
+   */
   typedef struct XArenaMark
   {
     XArenaChunk* chunk;
@@ -54,58 +64,114 @@ extern "C" {
    */
   X_ARENA_API XArena* x_arena_create(size_t chunk_size);
 
-  /** @brief Destroy the arena and free all memory. */
+  /**
+   * @brief Destroy the arena and free all memory.
+   * @param arena The arena to destroy.
+   */
   X_ARENA_API void x_arena_destroy(XArena* arena);
 
-  /** @brief Reset the arena: keep all chunks, set used = 0. */
+  /**
+   * @brief Reset the arena: keep all chunks, set used = 0.
+   * @param arena The arena to reset.
+   */
   X_ARENA_API void x_arena_reset(XArena* arena);
 
-  /** @brief Keep only the head chunk, free the rest. */
+  /**
+   * @brief Keep only the head chunk, free the rest.
+   * @param arena The arena to reset.
+   */
   X_ARENA_API void x_arena_reset_keep_head(XArena* arena);
 
-  /** @brief Keep the first `keep_n` chunks, free the rest. */
+  /**
+   * @brief Keep the first `keep_n` chunks, free the rest.
+   * @param arena   The arena to trim.
+   * @param keep_n  The number of chuncks to preserve.
+   */
   X_ARENA_API void x_arena_trim(XArena* arena, size_t keep_n);
 
   /**
    * @brief Allocate memory from the arena (aligned to X_ARENA_ALIGN).
-   * @return pointer to the allocated memory region
+   * @param arena   The arena to alloc from.
+   * @param size    The size in bytes to alloc.
+   * @return        Pointer to the allocated memory region
    */
   X_ARENA_API void* x_arena_alloc(XArena* arena, size_t size);
 
   /**
    * @brief Allocate zero-initialized memory from the arena.
-   * @return pointer to the allocated memory region
+   * @param arena   The arena to alloc from.
+   * @param size    The size in bytes to alloc.
+   * @return        Pointer to the allocated memory region
    */
   X_ARENA_API void* x_arena_alloc_zero(XArena* arena, size_t size);
 
-  /** @brief Duplicate a C-string into the arena. */
+  /**
+   * @brief Duplicate a C-string into the arena.
+   * @param arena   The arena to allocate string from.
+   * @param cstr    Pointer to a c string to duplicate into the arena.
+   * @return        Pointer to the allocated memory region
+   */
   X_ARENA_API char* x_arena_strdup(XArena* arena, const char* cstr);
 
-  /** @brief Take a mark (snapshot) of the arena state. */
+  /**
+   * @brief Duplicate a slice into the arena.
+   * @param arena   The arena to allocate string from.
+   * @param ptr     Pointer to a beggining of the data to duplicate into the arena.
+   * @param len     How much data to copy from `ptr` into the arena.
+   * @return        Pointer to the allocated memory region
+   */
+  X_ARENA_API char* x_arena_slicedup(XArena* arena, const char* ptr, size_t len, bool null_terminate);
+
+  /**
+   * @brief Makes a snapshot of the arena state.
+   * @param arena   The arena to take snapshot from.
+   * @return        A snapshot of the current arena state.
+   */
   X_ARENA_API XArenaMark x_arena_mark(XArena* arena);
 
-  /** @brief Rewind the arena to a previous mark (frees newer chunks). */
-  void x_arena_release(XArena* arena, XArenaMark mark);
+  /**
+   * @brief Rewind the arena to a previous mark (frees newer chunks).
+   * @param arena   The arena to apply the snapshot.
+   * @param mark    The snapshot to apply.
+   */
+  X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark);
+
+  /**
+   * @brief checks if a pointer points to arena owned memory
+   * @param arena The arena to check for pointer ownership
+   * @param ptr   The pointer to check
+   * @return true if ptr points to an address owned by the arena.
+   */
+  X_ARENA_API bool x_arena_has_pointer(const XArena* arena, void* ptr);
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif // X_ARENA_H
 
 #ifdef X_IMPL_ARENA
 
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 
 #ifndef X_ARENA_ALLOC
-#include <stdlib.h>
+/**
+ * @brief Internal macro for allocating memory.
+ * To override how this header allocates memory, define this macro with a
+ * different implementation before including this header.
+ * @param sz  The size of memory to alloc.
+ */
 #define X_ARENA_ALLOC(sz) malloc((sz))
 #endif
 
 #ifndef X_ARENA_FREE
-#include <stdlib.h>
+/**
+ * @brief Internal macro for freeing memory.
+ * To override how this header frees memory, define this macro with a
+ * different implementation before including this header.
+ * @param p  The address of memory region to free.
+ */
 #define X_ARENA_FREE(p) free((p))
 #endif
 
@@ -128,14 +194,14 @@ struct XArenaChunk
 };
 
 /* Align up helper. */
-static inline size_t x__arena_align_up(size_t n, size_t a)
+static inline size_t x_arena_align_up(size_t n, size_t a)
 {
   size_t mask = a - 1u;
   return (n + mask) & ~mask;
 }
 
 /* Create a single-allocation chunk: header + inline data. */
-static XArenaChunk* x__arena_chunk_create(size_t size)
+static XArenaChunk* x_arena_chunk_create(size_t size)
 {
   /* Guard absurd sizes and overflow of header + payload. */
   if (size > (SIZE_MAX - sizeof(XArenaChunk)))
@@ -157,7 +223,7 @@ static XArenaChunk* x__arena_chunk_create(size_t size)
   return chunk;
 }
 
-static void x__arena_chunk_destroy(XArenaChunk* chunk)
+static void x_arena_chunk_destroy(XArenaChunk* chunk)
 {
   if (chunk)
   {
@@ -166,7 +232,7 @@ static void x__arena_chunk_destroy(XArenaChunk* chunk)
 }
 
 /* Push chunk to list head. */
-static inline void x__arena_push_chunk(XArena* arena, XArenaChunk* chunk)
+static inline void x_arena_push_chunk(XArena* arena, XArenaChunk* chunk)
 {
   chunk->next = arena->chunks;
   arena->chunks = chunk;
@@ -192,13 +258,13 @@ X_ARENA_API XArena* x_arena_create(size_t chunk_size)
   arena->current = NULL;
 
   /* Allocate the initial chunk so x_arena_alloc can be fast. */
-  XArenaChunk* head = x__arena_chunk_create(chunk_size);
+  XArenaChunk* head = x_arena_chunk_create(chunk_size);
   if (!head)
   {
     X_ARENA_FREE(arena);
     return NULL;
   }
-  x__arena_push_chunk(arena, head);
+  x_arena_push_chunk(arena, head);
   return arena;
 }
 
@@ -213,7 +279,7 @@ X_ARENA_API void x_arena_destroy(XArena* arena)
   while (c)
   {
     XArenaChunk* next = c->next;
-    x__arena_chunk_destroy(c);
+    x_arena_chunk_destroy(c);
     c = next;
   }
 
@@ -250,7 +316,7 @@ X_ARENA_API void x_arena_reset_keep_head(XArena* arena)
   while (c)
   {
     XArenaChunk* next = c->next;
-    x__arena_chunk_destroy(c);
+    x_arena_chunk_destroy(c);
     c = next;
   }
 
@@ -289,16 +355,16 @@ X_ARENA_API void x_arena_trim(XArena* arena, size_t keep_n)
   while (to_free)
   {
     XArenaChunk* next = to_free->next;
-    x__arena_chunk_destroy(to_free);
+    x_arena_chunk_destroy(to_free);
     to_free = next;
   }
 
   arena->current = arena->chunks;
 }
 
-X_ARENA_API static void* x__arena_alloc_from_chunk(XArenaChunk* c, size_t size)
+X_ARENA_API static void* x_arena_alloc_from_chunk(XArenaChunk* c, size_t size)
 {
-  size_t off = x__arena_align_up(c->used, X_ARENA_ALIGN);
+  size_t off = x_arena_align_up(c->used, X_ARENA_ALIGN);
   if (off > c->capacity)
   {
     return NULL;
@@ -329,7 +395,7 @@ X_ARENA_API void* x_arena_alloc(XArena* arena, size_t size)
   /* Fast path: try current chunk. */
   if (arena->current)
   {
-    void* p = x__arena_alloc_from_chunk(arena->current, size);
+    void* p = x_arena_alloc_from_chunk(arena->current, size);
     if (p)
     {
       return p;
@@ -343,7 +409,7 @@ X_ARENA_API void* x_arena_alloc(XArena* arena, size_t size)
     {
       continue;
     }
-    void* p = x__arena_alloc_from_chunk(c, size);
+    void* p = x_arena_alloc_from_chunk(c, size);
     if (p)
     {
       arena->current = c;
@@ -353,14 +419,14 @@ X_ARENA_API void* x_arena_alloc(XArena* arena, size_t size)
 
   /* Need a new chunk: grow by max(request, default chunk size). */
   size_t grow = size > arena->chunk_size ? size : arena->chunk_size;
-  XArenaChunk* n = x__arena_chunk_create(grow);
+  XArenaChunk* n = x_arena_chunk_create(grow);
   if (!n)
   {
     return NULL;
   }
 
-  x__arena_push_chunk(arena, n);
-  return x__arena_alloc_from_chunk(n, size);
+  x_arena_push_chunk(arena, n);
+  return x_arena_alloc_from_chunk(n, size);
 }
 
 X_ARENA_API void* x_arena_alloc_zero(XArena* arena, size_t size)
@@ -387,6 +453,24 @@ X_ARENA_API char* x_arena_strdup(XArena* arena, const char* cstr)
   }
   memcpy(d, cstr, n);
   d[n] = '\0';
+  return d;
+}
+
+X_ARENA_API char* x_arena_slicedup(XArena* arena, const char* ptr, size_t len, bool null_terminate)
+{
+  if (!ptr)
+  {
+    return NULL;
+  }
+
+  char* d = (char*) x_arena_alloc(arena, len + (null_terminate ? 1u : 0u));
+  if (!d)
+  {
+    return NULL;
+  }
+  memcpy(d, ptr, len);
+  if (null_terminate)
+    d[len] = '\0';
   return d;
 }
 
@@ -418,7 +502,7 @@ X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark)
     while (c)
     {
       XArenaChunk* next = c->next;
-      x__arena_chunk_destroy(c);
+      x_arena_chunk_destroy(c);
       c = next;
     }
 
@@ -426,10 +510,10 @@ X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark)
     arena->current = NULL;
 
     /* Recreate an initial chunk for future fast allocations. */
-    XArenaChunk* head = x__arena_chunk_create(arena->chunk_size);
+    XArenaChunk* head = x_arena_chunk_create(arena->chunk_size);
     if (head)
     {
-      x__arena_push_chunk(arena, head);
+      x_arena_push_chunk(arena, head);
     }
     return;
   }
@@ -439,7 +523,7 @@ X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark)
   while (c && c != mark.chunk)
   {
     XArenaChunk* next = c->next;
-    x__arena_chunk_destroy(c);
+    x_arena_chunk_destroy(c);
     c = next;
   }
 
@@ -456,6 +540,27 @@ X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark)
 #endif
     c->used = mark.used;
   }
+}
+
+X_ARENA_API bool x_arena_has_pointer(const XArena* a, void* p)
+{
+  if (!p)
+  {
+    return false;
+  }
+
+  for (XArenaChunk* c = a->chunks; c != NULL; c = c->next)
+  {
+    const void* begin = (const void*)c->data;
+    const void* end   = (const void*)(c->data + c->used);
+
+    if (p >= begin && p < end)
+    {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 
@@ -478,3 +583,4 @@ size_t x_arena_head_used(const XArena* a)
 #endif /* X_ARENA_TESTING */
 
 #endif // X_IMPL_ARENA
+#endif // X_ARENA_H

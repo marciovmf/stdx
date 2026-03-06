@@ -1,21 +1,25 @@
-/*
+/**
  * STDX - Dynamic String Builder for C
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
  * License: MIT
+ * <https://github.com/marciovmf/stdx>
  *
- * To compile the implementation define X_IMPL_STRBUILDER
- * in **one** source file before including this header.
+ * ## Overview
  *
- * To customize how this module allocates memory, define
- * X_STRBUILDER_ALLOC / X_STRBUILDER_REALLOC / X_STRBUILDER_FREE before including.
- *
- * Notes:
  * This header provides a simple interface for constructing strings efficiently:
  *   - Dynamic growth as data is appended
  *   - Append strings, characters, substrings, and formatted text
  *   - Convert to null-terminated C string
  *   - Clear or destroy the builder when done
+ *
+ * To customize how this module allocates memory, define
+ * `X_STRBUILDER_ALLOC` / `X_STRBUILDER_REALLOC` / `X_STRBUILDER_FREE` before including.
+ *
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_STRBUILDER`
+ * in **one** source file before including this header.
+ *
  */
 
 #ifndef X_STRBUILDER_H
@@ -40,8 +44,21 @@
 extern "C" {
 #endif
 
-  typedef struct XStrBuilder XStrBuilder;
-  typedef struct XWStrBuilder XWStrBuilder;
+  typedef struct XStrBuilder
+  {
+    char *data;
+    size_t capacity;
+    size_t length;
+  } XStrBuilder;
+
+  typedef struct XWStrBuilder
+  {
+    wchar_t *data;
+    size_t capacity;
+    size_t length;
+  } XWStrBuilder;
+
+#define x_strbuilder_append_cstr(sb, str) x_strbuilder_append((sb), (str))
 
   /**
    * @brief Creates a XStrBuilder
@@ -197,19 +214,6 @@ extern "C" {
 extern "C" {
 #endif
 
-  struct XStrBuilder
-  {
-    char *data;
-    size_t capacity;
-    size_t length;
-  };
-
-  struct XWStrBuilder
-  {
-    wchar_t *data;
-    size_t capacity;
-    size_t length;
-  };
 
   static int s_strbuilder_reserve(XStrBuilder* sb, size_t min_cap)
   {
@@ -353,7 +357,7 @@ extern "C" {
 
   X_STRBUILDER_API size_t x_strbuilder_utf8_charlen(const XStrBuilder* sb)
   {
-    size_t i = 0, count = 0;
+    size_t count = 0;
     const char* s = sb->data;
     while (*s)
     {

@@ -1,13 +1,15 @@
-/*
+/**
  * STDX - Lightweight String Utilities
  * Part of the STDX General Purpose C Library by marciovmf
- * https://github.com/marciovmf/stdx
  * License: MIT
+ * <https://github.com/marciovmf/stdx>
  *
- * To compile the implementation define X_IMPL_STRING
+ * ## How to compile
+ *
+ * To compile the implementation define `X_IMPL_STRING`
  * in **one** source file before including this header.
  *
- * Notes:
+ * ## Overview
  *  This header provides:
  *   - C string helpers: case-insensitive prefix/suffix matching
  *   - XSmallstr: fixed-capacity, stack-allocated strings
@@ -46,13 +48,13 @@ extern "C" {
 
   typedef struct 
   {
-    const char* data;
+    const char* ptr;
     size_t length;
   } XSlice;
 
   typedef struct
   {
-    const wchar_t* data;
+    const wchar_t* ptr;
     size_t length; // In wide characters
   } XWStrview;
 
@@ -545,9 +547,9 @@ extern "C" {
   // XSlice - Non-owning string views and operations.
   // -------------------------------------------------------------------------------------
 
-#define     x_slice_empty() ((XSlice){ .data = 0, .length = 0 })
+#define     x_slice_empty() ((XSlice){ .ptr = 0, .length = 0 })
 #define     x_slice_is_empty(sv) ((sv).length == 0)
-#define     x_slice_init(cstr, len) ((XSlice){ .data = (cstr), .length = (len) })
+#define     x_slice_init(cstr, len) ((XSlice){ .ptr = (cstr), .length = (len) })
 #define     x_slice(cstr)           (x_slice_init( (cstr), strlen(cstr) ))
 
   /**
@@ -781,7 +783,7 @@ extern "C" {
   // Non-owning wide string views and operations.
   // -------------------------------------------------------------------------------------
 
-#define x_wslice_init(cstr, len) ((XWStrview){ .data = (cstr), .length = (len) })
+#define x_wslice_init(cstr, len) ((XWStrview){ .ptr = (cstr), .length = (len) })
 #define x_wslice(cstr)           (x_wslice_init( (cstr), wcslen(cstr) ))
 
   /**
@@ -979,7 +981,6 @@ extern "C" {
 #include <ctype.h>   /* tolower */
 #include <wctype.h>
 #include <locale.h>
-#include <errno.h>
 #include <stdio.h>
 
 #ifdef _WIN32
@@ -1106,25 +1107,6 @@ static size_t utf8_advance(const char* s, size_t len, size_t chars)
 X_STRING_API char* x_cstr_str(const char *haystack, const char *needle)
 {
   return strstr(haystack, needle);
-
-  if (!*needle)
-    return (char *)haystack;
-
-  for (; *haystack; haystack++)
-  {
-    const char *h = haystack;
-    const char *n = needle;
-
-    while (*h && *n && tolower((unsigned char)*h) == tolower((unsigned char)*n))
-    {
-      h++;
-      n++;
-    }
-
-    if (!*n)  // Reached end of needle => match
-      return (char *)haystack;
-  }
-  return NULL;
 }
 
 X_STRING_API bool x_cstr_ends_with(const char* str, const char* suffix)
@@ -1367,9 +1349,9 @@ X_STRING_API uint32_t x_cstr_hash(const char* str)
 
 X_STRING_API size_t smallstr(XSmallstr* smallString, const char* str)
 {
-  size_t length = strlen(str);
 #if defined(_DEBUG) || defined(DEBUG)
 #if defined(X_x_smallstr_ENABLE_DBG_MESSAGES)
+  size_t length = strlen(str);
   if (length >= X_SMALLSTR_MAX_LENGTH)
   {
     log_print_debug("The string length (%d) exceeds the maximum size of a XSmallstr (%d)", length, X_SMALLSTR_MAX_LENGTH);
@@ -1399,7 +1381,7 @@ X_STRING_API size_t x_smallstr_from_cstr(XSmallstr* s, const char* cstr)
 {
   size_t len = strlen(cstr);
   if (len > X_SMALLSTR_MAX_LENGTH)
-    return -1;
+    return 0;
   memcpy(s->buf, cstr, len);
   s->buf[len] = '\0';
   s->length = len;
@@ -1419,14 +1401,13 @@ X_STRING_API size_t x_smallstr_length(const XSmallstr* smallString)
 
 X_STRING_API void x_smallstr_clear(XSmallstr* smallString)
 {
-  memset(smallString->buf, 0, X_SMALLSTR_MAX_LENGTH * sizeof(char));
-  smallString->length = 0;
+  memset(smallString, 0, sizeof(XSmallstr));
 }
 
 X_STRING_API size_t x_smallstr_append_cstr(XSmallstr* s, const char* cstr)
 {
   size_t len = strlen(cstr);
-  if (s->length + len > X_SMALLSTR_MAX_LENGTH) return -1;
+  if (s->length + len > X_SMALLSTR_MAX_LENGTH) return 0;
   memcpy(&s->buf[s->length], cstr, len);
   s->length += len;
   s->buf[s->length] = '\0';
@@ -1435,7 +1416,7 @@ X_STRING_API size_t x_smallstr_append_cstr(XSmallstr* s, const char* cstr)
 
 X_STRING_API size_t x_smallstr_append_char(XSmallstr* s, char c)
 {
-  if (s->length + 1 > X_SMALLSTR_MAX_LENGTH) return -1;
+  if (s->length + 1 > X_SMALLSTR_MAX_LENGTH) return 0;
   s->buf[s->length++] = (char)c;
   s->buf[s->length] = '\0';
   return s->length;
@@ -1443,7 +1424,7 @@ X_STRING_API size_t x_smallstr_append_char(XSmallstr* s, char c)
 
 X_STRING_API size_t x_smallstr_substring(const XSmallstr* s, size_t start, size_t len, XSmallstr* out)
 {
-  if (start > s->length || start + len > s->length) return -1;
+  if (start > s->length || start + len > s->length) return 0;
   out->length = len;
   memcpy(out->buf, &s->buf[start], len);
   out->buf[len] = '\0';
@@ -1487,7 +1468,6 @@ X_STRING_API int32_t x_smallstr_replace_all(XSmallstr* s, const char* find, cons
 {
   XSmallstr result;
   x_smallstr_clear(&result);
-  bool found = false;
 
   size_t find_len = strlen(find);
   size_t replace_len = strlen(replace);
@@ -1535,8 +1515,8 @@ X_STRING_API size_t x_smallstr_utf8_len(const XSmallstr* s)
 X_STRING_API size_t x_smallstr_from_slice(XSlice sv, XSmallstr* out)
 {
   x_smallstr_clear(out);
-  if (sv.length > X_SMALLSTR_MAX_LENGTH) return -1;
-  memcpy(out->buf, sv.data, sv.length);
+  if (sv.length > X_SMALLSTR_MAX_LENGTH) return 0;
+  memcpy(out->buf, sv.ptr, sv.length);
   out->buf[sv.length] = '\0';
   out->length = sv.length;
   return out->length;
@@ -1607,7 +1587,6 @@ X_STRING_API void x_smallstr_utf8_trim_left(XSmallstr* s)
     uint32_t cp = utf8_decode(&start, end);
     if (!s_is_unicode_whitespace(cp))
     {
-      size_t offset = prev - s->buf;
       memmove(s->buf, prev, end - prev);
       s->length = end - prev;
       s->buf[s->length] = '\0';
@@ -1765,7 +1744,7 @@ X_STRING_API int32_t x_wsmallstr_next_token(XWSmallstr* input, wchar_t delim, XW
 
 X_STRING_API bool x_slice_eq(XSlice a, XSlice b)
 {
-  return a.length == b.length && (memcmp(a.data, b.data, a.length) == 0);
+  return a.length == b.length && (memcmp(a.ptr, b.ptr, a.length) == 0);
 }
 
 X_STRING_API bool x_slice_eq_cstr(XSlice a, const char* b)
@@ -1776,7 +1755,7 @@ X_STRING_API bool x_slice_eq_cstr(XSlice a, const char* b)
 X_STRING_API int32_t x_slice_cmp(XSlice a, XSlice b)
 {
   size_t min_len = a.length < b.length ? a.length : b.length;
-  int32_t r = memcmp(a.data, b.data, min_len);
+  int32_t r = memcmp(a.ptr, b.ptr, min_len);
   if (r != 0) return r;
   return (int)(a.length - b.length);
 }
@@ -1786,7 +1765,7 @@ X_STRING_API bool x_slice_eq_ci(XSlice a, XSlice b)
   if (a.length != b.length) return 0;
   for (size_t i = 0; i < a.length; i++)
   {
-    if (tolower((unsigned char)a.data[i]) != tolower((unsigned char)b.data[i]))
+    if (tolower((unsigned char)a.ptr[i]) != tolower((unsigned char)b.ptr[i]))
       return false;
   }
   return true;
@@ -1797,8 +1776,8 @@ X_STRING_API int32_t x_slice_cmp_ci(XSlice a, XSlice b)
   size_t min_len = a.length < b.length ? a.length : b.length;
   for (size_t i = 0; i < min_len; i++)
   {
-    int32_t ca = tolower((unsigned char)a.data[i]);
-    int32_t cb = tolower((unsigned char)b.data[i]);
+    int32_t ca = tolower((unsigned char)a.ptr[i]);
+    int32_t cb = tolower((unsigned char)b.ptr[i]);
     if (ca != cb) return ca - cb;
   }
   return (int)(a.length - b.length);
@@ -1808,20 +1787,20 @@ X_STRING_API XSlice x_slice_substr(XSlice sv, size_t start, size_t len)
 {
   if (start > sv.length) start = sv.length;
   if (start + len > sv.length) len = sv.length - start;
-  return x_slice_init(sv.data + start, len);
+  return x_slice_init(sv.ptr + start, len);
 }
 
 X_STRING_API XSlice x_slice_trim_left(XSlice sv)
 {
   size_t i = 0;
-  while (i < sv.length && (unsigned char)sv.data[i] <= ' ') i++;
+  while (i < sv.length && (unsigned char)sv.ptr[i] <= ' ') i++;
   return x_slice_substr(sv, i, sv.length - i);
 }
 
 X_STRING_API XSlice x_slice_trim_right(XSlice sv)
 {
   size_t i = sv.length;
-  while (i > 0 && (unsigned char)sv.data[i - 1] <= ' ') i--;
+  while (i > 0 && (unsigned char)sv.ptr[i - 1] <= ' ') i--;
   return x_slice_substr(sv, 0, i);
 }
 
@@ -1834,7 +1813,7 @@ X_STRING_API int32_t x_slice_find(XSlice sv, char c)
 {
   for (size_t i = 0; i < sv.length; i++)
   {
-    if (sv.data[i] == c) return (int)i;
+    if (sv.ptr[i] == c) return (int)i;
   }
   return -1;
 }
@@ -1843,9 +1822,9 @@ X_STRING_API int32_t x_slice_find_white_space(XSlice sv)
 {
   for (size_t i = 0; i < sv.length; i++)
   {
-    if ( sv.data[i] == ' ' ||
-        sv.data[i] == '\t' ||
-        sv.data[i] == '\r'
+    if ( sv.ptr[i] == ' ' ||
+        sv.ptr[i] == '\t' ||
+        sv.ptr[i] == '\r'
        ) return (int)i;
   }
   return -1;
@@ -1855,7 +1834,7 @@ X_STRING_API int32_t x_slice_rfind(XSlice sv, char c)
 {
   for (size_t i = sv.length; i > 0; i--)
   {
-    if (sv.data[i - 1] == c) return (int)(i - 1);
+    if (sv.ptr[i - 1] == c) return (int)(i - 1);
   }
   return -1;
 }
@@ -1869,12 +1848,20 @@ X_STRING_API bool x_slice_split_at(XSlice sv, char delim, XSlice* left, XSlice* 
   return true;
 }
 
+static bool inline s_char_is_white_space(char c)
+{
+  return ( c == ' ' || c == '\t' || c == '\r');
+}
+
 X_STRING_API bool x_slice_split_at_white_space(XSlice sv, XSlice* left, XSlice* right)
 {
   int32_t pos = x_slice_find_white_space(sv);
+
   if (pos < 0) return false;
-  if (left) *left = x_slice_substr(sv, 0, pos);
-  if (right) *right = x_slice_substr(sv, pos + 1, sv.length - pos - 1);
+  if (left)
+    *left = x_slice_trim(x_slice_substr(sv, 0, pos));
+  if (right)
+    *right = x_slice_trim(x_slice_substr(sv, pos + 1, sv.length - pos - 1));
   return true;
 }
 
@@ -1893,7 +1880,7 @@ X_STRING_API bool x_slice_next_token_white_space(XSlice* input, XSlice* token)
     return true;
   }
 
-  token->data = NULL;
+  token->ptr = NULL;
   token->length = 0;
   return false;
 }
@@ -1913,31 +1900,31 @@ X_STRING_API bool x_slice_next_token(XSlice* input, char delim, XSlice* token)
     return true;
   }
 
-  token->data = NULL;
+  token->ptr = NULL;
   token->length = 0;
   return false;
 }
 
 X_STRING_API bool x_slice_starts_with_cstr(XSlice sv, const char* prefix)
 {
-  if (prefix == NULL || sv.length == 0 || sv.data == NULL)
+  if (prefix == NULL || sv.length == 0 || sv.ptr == NULL)
     return false;
   size_t prefix_len = strlen(prefix);
   if (prefix_len > sv.length)
     return false;
 
-  return strncmp(sv.data, prefix, prefix_len) == 0;
+  return strncmp(sv.ptr, prefix, prefix_len) == 0;
 }
 
 X_STRING_API bool x_slice_ends_with_cstr(XSlice sv, const char* suffix)
 {
-  if (suffix == NULL || sv.length == 0 || sv.data == NULL)
+  if (suffix == NULL || sv.length == 0 || sv.ptr == NULL)
     return false;
   size_t suffix_len = strlen(suffix);
   if (suffix_len > sv.length)
     return false;
 
-  return strncmp(sv.data + sv.length - suffix_len, suffix, suffix_len) == 0;
+  return strncmp(sv.ptr + sv.length - suffix_len, suffix, suffix_len) == 0;
 }
 
 X_STRING_API bool x_wslice_empty(XWStrview sv)
@@ -1947,13 +1934,13 @@ X_STRING_API bool x_wslice_empty(XWStrview sv)
 
 X_STRING_API bool x_wslice_eq(XWStrview a, XWStrview b)
 {
-  return a.length == b.length && wcsncmp(a.data, b.data, a.length) == 0;
+  return a.length == b.length && wcsncmp(a.ptr, b.ptr, a.length) == 0;
 }
 
 X_STRING_API int32_t x_wslice_cmp(XWStrview a, XWStrview b)
 {
   size_t min = a.length < b.length ? a.length : b.length;
-  int32_t result = wcsncmp(a.data, b.data, min);
+  int32_t result = wcsncmp(a.ptr, b.ptr, min);
   return result != 0 ? result : (int)(a.length - b.length);
 }
 
@@ -1961,20 +1948,20 @@ X_STRING_API XWStrview x_wslice_substr(XWStrview sv, size_t start, size_t len)
 {
   if (start > sv.length) start = sv.length;
   if (start + len > sv.length) len = sv.length - start;
-  return (XWStrview){ sv.data + start, len };
+  return (XWStrview){ sv.ptr + start, len };
 }
 
 X_STRING_API XWStrview x_wslice_trim_left(XWStrview sv)
 {
   size_t i = 0;
-  while (i < sv.length && iswspace(sv.data[i])) i++;
+  while (i < sv.length && iswspace(sv.ptr[i])) i++;
   return x_wslice_substr(sv, i, sv.length - i);
 }
 
 X_STRING_API XWStrview x_wslice_trim_right(XWStrview sv)
 {
   size_t i = sv.length;
-  while (i > 0 && iswspace(sv.data[i - 1])) i--;
+  while (i > 0 && iswspace(sv.ptr[i - 1])) i--;
   return x_wslice_substr(sv, 0, i);
 }
 
@@ -1987,15 +1974,15 @@ X_STRING_API bool x_wslice_split_at(XWStrview sv, uint32_t delim, XWStrview* lef
 {
   for (size_t i = 0; i < sv.length; ++i)
   {
-    if ((uint32_t)sv.data[i] == delim)
+    if ((uint32_t)sv.ptr[i] == delim)
     {
       if (left) {
-        left->data = sv.data;
+        left->ptr = sv.ptr;
         left->length = i;
       }
       if (right)
       {
-        right->data = sv.data + i + 1;
+        right->ptr = sv.ptr + i + 1;
         right->length = sv.length - i - 1;
       }
       return true;
@@ -2016,27 +2003,27 @@ X_STRING_API bool x_wslice_next_token(XWStrview* input, wchar_t delim, XWStrview
   else if (input->length > 0)
   {
     *token = *input;
-    input->data += input->length;
+    input->ptr += input->length;
     input->length = 0;
     return true;
   }
 
-  token->data = NULL;
+  token->ptr = NULL;
   token->length = 0;
   return false;
 }
 
 X_STRING_API XSlice x_slice_utf8_substr(XSlice sv, size_t char_start, size_t char_len)
 {
-  size_t byte_start = utf8_advance(sv.data, sv.length, char_start);
-  size_t byte_end = utf8_advance(sv.data + byte_start, sv.length - byte_start, char_len);
-  return x_slice_init(sv.data + byte_start, byte_end );
+  size_t byte_start = utf8_advance(sv.ptr, sv.length, char_start);
+  size_t byte_end = utf8_advance(sv.ptr + byte_start, sv.length - byte_start, char_len);
+  return x_slice_init(sv.ptr + byte_start, byte_end );
 }
 
 X_STRING_API XSlice x_slice_utf8_trim_left(XSlice sv)
 {
-  const char* start = sv.data;
-  const char* end = sv.data + sv.length;
+  const char* start = sv.ptr;
+  const char* end = sv.ptr + sv.length;
   while (start < end)
   {
     const char* prev = start;
@@ -2051,8 +2038,8 @@ X_STRING_API XSlice x_slice_utf8_trim_left(XSlice sv)
 
 X_STRING_API XSlice x_slice_utf8_trim_right(XSlice sv)
 {
-  const char* start = sv.data;
-  const char* end = sv.data + sv.length;
+  const char* start = sv.ptr;
+  const char* end = sv.ptr + sv.length;
   const char* p = end;
   while (p > start)
   {
@@ -2063,10 +2050,10 @@ X_STRING_API XSlice x_slice_utf8_trim_right(XSlice sv)
     uint32_t cp = utf8_decode(&decode_from, end);
     if (!s_is_unicode_whitespace(cp))
     {
-      return x_slice_init(sv.data, (size_t)(prev - sv.data));
+      return x_slice_init(sv.ptr, (size_t)(prev - sv.ptr));
     }
   }
-  return x_slice_init(sv.data + sv.length, 0 );
+  return x_slice_init(sv.ptr + sv.length, 0 );
 }
 
 X_STRING_API XSlice x_slice_utf8_trim(XSlice sv)
@@ -2076,23 +2063,23 @@ X_STRING_API XSlice x_slice_utf8_trim(XSlice sv)
 
 X_STRING_API int32_t x_slice_utf8_find(XSlice sv, uint32_t codepoint)
 {
-  const char* ptr = sv.data;
-  const char* end = sv.data + sv.length;
+  const char* ptr = sv.ptr;
+  const char* end = sv.ptr + sv.length;
 
   while (ptr < end)
   {
     const char* start = ptr;
     uint32_t cp = utf8_decode(&ptr, end);
     if (cp == codepoint)
-      return (int)(start - sv.data);
+      return (int)(start - sv.ptr);
   }
   return -1;
 }
 
 X_STRING_API int32_t x_slice_utf8_rfind(XSlice sv, uint32_t codepoint)
 {
-  const char* ptr = sv.data;
-  const char* end = sv.data + sv.length;
+  const char* ptr = sv.ptr;
+  const char* end = sv.ptr + sv.length;
   const char* last_match = NULL;
 
   while (ptr < end)
@@ -2103,22 +2090,22 @@ X_STRING_API int32_t x_slice_utf8_rfind(XSlice sv, uint32_t codepoint)
       last_match = current;
   }
 
-  return last_match ? (int)(last_match - sv.data) : -1;
+  return last_match ? (int)(last_match - sv.ptr) : -1;
 }
 
 X_STRING_API bool x_slice_utf8_split_at(XSlice sv, uint32_t delim, XSlice* left, XSlice* right)
 {
-  const char* ptr = sv.data;
-  const char* end = sv.data + sv.length;
+  const char* ptr = sv.ptr;
+  const char* end = sv.ptr + sv.length;
 
   while (ptr < end) {
     const char* codepoint_start = ptr;
     int32_t cp = utf8_decode(&ptr, end);
 
     if (cp == (int32_t)delim) {
-      size_t left_len = codepoint_start - sv.data;
+      size_t left_len = codepoint_start - sv.ptr;
       size_t right_len = end - ptr;
-      *left  = x_slice_init(sv.data, left_len);
+      *left  = x_slice_init(sv.ptr, left_len);
       *right = x_slice_init(ptr, right_len);
       return true;
     }
@@ -2140,31 +2127,31 @@ X_STRING_API bool x_slice_utf8_next_token(XSlice* input, uint32_t delim, XSlice*
     return true;
   }
 
-  token->data = NULL;
+  token->ptr = NULL;
   token->length = 0;
   return false;
 }
 
 X_STRING_API bool x_slice_utf8_starts_with_cstr(XSlice sv, const char* prefix)
 {
-  if (!sv.data || !prefix) return false;
+  if (!sv.ptr || !prefix) return false;
   size_t prefix_len = strlen(prefix);
   if (prefix_len > sv.length) return false;
-  return memcmp(sv.data, prefix, prefix_len) == 0;
+  return memcmp(sv.ptr, prefix, prefix_len) == 0;
 }
 
 X_STRING_API bool x_slice_utf8_ends_with_cstr(XSlice sv, const char* suffix)
 {
-  if (!sv.data || !suffix) return false;
+  if (!sv.ptr || !suffix) return false;
   size_t suffix_len = strlen(suffix);
   if (suffix_len > sv.length) return false;
-  return memcmp(sv.data + sv.length - suffix_len, suffix, suffix_len) == 0;
+  return memcmp(sv.ptr + sv.length - suffix_len, suffix, suffix_len) == 0;
 }
 
 X_STRING_API XSlice x_slice_from_cstr(const char* s)
 {
   XSlice sv;
-  sv.data   = s ? s : "";
+  sv.ptr   = s ? s : "";
   sv.length = s ? (size_t)strlen(s) : 0u;
   return sv;
 }
@@ -2172,14 +2159,14 @@ X_STRING_API XSlice x_slice_from_cstr(const char* s)
 X_STRING_API XSlice x_slice_from_smallstr(const XSmallstr* s)
 {
   XSlice sv;
-  sv.data   = s ? s->buf : "";
+  sv.ptr   = s ? s->buf : "";
   sv.length = s ? s->length : 0u;
   return sv;
 }
 
 X_STRING_API size_t x_smallstr_append_slice(XSmallstr* s, XSlice sv)
 {
-  if (!s || !sv.data) { return s ? s->length : 0u; }
+  if (!s || !sv.ptr) { return s ? s->length : 0u; }
 
   size_t cap   = X_SMALLSTR_MAX_LENGTH;
   size_t avail = (s->length < cap) ? (cap - s->length) : 0u;
@@ -2187,7 +2174,7 @@ X_STRING_API size_t x_smallstr_append_slice(XSmallstr* s, XSlice sv)
 
   if (n > 0u)
   {
-    memcpy(s->buf + s->length, sv.data, n);
+    memcpy(s->buf + s->length, sv.ptr, n);
     s->length += n;
   }
 
@@ -2198,7 +2185,7 @@ X_STRING_API size_t x_smallstr_append_slice(XSmallstr* s, XSlice sv)
 X_STRING_API size_t x_smallstr_append_n(XSmallstr* s, const char* cstr, size_t n)
 {
   XSlice sv;
-  sv.data   = cstr ? cstr : "";
+  sv.ptr   = cstr ? cstr : "";
   sv.length = cstr ? n : 0u;
   return x_smallstr_append_slice(s, sv);
 }

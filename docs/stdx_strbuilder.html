@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_strbuilder.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_strbuilder.h">stdx_strbuilder.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_strbuilder_create">x_strbuilder_create</a></li>
+<li><a href="#x_strbuilder_append">x_strbuilder_append</a></li>
+<li><a href="#x_strbuilder_append_char">x_strbuilder_append_char</a></li>
+<li><a href="#x_strbuilder_append_format">x_strbuilder_append_format</a></li>
+<li><a href="#x_strbuilder_append_substring">x_strbuilder_append_substring</a></li>
+<li><a href="#x_strbuilder_to_string">x_strbuilder_to_string</a></li>
+<li><a href="#x_strbuilder_destroy">x_strbuilder_destroy</a></li>
+<li><a href="#x_strbuilder_clear">x_strbuilder_clear</a></li>
+<li><a href="#x_strbuilder_length">x_strbuilder_length</a></li>
+<li><a href="#x_strbuilder_append_utf8_substring">x_strbuilder_append_utf8_substring</a></li>
+<li><a href="#x_strbuilder_utf8_charlen">x_strbuilder_utf8_charlen</a></li>
+<li><a href="#x_wstrbuilder_create">x_wstrbuilder_create</a></li>
+<li><a href="#x_wstrbuilder_append">x_wstrbuilder_append</a></li>
+<li><a href="#x_wstrbuilder_append_char">x_wstrbuilder_append_char</a></li>
+<li><a href="#x_wstrbuilder_append_format">x_wstrbuilder_append_format</a></li>
+<li><a href="#x_wstrbuilder_clear">x_wstrbuilder_clear</a></li>
+<li><a href="#x_wstrbuilder_destroy">x_wstrbuilder_destroy</a></li>
+<li><a href="#x_wstrbuilder_to_string">x_wstrbuilder_to_string</a></li>
+<li><a href="#x_wstrbuilder_length">x_wstrbuilder_length</a></li>
+<li><a href="#x_wstrbuilder_grow">x_wstrbuilder_grow</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_STRBUILDER_VERSION_MAJOR">X_STRBUILDER_VERSION_MAJOR</a></li>
+<li><a href="#X_STRBUILDER_VERSION_MINOR">X_STRBUILDER_VERSION_MINOR</a></li>
+<li><a href="#X_STRBUILDER_VERSION_PATCH">X_STRBUILDER_VERSION_PATCH</a></li>
+<li><a href="#X_STRBUILDER_VERSION">X_STRBUILDER_VERSION</a></li>
+<li><a href="#STRBUILDER_STACK_BUFFER_SIZE">STRBUILDER_STACK_BUFFER_SIZE</a></li>
+<li><a href="#x_strbuilder_append_cstr">x_strbuilder_append_cstr</a></li>
+<li><a href="#X_STRBUILDER_ALLOC">X_STRBUILDER_ALLOC</a></li>
+<li><a href="#X_STRBUILDER_REALLOC">X_STRBUILDER_REALLOC</a></li>
+<li><a href="#X_STRBUILDER_FREE">X_STRBUILDER_FREE</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XStrBuilder">XStrBuilder</a></li>
+<li><a href="#XWStrBuilder">XWStrBuilder</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_strbuilder.h">
+      <header class="page-header">
+        <h1>stdx_strbuilder.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Dynamic String Builder for C
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p>This header provides a simple interface for constructing strings efficiently:
+  - Dynamic growth as data is appended
+  - Append strings, characters, substrings, and formatted text
+  - Convert to null-terminated C string
+  - Clear or destroy the builder when done</p>
+<p>To customize how this module allocates memory, define
+<code>X_STRBUILDER_ALLOC</code> / <code>X_STRBUILDER_REALLOC</code> / <code>X_STRBUILDER_FREE</code> before including.</p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_STRBUILDER</code>
+in <b>one</b> source file before including this header.</p>
+</div>
+      </header>
+
+      <article id="X_STRBUILDER_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRBUILDER_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRBUILDER_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_STRBUILDER_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRBUILDER_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRBUILDER_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_STRBUILDER_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRBUILDER_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRBUILDER_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_STRBUILDER_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRBUILDER_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRBUILDER_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_strbuilder.html#X_STRBUILDER_VERSION_MAJOR">X_STRBUILDER_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_strbuilder.html#X_STRBUILDER_VERSION_MINOR">X_STRBUILDER_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_strbuilder.html#X_STRBUILDER_VERSION_PATCH">X_STRBUILDER_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="STRBUILDER_STACK_BUFFER_SIZE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">STRBUILDER_STACK_BUFFER_SIZE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">STRBUILDER_STACK_BUFFER_SIZE</span> <span class="tok_num">255</span></code></pre>
+  
+  
+</article>
+<article id="XStrBuilder" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XStrBuilder</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XStrBuilder</span><span class="tok_pun">{</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XStrBuilder</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XWStrBuilder" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XWStrBuilder</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XWStrBuilder</span><span class="tok_pun">{</span>
+  <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XWStrBuilder</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_strbuilder_append_cstr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_append_cstr</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_strbuilder_append_cstr</span><span class="tok_pun">(</span><span class="tok_id">sb</span><span class="tok_pun">,</span> <span class="tok_id">str</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_strbuilder.html#x_strbuilder_append">x_strbuilder_append</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">sb</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_id">str</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_strbuilder_create" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_create</span></h2>
+  <p class="brief">Creates a XStrBuilder</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_strbuilder_create</span><span class="tok_pun">(</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>(none)</code></dt>
+<dd>@return pointer to the XStrBuilder or NULL if creation fails</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_strbuilder_append" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_append</span></h2>
+  <p class="brief">Appends a C-string to the builder</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_strbuilder_append</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Destination builder</dd>
+<dt><code>str</code></dt>
+<dd>Source null-terminated string (NULL is ignored)</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_strbuilder_append_char" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_append_char</span></h2>
+  <p class="brief">Appends one character</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_strbuilder_append_char</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">,</span>
+  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Destination builder</dd>
+<dt><code>c</code></dt>
+<dd>Character to append</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_strbuilder_append_format" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_append_format</span></h2>
+  <p class="brief">Appends formatted text (printf-style)</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_strbuilder_append_format</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">format</span><span class="tok_pun">,</span>
+  <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Destination builder</dd>
+<dt><code>format</code></dt>
+<dd>Format string (printf-style)</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_strbuilder_append_substring" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_append_substring</span></h2>
+  <p class="brief">Appends a substring</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_strbuilder_append_substring</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">start</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">length</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Destination builder</dd>
+<dt><code>start</code></dt>
+<dd>Pointer to first byte</dd>
+<dt><code>length</code></dt>
+<dd>Number of bytes to copy</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_strbuilder_to_string" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_to_string</span></h2>
+  <p class="brief">Returns internal buffer pointer</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_strbuilder_to_string</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Builder to query</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to internal NUL-terminated buffer (invalidated by later appends)</p>
+</section>
+
+</article>
+<article id="x_strbuilder_destroy" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_destroy</span></h2>
+  <p class="brief">Destroys the builder and frees memory</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_strbuilder_destroy</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Builder to destroy (may be NULL)</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_strbuilder_clear" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_clear</span></h2>
+  <p class="brief">Clears the builder content</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_strbuilder_clear</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Builder to clear</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_strbuilder_length" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_length</span></h2>
+  <p class="brief">Returns current length in bytes</p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_strbuilder_length</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Builder to query</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Length in bytes (excluding the NUL)</p>
+</section>
+
+</article>
+<article id="x_strbuilder_append_utf8_substring" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_append_utf8_substring</span></h2>
+  <p class="brief">Appends a UTF-8 substring by code-point range</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_strbuilder_append_utf8_substring</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">start_cp</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">len_cp</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Destination builder</dd>
+<dt><code>utf8</code></dt>
+<dd>Source UTF-8 string</dd>
+<dt><code>start_cp</code></dt>
+<dd>Start code-point index</dd>
+<dt><code>len_cp</code></dt>
+<dd>Number of code points to append</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_strbuilder_utf8_charlen" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_strbuilder_utf8_charlen</span></h2>
+  <p class="brief">Counts UTF-8 code points contained in the builder</p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_strbuilder_utf8_charlen</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Builder to query</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of Unicode code points</p>
+</section>
+
+</article>
+<article id="x_wstrbuilder_create" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wstrbuilder_create</span></h2>
+  <p class="brief">Creates a wide-character string builder
+param (none)</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_wstrbuilder_create</span><span class="tok_pun">(</span><span class="tok_pun">)</span>;</code></pre>
+  
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to builder or NULL on failure</p>
+</section>
+
+</article>
+<article id="x_wstrbuilder_append" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wstrbuilder_append</span></h2>
+  <p class="brief">Appends a wide C-string</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_wstrbuilder_append</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Destination builder</dd>
+<dt><code>str</code></dt>
+<dd>Source wide string (NULL is ignored)</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_wstrbuilder_append_char" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wstrbuilder_append_char</span></h2>
+  <p class="brief">Appends one wide character</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_wstrbuilder_append_char</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">,</span>
+  <span class="tok_id">wchar_t</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Destination builder</dd>
+<dt><code>c</code></dt>
+<dd>Character to append</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_wstrbuilder_append_format" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wstrbuilder_append_format</span></h2>
+  <p class="brief">Appends formatted wide text (printf-style)</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_wstrbuilder_append_format</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">format</span><span class="tok_pun">,</span>
+  <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Destination builder</dd>
+<dt><code>format</code></dt>
+<dd>Wide format string</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_wstrbuilder_clear" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wstrbuilder_clear</span></h2>
+  <p class="brief">Clears the wide builder content</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_wstrbuilder_clear</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Builder to clear</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_wstrbuilder_destroy" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wstrbuilder_destroy</span></h2>
+  <p class="brief">Destroys the wide builder and frees memory</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_wstrbuilder_destroy</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sb</code></dt>
+<dd>Builder to destroy (may be NULL)</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="x_wstrbuilder_to_string" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wstrbuilder_to_string</span></h2>
+  <p class="brief">Returns internal wide buffer pointer
+ param sb Builder to query
+ return Pointer to internal NUL-terminated wide buffer (invalidated by later appends)</p>
+  <pre class="symbol-decl"><code><span class="tok_id">wchar_t</span> <span class="tok_pun">*</span> <span class="tok_id">x_wstrbuilder_to_string</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_wstrbuilder_length" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wstrbuilder_length</span></h2>
+  <p class="brief">Returns current length in wide characters
+ param sb Builder to query
+ return Number of wchar_t (excluding the NUL)</p>
+  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_wstrbuilder_length</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="X_STRBUILDER_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRBUILDER_ALLOC</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRBUILDER_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">malloc</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_STRBUILDER_REALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRBUILDER_REALLOC</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRBUILDER_REALLOC</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">,</span> <span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">realloc</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_STRBUILDER_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STRBUILDER_FREE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRBUILDER_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="x_wstrbuilder_grow" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_wstrbuilder_grow</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRBUILDER_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_wstrbuilder_grow</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">needed_len</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

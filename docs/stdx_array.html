@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_array.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_array.h">stdx_array.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_array_create">x_array_create</a></li>
+<li><a href="#x_array_get">x_array_get</a></li>
+<li><a href="#x_array_getdata">x_array_getdata</a></li>
+<li><a href="#x_array_add">x_array_add</a></li>
+<li><a href="#x_array_insert">x_array_insert</a></li>
+<li><a href="#x_array_delete_range">x_array_delete_range</a></li>
+<li><a href="#x_array_clear">x_array_clear</a></li>
+<li><a href="#x_array_delete_at">x_array_delete_at</a></li>
+<li><a href="#x_array_destroy">x_array_destroy</a></li>
+<li><a href="#x_array_count">x_array_count</a></li>
+<li><a href="#x_array_capacity">x_array_capacity</a></li>
+<li><a href="#x_array_push">x_array_push</a></li>
+<li><a href="#x_array_pop">x_array_pop</a></li>
+<li><a href="#x_array_top">x_array_top</a></li>
+<li><a href="#x_array_is_empty">x_array_is_empty</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_ARRAY_VERSION_MAJOR">X_ARRAY_VERSION_MAJOR</a></li>
+<li><a href="#X_ARRAY_VERSION_MINOR">X_ARRAY_VERSION_MINOR</a></li>
+<li><a href="#X_ARRAY_VERSION_PATCH">X_ARRAY_VERSION_PATCH</a></li>
+<li><a href="#X_ARRAY_VERSION">X_ARRAY_VERSION</a></li>
+<li><a href="#X_ARRAY_ALLOC">X_ARRAY_ALLOC</a></li>
+<li><a href="#X_ARRAY_REALLOC">X_ARRAY_REALLOC</a></li>
+<li><a href="#X_ARRAY_FREE">X_ARRAY_FREE</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XArray">XArray</a></li>
+<li><a href="#XArray_t">XArray_t</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          <li><a href="#XArrayError">XArrayError</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_array.h">
+      <header class="page-header">
+        <h1>stdx_array.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Array
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p> Provides a generic, dynamic array implementation with support for
+ random access, insertion, deletion, and stack-like operations<br/>
+ (push/pop). Useful for managing homogeneous collections in C with
+ automatic resizing.</p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_ARRAY</code>
+in <b>one</b> source file before including this header.</p>
+<p>To customize how this module allocates memory, define
+<code>X_ARRAY_ALLOC</code> / <code>X_ARRAY_REALLOC</code> / <code>X_ARRAY_FREE</code> before including.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p> stdx_common.h</p>
+</div>
+      </header>
+
+      <article id="X_ARRAY_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARRAY_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_ARRAY_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARRAY_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_ARRAY_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARRAY_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_ARRAY_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARRAY_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#X_ARRAY_VERSION_MAJOR">X_ARRAY_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_array.html#X_ARRAY_VERSION_MINOR">X_ARRAY_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_array.html#X_ARRAY_VERSION_PATCH">X_ARRAY_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XArrayError" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">XArrayError</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span><span class="tok_pun">{</span>
+  <span class="tok_id">XARRAY_OK</span><span class="tok_pun">=</span><span class="tok_num">0</span><span class="tok_pun">,</span>
+  <span class="tok_id">XARRAY_INVALID_RANGE</span><span class="tok_pun">=</span><span class="tok_num">1</span><span class="tok_pun">,</span>
+  <span class="tok_id">XARRAY_MEMORY_ALLOCATION_FAILED</span><span class="tok_pun">=</span><span class="tok_num">2</span><span class="tok_pun">,</span>
+  <span class="tok_id">XARRAY_INDEX_OUT_OF_BOUNDS</span><span class="tok_pun">=</span><span class="tok_num">3</span><span class="tok_pun">,</span>
+  <span class="tok_id">XARRAY_EMPTY</span><span class="tok_pun">=</span><span class="tok_num">4</span>
+<span class="tok_pun">}</span><span class="tok_id">XArrayError</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XArray" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XArray</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_kw"><a href="stdx_array.html#XArray_t">XArray_t</a></span> <span class="tok_id">XArray</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_array_create" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_create</span></h2>
+  <p class="brief">Create a new dynamic array.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_array_create</span><span class="tok_pun">(</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">elementSize</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>elementSize</code></dt>
+<dd>Size in bytes of a single element stored in the array.</dd>
+<dt><code>capacity</code></dt>
+<dd>Initial number of elements the array can hold.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the newly created array, or NULL on failure.</p>
+</section>
+
+</article>
+<article id="x_array_get" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_get</span></h2>
+  <p class="brief">Get a pointer to the element at the given index.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_common.html#XPtr">XPtr</a></span> <span class="tok_id">x_array_get</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">,</span>
+  <span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">index</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+<dt><code>index</code></dt>
+<dd>Zero-based index of the element.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the element at the given index.</p>
+</section>
+
+</article>
+<article id="x_array_getdata" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_getdata</span></h2>
+  <p class="brief">Get a pointer to the underlying data buffer.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_common.html#XPtr">XPtr</a></span> <span class="tok_id">x_array_getdata</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the internal contiguous data storage.</p>
+</section>
+
+</article>
+<article id="x_array_add" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_add</span></h2>
+  <p class="brief">Append an element to the end of the array.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_array.html#XArrayError">XArrayError</a></span> <span class="tok_id">x_array_add</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+<dt><code>data</code></dt>
+<dd>Pointer to the element data to copy into the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Error code indicating success or failure.</p>
+</section>
+
+</article>
+<article id="x_array_insert" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_insert</span></h2>
+  <p class="brief">Insert an element at the specified index.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_array.html#XArrayError">XArrayError</a></span> <span class="tok_id">x_array_insert</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">,</span>
+  <span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">index</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+<dt><code>data</code></dt>
+<dd>Pointer to the element data to copy into the array.</dd>
+<dt><code>index</code></dt>
+<dd>Index at which the element will be inserted.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Error code indicating success or failure.</p>
+</section>
+
+</article>
+<article id="x_array_delete_range" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_delete_range</span></h2>
+  <p class="brief">Delete a range of elements from the array.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_array.html#XArrayError">XArrayError</a></span> <span class="tok_id">x_array_delete_range</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">,</span>
+  <span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
+  <span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">end</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+<dt><code>start</code></dt>
+<dd>Index of the first element to delete.</dd>
+<dt><code>end</code></dt>
+<dd>Index one past the last element to delete.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Error code indicating success or failure.</p>
+</section>
+
+</article>
+<article id="x_array_clear" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_clear</span></h2>
+  <p class="brief">Remove all elements from the array without freeing its storage.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_array_clear</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_array_delete_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_delete_at</span></h2>
+  <p class="brief">Delete the element at the specified index.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_array_delete_at</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">,</span>
+  <span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">index</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+<dt><code>index</code></dt>
+<dd>Index of the element to remove.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_array_destroy" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_destroy</span></h2>
+  <p class="brief">Destroy the array and free all associated memory.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_array_destroy</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_array_count" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_count</span></h2>
+  <p class="brief">Get the number of elements currently stored in the array.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">uint32_t</span> <span class="tok_id">x_array_count</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of elements in the array.</p>
+</section>
+
+</article>
+<article id="x_array_capacity" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_capacity</span></h2>
+  <p class="brief">Get the current capacity of the array.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">uint32_t</span> <span class="tok_id">x_array_capacity</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>arr</code></dt>
+<dd>Pointer to the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Maximum number of elements the array can hold without resizing.</p>
+</section>
+
+</article>
+<article id="x_array_push" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_push</span></h2>
+  <p class="brief">Push an element onto the end of the array.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_array_push</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">array</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">value</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>array</code></dt>
+<dd>Pointer to the array.</dd>
+<dt><code>value</code></dt>
+<dd>Pointer to the element data to copy into the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_array_pop" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_pop</span></h2>
+  <p class="brief">Remove the last element from the array.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_array_pop</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">array</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>array</code></dt>
+<dd>Pointer to the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Nothing.</p>
+</section>
+
+</article>
+<article id="x_array_top" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_top</span></h2>
+  <p class="brief">Get a pointer to the last element in the array.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_common.html#XPtr">XPtr</a></span> <span class="tok_id">x_array_top</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">array</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>array</code></dt>
+<dd>Pointer to the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the last element.</p>
+</section>
+
+</article>
+<article id="x_array_is_empty" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_is_empty</span></h2>
+  <p class="brief">Check whether the array is empty.</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">bool</span> <span class="tok_id">x_array_is_empty</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">array</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>array</code></dt>
+<dd>Pointer to the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if the array contains no elements, false otherwise.</p>
+</section>
+
+</article>
+<article id="X_ARRAY_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARRAY_ALLOC</span></h2>
+  <p class="brief">Internal macro for allocating memory.
+To override how this header allocates memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">malloc</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to alloc.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_ARRAY_REALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARRAY_REALLOC</span></h2>
+  <p class="brief">Internal macro for resizing memory.
+To override how this header resizes memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_REALLOC</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">,</span> <span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">realloc</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to resize.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_ARRAY_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ARRAY_FREE</span></h2>
+  <p class="brief">Internal macro for freeing memory.
+To override how this header frees memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>p</code></dt>
+<dd>The address of memory region to free.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="XArray_t" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XArray_t</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">struct</span> <span class="tok_id">XArray_t</span><span class="tok_pun">{</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">array</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">elementSize</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

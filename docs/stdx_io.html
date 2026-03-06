@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_io.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_io.h">stdx_io.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_io_open">x_io_open</a></li>
+<li><a href="#x_io_close">x_io_close</a></li>
+<li><a href="#x_io_read">x_io_read</a></li>
+<li><a href="#x_io_read_all">x_io_read_all</a></li>
+<li><a href="#x_io_read_text">x_io_read_text</a></li>
+<li><a href="#x_io_write">x_io_write</a></li>
+<li><a href="#x_io_write_text">x_io_write_text</a></li>
+<li><a href="#x_io_append_text">x_io_append_text</a></li>
+<li><a href="#x_io_seek">x_io_seek</a></li>
+<li><a href="#x_io_tell">x_io_tell</a></li>
+<li><a href="#x_io_rewind">x_io_rewind</a></li>
+<li><a href="#x_io_flush">x_io_flush</a></li>
+<li><a href="#x_io_eof">x_io_eof</a></li>
+<li><a href="#x_io_error">x_io_error</a></li>
+<li><a href="#x_io_clearerr">x_io_clearerr</a></li>
+<li><a href="#x_io_fileno">x_io_fileno</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_IO_VERSION_MAJOR">X_IO_VERSION_MAJOR</a></li>
+<li><a href="#X_IO_VERSION_MINOR">X_IO_VERSION_MINOR</a></li>
+<li><a href="#X_IO_VERSION_PATCH">X_IO_VERSION_PATCH</a></li>
+<li><a href="#X_IO_VERSION">X_IO_VERSION</a></li>
+<li><a href="#X_IO_ALLOC">X_IO_ALLOC</a></li>
+<li><a href="#X_IO_FREE">X_IO_FREE</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XFile">XFile</a></li>
+<li><a href="#XFile_t">XFile_t</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_io.h">
+      <header class="page-header">
+        <h1>stdx_io.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - IO (file I/O utility functions)
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p>Provides utility functions for reading and writing files.</p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define <code>X_IMPL_IO</code>
+in <b>one</b> source file before including this header.</p>
+<p>To customize how this module allocates memory, define
+<code>X_IO_ALLOC</code> / <code>X_IO_FREE</code> before including.</p>
+</div>
+      </header>
+
+      <article id="X_IO_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_IO_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_IO_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_IO_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_IO_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_IO_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_IO_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_IO_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_IO_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_IO_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_IO_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_IO_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#X_IO_VERSION_MAJOR">X_IO_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_io.html#X_IO_VERSION_MINOR">X_IO_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_io.html#X_IO_VERSION_PATCH">X_IO_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XFile" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XFile</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_kw"><a href="stdx_io.html#XFile_t">XFile_t</a></span> <span class="tok_id">XFile</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_io_open" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_open</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_io_open</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">mode</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_close" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_close</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_io_close</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_read" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_read</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_io_read</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buffer</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_read_all" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_read_all</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_io_read_all</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_size</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_read_text" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_read_text</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_io_read_text</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_size</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_write" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_write</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_io_write</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">,</span>
+  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_write_text" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_write_text</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_write_text</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">text</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_append_text" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_append_text</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_append_text</span><span class="tok_pun">(</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">,</span>
+  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">text</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_seek" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_seek</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_seek</span><span class="tok_pun">(</span>
+  <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
+  <span class="tok_kw">long</span> <span class="tok_id">offset</span><span class="tok_pun">,</span>
+  <span class="tok_kw">int32_t</span> <span class="tok_id">origin</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_tell" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_tell</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">long</span> <span class="tok_id">x_io_tell</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_rewind" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_rewind</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_rewind</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_flush" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_flush</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_flush</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_eof" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_eof</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_eof</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_error" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_error</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_error</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_clearerr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_clearerr</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_io_clearerr</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="x_io_fileno" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_io_fileno</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_io_fileno</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  
+  
+</article>
+<article id="X_IO_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_IO_ALLOC</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_IO_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">malloc</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_IO_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_IO_FREE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_IO_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="XFile_t" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XFile_t</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">struct</span> <span class="tok_id">XFile_t</span><span class="tok_pun">{</span>
+  <span class="tok_id">FILE</span> <span class="tok_pun">*</span><span class="tok_id">fp</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>
