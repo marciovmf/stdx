@@ -107,6 +107,7 @@ create_test(TARGET test_network SOURCES tests/test_network.c NORUN)
 create_test(TARGET test_io SOURCES tests/test_io.c)
 create_test(TARGET test_time SOURCES tests/test_time.c)
 create_test(TARGET test_ini SOURCES tests/test_ini.c)
+create_test(TARGET test_math SOURCES tests/test_math.c)
 build_and_run_tests()
 
 #---------------------------------------------------------------------------
