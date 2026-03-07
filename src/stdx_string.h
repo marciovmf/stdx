@@ -1,7 +1,7 @@
 /**
- * STDX - Lightweight String Utilities
- * Part of the STDX General Purpose C Library by marciovmf
- * License: MIT
+ * STDX - Lightweight String Utilities 
+ * Part of the STDX General Purpose C Library by marciovmf 
+ * License: MIT 
  * <https://github.com/marciovmf/stdx>
  *
  * ## How to compile
@@ -1347,21 +1347,12 @@ X_STRING_API uint32_t x_cstr_hash(const char* str)
   return hash;
 }
 
-X_STRING_API size_t smallstr(XSmallstr* smallString, const char* str)
+X_STRING_API int32_t   x_smallstr_init(XSmallstr* s, const char* str)
 {
-#if defined(_DEBUG) || defined(DEBUG)
-#if defined(X_x_smallstr_ENABLE_DBG_MESSAGES)
-  size_t length = strlen(str);
-  if (length >= X_SMALLSTR_MAX_LENGTH)
-  {
-    log_print_debug("The string length (%d) exceeds the maximum size of a XSmallstr (%d)", length, X_SMALLSTR_MAX_LENGTH);
-  }
-#endif
-#endif
-  strncpy((char *) &smallString->buf, str, X_SMALLSTR_MAX_LENGTH - 1);
-  smallString->buf[X_SMALLSTR_MAX_LENGTH - 1] = 0;
-  smallString->length = strlen(smallString->buf);
-  return smallString->length;
+  strncpy((char *) &s->buf, str, X_SMALLSTR_MAX_LENGTH - 1);
+  s->buf[X_SMALLSTR_MAX_LENGTH - 1] = 0;
+  s->length = strlen(s->buf);
+  return (int32_t) s->length;
 }
 
 X_STRING_API size_t x_smallstr_format(XSmallstr* smallString, const char* fmt, ...)

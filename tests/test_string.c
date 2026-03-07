@@ -46,7 +46,7 @@ int test_str_ends_with(void)
 int test_x_smallstr_basic(void)
 {
   XSmallstr s;
-  size_t len = smallstr(&s, "test123");
+  size_t len = x_smallstr_init(&s, "test123");
   ASSERT_EQ(len, 7);
   ASSERT_EQ(x_smallstr_length(&s), 7);
   return X_TEST_SUCCESS;
@@ -58,7 +58,7 @@ int test_x_smallstr_truncation(void)
   char long_str[1024] = {0};
   memset(long_str, 'a', sizeof(long_str) - 1);
   long_str[sizeof(long_str) - 1] = '\0';
-  size_t len = smallstr(&s, long_str);
+  size_t len = x_smallstr_init(&s, long_str);
   ASSERT_TRUE(len <= X_SMALLSTR_MAX_LENGTH);
   ASSERT_EQ(x_smallstr_length(&s), len);
   return X_TEST_SUCCESS;
@@ -77,7 +77,7 @@ int test_x_smallstr_format(void)
 int test_x_smallstr_clear(void)
 {
   XSmallstr s;
-  smallstr(&s, "clear me");
+  x_smallstr_init(&s, "clear me");
   x_smallstr_clear(&s);
   ASSERT_EQ(x_smallstr_length(&s), 0);
   return X_TEST_SUCCESS;
