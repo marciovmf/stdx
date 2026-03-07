@@ -1,7 +1,7 @@
 /**
- * STDX - Array
- * Part of the STDX General Purpose C Library by marciovmf
- * License: MIT
+ * STDX - Generic Hashtable 
+ * Part of the STDX General Purpose C Library by marciovmf 
+ * License: MIT 
  * <https://github.com/marciovmf/stdx>
  *
  * ## Overview
@@ -19,14 +19,72 @@
  * To customize how this module allocates memory, define
  * `X_ARRAY_ALLOC` / `X_ARRAY_REALLOC` / `X_ARRAY_FREE` before including.
  *
+ * ## Typed usage (recommended)
+ *
+ * The array core operates on `void*` elements and an explicit element size.
+ * For convenience this header also provides macros that generate type-safe
+ * wrappers on top of the generic API.
+ *
+ * These macros create:
+ *
+ * - a typed alias for `XArray`
+ * - typed wrapper functions (`create`, `push`, `get`, `data`, `count`, etc.)
+ *
+ * This avoids manual casts and makes the API easier and safer to use.
+ *
+ * ### Example
+ *
+ * ```
+ * X_ARRAY_TYPE(int)
+ * XArray_int* arr = x_array_int_create(16);
+ * x_array_int_push(arr, 10);
+ * x_array_int_push(arr, 20);
+ * int* value = x_array_int_get(arr, 1);
+ * printf("%d\n", *value);
+ * ```
+ *
+ * ### Named variants
+ *
+ * If the element type is not a valid identifier (for example
+ * `unsigned int`, `const char*`, or complex types), use the named version:
+ *
+ * ```
+ * X_ARRAY_TYPE_NAMED(unsigned int, uint)
+ * XArray_uint* arr = x_array_uint_create(8);
+ * ```
+ *
+ * The second argument defines the suffix used to generate the type
+ * and function names.
+ *
+ * ### Example with struct types
+ *
+ * ```
+ * typedef struct
+ * {
+ *   float x;
+ *   float y;
+ * } Point;
+ *
+ * X_ARRAY_TYPE(Point)
+ * XArray_Point* points = x_array_Point_create(4);
+ *
+ * Point p = {1.0f, 2.0f};
+ * x_array_Point_push(points, p);
+ * ```
+ *
+ * Internally these wrappers call the generic API, so there is no
+ * additional runtime overhead.
+ *
  * ## Dependencies
+ *
  *  stdx_common.h
+ *
  */
 
 #ifndef X_ARRAY_H
 #define X_ARRAY_H
 
-#include <stdx_common.h>
+#include "stdx_common.h"
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -65,14 +123,14 @@ extern "C" {
    * @param index Zero-based index of the element.
    * @return Pointer to the element at the given index.
    */
-  XPtr x_array_get(XArray* arr, unsigned int index);
+  void* x_array_get(XArray* arr, unsigned int index);
 
   /**
    * @brief Get a pointer to the underlying data buffer.
    * @param arr Pointer to the array.
    * @return Pointer to the internal contiguous data storage.
    */
-  XPtr x_array_getdata(XArray* arr);
+  void* x_array_data(XArray* arr);
 
   /**
    * @brief Append an element to the end of the array.
@@ -95,7 +153,7 @@ extern "C" {
    * @brief Delete a range of elements from the array.
    * @param arr Pointer to the array.
    * @param start Index of the first element to delete.
-   * @param end Index one past the last element to delete.
+   * @param end Index of the last element to delete (inclusive).
    * @return Error code indicating success or failure.
    */
   XArrayError x_array_delete_range(XArray* arr, unsigned int start, unsigned int end);
@@ -156,7 +214,7 @@ extern "C" {
    * @param array Pointer to the array.
    * @return Pointer to the last element.
    */
-  XPtr x_array_top(XArray* array);
+  void* x_array_top(XArray* array);
 
   /**
    * @brief Check whether the array is empty.
@@ -164,6 +222,102 @@ extern "C" {
    * @return True if the array contains no elements, false otherwise.
    */
   bool x_array_is_empty(XArray* array);
+
+
+  /* Declare a typed array alias and typed inline wrappers. */
+#define X_ARRAY_TYPE(T) \
+  X_ARRAY_TYPE_NAMED(T, T)
+
+  /* Use this form for multi-token types such as unsigned int or struct Foo. */
+#define X_ARRAY_TYPE_NAMED(T, suffix) \
+  typedef XArray XArray_##suffix; \
+  static inline XArray_##suffix* x_array_##suffix##_create(size_t capacity) \
+  { \
+    return (XArray_##suffix*)x_array_create(sizeof(T), capacity); \
+  } \
+  static inline void x_array_##suffix##_destroy(XArray_##suffix* arr) \
+  { \
+    x_array_destroy((XArray*)arr); \
+  } \
+  static inline XArrayError x_array_##suffix##_add_ptr(XArray_##suffix* arr, const T* value_ptr) \
+  { \
+    return x_array_add((XArray*)arr, (void*)value_ptr); \
+  } \
+  static inline XArrayError x_array_##suffix##_add(XArray_##suffix* arr, T value) \
+  { \
+    T value_copy = value; \
+    return x_array_add((XArray*)arr, &value_copy); \
+  } \
+  static inline XArrayError x_array_##suffix##_insert_ptr(XArray_##suffix* arr, const T* value_ptr, unsigned int index) \
+  { \
+    return x_array_insert((XArray*)arr, (void*)value_ptr, index); \
+  } \
+  static inline XArrayError x_array_##suffix##_insert(XArray_##suffix* arr, T value, unsigned int index) \
+  { \
+    T value_copy = value; \
+    return x_array_insert((XArray*)arr, &value_copy, index); \
+  } \
+  static inline XArrayError x_array_##suffix##_push_ptr(XArray_##suffix* arr, const T* value_ptr) \
+  { \
+    return x_array_add((XArray*)arr, (void*)value_ptr); \
+  } \
+  static inline XArrayError x_array_##suffix##_push(XArray_##suffix* arr, T value) \
+  { \
+    T value_copy = value; \
+    return x_array_add((XArray*)arr, &value_copy); \
+  } \
+  static inline void x_array_##suffix##_pop(XArray_##suffix* arr) \
+  { \
+    x_array_pop((XArray*)arr); \
+  } \
+  static inline T* x_array_##suffix##_get(XArray_##suffix* arr, unsigned int index) \
+  { \
+    return (T*)x_array_get((XArray*)arr, index); \
+  } \
+  static inline const T* x_array_##suffix##_get_const(const XArray_##suffix* arr, unsigned int index) \
+  { \
+    return (const T*)x_array_get((XArray*)arr, index); \
+  } \
+  static inline T* x_array_##suffix##_data(XArray_##suffix* arr) \
+  { \
+    return (T*)x_array_data((XArray*)arr); \
+  } \
+  static inline const T* x_array_##suffix##_data_const(const XArray_##suffix* arr) \
+  { \
+    return (const T*)x_array_data((XArray*)arr); \
+  } \
+  static inline T* x_array_##suffix##_top(XArray_##suffix* arr) \
+  { \
+    return (T*)x_array_top((XArray*)arr); \
+  } \
+  static inline const T* x_array_##suffix##_top_const(const XArray_##suffix* arr) \
+  { \
+    return (const T*)x_array_top((XArray*)arr); \
+  } \
+  static inline void x_array_##suffix##_clear(XArray_##suffix* arr) \
+  { \
+    x_array_clear((XArray*)arr); \
+  } \
+  static inline void x_array_##suffix##_delete_at(XArray_##suffix* arr, unsigned int index) \
+  { \
+    x_array_delete_at((XArray*)arr, index); \
+  } \
+  static inline XArrayError x_array_##suffix##_delete_range(XArray_##suffix* arr, unsigned int start, unsigned int end) \
+  { \
+    return x_array_delete_range((XArray*)arr, start, end); \
+  } \
+  static inline uint32_t x_array_##suffix##_count(XArray_##suffix* arr) \
+  { \
+    return x_array_count((XArray*)arr); \
+  } \
+  static inline uint32_t x_array_##suffix##_capacity(XArray_##suffix* arr) \
+  { \
+    return x_array_capacity((XArray*)arr); \
+  } \
+  static inline bool x_array_##suffix##_is_empty(XArray_##suffix* arr) \
+  { \
+    return x_array_is_empty((XArray*)arr); \
+  }
 
 #ifdef __cplusplus
 }
@@ -227,32 +381,48 @@ extern "C" {
       return NULL;
     }
 
-    arr->array = X_ARRAY_ALLOC(capacity * elementSize);
+    arr->array = NULL;
     arr->size = 0;
     arr->capacity = capacity;
     arr->elementSize = elementSize;
 
-    X_ASSERT(capacity > 0);
+    if (capacity > 0)
+    {
+      arr->array = X_ARRAY_ALLOC(capacity * elementSize);
+      if (arr->array == NULL)
+      {
+        X_ARRAY_FREE(arr);
+        return NULL;
+      }
+    }
+
     return arr;
   }
 
   XArrayError x_array_add(XArray* arr, void* data)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
+    void* new_array;
+    size_t new_capacity;
+
+    X_ASSERT(arr != NULL);
 
     if (arr->size >= arr->capacity)
     {
-      arr->capacity = arr->capacity == 0 ? arr->capacity : arr->capacity * 2;
-      arr->array = X_ARRAY_REALLOC(arr->array, arr->capacity * arr->elementSize);
-      if (!arr->array)
+      new_capacity = arr->capacity == 0 ? 1 : arr->capacity * 2;
+      new_array = X_ARRAY_REALLOC(arr->array, new_capacity * arr->elementSize);
+      if (new_array == NULL)
       {
         return XARRAY_MEMORY_ALLOCATION_FAILED;
       }
+
+      arr->array = new_array;
+      arr->capacity = new_capacity;
     }
 
     if (data != NULL)
+    {
       memcpy((uint8_t*)arr->array + (arr->size * arr->elementSize), data, arr->elementSize);
+    }
 
     arr->size++;
     return XARRAY_OK;
@@ -260,8 +430,10 @@ extern "C" {
 
   XArrayError x_array_insert(XArray* arr, void* data, unsigned int index)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
+    void* new_array;
+    size_t new_capacity;
+
+    X_ASSERT(arr != NULL);
 
     if (index > arr->size)
     {
@@ -270,38 +442,45 @@ extern "C" {
 
     if (arr->size >= arr->capacity)
     {
-      arr->capacity = arr->capacity == 0 ? 1 : arr->capacity * 2;
-      arr->array = X_ARRAY_REALLOC(arr->array, arr->capacity * arr->elementSize);
-      if (!arr->array)
+      new_capacity = arr->capacity == 0 ? 1 : arr->capacity * 2;
+      new_array = X_ARRAY_REALLOC(arr->array, new_capacity * arr->elementSize);
+      if (new_array == NULL)
       {
         return XARRAY_MEMORY_ALLOCATION_FAILED;
       }
+
+      arr->array = new_array;
+      arr->capacity = new_capacity;
     }
 
     memmove((uint8_t*)arr->array + ((index + 1) * arr->elementSize),
-        (uint8_t*)arr->array + (index * arr->elementSize),
-        (arr->size - index) * arr->elementSize);
-    memcpy((uint8_t*)arr->array + (index * arr->elementSize), data, arr->elementSize);
+      (uint8_t*)arr->array + (index * arr->elementSize),
+      (arr->size - index) * arr->elementSize);
+
+    if (data != NULL)
+    {
+      memcpy((uint8_t*)arr->array + (index * arr->elementSize), data, arr->elementSize);
+    }
+
     arr->size++;
     return XARRAY_OK;
   }
 
-  XPtr x_array_get(XArray* arr, unsigned int index)
+  void* x_array_get(XArray* arr, unsigned int index)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
+    X_ASSERT(arr != NULL);
+
     if (index >= arr->size)
     {
-      return X_PTR_ERR(XARRAY_INDEX_OUT_OF_BOUNDS);
+      return NULL;
     }
 
-    return X_PTR_OK((uint8_t*)arr->array + (index * arr->elementSize));
+    return (uint8_t*)arr->array + (index * arr->elementSize);
   }
 
   void x_array_destroy(XArray* arr)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
+    X_ASSERT(arr != NULL);
 
     X_ARRAY_FREE(arr->array);
     X_ARRAY_FREE(arr);
@@ -309,56 +488,54 @@ extern "C" {
 
   XArrayError x_array_delete_range(XArray* arr, unsigned int start, unsigned int end)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
+    size_t delete_count;
+
+    X_ASSERT(arr != NULL);
 
     if (start >= arr->size || end >= arr->size || start > end)
     {
       return XARRAY_INVALID_RANGE;
     }
 
-    size_t deleteCount = end - start + 1;
+    delete_count = end - start + 1;
+
     memmove(
-        (uint8_t*)arr->array + (start * arr->elementSize),       // Destination
-        (uint8_t*)arr->array + ((end + 1) * arr->elementSize),   // Source
-        (arr->size - end - 1) * arr->elementSize);            // Size
-    arr->size -= deleteCount;
+      (uint8_t*)arr->array + (start * arr->elementSize),
+      (uint8_t*)arr->array + ((end + 1) * arr->elementSize),
+      (arr->size - end - 1) * arr->elementSize);
+
+    arr->size -= delete_count;
     return XARRAY_OK;
   }
 
   void x_array_clear(XArray* arr)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
+    X_ASSERT(arr != NULL);
     arr->size = 0;
   }
 
   uint32_t x_array_count(XArray* arr)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
+    X_ASSERT(arr != NULL);
     return (uint32_t) arr->size;
   }
 
   uint32_t x_array_capacity(XArray* arr)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
+    X_ASSERT(arr != NULL);
     return (uint32_t) arr->capacity;
   }
 
   void x_array_delete_at(XArray* arr, unsigned int index)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
+    X_ASSERT(arr != NULL);
     x_array_delete_range(arr, index, index);
   }
 
-  XPtr x_array_getdata(XArray* arr)
+  void* x_array_data(XArray* arr)
   {
-    X_ASSERT(arr->array != NULL);
-    X_ASSERT(arr->capacity > 0);
-    return X_PTR_OK(arr->array);
+    X_ASSERT(arr != NULL);
+    return arr->array;
   }
 
   void x_array_push(XArray* array, void* value)
@@ -374,10 +551,15 @@ extern "C" {
     }
   }
 
-  XPtr x_array_top(XArray* array)
+  void* x_array_top(XArray* array)
   {
     uint32_t count = x_array_count(array);
-    if (count == 0) return X_PTR_ERR(XARRAY_EMPTY);
+
+    if (count == 0)
+    {
+      return NULL;
+    }
+
     return x_array_get(array, count - 1);
   }
 

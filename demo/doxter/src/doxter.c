@@ -26,6 +26,8 @@
 
 #define INDENTATION "  "
 
+X_HASHTABLE_TYPE_NAMED(XSmallstr, DoxterSymbol, dox_symbol_map)
+
 // --------------------------------------------------------
 // Types
 // --------------------------------------------------------
@@ -523,7 +525,7 @@ static void s_render_index_for_type(DoxterProject *proj,
   const u32 count = first + source->num_symbols;
   for (u32 symbol_i = first; symbol_i < count; symbol_i++)
   {
-    DoxterSymbol *sym = (DoxterSymbol *) x_array_get(proj->symbols, symbol_i).ptr;
+    DoxterSymbol *sym = (DoxterSymbol *) x_array_get(proj->symbols, symbol_i);
 
     if (sym->name.length == 0) continue;
     if (sym->type != type) continue;
@@ -626,7 +628,7 @@ static bool s_symbol_map_get_by_slice(DoxterProject *project, XSlice text, Doxte
   memset(&key, 0, sizeof(key));
   x_smallstr_from_slice(text, &key);
 
-  return x_hashtable_get(project->symbol_map, &key, out_sym);
+  return x_hashtable_dox_symbol_map_get(project->symbol_map, key, out_sym);
 }
 
 static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, const DoxterToken* t, const DoxterSymbol* current_symbol)
@@ -645,7 +647,7 @@ static void s_emit_token_highlighted(DoxterProject* project, XStrBuilder* out, c
 
                          XSmallstr key;
                          x_smallstr_from_slice(t->text, &key);
-                         cls = s_is_c_keyword(t->text) || x_hashtable_has(project->symbol_map, &key) ? "kw" :  "id";
+                         cls = s_is_c_keyword(t->text) || x_hashtable_dox_symbol_map_has(project->symbol_map, key) ? "kw" :  "id";
                          break;
                        }
     case DOXTER_MACRO_DIRECTIVE: cls = "pp"; break;
@@ -818,7 +820,7 @@ static void s_emit_span_tokens(
 
   for (u32 i = 0; i < ts.count; ++i)
   {
-    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, ts.first + i).ptr;
+    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, ts.first + i);
 
     if (current_symbol &&
         current_symbol->type == DOXTER_ENUM &&
@@ -846,7 +848,7 @@ static bool s_params_has_multiple_args(DoxterProject* project, DoxterTokenSpan p
 
   for (u32 i = 0; i < params_ts.count; ++i)
   {
-    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, params_ts.first + i).ptr;
+    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, params_ts.first + i);
 
     if (t->kind == DOXTER_PUNCT && t->text.length == 1)
     {
@@ -878,7 +880,7 @@ static void s_emit_function_params( DoxterProject* project,
 
   for (u32 i = 0; i < params_ts.count; ++i)
   {
-    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, params_ts.first + i).ptr;
+    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, params_ts.first + i);
 
     if (prev && s_join_need_space_simple(prev, t, true /* glue star to ident for params */))
     {
@@ -927,7 +929,7 @@ static void s_emit_decl_function(DoxterProject* project, const DoxterSymbol* sym
   /* Always separate return part and name. This enforces: "char * x_func". */
   x_strbuilder_append_char(out, ' ');
 
-  const DoxterToken* name = (const DoxterToken*)x_array_get(project->tokens, sym->stmt.fn.name_tok).ptr;
+  const DoxterToken* name = (const DoxterToken*)x_array_get(project->tokens, sym->stmt.fn.name_tok);
   s_emit_token_highlighted(project, out, name, sym);
 
   bool multiline = s_params_has_multiple_args(project, sym->stmt.fn.params_ts);
@@ -988,7 +990,7 @@ static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, 
 
   for (u32 i = 0; i < count; ++i)
   {
-    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, first + i).ptr;
+    const DoxterToken* t = (const DoxterToken*)x_array_get(project->tokens, first + i);
 
     /* Ensure last enum item doesn't glue to '}' when there's no trailing comma. */
     if (sym->type == DOXTER_ENUM && brace_depth == 1 &&
@@ -1019,7 +1021,7 @@ static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, 
 
           if ((i + 1) < count)
           {
-            const DoxterToken* n = (const DoxterToken*)x_array_get(project->tokens, first + i + 1).ptr;
+            const DoxterToken* n = (const DoxterToken*)x_array_get(project->tokens, first + i + 1);
             if (n->kind == DOXTER_PUNCT && n->text.length == 1 && n->text.ptr[0] == '}')
             {
               next_is_closing_brace = true;
@@ -1045,7 +1047,7 @@ static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, 
 
         if ((i + 1) < count)
         {
-          const DoxterToken* n = (const DoxterToken*)x_array_get(project->tokens, first + i + 1).ptr;
+          const DoxterToken* n = (const DoxterToken*)x_array_get(project->tokens, first + i + 1);
           if (n->kind == DOXTER_PUNCT && n->text.length == 1 && n->text.ptr[0] == '}')
           {
             next_is_closing_brace = true;
@@ -1066,7 +1068,7 @@ static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, 
 
         if ((i + 1) < count)
         {
-          const DoxterToken* n = (const DoxterToken*)x_array_get(project->tokens, first + i + 1).ptr;
+          const DoxterToken* n = (const DoxterToken*)x_array_get(project->tokens, first + i + 1);
           if (n->kind == DOXTER_PUNCT && n->text.length == 1 && n->text.ptr[0] == '}')
           {
             next_is_closing_brace = true;
@@ -1257,7 +1259,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
       return;
 
     DoxterSymbol* file_comment =
-      (DoxterSymbol*) x_array_get(project->symbols, source->first_symbol_index).ptr;
+      (DoxterSymbol*) x_array_get(project->symbols, source->first_symbol_index);
 
     if (!file_comment)
       return;
@@ -1336,7 +1338,7 @@ static void s_template_resolve_placeholder(const char *placeholder,
     const u32 count = first + source->num_symbols;
     for (u32 symbol_i = first; symbol_i < count; symbol_i++)
     {
-      DoxterSymbol *sym = (DoxterSymbol *) x_array_get(project->symbols, symbol_i).ptr;
+      DoxterSymbol *sym = (DoxterSymbol *) x_array_get(project->symbols, symbol_i);
 
       if (sym->name.length == 0)
         continue;
@@ -1815,7 +1817,7 @@ static DoxterProject* s_doxter_project_create(DoxterCmdLine* args)
   XArena* arena = x_arena_create(arena_size);
   DoxterProject* proj = (DoxterProject*) malloc (sizeof(DoxterProject));
   proj->scratch                                 = arena;
-  proj->symbol_map                              = x_hashtable_create(XSmallstr, DoxterSymbol);
+  proj->symbol_map                              = x_hashtable_dox_symbol_map_create();
   proj->symbols                                 = x_array_create(sizeof(DoxterSymbol), 256);
   proj->tokens                                  = x_array_create(sizeof(DoxterToken), 64);
   proj->source_count                            = 0;
@@ -1951,14 +1953,14 @@ i32 main(i32 argc, char **argv)
 
     for (u32 i_symbol = start; i_symbol < end; i_symbol++)
     {
-      DoxterSymbol* sym = x_array_get(proj->symbols, i_symbol).ptr;
+      DoxterSymbol* sym = x_array_get(proj->symbols, i_symbol);
       x_smallstr_clear(&sym->anchor);
       if (sym->type == DOXTER_FILE)
       {
         x_smallstr_appendf(&sym->anchor, "%s%c", source_info->output_name, 0);
         memset(&key, 0, sizeof(key));
         x_smallstr_from_slice(sym->name, &key);
-        x_hashtable_set(proj->symbol_map, &key, sym);
+        x_hashtable_dox_symbol_map_set(proj->symbol_map, key, *sym);
       }
       else
       {
@@ -1967,7 +1969,7 @@ i32 main(i32 argc, char **argv)
 
         memset(&key, 0, sizeof(key));
         x_smallstr_from_slice(sym->name, &key);
-        x_hashtable_set(proj->symbol_map, &key, sym);
+        x_hashtable_dox_symbol_map_set(proj->symbol_map, key, *sym);
 
       }
     }

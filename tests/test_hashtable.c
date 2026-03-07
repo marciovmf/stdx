@@ -1,4 +1,4 @@
-#include <stdx_common.h>
+#include "stdx_common.h"
 #define X_IMPL_TEST
 #include <stdx_test.h>
 #define X_IMPL_HASHTABLE
@@ -14,7 +14,7 @@
 
 int test_x_hashtable_rehash_ints(void)
 {
-  XHashtable* ht = x_hashtable_create(int32_t, char*);
+  XHashtable* ht = x_hashtable_create_ex(sizeof(int32_t), false, false, sizeof(char*), true, true);
 
   for (int i = 0; i < 100; i++)
   {
@@ -31,7 +31,7 @@ char* out;
 
 int test_x_hashtable_rehash_string(void)
 {
-  XHashtable* ht = x_hashtable_create(char*, char*);
+  XHashtable* ht = x_hashtable_create_ex(sizeof(char*), true, true, sizeof(char*), true, true);
 
   x_hashtable_set(ht, "zip",	 "zip");
   x_hashtable_set(ht, "xul",	  "application/vnd.mozilla.xul+xml");
@@ -125,7 +125,7 @@ int test_x_hashtable_rehash_string(void)
 
 int test_str_key_str_val(void)
 {
-  XHashtable* ht = x_hashtable_create(char*, char*);
+  XHashtable* ht = x_hashtable_create_ex(sizeof(char*), true, true, sizeof(char*), true, true);
 
   const char* k = "foo";
   const char* v = "bar";
@@ -155,7 +155,7 @@ int test_str_key_str_val(void)
 int test_str_key_copy_val(void)
 {
 
-  XHashtable* ht = x_hashtable_create(char*, int32_t);
+  XHashtable* ht = x_hashtable_create_ex(sizeof(char*), true, true, sizeof(int32_t), false, false);
 
   x_hashtable_set(ht, "FIVE",   ref_i(5));
   x_hashtable_set(ht, "SIX",    ref_i(6));
@@ -185,7 +185,7 @@ int test_str_key_copy_val(void)
 
 int test_copy_key_str_val(void)
 {
-  XHashtable* ht = x_hashtable_create(float, char*);
+  XHashtable* ht = x_hashtable_create_ex(sizeof(float), false, false, sizeof(char*), true, true);
 
   x_hashtable_set(ht, ref_f(5.000f), "FIVE");
   x_hashtable_set(ht, ref_f(6.000f), "SIX");
@@ -260,7 +260,7 @@ int test_int_key_struct_value(void)
   } Point;
 
 
-  XHashtable* ht = x_hashtable_create(int, Point);
+  XHashtable* ht = x_hashtable_create_ex(sizeof(int), false, false, sizeof(Point), false, false);
 
   Point p1 = {5.0f, 10.0f};
   x_hashtable_set(ht, ref_i(5), &p1);
@@ -302,12 +302,116 @@ int test_pointers_as_keys(void)
   // pointer to this funciton
   int (*this_func)(void) = test_pointers_as_keys;
 
-  XHashtable* ht = x_hashtable_create(int*, char*);
+  XHashtable* ht = x_hashtable_create_ex(sizeof(int*), false, true, sizeof(char*), true, true);
   ASSERT_TRUE(x_hashtable_set(ht, (const void*) this_func, "Hello, World!"));
   ASSERT_TRUE(x_hashtable_set(ht, (const void*) this_func, "test_pointers_as_keys()"));
   char* out;
   ASSERT_TRUE(x_hashtable_get(ht, (const void*) test_pointers_as_keys, &out));
   ASSERT_TRUE(strcmp(out, "test_pointers_as_keys()") == 0);
+  return 0;
+}
+
+
+typedef struct TestHashPoint
+{
+  float x;
+  float y;
+} TestHashPoint;
+
+X_HASHTABLE_TYPE(int32_t, float)
+X_HASHTABLE_TYPE_CSTR_KEY_NAMED(int32_t, cstr_i32)
+X_HASHTABLE_TYPE_NAMED(int32_t, TestHashPoint, i32_testhashpoint)
+
+int test_typed_hashtable_int32_float(void)
+{
+  XHashtable_int32_t_float* ht = x_hashtable_int32_t_float_create();
+  ASSERT_TRUE(ht != NULL);
+
+  ASSERT_TRUE(x_hashtable_int32_t_float_set(ht, 10, 1.5f));
+  ASSERT_TRUE(x_hashtable_int32_t_float_set(ht, 20, 2.5f));
+  ASSERT_TRUE(x_hashtable_int32_t_float_set(ht, 20, 3.5f));
+
+  ASSERT_TRUE(x_hashtable_int32_t_float_count(ht) == 2);
+
+  {
+    float out = 0.0f;
+    ASSERT_TRUE(x_hashtable_int32_t_float_get(ht, 10, &out));
+    ASSERT_TRUE(out == 1.5f);
+    ASSERT_TRUE(x_hashtable_int32_t_float_get(ht, 20, &out));
+    ASSERT_TRUE(out == 3.5f);
+    ASSERT_FALSE(x_hashtable_int32_t_float_get(ht, 99, &out));
+  }
+
+  ASSERT_TRUE(x_hashtable_int32_t_float_has(ht, 10));
+  ASSERT_FALSE(x_hashtable_int32_t_float_has(ht, 99));
+
+  ASSERT_TRUE(x_hashtable_int32_t_float_remove(ht, 10));
+  ASSERT_FALSE(x_hashtable_int32_t_float_has(ht, 10));
+  ASSERT_TRUE(x_hashtable_int32_t_float_count(ht) == 1);
+
+  x_hashtable_int32_t_float_destroy(ht);
+  return 0;
+}
+
+int test_typed_hashtable_cstr_i32(void)
+{
+  XHashtable_cstr_i32* ht = x_hashtable_cstr_i32_create();
+  ASSERT_TRUE(ht != NULL);
+
+  ASSERT_TRUE(x_hashtable_cstr_i32_set(ht, "ONE", 1));
+  ASSERT_TRUE(x_hashtable_cstr_i32_set(ht, "TWO", 2));
+  ASSERT_TRUE(x_hashtable_cstr_i32_set(ht, "THREE", 3));
+
+  ASSERT_TRUE(x_hashtable_cstr_i32_count(ht) == 3);
+  ASSERT_TRUE(x_hashtable_cstr_i32_has(ht, "TWO"));
+  ASSERT_FALSE(x_hashtable_cstr_i32_has(ht, "FOUR"));
+
+  {
+    int32_t out = 0;
+    ASSERT_TRUE(x_hashtable_cstr_i32_get(ht, "ONE", &out));
+    ASSERT_TRUE(out == 1);
+    ASSERT_TRUE(x_hashtable_cstr_i32_get(ht, "THREE", &out));
+    ASSERT_TRUE(out == 3);
+  }
+
+  ASSERT_TRUE(x_hashtable_cstr_i32_remove(ht, "TWO"));
+  ASSERT_FALSE(x_hashtable_cstr_i32_has(ht, "TWO"));
+  ASSERT_TRUE(x_hashtable_cstr_i32_count(ht) == 2);
+
+  x_hashtable_cstr_i32_destroy(ht);
+  return 0;
+}
+
+int test_typed_hashtable_i32_struct(void)
+{
+  XHashtable_i32_testhashpoint* ht = x_hashtable_i32_testhashpoint_create();
+  ASSERT_TRUE(ht != NULL);
+
+  {
+    TestHashPoint p = { 1.0f, 2.0f };
+    ASSERT_TRUE(x_hashtable_i32_testhashpoint_set(ht, 11, p));
+  }
+
+  {
+    TestHashPoint p = { 3.0f, 4.0f };
+    ASSERT_TRUE(x_hashtable_i32_testhashpoint_set(ht, 22, p));
+  }
+
+  {
+    TestHashPoint out = { 0 };
+    ASSERT_TRUE(x_hashtable_i32_testhashpoint_get(ht, 11, &out));
+    ASSERT_TRUE(out.x == 1.0f);
+    ASSERT_TRUE(out.y == 2.0f);
+
+    ASSERT_TRUE(x_hashtable_i32_testhashpoint_get(ht, 22, &out));
+    ASSERT_TRUE(out.x == 3.0f);
+    ASSERT_TRUE(out.y == 4.0f);
+  }
+
+  ASSERT_TRUE(x_hashtable_i32_testhashpoint_remove(ht, 11));
+  ASSERT_FALSE(x_hashtable_i32_testhashpoint_has(ht, 11));
+
+  x_hashtable_i32_testhashpoint_destroy(ht);
   return 0;
 }
 
@@ -322,7 +426,10 @@ int main()
     X_TEST(test_copy_key_copy_val),
     X_TEST(test_int_key_struct_value),
     X_TEST(test_x_hashtable_rehash_string),
-    X_TEST(test_x_hashtable_rehash_ints)
+    X_TEST(test_x_hashtable_rehash_ints),
+    X_TEST(test_typed_hashtable_int32_float),
+    X_TEST(test_typed_hashtable_cstr_i32),
+    X_TEST(test_typed_hashtable_i32_struct)
   };
 
   return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));

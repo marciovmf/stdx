@@ -1,26 +1,86 @@
 /**
- * STDX - Generic Hashtable
- * Part of the STDX General Purpose C Library by marciovmf
- * License: MIT
- * <https://github.com/marciovmf/stdx>
+ * STDX - Generic Hashtable 
+ * Part of the STDX General Purpose C Library by marciovmf 
+ * License: MIT 
+ * <https://github.com/marciovmf/stdx> 
  *
  * ## Overview
  *
- *  Provides a generic, type-agnostic hashtable implementation with 
- *  customizable hash and equality functions. Supports arbitrary key 
- *  and value types, optional custom allocators, and built-in iteration.
- *  Includes helpers for common cases like string keys.
+ * Provides a generic, type-agnostic hashtable implementation with
+ * customizable hash and equality functions. Supports arbitrary key 
+ * and value types, optional custom allocators, and built-in iteration. 
+ * Includes helpers for common cases like string keys. 
+ * 
+ * ## How to compile 
+ * 
+ * To compile the implementation define X_IMPL_HASHTABLE 
+ * in **one** source file before including this header. 
+ * 
+ * To customize how this module allocates memory, define 
+ * X_HASHTABLE_ALLOC / X_HASHTABLE_REALLOC / X_HASHTABLE_FREE before including.
  *
- * ## How to compile
+ * ## Typed usage (recommended)
  *
- * To compile the implementation define `X_IMPL_HASHTABLE`
- * in **one** source file before including this header.
+ * The hashtable core operates on `void*` and explicit key/value sizes.
+ * For convenience, this header also provides macros that generate
+ * type-safe wrappers on top of the generic API.
  *
- * To customize how this module allocates memory, define
- * `X_HASHTABLE_ALLOC` / `X_HASHTABLE_REALLOC` / `X_HASHTABLE_FREE` before including.
+ * These macros create:
  *
- * ## Dependencies:
- * - stdx_arena.h
+ * - a typed alias for `XHashtable`
+ * - typed wrapper functions (`create`, `set`, `get`, `has`, `remove`, `count`)
+ *
+ * This removes the need for manual casts and makes the API easier to use.
+ *
+ * ### Example
+ *
+ * ```
+ * X_HASHTABLE_TYPE(int32_t, float)
+ * XHashtable_int32_t_float* ht = x_hashtable_int32_t_float_create();
+ * x_hashtable_int32_t_float_set(ht, 10, 2.5f);
+ * float value;
+ * if (x_hashtable_int32_t_float_get(ht, 10, &value))
+ * {
+ *     printf("value = %f\n", value);
+ * }
+ * ```
+ *
+ * ### Named variants
+ *
+ * If the key or value type is not a valid identifier (for example
+ * `char*`, `unsigned int`, or complex types), use the named version:
+ *
+ * ```
+ * X_HASHTABLE_TYPE_NAMED(char*, int32_t, cstr_i32)
+ * XHashtable_cstr_i32* ht = x_hashtable_cstr_i32_create();
+ * ```
+ *
+ * ### Specialized macros
+ *
+ * Some key/value combinations require explicit semantics. The following
+ * helpers are provided:
+ *
+ * - `X_HASHTABLE_TYPE_PTR_KEY_NAMED`
+ * - `X_HASHTABLE_TYPE_CSTR_KEY_NAMED`
+ * - `X_HASHTABLE_TYPE_PTR_VALUE_NAMED`
+ * - `X_HASHTABLE_TYPE_PTR_KEY_PTR_VALUE_NAMED`
+ * - `X_HASHTABLE_TYPE_CSTR_KEY_PTR_VALUE_NAMED`
+ *
+ * These macros declare the correct ownership and comparison behavior
+ * for pointer keys, string keys, or pointer values.
+ *
+ * ### Example with string keys
+ *
+ * ```
+ * X_HASHTABLE_TYPE_CSTR_KEY_NAMED(int32_t, cstr_i32)
+ * XHashtable_cstr_i32* ht = x_hashtable_cstr_i32_create();
+ * x_hashtable_cstr_i32_set(ht, "ONE", 1);
+ * x_hashtable_cstr_i32_set(ht, "TWO", 2);
+ * ```
+ *
+ * Internally these wrappers call the generic API, so there is no
+ * additional runtime overhead.
+ *
  */
 
 #ifndef X_HASHTABLE_H
@@ -54,8 +114,6 @@ extern "C" {
 
   typedef struct
   {
-    void* key;
-    void* value;
     enum XEntryState
     {
       X_HASH_ENTRY_FREE,
@@ -70,16 +128,16 @@ extern "C" {
     size_t value_size;
     size_t count;
     size_t capacity;
-    XHashEntry* entries;    // parallel to keys and values
-    void* keys;             // array of keys (capacity * key_size)
-    void* values;           // array of values (capacity * value_size)
+    XHashEntry* entries;    /* parallel to keys and values */
+    void* keys;             /* array of keys (capacity * key_size) */
+    void* values;           /* array of values (capacity * value_size) */
 
     bool key_is_pointer;
     bool value_is_pointer;
     bool key_is_null_terminated;
     bool value_is_null_terminated;
 
-    // callbacks
+    /* callbacks */
     XHashFnHash       fn_key_hash;
     XHashFnCompare    fn_key_compare;
     XHashFnClone      fn_key_copy;
@@ -91,26 +149,11 @@ extern "C" {
   typedef struct
   {
     XHashtable* table;
-    size_t index;      // current occupied slot, or table->capacity when finished
+    size_t index;      /* current occupied slot, or table->capacity when finished */
   } XHashtableIter;
 
-
-#define X_STR(s) #s
-#define X_TOSTR(s) X_STR(s)
-#define X_TYPE_NAME(t) X_TOSTR(t)
-
   /**
-   * @brief Create a hashtable with key/value type inference using compile-time type name strings.
-   * @param tk Key type (passed as a type token, e.g. int, XSmallstr, char*).
-   * @param tv Value type (passed as a type token, e.g. Foo, Bar*, char*).
-   * @return Pointer to a newly created hashtable, or NULL on failure.
-   */
-#define x_hashtable_create(tk, tv) x_hashtable_create_(  \
-    sizeof(tk), strcmp( X_TYPE_NAME(tk), "char*") == 0, strchr(X_TYPE_NAME(tk), '*') != 0, \
-    sizeof(tv), strcmp( X_TYPE_NAME(tv), "char*") == 0, strchr(X_TYPE_NAME(tv), '*') != 0)
-
-  /**
-   * @brief Create a hashtable using raw size and string/pointer traits for keys and values.
+   * @brief Create a hashtable using raw size and explicit string/pointer traits for keys and values.
    * @param key_size Size in bytes of the key type.
    * @param key_null_terminated True if the key is a NUL-terminated string (C string).
    * @param key_is_pointer True if the key is stored as a pointer value.
@@ -119,8 +162,13 @@ extern "C" {
    * @param value_is_pointer True if the value is stored as a pointer value.
    * @return Pointer to a newly created hashtable, or NULL on failure.
    */
-  static XHashtable* x_hashtable_create_(size_t key_size, bool key_null_terminated, bool key_is_pointer,
-      size_t value_size, bool value_null_terminated, bool value_is_pointer);
+  X_HASHTABLE_API XHashtable* x_hashtable_create_ex(
+      size_t key_size,
+      bool key_null_terminated,
+      bool key_is_pointer,
+      size_t value_size,
+      bool value_null_terminated,
+      bool value_is_pointer);
 
   /**
    * @brief Create a fully-configurable hashtable with custom hashing, comparison, cloning, and destruction.
@@ -268,6 +316,194 @@ extern "C" {
    */
   X_HASHTABLE_API size_t x_hashtable_iter_slot(const XHashtableIter* it);
 
+#define X_HASHTABLE_TYPE(tk, tv) X_HASHTABLE_TYPE_NAMED(tk, tv, tk##_##tv)
+
+#define X_HASHTABLE_TYPE_NAMED(tk, tv, suffix) \
+  typedef XHashtable XHashtable_##suffix; \
+  static inline XHashtable_##suffix* x_hashtable_##suffix##_create(void) \
+  { \
+    return (XHashtable_##suffix*)x_hashtable_create_ex(sizeof(tk), false, false, sizeof(tv), false, false); \
+  } \
+  static inline bool x_hashtable_##suffix##_set(XHashtable_##suffix* table, tk key, tv value) \
+  { \
+    return x_hashtable_set((XHashtable*)table, &key, &value); \
+  } \
+  static inline bool x_hashtable_##suffix##_get(XHashtable_##suffix* table, tk key, tv* out_value) \
+  { \
+    return x_hashtable_get((XHashtable*)table, &key, out_value); \
+  } \
+  static inline bool x_hashtable_##suffix##_has(XHashtable_##suffix* table, tk key) \
+  { \
+    return x_hashtable_has((XHashtable*)table, &key); \
+  } \
+  static inline bool x_hashtable_##suffix##_remove(XHashtable_##suffix* table, tk key) \
+  { \
+    return x_hashtable_remove((XHashtable*)table, &key); \
+  } \
+  static inline void x_hashtable_##suffix##_destroy(XHashtable_##suffix* table) \
+  { \
+    x_hashtable_destroy((XHashtable*)table); \
+  } \
+  static inline size_t x_hashtable_##suffix##_count(const XHashtable_##suffix* table) \
+  { \
+    return x_hashtable_count((const XHashtable*)table); \
+  }
+
+#define X_HASHTABLE_TYPE_PTR_KEY_NAMED(tk, tv, suffix) \
+  typedef XHashtable XHashtable_##suffix; \
+  static inline XHashtable_##suffix* x_hashtable_##suffix##_create(void) \
+  { \
+    return (XHashtable_##suffix*)x_hashtable_create_ex(sizeof(tk), false, true, sizeof(tv), false, false); \
+  } \
+  static inline bool x_hashtable_##suffix##_set(XHashtable_##suffix* table, tk key, tv value) \
+  { \
+    return x_hashtable_set((XHashtable*)table, key, &value); \
+  } \
+  static inline bool x_hashtable_##suffix##_get(XHashtable_##suffix* table, tk key, tv* out_value) \
+  { \
+    return x_hashtable_get((XHashtable*)table, key, out_value); \
+  } \
+  static inline bool x_hashtable_##suffix##_has(XHashtable_##suffix* table, tk key) \
+  { \
+    return x_hashtable_has((XHashtable*)table, key); \
+  } \
+  static inline bool x_hashtable_##suffix##_remove(XHashtable_##suffix* table, tk key) \
+  { \
+    return x_hashtable_remove((XHashtable*)table, key); \
+  } \
+  static inline void x_hashtable_##suffix##_destroy(XHashtable_##suffix* table) \
+  { \
+    x_hashtable_destroy((XHashtable*)table); \
+  } \
+  static inline size_t x_hashtable_##suffix##_count(const XHashtable_##suffix* table) \
+  { \
+    return x_hashtable_count((const XHashtable*)table); \
+  }
+
+#define X_HASHTABLE_TYPE_CSTR_KEY_NAMED(tv, suffix) \
+  typedef XHashtable XHashtable_##suffix; \
+  static inline XHashtable_##suffix* x_hashtable_##suffix##_create(void) \
+  { \
+    return (XHashtable_##suffix*)x_hashtable_create_ex(sizeof(char*), true, true, sizeof(tv), false, false); \
+  } \
+  static inline bool x_hashtable_##suffix##_set(XHashtable_##suffix* table, const char* key, tv value) \
+  { \
+    return x_hashtable_set((XHashtable*)table, key, &value); \
+  } \
+  static inline bool x_hashtable_##suffix##_get(XHashtable_##suffix* table, const char* key, tv* out_value) \
+  { \
+    return x_hashtable_get((XHashtable*)table, key, out_value); \
+  } \
+  static inline bool x_hashtable_##suffix##_has(XHashtable_##suffix* table, const char* key) \
+  { \
+    return x_hashtable_has((XHashtable*)table, key); \
+  } \
+  static inline bool x_hashtable_##suffix##_remove(XHashtable_##suffix* table, const char* key) \
+  { \
+    return x_hashtable_remove((XHashtable*)table, key); \
+  } \
+  static inline void x_hashtable_##suffix##_destroy(XHashtable_##suffix* table) \
+  { \
+    x_hashtable_destroy((XHashtable*)table); \
+  } \
+  static inline size_t x_hashtable_##suffix##_count(const XHashtable_##suffix* table) \
+  { \
+    return x_hashtable_count((const XHashtable*)table); \
+  }
+
+#define X_HASHTABLE_TYPE_PTR_VALUE_NAMED(tk, tv, suffix) \
+  typedef XHashtable XHashtable_##suffix; \
+  static inline XHashtable_##suffix* x_hashtable_##suffix##_create(void) \
+  { \
+    return (XHashtable_##suffix*)x_hashtable_create_ex(sizeof(tk), false, false, sizeof(tv), false, true); \
+  } \
+  static inline bool x_hashtable_##suffix##_set(XHashtable_##suffix* table, tk key, tv value) \
+  { \
+    return x_hashtable_set((XHashtable*)table, &key, value); \
+  } \
+  static inline bool x_hashtable_##suffix##_get(XHashtable_##suffix* table, tk key, tv* out_value) \
+  { \
+    return x_hashtable_get((XHashtable*)table, &key, out_value); \
+  } \
+  static inline bool x_hashtable_##suffix##_has(XHashtable_##suffix* table, tk key) \
+  { \
+    return x_hashtable_has((XHashtable*)table, &key); \
+  } \
+  static inline bool x_hashtable_##suffix##_remove(XHashtable_##suffix* table, tk key) \
+  { \
+    return x_hashtable_remove((XHashtable*)table, &key); \
+  } \
+  static inline void x_hashtable_##suffix##_destroy(XHashtable_##suffix* table) \
+  { \
+    x_hashtable_destroy((XHashtable*)table); \
+  } \
+  static inline size_t x_hashtable_##suffix##_count(const XHashtable_##suffix* table) \
+  { \
+    return x_hashtable_count((const XHashtable*)table); \
+  }
+
+#define X_HASHTABLE_TYPE_PTR_KEY_PTR_VALUE_NAMED(tk, tv, suffix) \
+  typedef XHashtable XHashtable_##suffix; \
+  static inline XHashtable_##suffix* x_hashtable_##suffix##_create(void) \
+  { \
+    return (XHashtable_##suffix*)x_hashtable_create_ex(sizeof(tk), false, true, sizeof(tv), false, true); \
+  } \
+  static inline bool x_hashtable_##suffix##_set(XHashtable_##suffix* table, tk key, tv value) \
+  { \
+    return x_hashtable_set((XHashtable*)table, key, value); \
+  } \
+  static inline bool x_hashtable_##suffix##_get(XHashtable_##suffix* table, tk key, tv* out_value) \
+  { \
+    return x_hashtable_get((XHashtable*)table, key, out_value); \
+  } \
+  static inline bool x_hashtable_##suffix##_has(XHashtable_##suffix* table, tk key) \
+  { \
+    return x_hashtable_has((XHashtable*)table, key); \
+  } \
+  static inline bool x_hashtable_##suffix##_remove(XHashtable_##suffix* table, tk key) \
+  { \
+    return x_hashtable_remove((XHashtable*)table, key); \
+  } \
+  static inline void x_hashtable_##suffix##_destroy(XHashtable_##suffix* table) \
+  { \
+    x_hashtable_destroy((XHashtable*)table); \
+  } \
+  static inline size_t x_hashtable_##suffix##_count(const XHashtable_##suffix* table) \
+  { \
+    return x_hashtable_count((const XHashtable*)table); \
+  }
+
+#define X_HASHTABLE_TYPE_CSTR_KEY_PTR_VALUE_NAMED(tv, suffix) \
+  typedef XHashtable XHashtable_##suffix; \
+  static inline XHashtable_##suffix* x_hashtable_##suffix##_create(void) \
+  { \
+    return (XHashtable_##suffix*)x_hashtable_create_ex(sizeof(char*), true, true, sizeof(tv), false, true); \
+  } \
+  static inline bool x_hashtable_##suffix##_set(XHashtable_##suffix* table, const char* key, tv value) \
+  { \
+    return x_hashtable_set((XHashtable*)table, key, value); \
+  } \
+  static inline bool x_hashtable_##suffix##_get(XHashtable_##suffix* table, const char* key, tv* out_value) \
+  { \
+    return x_hashtable_get((XHashtable*)table, key, out_value); \
+  } \
+  static inline bool x_hashtable_##suffix##_has(XHashtable_##suffix* table, const char* key) \
+  { \
+    return x_hashtable_has((XHashtable*)table, key); \
+  } \
+  static inline bool x_hashtable_##suffix##_remove(XHashtable_##suffix* table, const char* key) \
+  { \
+    return x_hashtable_remove((XHashtable*)table, key); \
+  } \
+  static inline void x_hashtable_##suffix##_destroy(XHashtable_##suffix* table) \
+  { \
+    x_hashtable_destroy((XHashtable*)table); \
+  } \
+  static inline size_t x_hashtable_##suffix##_count(const XHashtable_##suffix* table) \
+  { \
+    return x_hashtable_count((const XHashtable*)table); \
+  }
+
 #ifdef __cplusplus
 }
 #endif
@@ -290,6 +526,17 @@ extern "C" {
 #define X_HASHTABLE_ALLOC(sz)        malloc(sz)
 #endif
 
+#ifndef X_HASHTABLE_CALLOC
+/**
+ * @brief Internal macro for allocating zero-initialized memory.
+ * To override how this header allocates zero-initialized memory, define this macro with a
+ * different implementation before including this header.
+ * @param n  The number of elements to alloc.
+ * @param sz The size of each element.
+ */
+#define X_HASHTABLE_CALLOC(n,sz)     calloc((n),(sz))
+#endif
+
 #ifndef X_HASHTABLE_FREE
 /**
  * @brief Internal macro for freeing memory.
@@ -304,7 +551,6 @@ extern "C" {
 extern "C" {
 #endif
 
-  // Helpers for pointer arithmetic on keys/values arrays
   X_HASHTABLE_API static inline void* key_at(XHashtable* t, size_t i)
   {
     return (char*)t->keys + i * t->key_size;
@@ -317,19 +563,24 @@ extern "C" {
 
   X_HASHTABLE_API size_t x_hashtable_hash_bytes(const void* key, size_t size)
   {
-    // djb2 hash
     const unsigned char* data = (const unsigned char*)key;
     size_t hash = 5381;
-    for (size_t i = 0; i < size; i++)
-      hash = ((hash << 5) + hash) + data[i];  // hash * 33 + data[i]
+    size_t i;
+    for (i = 0; i < size; i++)
+    {
+      hash = ((hash << 5) + hash) + data[i];
+    }
     return hash;
   }
 
   X_HASHTABLE_API size_t x_hashtable_hash_cstr(const void* key, size_t _)
   {
+    const char* str;
+    size_t len;
+
     X_UNUSED(_);
-    const char* str = (const char*)key;
-    size_t len = strlen(str);
+    str = (const char*)key;
+    len = strlen(str);
     return x_hashtable_hash_bytes(str, len);
   }
 
@@ -356,10 +607,9 @@ extern "C" {
     *(char**)dest = mem;
   }
 
-  // Forward declarations
   X_HASHTABLE_API static bool x_hashtable_resize(XHashtable* table, size_t new_capacity);
 
-  X_HASHTABLE_API static XHashtable* x_hashtable_create_(size_t key_size, bool key_null_terminated, bool key_is_pointer,
+  X_HASHTABLE_API XHashtable* x_hashtable_create_ex(size_t key_size, bool key_null_terminated, bool key_is_pointer,
       size_t value_size, bool value_null_terminated, bool value_is_pointer)
   {
     XHashtable* ht = x_hashtable_create_full(
@@ -371,6 +621,11 @@ extern "C" {
         key_null_terminated   ? x_hashtable_free_cstr     : NULL,
         value_null_terminated ? x_hashtable_clone_cstr    : NULL,
         value_null_terminated ? x_hashtable_free_cstr     : NULL);
+
+    if (!ht)
+    {
+      return NULL;
+    }
 
     ht->key_is_pointer = key_is_pointer;
     ht->key_is_null_terminated = key_null_terminated;
@@ -391,10 +646,14 @@ extern "C" {
       )
   {
     XHashtable* table = (XHashtable*)X_HASHTABLE_ALLOC(sizeof(XHashtable));
-    if (!table) return NULL;
-
     size_t capacity = X_HASHTABLE_INITIAL_CAPACITY;
-    table->entries = (XHashEntry*)calloc(capacity, sizeof(XHashEntry));
+
+    if (!table)
+    {
+      return NULL;
+    }
+
+    table->entries = (XHashEntry*)X_HASHTABLE_CALLOC(capacity, sizeof(XHashEntry));
     table->keys = X_HASHTABLE_ALLOC(key_size * capacity);
     table->values = X_HASHTABLE_ALLOC(value_size * capacity);
 
@@ -411,6 +670,10 @@ extern "C" {
     table->value_size = value_size;
     table->count = 0;
     table->capacity = capacity;
+    table->key_is_pointer = false;
+    table->value_is_pointer = false;
+    table->key_is_null_terminated = false;
+    table->value_is_null_terminated = false;
 
     table->fn_key_hash = fn_key_hash;
     table->fn_key_compare = fn_key_compare;
@@ -419,7 +682,6 @@ extern "C" {
     table->fn_value_copy = fn_value_copy;
     table->fn_value_free = fn_value_free;
 
-    // all entries are free by calloc
     return table;
   }
 
@@ -428,10 +690,10 @@ extern "C" {
     size_t capacity = table->capacity;
     size_t hash = table->fn_key_hash(key, table->key_size);
     size_t index = hash % capacity;
-
     size_t first_deleted = (size_t)-1;
+    size_t i;
 
-    for (size_t i = 0; i < capacity; i++)
+    for (i = 0; i < capacity; i++)
     {
       size_t idx = (index + i) % capacity;
       XHashEntry* entry = &table->entries[idx];
@@ -439,9 +701,13 @@ extern "C" {
       if (entry->state == X_HASH_ENTRY_FREE)
       {
         if (first_deleted != (size_t)-1)
+        {
           *out_index_found = first_deleted;
+        }
         else
+        {
           *out_index_found = idx;
+        }
 
         *found = false;
         return idx;
@@ -449,7 +715,9 @@ extern "C" {
       else if (entry->state == X_HASH_ENTRY_DELETED)
       {
         if (first_deleted == (size_t)-1)
+        {
           first_deleted = idx;
+        }
       }
       else if (entry->state == X_HASH_ENTRY_OCCUPIED)
       {
@@ -467,7 +735,6 @@ extern "C" {
       }
     }
 
-    // table full but should never happen if resized properly
     *out_index_found = (size_t)-1;
     *found = false;
     return (size_t)-1;
@@ -475,55 +742,74 @@ extern "C" {
 
   X_HASHTABLE_API bool x_hashtable_set(XHashtable* table, const void* key, const void* value)
   {
-    if (!table || !key) return false;
+    size_t idx;
+    bool found;
+    XHashEntry* entry;
 
-    // resize if load factor exceeded
+    if (!table || !key)
+    {
+      return false;
+    }
+
     if ((double)(table->count + 1) / table->capacity > X_HASHTABLE_LOAD_FACTOR)
     {
       if (!x_hashtable_resize(table, table->capacity * 2))
+      {
         return false;
+      }
     }
-
-    size_t idx;
-    bool found;
 
     probe_index(table,
         (table->key_is_pointer && !table->key_is_null_terminated) ? &key : key,
         &idx, &found);
     if (idx == (size_t)-1)
-      return false; // table full
+    {
+      return false;
+    }
 
-    XHashEntry* entry = &table->entries[idx];
+    entry = &table->entries[idx];
 
     if (found)
     {
-      // Replace existing value
       void* value_ptr = value_at(table, idx);
       if (table->fn_value_free)
+      {
         table->fn_value_free(value_ptr);
+      }
       if (table->fn_value_copy)
+      {
         table->fn_value_copy(value_ptr, value);
+      }
       else
+      {
         memcpy(value_ptr,
             (table->value_is_pointer && !table->value_is_null_terminated) ? &value : value,
             table->value_size);
+      }
     }
     else
     {
-      // Insert new entry
       if (table->fn_key_copy)
+      {
         table->fn_key_copy(key_at(table, idx), key);
+      }
       else
-        memcpy(key_at(table, idx), 
+      {
+        memcpy(key_at(table, idx),
             (table->key_is_pointer && !table->key_is_null_terminated) ? &key : key,
             table->key_size);
+      }
 
       if (table->fn_value_copy)
+      {
         table->fn_value_copy(value_at(table, idx), value);
+      }
       else
+      {
         memcpy(value_at(table, idx),
             (table->value_is_pointer && !table->value_is_null_terminated) ? &value : value,
             table->value_size);
+      }
 
       entry->state = X_HASH_ENTRY_OCCUPIED;
       table->count++;
@@ -534,10 +820,14 @@ extern "C" {
 
   X_HASHTABLE_API bool x_hashtable_get(XHashtable* table, const void* key, void* out_value)
   {
-    if (!table || !key || !out_value) return false;
-
     size_t idx;
     bool found;
+
+    if (!table || !key || !out_value)
+    {
+      return false;
+    }
+
     probe_index(table,
         (table->key_is_pointer && !table->key_is_null_terminated) ? &key : key,
         &idx, &found);
@@ -545,7 +835,6 @@ extern "C" {
     if (found)
     {
       void* value_ptr = value_at(table, idx);
-      //memcpy(out_value, value_ptr, table->value_size);
       memcpy(out_value,
           (table->value_is_pointer && !table->value_is_null_terminated) ? &value_ptr : value_ptr,
           table->value_size);
@@ -556,31 +845,53 @@ extern "C" {
 
   X_HASHTABLE_API bool x_hashtable_has(XHashtable* table, const void* key)
   {
-    if (!table || !key) return false;
-
     size_t idx;
     bool found;
-    probe_index(table, key, &idx, &found);
+
+    if (!table || !key)
+    {
+      return false;
+    }
+
+    probe_index(table,
+        (table->key_is_pointer && !table->key_is_null_terminated) ? &key : key,
+        &idx, &found);
     return found;
   }
 
   X_HASHTABLE_API bool x_hashtable_remove(XHashtable* table, const void* key)
   {
-    if (!table || !key) return false;
-
     size_t idx;
     bool found;
-    probe_index(table, key, &idx, &found);
-    if (!found) return false;
+    XHashEntry* entry;
+    void* key_ptr;
+    void* value_ptr;
 
-    XHashEntry* entry = &table->entries[idx];
-    void* key_ptr = key_at(table, idx);
-    void* value_ptr = value_at(table, idx);
+    if (!table || !key)
+    {
+      return false;
+    }
+
+    probe_index(table,
+        (table->key_is_pointer && !table->key_is_null_terminated) ? &key : key,
+        &idx, &found);
+    if (!found)
+    {
+      return false;
+    }
+
+    entry = &table->entries[idx];
+    key_ptr = key_at(table, idx);
+    value_ptr = value_at(table, idx);
 
     if (table->fn_key_free)
+    {
       table->fn_key_free(key_ptr);
+    }
     if (table->fn_value_free)
+    {
       table->fn_value_free(value_ptr);
+    }
 
     entry->state = X_HASH_ENTRY_DELETED;
     table->count--;
@@ -589,10 +900,14 @@ extern "C" {
 
   X_HASHTABLE_API void x_hashtable_destroy(XHashtable* table)
   {
-    if (!table) return;
+    size_t i;
 
-    // free keys and values if needed
-    for (size_t i = 0; i < table->capacity; i++)
+    if (!table)
+    {
+      return;
+    }
+
+    for (i = 0; i < table->capacity; i++)
     {
       if (table->entries[i].state == X_HASH_ENTRY_OCCUPIED)
       {
@@ -600,9 +915,13 @@ extern "C" {
         void* value_ptr = value_at(table, i);
 
         if (table->fn_key_free)
+        {
           table->fn_key_free(key_ptr);
+        }
         if (table->fn_value_free)
+        {
           table->fn_value_free(value_ptr);
+        }
       }
     }
 
@@ -619,11 +938,23 @@ extern "C" {
 
   X_HASHTABLE_API static bool x_hashtable_resize(XHashtable* table, size_t new_capacity)
   {
-    if (!table || new_capacity <= table->capacity) return false;
+    XHashEntry* new_entries;
+    void* new_keys;
+    void* new_values;
+    XHashEntry* old_entries;
+    void* old_keys;
+    void* old_values;
+    size_t old_capacity;
+    size_t i;
 
-    XHashEntry* new_entries = (XHashEntry*)calloc(new_capacity, sizeof(XHashEntry));
-    void* new_keys = X_HASHTABLE_ALLOC(table->key_size * new_capacity);
-    void* new_values = X_HASHTABLE_ALLOC(table->value_size * new_capacity);
+    if (!table || new_capacity <= table->capacity)
+    {
+      return false;
+    }
+
+    new_entries = (XHashEntry*)X_HASHTABLE_CALLOC(new_capacity, sizeof(XHashEntry));
+    new_keys = X_HASHTABLE_ALLOC(table->key_size * new_capacity);
+    new_values = X_HASHTABLE_ALLOC(table->value_size * new_capacity);
 
     if (!new_entries || !new_keys || !new_values)
     {
@@ -633,11 +964,10 @@ extern "C" {
       return false;
     }
 
-    // Save old arrays
-    XHashEntry* old_entries = table->entries;
-    void* old_keys = table->keys;
-    void* old_values = table->values;
-    size_t old_capacity = table->capacity;
+    old_entries = table->entries;
+    old_keys = table->keys;
+    old_values = table->values;
+    old_capacity = table->capacity;
 
     table->entries = new_entries;
     table->keys = new_keys;
@@ -645,8 +975,7 @@ extern "C" {
     table->capacity = new_capacity;
     table->count = 0;
 
-    // Rehash all old entries
-    for (size_t i = 0; i < old_capacity; i++)
+    for (i = 0; i < old_capacity; i++)
     {
       if (old_entries[i].state == X_HASH_ENTRY_OCCUPIED)
       {
@@ -654,14 +983,17 @@ extern "C" {
         void* value_ptr = (char*)old_values + i * table->value_size;
 
         x_hashtable_set(table,
-            table->key_is_null_terminated ? *(void**)key_ptr : key_ptr, 
-            table->value_is_null_terminated ? *(void**)value_ptr : value_ptr);
+            table->key_is_null_terminated ? *(void**)key_ptr : (table->key_is_pointer ? *(void**)key_ptr : key_ptr),
+            table->value_is_null_terminated ? *(void**)value_ptr : (table->value_is_pointer ? *(void**)value_ptr : value_ptr));
 
-        // Free old keys and values if user callbacks exist
         if (table->fn_key_free)
+        {
           table->fn_key_free(key_ptr);
+        }
         if (table->fn_value_free)
+        {
           table->fn_value_free(value_ptr);
+        }
       }
     }
 
@@ -677,7 +1009,9 @@ extern "C" {
     void* slot = key_at(t, i);
 
     if (t->key_is_pointer || t->key_is_null_terminated)
+    {
       return *(void**)slot;
+    }
 
     return slot;
   }
@@ -687,7 +1021,9 @@ extern "C" {
     void* slot = value_at(t, i);
 
     if (t->value_is_pointer || t->value_is_null_terminated)
+    {
       return *(void**)slot;
+    }
 
     return slot;
   }
@@ -695,7 +1031,9 @@ extern "C" {
   X_HASHTABLE_API bool x_hashtable_iter_begin(XHashtable* table, XHashtableIter* it)
   {
     if (!table || !it)
+    {
       return false;
+    }
 
     it->table = table;
     it->index = (size_t)-1;
@@ -704,23 +1042,33 @@ extern "C" {
 
   X_HASHTABLE_API bool x_hashtable_iter_next(XHashtableIter* it, void** out_key, void** out_value)
   {
+    XHashtable* t;
+    size_t start;
+    size_t i;
+
     if (!it || !it->table || !out_key || !out_value)
+    {
       return false;
+    }
 
-    XHashtable* t = it->table;
+    t = it->table;
 
-    size_t start = it->index;
+    start = it->index;
     if (start == (size_t)-1)
+    {
       start = 0;
+    }
     else
+    {
       start = start + 1;
+    }
 
-    for (size_t i = start; i < t->capacity; i++)
+    for (i = start; i < t->capacity; i++)
     {
       if (t->entries[i].state == X_HASH_ENTRY_OCCUPIED)
       {
         it->index = i;
-        *out_key = (void**) x_hashtable__user_key_ptr(t, i);
+        *out_key = (void*)x_hashtable__user_key_ptr(t, i);
         *out_value = x_hashtable__user_value_ptr(t, i);
         return true;
       }
@@ -732,13 +1080,19 @@ extern "C" {
 
   X_HASHTABLE_API bool x_hashtable_iter_next_const(XHashtableIter* it, const void** out_key, const void** out_value)
   {
-    if (!it || !out_key || !out_value)
-      return false;
-
     void* v = NULL;
-    bool ok = x_hashtable_iter_next(it, out_key, &v);
-    if (!ok)
+    bool ok;
+
+    if (!it || !out_key || !out_value)
+    {
       return false;
+    }
+
+    ok = x_hashtable_iter_next(it, (void**)out_key, &v);
+    if (!ok)
+    {
+      return false;
+    }
 
     *out_value = (const void*)v;
     return true;
@@ -747,7 +1101,9 @@ extern "C" {
   X_HASHTABLE_API size_t x_hashtable_iter_slot(const XHashtableIter* it)
   {
     if (!it || !it->table)
+    {
       return 0;
+    }
 
     return it->index;
   }
@@ -756,5 +1112,5 @@ extern "C" {
 }
 #endif
 
-#endif // X_IMPL_HASHTABLE
-#endif // X_HASHTABLE_H
+#endif /* X_IMPL_HASHTABLE */
+#endif /* X_HASHTABLE_H */

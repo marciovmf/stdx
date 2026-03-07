@@ -459,7 +459,7 @@ static u32 s_find_matching_paren(DoxterProject* proj, u32 open_i, u32 first, u32
   u32 depth = 0;
   for (u32 i = open_i; i < end; ++i)
   {
-    DoxterToken* t = x_array_get(proj->tokens, i).ptr;
+    DoxterToken* t = x_array_get(proj->tokens, i);
 
     if (s_tok_is_punct_text(t, '('))
     {
@@ -482,7 +482,7 @@ static u32 s_find_matching_brace(DoxterProject* proj, u32 open_i, u32 first, u32
   u32 depth = 0;
   for (u32 i = open_i; i < end; ++i)
   {
-    DoxterToken* t = x_array_get(proj->tokens, i).ptr;
+    DoxterToken* t = x_array_get(proj->tokens, i);
 
     if (s_tok_is_punct_text(t, '{'))
     {
@@ -521,7 +521,7 @@ static void s_symbol_fill_function_stmt(DoxterProject* proj, DoxterSymbol* sym)
 
   for (u32 i = first; i < end; ++i)
   {
-    DoxterToken* t = x_array_get(proj->tokens, i).ptr;
+    DoxterToken* t = x_array_get(proj->tokens, i);
 
     if (s_tok_is_punct_text(t, '('))
     {
@@ -548,7 +548,7 @@ static void s_symbol_fill_function_stmt(DoxterProject* proj, DoxterSymbol* sym)
 
   /* Name token: the identifier right before '(' (common prototypes) */
   u32 name_i = open_paren - 1;
-  DoxterToken* name_t = x_array_get(proj->tokens, name_i).ptr;
+  DoxterToken* name_t = x_array_get(proj->tokens, name_i);
   if (name_t->kind != DOXTER_IDENT)
   {
     return;
@@ -587,7 +587,7 @@ static void s_symbol_fill_macro_stmt(DoxterProject* proj, DoxterSymbol* sym)
     return;
   }
 
-  DoxterToken* d = x_array_get(proj->tokens, i).ptr;
+  DoxterToken* d = x_array_get(proj->tokens, i);
   if (d->kind != DOXTER_MACRO_DIRECTIVE)
   {
     return;
@@ -596,7 +596,7 @@ static void s_symbol_fill_macro_stmt(DoxterProject* proj, DoxterSymbol* sym)
   i++;
   while (i < end)
   {
-    DoxterToken* t = x_array_get(proj->tokens, i).ptr;
+    DoxterToken* t = x_array_get(proj->tokens, i);
     if (t->kind == DOXTER_IDENT)
     {
       sym->stmt.macro.name_tok = i;
@@ -614,7 +614,7 @@ static void s_symbol_fill_macro_stmt(DoxterProject* proj, DoxterSymbol* sym)
   /* Optional function-like args: immediately following '(' */
   if (i < end)
   {
-    DoxterToken* t = x_array_get(proj->tokens, i).ptr;
+    DoxterToken* t = x_array_get(proj->tokens, i);
     if (s_tok_is_punct_text(t, '('))
     {
       u32 close_paren = s_find_matching_paren(proj, i, first, end);
@@ -647,7 +647,7 @@ static void s_symbol_fill_record_stmt(DoxterProject* proj, DoxterSymbol* sym)
   /* Find 'struct/union/enum' keyword then optional tag name */
   for (u32 i = first; i + 1 < end; ++i)
   {
-    DoxterToken* t = x_array_get(proj->tokens, i).ptr;
+    DoxterToken* t = x_array_get(proj->tokens, i);
 
     if (t->kind == DOXTER_IDENT)
     {
@@ -655,7 +655,7 @@ static void s_symbol_fill_record_stmt(DoxterProject* proj, DoxterSymbol* sym)
       if ((sym->type == DOXTER_STRUCT || sym->type == DOXTER_UNION || sym->type == DOXTER_ENUM) &&
           (x_slice_eq_cstr(t->text, "struct") || x_slice_eq_cstr(t->text, "union") || x_slice_eq_cstr(t->text, "enum")))
       {
-        DoxterToken* n = x_array_get(proj->tokens, i + 1).ptr;
+        DoxterToken* n = x_array_get(proj->tokens, i + 1);
         if (n->kind == DOXTER_IDENT)
         {
           sym->stmt.record.name_tok = i + 1;
@@ -690,7 +690,7 @@ static void s_symbol_fill_typedef_stmt(DoxterProject* proj, DoxterSymbol* sym)
 
   for (u32 i = first; i < end; ++i)
   {
-    DoxterToken* t = x_array_get(proj->tokens, i).ptr;
+    DoxterToken* t = x_array_get(proj->tokens, i);
     if (t->kind == DOXTER_IDENT)
     {
       last_ident = i;
@@ -876,7 +876,7 @@ static void s_debug_print_token_span( DoxterProject* proj, const char* label, Do
   for (u32 i = 0; i < span.count; ++i)
   {
     u32 ti = span.first + i;
-    DoxterToken* t = x_array_get(proj->tokens, ti).ptr;
+    DoxterToken* t = x_array_get(proj->tokens, ti);
 
     printf("'%.*s'", (int)t->text.length, t->text.ptr);
 
@@ -897,7 +897,7 @@ static void s_debug_print_token_at( DoxterProject* proj, const char* label, u32 
     return;
   }
 
-  DoxterToken* t = x_array_get(proj->tokens, tok_index).ptr;
+  DoxterToken* t = x_array_get(proj->tokens, tok_index);
   printf(
       "    %s: '%.*s'\n",
       label,
@@ -1115,7 +1115,7 @@ static bool s_skip_code_block(XSlice* input)
 
 static DoxterSymbol* s_find_symbol(XArray* symbols, XSlice name)
 {
-  DoxterSymbol* s = (DoxterSymbol*) x_array_getdata(symbols).ptr;
+  DoxterSymbol* s = (DoxterSymbol*) x_array_data(symbols);
   u32 count = x_array_count(symbols);
   for (u32 i = 0; i < count; i++)
   {
