@@ -103,6 +103,7 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -245,9 +246,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_thread_create</span></h2>
   <p class="brief">Create and start a new thread.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_thread_create</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_thread.html#XThread">XThread</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">t</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_thread.html#XThreadFunc">XThreadFunc</a></span> <span class="tok_id">func</span><span class="tok_pun">,</span>
-  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">arg</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_thread.html#XThread">XThread</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">t</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_thread.html#XThreadFunc">XThreadFunc</a></span> <span class="tok_id">func</span><span class="tok_pun">,</span>
+ <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">arg</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -408,8 +410,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_thread_condvar_wait</span></h2>
   <p class="brief">Wait on a condition variable.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_condvar_wait</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -534,9 +537,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_threadpool_enqueue</span></h2>
   <p class="brief">Enqueue a task for execution by the thread pool.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_threadpool_enqueue</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_thread.html#XThreadPool">XThreadPool</a></span> <span class="tok_pun">*</span><span class="tok_id">pool</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_thread.html#XThreadTask">XThreadTask</a></span> <span class="tok_id">fn</span><span class="tok_pun">,</span>
-  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">arg</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_thread.html#XThreadPool">XThreadPool</a></span> <span class="tok_pun">*</span><span class="tok_id">pool</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_thread.html#XThreadTask">XThreadTask</a></span> <span class="tok_id">fn</span><span class="tok_pun">,</span>
+ <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">arg</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>

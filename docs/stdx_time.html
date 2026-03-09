@@ -89,6 +89,7 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -268,8 +269,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_time_diff</span></h2>
   <p class="brief">Compute the difference between two time values.</p>
   <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_diff</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">end</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">start</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">end</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">start</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -294,8 +296,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_time_add</span></h2>
   <p class="brief">Add two time values.</p>
   <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_add</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -320,8 +323,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_time_sub</span></h2>
   <p class="brief">Subtract one time value from another.</p>
   <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_sub</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -346,8 +350,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_time_equals</span></h2>
   <p class="brief">Compare two time values for equality.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_equals</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -372,8 +377,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_time_less_than</span></h2>
   <p class="brief">Test whether one time value is less than another.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_less_than</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -398,8 +404,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_time_greater_than</span></h2>
   <p class="brief">Test whether one time value is greater than another.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_greater_than</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>

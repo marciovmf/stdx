@@ -201,6 +201,7 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -398,8 +399,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_cstr_str</span></h2>
   <p class="brief">Searches for a substring within a null-terminated C-string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_cstr_str</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">haystack</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">needle</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">haystack</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">needle</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -424,8 +426,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_cstr_ends_with</span></h2>
   <p class="brief">Checks whether the string ends with the specified suffix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_cstr_ends_with</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -450,8 +453,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_cstr_starts_with</span></h2>
   <p class="brief">Checks whether a null-terminated C-string starts with the given prefix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_cstr_starts_with</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -476,8 +480,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_cstr_ends_with_ci</span></h2>
   <p class="brief">Case-insensitive check whether the string ends with the specified suffix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_cstr_ends_with_ci</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -502,8 +507,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_cstr_starts_with_ci</span></h2>
   <p class="brief">Checks whether a null-terminated C-string starts with the given prefix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_cstr_starts_with_ci</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -528,8 +534,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wcstr_starts_with</span></h2>
   <p class="brief">Checks whether the string starts with the specified prefix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wcstr_starts_with</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -554,8 +561,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wcstr_ends_with</span></h2>
   <p class="brief">Checks whether a null-terminated wide C-string ends with the given suffix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wcstr_ends_with</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -580,8 +588,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wcstr_starts_with_ci</span></h2>
   <p class="brief">Case-insensitive check whether the string starts with the specified prefix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wcstr_starts_with_ci</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -606,8 +615,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wcstr_ends_with_ci</span></h2>
   <p class="brief">Checks whether a null-terminated wide C-string ends with the given suffix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wcstr_ends_with_ci</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">suffix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -632,8 +642,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wcstr_cicmp</span></h2>
   <p class="brief">Case-insensitively compares two wide C-strings.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wcstr_cicmp</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -658,9 +669,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_cstr_to_wcstr</span></h2>
   <p class="brief">Utility for null-terminated C-strings.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_cstr_to_wcstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">,</span>
-  <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">,</span>
+ <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -687,9 +699,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wcstr_to_utf8</span></h2>
   <p class="brief">Converts between string encodings.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_wcstr_to_utf8</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">wide</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">wide</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -716,9 +729,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wcstr_to_cstr</span></h2>
   <p class="brief">Utility for null-terminated wide C-strings.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_wcstr_to_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -745,9 +759,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_utf8_to_wcstr</span></h2>
   <p class="brief">Converts between string encodings.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_utf8_to_wcstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
-  <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">wide</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
+ <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">wide</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -796,8 +811,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_utf8_strcmp</span></h2>
   <p class="brief">Compares two null-terminated UTF-8 strings.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_utf8_strcmp</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -822,8 +838,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_utf8_tolower</span></h2>
   <p class="brief">Converts ASCII letters to lower case; leaves multibyte UTF-8 unchanged.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_utf8_tolower</span><span class="tok_pun">(</span>
-  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -848,8 +865,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_utf8_toupper</span></h2>
   <p class="brief">Converts ASCII letters to upper case; leaves multibyte UTF-8 unchanged.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_utf8_toupper</span><span class="tok_pun">(</span>
-  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">dest</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -896,9 +914,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_utf8_decode</span></h2>
   <p class="brief">Decodes a single UTF-8 codepoint from the specified byte span.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_utf8_decode</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">end</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">end</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -947,8 +966,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_init</span></h2>
   <p class="brief">Initializes a fixed-capacity small string from a source C-string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_init</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -973,9 +993,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_format</span></h2>
   <p class="brief">Formats text into a small string; truncates if necessary.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_format</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
-  <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
+ <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1002,8 +1023,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_from_cstr</span></h2>
   <p class="brief">Copies a null-terminated C-string into a small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_from_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1028,8 +1050,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_from_slice</span></h2>
   <p class="brief">Copies a string view into a small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_from_slice</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1120,8 +1143,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_append_cstr</span></h2>
   <p class="brief">Appends a null-terminated C-string if space allows.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_append_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1146,8 +1170,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_append_char</span></h2>
   <p class="brief">Appends a single character if space allows.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_append_char</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1172,10 +1197,11 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_substring</span></h2>
   <p class="brief">Copies a byte-range substring into a small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_substring</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1270,8 +1296,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_cmp_ci</span></h2>
   <p class="brief">Compares two small strings case-insensitively.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_cmp_ci</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1296,9 +1323,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_replace_all</span></h2>
   <p class="brief">Replaces all occurrences of a substring in a small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_replace_all</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">find</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">replace</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">find</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">replace</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1347,8 +1375,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_cmp</span></h2>
   <p class="brief">Compares two small strings.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_cmp</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1373,8 +1402,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_cmp_cstr</span></h2>
   <p class="brief">Compares a small string with a null-terminated C-string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_cmp_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1421,10 +1451,11 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_utf8_substring</span></h2>
   <p class="brief">Copies a UTF-8 codepoint-range substring into a small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_utf8_substring</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">start_cp</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">len_cp</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">start_cp</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">len_cp</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1519,8 +1550,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wsmallstr_init</span></h2>
   <p class="brief">Initializes a wide-character small string from a wide C-string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_init</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1545,8 +1577,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wsmallstr_cmp</span></h2>
   <p class="brief">Compares two wide small strings.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_cmp</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1571,8 +1604,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wsmallstr_cmp_cstr</span></h2>
   <p class="brief">Compares a wide small string with a wide C-string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_cmp_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1597,8 +1631,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wsmallstr_cmp_ci</span></h2>
   <p class="brief">Compares two wide small strings case-insensitively.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_cmp_ci</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1667,8 +1702,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wsmallstr_append</span></h2>
   <p class="brief">Appends a wide C-string if space allows.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_append</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">tail</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">tail</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1693,10 +1729,11 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wsmallstr_substring</span></h2>
   <p class="brief">Copies a wide-character substring into a destination small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_substring</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1747,8 +1784,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wsmallstr_find</span></h2>
   <p class="brief">Finds a wide character within a wide small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_find</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_id">wchar_t</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_id">wchar_t</span> <span class="tok_id">c</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1813,8 +1851,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_eq</span></h2>
   <p class="brief">Compares two string views for equality.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_eq</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1839,8 +1878,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_eq_cstr</span></h2>
   <p class="brief">Compares a string view with a C-string for equality.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_eq_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1865,8 +1905,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_eq_ci</span></h2>
   <p class="brief">Compares two string views case-insensitively.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_eq_ci</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1891,8 +1932,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_cmp</span></h2>
   <p class="brief">Lexicographically compares two string views.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_cmp</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1917,8 +1959,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_cmp_ci</span></h2>
   <p class="brief">Lexicographically compares two string views case-insensitively.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_cmp_ci</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -1943,9 +1986,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_substr</span></h2>
   <p class="brief">Creates a sub-view by byte range from a string view.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_substr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2038,8 +2082,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_find</span></h2>
   <p class="brief">Finds the first occurrence of a character in a string view.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_find</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2086,8 +2131,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_rfind</span></h2>
   <p class="brief">Finds the last occurrence of a character in a string view.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_rfind</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2112,10 +2158,11 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_split_at</span></h2>
   <p class="brief">Splits a string view at the first occurrence of a delimiter.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_split_at</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2144,9 +2191,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_split_at_white_space</span></h2>
   <p class="brief">Splits a string view at the first ASCII whitespace.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_split_at_white_space</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2173,8 +2221,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_next_token_white_space</span></h2>
   <p class="brief">Extracts the next token delimited by ASCII whitespace.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_next_token_white_space</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2199,9 +2248,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_next_token</span></h2>
   <p class="brief">Extracts the next token delimited by a character.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_next_token</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2228,8 +2278,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_starts_with_cstr</span></h2>
   <p class="brief">Checks whether a string view starts with the given C-string prefix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_starts_with_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2254,8 +2305,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_ends_with_cstr</span></h2>
   <p class="brief">Checks whether a string view ends with the given C-string suffix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_ends_with_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2280,9 +2332,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_utf8_substr</span></h2>
   <p class="brief">Creates a sub-view by byte range from a string view.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_slice_utf8_substr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">char_start</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">char_len</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">char_start</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">char_len</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2375,8 +2428,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_utf8_find</span></h2>
   <p class="brief">Finds the first occurrence of a character in a string view.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_utf8_find</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2401,8 +2455,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_utf8_rfind</span></h2>
   <p class="brief">Finds the last occurrence of a UTF-8 codepoint in a string view.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_slice_utf8_rfind</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2427,10 +2482,11 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_utf8_split_at</span></h2>
   <p class="brief">Splits a string view at the first occurrence of a delimiter.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_utf8_split_at</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">uint32_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2459,9 +2515,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_utf8_next_token</span></h2>
   <p class="brief">Extracts the next token delimited by a UTF-8 codepoint.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_utf8_next_token</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
-  <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2488,8 +2545,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_utf8_starts_with_cstr</span></h2>
   <p class="brief">Checks whether a string view starts with the given C-string prefix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_utf8_starts_with_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2514,8 +2572,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_utf8_ends_with_cstr</span></h2>
   <p class="brief">Checks whether a string view ends with the given C-string suffix.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_utf8_ends_with_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2582,8 +2641,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wslice_eq</span></h2>
   <p class="brief">Compares two wide string views for equality.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wslice_eq</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2608,8 +2668,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wslice_cmp</span></h2>
   <p class="brief">Lexicographically compares two wide string views.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wslice_cmp</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2634,9 +2695,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wslice_substr</span></h2>
   <p class="brief">Creates a sub-view by range from a wide string view.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">x_wslice_substr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">start</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">len</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2729,10 +2791,11 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wslice_split_at</span></h2>
   <p class="brief">Splits a wide string view at the first occurrence of a delimiter.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wslice_split_at</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">uint32_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2761,9 +2824,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wslice_next_token</span></h2>
   <p class="brief">Extracts the next token from a string view using the given delimiter.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_wslice_next_token</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
-  <span class="tok_id">wchar_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+ <span class="tok_id">wchar_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XWStrview">XWStrview</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2834,8 +2898,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_append_slice</span></h2>
   <p class="brief">Appends the contents of a string view to a small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_append_slice</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2860,9 +2925,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_append_n</span></h2>
   <p class="brief">Appends a fixed-length portion of a C-string to a small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_append_n</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">n</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">n</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2889,9 +2955,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_vappendf</span></h2>
   <p class="brief">Appends formatted text to a small string using a va_list.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_vappendf</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
-  <span class="tok_id">va_list</span> <span class="tok_id">args</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
+ <span class="tok_id">va_list</span> <span class="tok_id">args</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2918,9 +2985,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_appendf</span></h2>
   <p class="brief">Appends formatted text to a small string.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_appendf</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
-  <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
+ <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2947,8 +3015,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_contains_char</span></h2>
   <p class="brief">Checks whether a string view contains the specified character.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_contains_char</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2973,8 +3042,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_slice_contains_utf8</span></h2>
   <p class="brief">Checks whether a string view contains the specified UTF-8 codepoint.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_slice_contains_utf8</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
-  <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -2999,8 +3069,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_contains_char</span></h2>
   <p class="brief">Checks whether a small string contains the specified character.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_smallstr_contains_char</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -3025,10 +3096,11 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_join</span></h2>
   <p class="brief">Concatenates multiple string views into a small string, inserting a separator between them.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_smallstr_join</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">dst</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">parts</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">count</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sep</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">dst</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">parts</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">count</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sep</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -3093,9 +3165,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_try_append_cstr</span></h2>
   <p class="brief">Attempts to append a C-string to a small string up to its capacity.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_smallstr_try_append_cstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_appended</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_appended</span><span class="tok_pun">)</span>
+;</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -3164,9 +3237,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wide_to_utf8</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_wide_to_utf8</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">wide</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">wide</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span><span class="tok_pun">,</span>
+ <span class="tok_id">size_t</span> <span class="tok_id">max</span><span class="tok_pun">)</span>
+;</code></pre>
   
   
 </article>
@@ -3177,8 +3251,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_find</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_find</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>
+;</code></pre>
   
   
 </article>
@@ -3189,8 +3264,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_rfind</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_rfind</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">c</span><span class="tok_pun">)</span>
+;</code></pre>
   
   
 </article>
@@ -3201,10 +3277,11 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_smallstr_split_at</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_smallstr_split_at</span><span class="tok_pun">(</span>
-  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">char</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">char</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">left</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">right</span><span class="tok_pun">)</span>
+;</code></pre>
   
   
 </article>
@@ -3215,8 +3292,9 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wsmallstr_from_wcstr</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_from_wcstr</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
-  <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">s</span><span class="tok_pun">,</span>
+ <span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">src</span><span class="tok_pun">)</span>
+;</code></pre>
   
   
 </article>
@@ -3227,9 +3305,10 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">x_wsmallstr_next_token</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_wsmallstr_next_token</span><span class="tok_pun">(</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
-  <span class="tok_id">wchar_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
-  <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>;</code></pre>
+ <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
+ <span class="tok_id">wchar_t</span> <span class="tok_id">delim</span><span class="tok_pun">,</span>
+ <span class="tok_kw"><a href="stdx_string.html#XWSmallstr">XWSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">token</span><span class="tok_pun">)</span>
+;</code></pre>
   
   
 </article>

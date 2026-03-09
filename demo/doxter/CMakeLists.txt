@@ -41,6 +41,7 @@ add_custom_target(baking-step
 add_executable(doxter
   src/doxter.c
   src/doxter_parser.c
+  src/doxter_pretty.c
   ${BAKE_TEMPLATE_OUTPUT}
   ${BAKE_FONTS_OUTPUT}
 )

@@ -6,6 +6,7 @@
 #include <stdx_hashtable.h>
 #include <stdx_array.h>
 #include <stdx_arena.h>
+#include <stdx_strbuilder.h>
 
 #ifndef DOXTER_COMMENT_MAX_ARGS
 #define DOXTER_COMMENT_MAX_ARGS 32
@@ -14,6 +15,7 @@
 #ifndef DOXTER_MAX_MODULES
 #define DOXTER_MAX_MODULES 64
 #endif
+
 
 typedef enum DoxterTokenKind
 {
@@ -209,5 +211,21 @@ typedef struct
  * @return the number or symbols found
  */
 i32 doxter_source_parse(DoxterProject* proj, u32 source_index);
+
+bool doxter_symbol_map_get(DoxterProject *project, XSlice text, DoxterSymbol *out_sym);
+
+typedef struct DoxterPretty
+{
+  DoxterProject      *project;
+  const DoxterSymbol *symbol;
+  XStrBuilder        *out;
+  u32                 pos;
+  u32                 end;
+  i32                 indent;
+} DoxterPretty;
+
+X_HASHTABLE_TYPE_NAMED(XSmallstr, DoxterSymbol, dox_symbol_map);
+
+bool doxter_pretty_format_symbol(DoxterProject *project, const DoxterSymbol *sym, XStrBuilder *out);
 
 #endif //DOXTER_H
