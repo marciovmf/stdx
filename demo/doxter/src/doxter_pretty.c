@@ -344,11 +344,6 @@ static void s_emit_function_params(DoxterProject* project,
       }
       else if (c == ')')
       {
-        if (multiline && paren_depth == 1)
-        {
-          x_strbuilder_append_cstr(out, "\n");
-        }
-
         paren_depth--;
       }
       else if (c == ',' && paren_depth == 1)
