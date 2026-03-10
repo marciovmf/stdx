@@ -173,9 +173,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_open</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_io_open</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">mode</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_io_open</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">mode</span>
+);</code></pre>
   
   
 </article>
@@ -185,7 +186,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_close</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_io_close</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_io_close</span>(<span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>);</code></pre>
   
   
 </article>
@@ -195,10 +196,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_read</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_io_read</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
- <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buffer</span><span class="tok_pun">,</span>
- <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_io_read</span>(
+ <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>,
+ <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buffer</span>,
+ <span class="tok_id">size_t</span> <span class="tok_id">size</span>
+);</code></pre>
   
   
 </article>
@@ -208,9 +210,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_read_all</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_io_read_all</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
- <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_size</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_io_read_all</span>(
+ <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>,
+ <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_size</span>
+);</code></pre>
   
   
 </article>
@@ -220,9 +223,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_read_text</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_io_read_text</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">,</span>
- <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_size</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_io_read_text</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span>,
+ <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_size</span>
+);</code></pre>
   
   
 </article>
@@ -232,10 +236,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_write</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_io_write</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">,</span>
- <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_io_write</span>(
+ <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span>,
+ <span class="tok_id">size_t</span> <span class="tok_id">size</span>
+);</code></pre>
   
   
 </article>
@@ -245,9 +250,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_write_text</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_write_text</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">text</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_write_text</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">text</span>
+);</code></pre>
   
   
 </article>
@@ -257,9 +263,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_append_text</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_append_text</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">text</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_append_text</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">text</span>
+);</code></pre>
   
   
 </article>
@@ -269,10 +276,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_seek</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_seek</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
- <span class="tok_kw">long</span> <span class="tok_id">offset</span><span class="tok_pun">,</span>
- <span class="tok_kw">int32_t</span> <span class="tok_id">origin</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_seek</span>(
+ <span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>,
+ <span class="tok_kw">long</span> <span class="tok_id">offset</span>,
+ <span class="tok_kw">int32_t</span> <span class="tok_id">origin</span>
+);</code></pre>
   
   
 </article>
@@ -282,7 +290,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_tell</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">long</span> <span class="tok_id">x_io_tell</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">long</span> <span class="tok_id">x_io_tell</span>(<span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>);</code></pre>
   
   
 </article>
@@ -292,7 +300,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_rewind</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_rewind</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_rewind</span>(<span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>);</code></pre>
   
   
 </article>
@@ -302,7 +310,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_flush</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_flush</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_flush</span>(<span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>);</code></pre>
   
   
 </article>
@@ -312,7 +320,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_eof</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_eof</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_eof</span>(<span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>);</code></pre>
   
   
 </article>
@@ -322,7 +330,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_error</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_error</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_io_error</span>(<span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>);</code></pre>
   
   
 </article>
@@ -332,7 +340,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_clearerr</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_io_clearerr</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_io_clearerr</span>(<span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>);</code></pre>
   
   
 </article>
@@ -342,7 +350,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_io_fileno</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_io_fileno</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_IO_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_io_fileno</span>(<span class="tok_kw"><a href="stdx_io.html#XFile">XFile</a></span> <span class="tok_pun">*</span><span class="tok_id">file</span>);</code></pre>
   
   
 </article>

@@ -244,10 +244,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_create</span></h2>
   <p class="brief">Create and start a new thread.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_thread_create</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_thread.html#XThread">XThread</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">t</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_thread.html#XThreadFunc">XThreadFunc</a></span> <span class="tok_id">func</span><span class="tok_pun">,</span>
- <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">arg</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_thread_create</span>(
+ <span class="tok_kw"><a href="stdx_thread.html#XThread">XThread</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">t</span>,
+ <span class="tok_kw"><a href="stdx_thread.html#XThreadFunc">XThreadFunc</a></span> <span class="tok_id">func</span>,
+ <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">arg</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -273,7 +274,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_join</span></h2>
   <p class="brief">Wait for a thread to finish execution.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_join</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XThread">XThread</a></span> <span class="tok_pun">*</span><span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_join</span>(<span class="tok_kw"><a href="stdx_thread.html#XThread">XThread</a></span> <span class="tok_pun">*</span><span class="tok_id">t</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -291,7 +292,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_destroy</span></h2>
   <p class="brief">Destroy a thread handle and release its resources.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_destroy</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XThread">XThread</a></span> <span class="tok_pun">*</span><span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_destroy</span>(<span class="tok_kw"><a href="stdx_thread.html#XThread">XThread</a></span> <span class="tok_pun">*</span><span class="tok_id">t</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -309,7 +310,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_mutex_init</span></h2>
   <p class="brief">Create a mutex.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_thread_mutex_init</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">m</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_thread_mutex_init</span>(<span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">m</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -331,7 +332,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_mutex_lock</span></h2>
   <p class="brief">Lock a mutex, blocking until it becomes available.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_mutex_lock</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_mutex_lock</span>(<span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -349,7 +350,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_mutex_unlock</span></h2>
   <p class="brief">Unlock a mutex.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_mutex_unlock</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_mutex_unlock</span>(<span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -367,7 +368,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_mutex_destroy</span></h2>
   <p class="brief">Destroy a mutex and release its resources.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_mutex_destroy</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_mutex_destroy</span>(<span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -385,7 +386,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_condvar_init</span></h2>
   <p class="brief">Create a condition variable.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_thread_condvar_init</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">cv</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_thread_condvar_init</span>(<span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">cv</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -407,9 +408,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_condvar_wait</span></h2>
   <p class="brief">Wait on a condition variable.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_condvar_wait</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_condvar_wait</span>(
+ <span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span>,
+ <span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_id">m</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -429,7 +431,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_condvar_signal</span></h2>
   <p class="brief">Wake one thread waiting on a condition variable.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_condvar_signal</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_condvar_signal</span>(<span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -447,7 +449,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_condvar_broadcast</span></h2>
   <p class="brief">Wake all threads waiting on a condition variable.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_condvar_broadcast</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_condvar_broadcast</span>(<span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -465,7 +467,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_condvar_destroy</span></h2>
   <p class="brief">Destroy a condition variable and release its resources.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_condvar_destroy</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_condvar_destroy</span>(<span class="tok_kw"><a href="stdx_thread.html#XCondVar">XCondVar</a></span> <span class="tok_pun">*</span><span class="tok_id">cv</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -483,7 +485,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_sleep_ms</span></h2>
   <p class="brief">Sleep the current thread for at least the given number of milliseconds.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_sleep_ms</span><span class="tok_pun">(</span><span class="tok_kw">int</span> <span class="tok_id">ms</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_sleep_ms</span>(<span class="tok_kw">int</span> <span class="tok_id">ms</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -501,7 +503,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_yield</span></h2>
   <p class="brief">Yield execution to allow other threads to run.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_yield</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_thread_yield</span>(<span class="tok_kw">void</span>);</code></pre>
   
   
 </article>
@@ -511,7 +513,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_threadpool_create</span></h2>
   <p class="brief">Create a thread pool with a fixed number of worker threads.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_thread.html#XThreadPool">XThreadPool</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_threadpool_create</span><span class="tok_pun">(</span><span class="tok_kw">int</span> <span class="tok_id">num_threads</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_thread.html#XThreadPool">XThreadPool</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_threadpool_create</span>(<span class="tok_kw">int</span> <span class="tok_id">num_threads</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -533,10 +535,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_threadpool_enqueue</span></h2>
   <p class="brief">Enqueue a task for execution by the thread pool.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_threadpool_enqueue</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_thread.html#XThreadPool">XThreadPool</a></span> <span class="tok_pun">*</span><span class="tok_id">pool</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_thread.html#XThreadTask">XThreadTask</a></span> <span class="tok_id">fn</span><span class="tok_pun">,</span>
- <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">arg</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_threadpool_enqueue</span>(
+ <span class="tok_kw"><a href="stdx_thread.html#XThreadPool">XThreadPool</a></span> <span class="tok_pun">*</span><span class="tok_id">pool</span>,
+ <span class="tok_kw"><a href="stdx_thread.html#XThreadTask">XThreadTask</a></span> <span class="tok_id">fn</span>,
+ <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">arg</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -562,7 +565,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_threadpool_destroy</span></h2>
   <p class="brief">Destroy a thread pool and release its resources.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_threadpool_destroy</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XThreadPool">XThreadPool</a></span> <span class="tok_pun">*</span><span class="tok_id">pool</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_threadpool_destroy</span>(<span class="tok_kw"><a href="stdx_thread.html#XThreadPool">XThreadPool</a></span> <span class="tok_pun">*</span><span class="tok_id">pool</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -633,7 +636,7 @@ different implementation before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_thread_mutexinit</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_thread_mutexinit</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">m</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_thread_mutexinit</span>(<span class="tok_kw"><a href="stdx_thread.html#XMutex">XMutex</a></span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">m</span>);</code></pre>
   
   
 </article>

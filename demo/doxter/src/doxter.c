@@ -582,7 +582,6 @@ static void s_render_params_block(const DoxterSymbol *sym,
           s_template_ctx.param_decl = param_decl;
           s_template_ctx.has_param_decl = has_param_decl;
           s_template_ctx.symbol = sym;
-          s_template_ctx.project = s_template_ctx.project;
 
           s_render_template(templates->param_item_html,
               s_template_ctx.project,

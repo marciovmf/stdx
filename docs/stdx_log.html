@@ -246,10 +246,11 @@ Can be overriden before including this header</p>
   </div>
   <h2><span class="symbol-name">logger_init</span></h2>
   <p class="brief">Initialize the logging system.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_init</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogOutputFlags">XLogOutputFlags</a></span> <span class="tok_id">outputs</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_init</span>(
+ <span class="tok_kw"><a href="stdx_log.html#XLogOutputFlags">XLogOutputFlags</a></span> <span class="tok_id">outputs</span>,
+ <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -271,7 +272,7 @@ Can be overriden before including this header</p>
   </div>
   <h2><span class="symbol-name">logger_close</span></h2>
   <p class="brief">Shutdown the logging system and release resources.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_close</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_close</span>(<span class="tok_kw">void</span>);</code></pre>
   
   
 </article>
@@ -284,7 +285,7 @@ Can be overriden before including this header</p>
  
 This does not affect file logging configured via logger_init() (XLOG_OUTPUT_FILE).
 Passing NULL resets to stdout.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_set_console</span><span class="tok_pun">(</span><span class="tok_id">FILE</span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_set_console</span>(<span class="tok_id">FILE</span> <span class="tok_pun">*</span><span class="tok_id">out</span>);</code></pre>
   
   
 </article>
@@ -294,7 +295,7 @@ Passing NULL resets to stdout.</p>
   </div>
   <h2><span class="symbol-name">logger_get_console</span></h2>
   <p class="brief">Get the current console output stream (never NULL; defaults to stdout).</p>
-  <pre class="symbol-decl"><code><span class="tok_id">FILE</span> <span class="tok_pun">*</span> <span class="tok_id">logger_get_console</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">FILE</span> <span class="tok_pun">*</span> <span class="tok_id">logger_get_console</span>(<span class="tok_kw">void</span>);</code></pre>
   
   
 </article>
@@ -304,16 +305,17 @@ Passing NULL resets to stdout.</p>
   </div>
   <h2><span class="symbol-name">logger_log</span></h2>
   <p class="brief">Emit a formatted log message with full context information.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_log</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">fg</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">bg</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogComponent">XLogComponent</a></span> <span class="tok_id">components</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
- <span class="tok_kw">int</span> <span class="tok_id">line</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">func</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
- <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_log</span>(
+ <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span>,
+ <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">fg</span>,
+ <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">bg</span>,
+ <span class="tok_kw"><a href="stdx_log.html#XLogComponent">XLogComponent</a></span> <span class="tok_id">components</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span>,
+ <span class="tok_kw">int</span> <span class="tok_id">line</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">func</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span>,
+ <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -349,17 +351,18 @@ Passing NULL resets to stdout.</p>
 If console output is enabled (XLOG_OUTPUT_CONSOLE), the message is written to `out` when non-NULL.
 If `out` is NULL, the logger's default console stream is used.
 File output configured via logger_init() is still honored when XLOG_OUTPUT_FILE is enabled.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_log_to</span><span class="tok_pun">(</span>
- <span class="tok_id">FILE</span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">fg</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">bg</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogComponent">XLogComponent</a></span> <span class="tok_id">components</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
- <span class="tok_kw">int</span> <span class="tok_id">line</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">func</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
- <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_log_to</span>(
+ <span class="tok_id">FILE</span> <span class="tok_pun">*</span><span class="tok_id">out</span>,
+ <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span>,
+ <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">fg</span>,
+ <span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">bg</span>,
+ <span class="tok_kw"><a href="stdx_log.html#XLogComponent">XLogComponent</a></span> <span class="tok_id">components</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span>,
+ <span class="tok_kw">int</span> <span class="tok_id">line</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">func</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span>,
+ <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span>
+);</code></pre>
   
   
 </article>
@@ -369,10 +372,11 @@ File output configured via logger_init() is still honored when XLOG_OUTPUT_FILE 
   </div>
   <h2><span class="symbol-name">logger_print</span></h2>
   <p class="brief">Emit a formatted log message without source context.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_print</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span><span class="tok_pun">,</span>
- <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">logger_print</span>(
+ <span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span>,
+ <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
