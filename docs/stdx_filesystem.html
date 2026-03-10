@@ -20,39 +20,55 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#x_fs_find_first_file">x_fs_find_first_file</a></li>
+          <li><a href="#x_fs_cwd_get">x_fs_cwd_get</a></li>
+<li><a href="#x_fs_cwd_set">x_fs_cwd_set</a></li>
+<li><a href="#x_fs_cwd_set_from_executable_path">x_fs_cwd_set_from_executable_path</a></li>
 <li><a href="#x_fs_directory_create">x_fs_directory_create</a></li>
 <li><a href="#x_fs_directory_create_recursive">x_fs_directory_create_recursive</a></li>
 <li><a href="#x_fs_directory_delete">x_fs_directory_delete</a></li>
 <li><a href="#x_fs_file_copy">x_fs_file_copy</a></li>
+<li><a href="#x_fs_file_creation_time">x_fs_file_creation_time</a></li>
+<li><a href="#x_fs_file_modification_time">x_fs_file_modification_time</a></li>
+<li><a href="#x_fs_file_permissions">x_fs_file_permissions</a></li>
 <li><a href="#x_fs_file_rename">x_fs_file_rename</a></li>
+<li><a href="#x_fs_file_set_permissions">x_fs_file_set_permissions</a></li>
+<li><a href="#x_fs_file_stat">x_fs_file_stat</a></li>
+<li><a href="#x_fs_find_close">x_fs_find_close</a></li>
+<li><a href="#x_fs_find_first_file">x_fs_find_first_file</a></li>
 <li><a href="#x_fs_find_next_file">x_fs_find_next_file</a></li>
 <li><a href="#x_fs_get_temp_folder">x_fs_get_temp_folder</a></li>
-<li><a href="#x_fs_cwd_get">x_fs_cwd_get</a></li>
-<li><a href="#x_fs_cwd_set">x_fs_cwd_set</a></li>
-<li><a href="#x_fs_cwd_set_from_executable_path">x_fs_cwd_set_from_executable_path</a></li>
-<li><a href="#x_fs_find_close">x_fs_find_close</a></li>
-<li><a href="#x_fs_watch_open">x_fs_watch_open</a></li>
-<li><a href="#x_fs_watch_close">x_fs_watch_close</a></li>
-<li><a href="#x_fs_watch_poll">x_fs_watch_poll</a></li>
-<li><a href="#x_fs_path_normalize">x_fs_path_normalize</a></li>
-<li><a href="#x_fs_path_stem_cstr">x_fs_path_stem_cstr</a></li>
-<li><a href="#x_fs_path_stem_as_slice">x_fs_path_stem_as_slice</a></li>
-<li><a href="#x_fs_path_stem">x_fs_path_stem</a></li>
-<li><a href="#x_fs_path_basename_cstr">x_fs_path_basename_cstr</a></li>
-<li><a href="#x_fs_path_basename_as_slice">x_fs_path_basename_as_slice</a></li>
-<li><a href="#x_fs_path_basename">x_fs_path_basename</a></li>
-<li><a href="#x_fs_path_dirname_cstr">x_fs_path_dirname_cstr</a></li>
-<li><a href="#x_fs_path_dirname_as_slice">x_fs_path_dirname_as_slice</a></li>
-<li><a href="#x_fs_path_dirname">x_fs_path_dirname</a></li>
+<li><a href="#x_fs_is_directory">x_fs_is_directory</a></li>
+<li><a href="#x_fs_is_file">x_fs_is_file</a></li>
+<li><a href="#x_fs_is_symlink">x_fs_is_symlink</a></li>
+<li><a href="#x_fs_make_temp_directory">x_fs_make_temp_directory</a></li>
+<li><a href="#x_fs_make_temp_file">x_fs_make_temp_file</a></li>
 <li><a href="#x_fs_path_">x_fs_path_</a></li>
-<li><a href="#x_fs_path_join_">x_fs_path_join_</a></li>
-<li><a href="#x_fs_path_join_slice_">x_fs_path_join_slice_</a></li>
+<li><a href="#x_fs_path_append">x_fs_path_append</a></li>
 <li><a href="#x_fs_path_as_slice">x_fs_path_as_slice</a></li>
+<li><a href="#x_fs_path_basename">x_fs_path_basename</a></li>
+<li><a href="#x_fs_path_basename_as_slice">x_fs_path_basename_as_slice</a></li>
+<li><a href="#x_fs_path_basename_cstr">x_fs_path_basename_cstr</a></li>
+<li><a href="#x_fs_path_change_extension">x_fs_path_change_extension</a></li>
+<li><a href="#x_fs_path_clone">x_fs_path_clone</a></li>
+<li><a href="#x_fs_path_common_prefix">x_fs_path_common_prefix</a></li>
+<li><a href="#x_fs_path_compare">x_fs_path_compare</a></li>
+<li><a href="#x_fs_path_compare_cstr">x_fs_path_compare_cstr</a></li>
+<li><a href="#x_fs_path_cstr">x_fs_path_cstr</a></li>
+<li><a href="#x_fs_path_dirname">x_fs_path_dirname</a></li>
+<li><a href="#x_fs_path_dirname_as_slice">x_fs_path_dirname_as_slice</a></li>
+<li><a href="#x_fs_path_dirname_cstr">x_fs_path_dirname_cstr</a></li>
+<li><a href="#x_fs_path_eq">x_fs_path_eq</a></li>
+<li><a href="#x_fs_path_eq_cstr">x_fs_path_eq_cstr</a></li>
 <li><a href="#x_fs_path_exists">x_fs_path_exists</a></li>
 <li><a href="#x_fs_path_exists_cstr">x_fs_path_exists_cstr</a></li>
 <li><a href="#x_fs_path_exists_quick">x_fs_path_exists_quick</a></li>
 <li><a href="#x_fs_path_exists_quick_cstr">x_fs_path_exists_quick_cstr</a></li>
+<li><a href="#x_fs_path_extension">x_fs_path_extension</a></li>
+<li><a href="#x_fs_path_extension_as_slice">x_fs_path_extension_as_slice</a></li>
+<li><a href="#x_fs_path_extension_cstr">x_fs_path_extension_cstr</a></li>
+<li><a href="#x_fs_path_from_executable">x_fs_path_from_executable</a></li>
+<li><a href="#x_fs_path_from_slice">x_fs_path_from_slice</a></li>
+<li><a href="#x_fs_path_init">x_fs_path_init</a></li>
 <li><a href="#x_fs_path_is_absolute">x_fs_path_is_absolute</a></li>
 <li><a href="#x_fs_path_is_absolute_cstr">x_fs_path_is_absolute_cstr</a></li>
 <li><a href="#x_fs_path_is_absolute_native">x_fs_path_is_absolute_native</a></li>
@@ -63,38 +79,22 @@
 <li><a href="#x_fs_path_is_file_cstr">x_fs_path_is_file_cstr</a></li>
 <li><a href="#x_fs_path_is_relative">x_fs_path_is_relative</a></li>
 <li><a href="#x_fs_path_is_relative_cstr">x_fs_path_is_relative_cstr</a></li>
-<li><a href="#x_fs_path_cstr">x_fs_path_cstr</a></li>
-<li><a href="#x_fs_path_append">x_fs_path_append</a></li>
-<li><a href="#x_fs_path_change_extension">x_fs_path_change_extension</a></li>
-<li><a href="#x_fs_path_compare">x_fs_path_compare</a></li>
-<li><a href="#x_fs_path_compare_cstr">x_fs_path_compare_cstr</a></li>
-<li><a href="#x_fs_path_eq">x_fs_path_eq</a></li>
-<li><a href="#x_fs_path_eq_cstr">x_fs_path_eq_cstr</a></li>
-<li><a href="#x_fs_path_extension_cstr">x_fs_path_extension_cstr</a></li>
-<li><a href="#x_fs_path_extension_as_slice">x_fs_path_extension_as_slice</a></li>
-<li><a href="#x_fs_path_extension">x_fs_path_extension</a></li>
-<li><a href="#x_fs_path_from_slice">x_fs_path_from_slice</a></li>
+<li><a href="#x_fs_path_join_">x_fs_path_join_</a></li>
+<li><a href="#x_fs_path_join_one">x_fs_path_join_one</a></li>
+<li><a href="#x_fs_path_join_one_slice">x_fs_path_join_one_slice</a></li>
+<li><a href="#x_fs_path_join_slice_">x_fs_path_join_slice_</a></li>
+<li><a href="#x_fs_path_normalize">x_fs_path_normalize</a></li>
 <li><a href="#x_fs_path_relative_to_cstr">x_fs_path_relative_to_cstr</a></li>
-<li><a href="#x_fs_path_common_prefix">x_fs_path_common_prefix</a></li>
 <li><a href="#x_fs_path_set">x_fs_path_set</a></li>
 <li><a href="#x_fs_path_set_slice">x_fs_path_set_slice</a></li>
 <li><a href="#x_fs_path_split">x_fs_path_split</a></li>
-<li><a href="#x_fs_path_from_executable">x_fs_path_from_executable</a></li>
-<li><a href="#x_fs_file_stat">x_fs_file_stat</a></li>
-<li><a href="#x_fs_file_modification_time">x_fs_file_modification_time</a></li>
-<li><a href="#x_fs_file_creation_time">x_fs_file_creation_time</a></li>
-<li><a href="#x_fs_file_permissions">x_fs_file_permissions</a></li>
-<li><a href="#x_fs_file_set_permissions">x_fs_file_set_permissions</a></li>
-<li><a href="#x_fs_is_file">x_fs_is_file</a></li>
-<li><a href="#x_fs_is_directory">x_fs_is_directory</a></li>
-<li><a href="#x_fs_is_symlink">x_fs_is_symlink</a></li>
+<li><a href="#x_fs_path_stem">x_fs_path_stem</a></li>
+<li><a href="#x_fs_path_stem_as_slice">x_fs_path_stem_as_slice</a></li>
+<li><a href="#x_fs_path_stem_cstr">x_fs_path_stem_cstr</a></li>
 <li><a href="#x_fs_read_symlink">x_fs_read_symlink</a></li>
-<li><a href="#x_fs_make_temp_file">x_fs_make_temp_file</a></li>
-<li><a href="#x_fs_make_temp_directory">x_fs_make_temp_directory</a></li>
-<li><a href="#x_fs_path_join_one_slice">x_fs_path_join_one_slice</a></li>
-<li><a href="#x_fs_path_join_one">x_fs_path_join_one</a></li>
-<li><a href="#x_fs_path_clone">x_fs_path_clone</a></li>
-<li><a href="#x_fs_path_init">x_fs_path_init</a></li>
+<li><a href="#x_fs_watch_close">x_fs_watch_close</a></li>
+<li><a href="#x_fs_watch_open">x_fs_watch_open</a></li>
+<li><a href="#x_fs_watch_poll">x_fs_watch_poll</a></li>
 
         </ul>
       </details>
@@ -102,23 +102,23 @@
       <details open>
         <summary>Macros</summary>
         <ul>
-          <li><a href="#X_FILESYSTEM_VERSION_MAJOR">X_FILESYSTEM_VERSION_MAJOR</a></li>
-<li><a href="#X_FILESYSTEM_VERSION_MINOR">X_FILESYSTEM_VERSION_MINOR</a></li>
-<li><a href="#X_FILESYSTEM_VERSION_PATCH">X_FILESYSTEM_VERSION_PATCH</a></li>
-<li><a href="#X_FILESYSTEM_VERSION">X_FILESYSTEM_VERSION</a></li>
-<li><a href="#X_FS_PAHT_MAX_LENGTH">X_FS_PAHT_MAX_LENGTH</a></li>
-<li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
-<li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
-<li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
-<li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
-<li><a href="#x_fs_path">x_fs_path</a></li>
-<li><a href="#x_fs_path_join">x_fs_path_join</a></li>
-<li><a href="#x_fs_path_join_slice">x_fs_path_join_slice</a></li>
-<li><a href="#MAX_PATH">MAX_PATH</a></li>
-<li><a href="#X_FS_MAX_PATH">X_FS_MAX_PATH</a></li>
+          <li><a href="#MAX_PATH">MAX_PATH</a></li>
 <li><a href="#X_FILESYSTEM_ALLOC">X_FILESYSTEM_ALLOC</a></li>
 <li><a href="#X_FILESYSTEM_CALLOC">X_FILESYSTEM_CALLOC</a></li>
 <li><a href="#X_FILESYSTEM_FREE">X_FILESYSTEM_FREE</a></li>
+<li><a href="#X_FILESYSTEM_VERSION">X_FILESYSTEM_VERSION</a></li>
+<li><a href="#X_FILESYSTEM_VERSION_MAJOR">X_FILESYSTEM_VERSION_MAJOR</a></li>
+<li><a href="#X_FILESYSTEM_VERSION_MINOR">X_FILESYSTEM_VERSION_MINOR</a></li>
+<li><a href="#X_FILESYSTEM_VERSION_PATCH">X_FILESYSTEM_VERSION_PATCH</a></li>
+<li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
+<li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
+<li><a href="#X_FS_MAX_PATH">X_FS_MAX_PATH</a></li>
+<li><a href="#X_FS_PAHT_MAX_LENGTH">X_FS_PAHT_MAX_LENGTH</a></li>
+<li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
+<li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
+<li><a href="#x_fs_path">x_fs_path</a></li>
+<li><a href="#x_fs_path_join">x_fs_path_join</a></li>
+<li><a href="#x_fs_path_join_slice">x_fs_path_join_slice</a></li>
 
         </ul>
       </details>
@@ -126,12 +126,12 @@
       <details open>
         <summary>Structs</summary>
         <ul>
-          <li><a href="#XFSDireEntry">XFSDireEntry</a></li>
+          <li><a href="#FSFileStat">FSFileStat</a></li>
+<li><a href="#XFSDireEntry">XFSDireEntry</a></li>
+<li><a href="#XFSDireEntry_t">XFSDireEntry_t</a></li>
 <li><a href="#XFSDireHandle">XFSDireHandle</a></li>
 <li><a href="#XFSWatch">XFSWatch</a></li>
-<li><a href="#XFSDireEntry_t">XFSDireEntry_t</a></li>
 <li><a href="#XFSWatchEvent">XFSWatchEvent</a></li>
-<li><a href="#FSFileStat">FSFileStat</a></li>
 <li><a href="#dirent">dirent</a></li>
 <li><a href="#stat">stat</a></li>
 
@@ -172,7 +172,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -430,9 +429,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Directory path to search.</dd>
-<dt><code>entry</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSDireEntry">XFSDireEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
 <dd>Output directory entry filled with the first result.</dd>
 
   </dl>
@@ -454,7 +453,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Directory path to create.</dd>
 
   </dl>
@@ -476,7 +475,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Directory path to create.</dd>
 
   </dl>
@@ -498,7 +497,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>directory</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">directory</span></code></dt>
 <dd>Directory path to delete.</dd>
 
   </dl>
@@ -522,9 +521,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>file</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span></code></dt>
 <dd>Source file path.</dd>
-<dt><code>newFile</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">newFile</span></code></dt>
 <dd>Destination file path.</dd>
 
   </dl>
@@ -548,9 +547,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>file</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span></code></dt>
 <dd>Source file path.</dd>
-<dt><code>newFile</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">newFile</span></code></dt>
 <dd>Destination file path.</dd>
 
   </dl>
@@ -574,9 +573,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>dirHandle</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">dirHandle</span></code></dt>
 <dd>Enumeration handle returned by x_fs_find_first_file().</dd>
-<dt><code>entry</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSDireEntry">XFSDireEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
 <dd>Output directory entry filled with the next result.</dd>
 
   </dl>
@@ -598,7 +597,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>out</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
 <dd>Output path buffer to receive the temp folder.</dd>
 
   </dl>
@@ -620,7 +619,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Output path buffer to receive the current working directory.</dd>
 
   </dl>
@@ -642,7 +641,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>New working directory path.</dd>
 
   </dl>
@@ -678,7 +677,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>dirHandle</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">dirHandle</span></code></dt>
 <dd>Enumeration handle to close.</dd>
 
   </dl>
@@ -700,7 +699,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to watch (directory or file, depending on platform support).</dd>
 
   </dl>
@@ -722,7 +721,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>fw</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span><span class="tok_id">fw</span></code></dt>
 <dd>Watch handle to close.</dd>
 
   </dl>
@@ -747,11 +746,11 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>fw</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span><span class="tok_id">fw</span></code></dt>
 <dd>Watch handle.</dd>
-<dt><code>out_events</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSWatchEvent">XFSWatchEvent</a></span> <span class="tok_pun">*</span><span class="tok_id">out_events</span></code></dt>
 <dd>Output array to receive events.</dd>
-<dt><code>max_events</code></dt>
+<dt><code><span class="tok_kw">int32_t</span> <span class="tok_id">max_events</span></code></dt>
 <dd>Maximum number of events to write to out_events.</dd>
 
   </dl>
@@ -773,7 +772,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path to normalize.</dd>
 
   </dl>
@@ -795,7 +794,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
 
   </dl>
@@ -839,7 +838,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
 
   </dl>
@@ -883,7 +882,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
 
   </dl>
@@ -929,7 +928,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>out</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
 <dd>Output path to receive the resulting path.</dd>
 
   </dl>
@@ -985,7 +984,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1007,7 +1006,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1029,7 +1028,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1051,7 +1050,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1073,7 +1072,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1095,7 +1094,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1117,7 +1116,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1139,7 +1138,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1161,7 +1160,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1183,7 +1182,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1205,7 +1204,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1227,7 +1226,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1249,7 +1248,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1271,7 +1270,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1293,7 +1292,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>p</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span></code></dt>
 <dd>Path object.</dd>
 
   </dl>
@@ -1317,9 +1316,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>p</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span></code></dt>
 <dd>Path to append to.</dd>
-<dt><code>comp</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">comp</span></code></dt>
 <dd>Component to append.</dd>
 
   </dl>
@@ -1343,9 +1342,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to modify.</dd>
-<dt><code>new_ext</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">new_ext</span></code></dt>
 <dd>New extension (with or without leading dot, depending on implementation).</dd>
 
   </dl>
@@ -1369,9 +1368,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>First path.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span></code></dt>
 <dd>Second path.</dd>
 
   </dl>
@@ -1395,9 +1394,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>Path.</dd>
-<dt><code>cstr</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span></code></dt>
 <dd>C string path.</dd>
 
   </dl>
@@ -1421,9 +1420,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>Path.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span></code></dt>
 <dd>Small string to compare against.</dd>
 
   </dl>
@@ -1447,9 +1446,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>Path.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span></code></dt>
 <dd>C string path.</dd>
 
   </dl>
@@ -1471,7 +1470,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
 
   </dl>
@@ -1517,9 +1516,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sv</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span></code></dt>
 <dd>Input slice containing a path string.</dd>
-<dt><code>out</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
 <dd>Output path to receive the converted string.</dd>
 
   </dl>
@@ -1544,11 +1543,11 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>from_path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">from_path</span></code></dt>
 <dd>Base path.</dd>
-<dt><code>to_path</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">to_path</span></code></dt>
 <dd>Target path.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the relative path.</dd>
 
   </dl>
@@ -1573,11 +1572,11 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>from_path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">from_path</span></code></dt>
 <dd>First path.</dd>
-<dt><code>to_path</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">to_path</span></code></dt>
 <dd>Second path.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the common prefix.</dd>
 
   </dl>
@@ -1601,9 +1600,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>p</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span></code></dt>
 <dd>Path to set.</dd>
-<dt><code>cstr</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span></code></dt>
 <dd>Source C string.</dd>
 
   </dl>
@@ -1627,9 +1626,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>p</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span></code></dt>
 <dd>Path to set.</dd>
-<dt><code>slice</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">slice</span></code></dt>
 <dd>stdx slice string.</dd>
 
   </dl>
@@ -1655,13 +1654,13 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
-<dt><code>out_components</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_components</span></code></dt>
 <dd>Output array of components.</dd>
-<dt><code>max_components</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">max_components</span></code></dt>
 <dd>Maximum number of components to write.</dd>
-<dt><code>out_count</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_count</span></code></dt>
 <dd>Output count of components written.</dd>
 
   </dl>
@@ -1683,7 +1682,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>out</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
 <dd>Output path to receive the executable path.</dd>
 
   </dl>
@@ -1707,9 +1706,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>out_stat</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#FSFileStat">FSFileStat</a></span> <span class="tok_pun">*</span><span class="tok_id">out_stat</span></code></dt>
 <dd>Output struct receiving the metadata.</dd>
 
   </dl>
@@ -1733,9 +1732,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>out_time</code></dt>
+<dt><code><span class="tok_id">time_t</span> <span class="tok_pun">*</span><span class="tok_id">out_time</span></code></dt>
 <dd>Output time receiving the modification time.</dd>
 
   </dl>
@@ -1759,9 +1758,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>out_time</code></dt>
+<dt><code><span class="tok_id">time_t</span> <span class="tok_pun">*</span><span class="tok_id">out_time</span></code></dt>
 <dd>Output time receiving the creation time.</dd>
 
   </dl>
@@ -1785,9 +1784,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>out_permissions</code></dt>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_permissions</span></code></dt>
 <dd>Output value receiving the permissions (platform-dependent).</dd>
 
   </dl>
@@ -1811,9 +1810,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>permissions</code></dt>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_id">permissions</span></code></dt>
 <dd>Permissions value to set (platform-dependent).</dd>
 
   </dl>
@@ -1835,7 +1834,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1857,7 +1856,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1879,7 +1878,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1903,9 +1902,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Symbolic link path.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the resolved link target.</dd>
 
   </dl>
@@ -1929,9 +1928,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>prefix</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span></code></dt>
 <dd>Prefix to use for the temporary file name.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the created temp file path.</dd>
 
   </dl>
@@ -1955,9 +1954,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>prefix</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span></code></dt>
 <dd>Prefix to use for the temporary directory name.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the created temp directory path.</dd>
 
   </dl>

@@ -20,18 +20,18 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#x_ini_load_file">x_ini_load_file</a></li>
-<li><a href="#x_ini_load_mem">x_ini_load_mem</a></li>
+          <li><a href="#x_ini_err_str">x_ini_err_str</a></li>
 <li><a href="#x_ini_free">x_ini_free</a></li>
-<li><a href="#x_ini_err_str">x_ini_err_str</a></li>
 <li><a href="#x_ini_get">x_ini_get</a></li>
-<li><a href="#x_ini_get_i32">x_ini_get_i32</a></li>
-<li><a href="#x_ini_get_f32">x_ini_get_f32</a></li>
 <li><a href="#x_ini_get_bool">x_ini_get_bool</a></li>
-<li><a href="#x_ini_section_count">x_ini_section_count</a></li>
-<li><a href="#x_ini_section_name">x_ini_section_name</a></li>
+<li><a href="#x_ini_get_f32">x_ini_get_f32</a></li>
+<li><a href="#x_ini_get_i32">x_ini_get_i32</a></li>
 <li><a href="#x_ini_key_count">x_ini_key_count</a></li>
 <li><a href="#x_ini_key_name">x_ini_key_name</a></li>
+<li><a href="#x_ini_load_file">x_ini_load_file</a></li>
+<li><a href="#x_ini_load_mem">x_ini_load_mem</a></li>
+<li><a href="#x_ini_section_count">x_ini_section_count</a></li>
+<li><a href="#x_ini_section_name">x_ini_section_name</a></li>
 <li><a href="#x_ini_value_at">x_ini_value_at</a></li>
 
         </ul>
@@ -40,16 +40,16 @@
       <details open>
         <summary>Macros</summary>
         <ul>
-          <li><a href="#X_INI_VERSION_MAJOR">X_INI_VERSION_MAJOR</a></li>
+          <li><a href="#X_INI_ALLOC">X_INI_ALLOC</a></li>
+<li><a href="#X_INI_DEFAULT_ENTRIES_CAP">X_INI_DEFAULT_ENTRIES_CAP</a></li>
+<li><a href="#X_INI_DEFAULT_SECTIONS_CAP">X_INI_DEFAULT_SECTIONS_CAP</a></li>
+<li><a href="#X_INI_FREE">X_INI_FREE</a></li>
+<li><a href="#X_INI_MAX_LINE">X_INI_MAX_LINE</a></li>
+<li><a href="#X_INI_REALLOC">X_INI_REALLOC</a></li>
+<li><a href="#X_INI_VERSION">X_INI_VERSION</a></li>
+<li><a href="#X_INI_VERSION_MAJOR">X_INI_VERSION_MAJOR</a></li>
 <li><a href="#X_INI_VERSION_MINOR">X_INI_VERSION_MINOR</a></li>
 <li><a href="#X_INI_VERSION_PATCH">X_INI_VERSION_PATCH</a></li>
-<li><a href="#X_INI_VERSION">X_INI_VERSION</a></li>
-<li><a href="#X_INI_DEFAULT_SECTIONS_CAP">X_INI_DEFAULT_SECTIONS_CAP</a></li>
-<li><a href="#X_INI_DEFAULT_ENTRIES_CAP">X_INI_DEFAULT_ENTRIES_CAP</a></li>
-<li><a href="#X_INI_MAX_LINE">X_INI_MAX_LINE</a></li>
-<li><a href="#X_INI_ALLOC">X_INI_ALLOC</a></li>
-<li><a href="#X_INI_REALLOC">X_INI_REALLOC</a></li>
-<li><a href="#X_INI_FREE">X_INI_FREE</a></li>
 
         </ul>
       </details>
@@ -57,10 +57,10 @@
       <details open>
         <summary>Structs</summary>
         <ul>
-          <li><a href="#XIniError">XIniError</a></li>
-<li><a href="#XIniSection">XIniSection</a></li>
+          <li><a href="#XIni">XIni</a></li>
 <li><a href="#XIniEntry">XIniEntry</a></li>
-<li><a href="#XIni">XIni</a></li>
+<li><a href="#XIniError">XIniError</a></li>
+<li><a href="#XIniSection">XIniSection</a></li>
 
         </ul>
       </details>
@@ -98,7 +98,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -287,11 +286,11 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to the INI file.</dd>
-<dt><code>out_ini</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">out_ini</span></code></dt>
 <dd>Output structure receiving the parsed INI data.</dd>
-<dt><code>err</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_ini.html#XIniError">XIniError</a></span> <span class="tok_pun">*</span><span class="tok_id">err</span></code></dt>
 <dd>Optional output error information (may be NULL).</dd>
 
   </dl>
@@ -317,13 +316,13 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>data</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span></code></dt>
 <dd>Pointer to the INI data in memory.</dd>
-<dt><code>size</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>Size of the data buffer in bytes.</dd>
-<dt><code>out_ini</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">out_ini</span></code></dt>
 <dd>Output structure receiving the parsed INI data.</dd>
-<dt><code>err</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_ini.html#XIniError">XIniError</a></span> <span class="tok_pun">*</span><span class="tok_id">err</span></code></dt>
 <dd>Optional output error information (may be NULL).</dd>
 
   </dl>
@@ -345,7 +344,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>INI structure to free.</dd>
 
   </dl>
@@ -367,7 +366,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>code</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIniErrorCode">XIniErrorCode</a></span> <span class="tok_id">code</span></code></dt>
 <dd>Error code.</dd>
 
   </dl>
@@ -393,13 +392,13 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>Parsed INI data.</dd>
-<dt><code>section</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
 <dd>Section name.</dd>
-<dt><code>key</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
 <dd>Key name.</dd>
-<dt><code>def_value</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">def_value</span></code></dt>
 <dd>Default value returned if the key is not found.</dd>
 
   </dl>
@@ -425,13 +424,13 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>Parsed INI data.</dd>
-<dt><code>section</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
 <dd>Section name.</dd>
-<dt><code>key</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
 <dd>Key name.</dd>
-<dt><code>def_value</code></dt>
+<dt><code><span class="tok_kw">int32_t</span> <span class="tok_id">def_value</span></code></dt>
 <dd>Default value returned if the key is not found or cannot be parsed.</dd>
 
   </dl>
@@ -457,13 +456,13 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>Parsed INI data.</dd>
-<dt><code>section</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
 <dd>Section name.</dd>
-<dt><code>key</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
 <dd>Key name.</dd>
-<dt><code>def_value</code></dt>
+<dt><code><span class="tok_kw">float</span> <span class="tok_id">def_value</span></code></dt>
 <dd>Default value returned if the key is not found or cannot be parsed.</dd>
 
   </dl>
@@ -489,13 +488,13 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>Parsed INI data.</dd>
-<dt><code>section</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
 <dd>Section name.</dd>
-<dt><code>key</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
 <dd>Key name.</dd>
-<dt><code>def_value</code></dt>
+<dt><code><span class="tok_kw">bool</span> <span class="tok_id">def_value</span></code></dt>
 <dd>Default value returned if the key is not found or cannot be parsed.</dd>
 
   </dl>
@@ -517,7 +516,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>Parsed INI data.</dd>
 
   </dl>
@@ -541,9 +540,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>Parsed INI data.</dd>
-<dt><code>section_index</code></dt>
+<dt><code><span class="tok_kw">int</span> <span class="tok_id">section_index</span></code></dt>
 <dd>Zero-based section index.</dd>
 
   </dl>
@@ -567,9 +566,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>Parsed INI data.</dd>
-<dt><code>section_index</code></dt>
+<dt><code><span class="tok_kw">int</span> <span class="tok_id">section_index</span></code></dt>
 <dd>Zero-based section index.</dd>
 
   </dl>
@@ -594,11 +593,11 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>Parsed INI data.</dd>
-<dt><code>section_index</code></dt>
+<dt><code><span class="tok_kw">int</span> <span class="tok_id">section_index</span></code></dt>
 <dd>Zero-based section index.</dd>
-<dt><code>key_index</code></dt>
+<dt><code><span class="tok_kw">int</span> <span class="tok_id">key_index</span></code></dt>
 <dd>Zero-based key index within the section.</dd>
 
   </dl>
@@ -623,11 +622,11 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ini</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
 <dd>Parsed INI data.</dd>
-<dt><code>section_index</code></dt>
+<dt><code><span class="tok_kw">int</span> <span class="tok_id">section_index</span></code></dt>
 <dd>Zero-based section index.</dd>
-<dt><code>key_index</code></dt>
+<dt><code><span class="tok_kw">int</span> <span class="tok_id">key_index</span></code></dt>
 <dd>Zero-based key index within the section.</dd>
 
   </dl>

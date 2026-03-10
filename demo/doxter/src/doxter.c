@@ -105,8 +105,10 @@ typedef struct
   const DoxterConfig      *config;
   const DoxterSymbol      *symbol;
   const DoxterSourceInfo  *source;
-  XSlice                  param_name;
   XSlice                  param_desc;
+  XSlice                  param_name;
+  DoxterTokenSpan         param_decl;
+  bool                    has_param_decl;
   XSlice                  params_items;
   XSlice                  return_desc;
 } DoxterTemplateCtx;
@@ -152,6 +154,67 @@ static bool s_project_source_add(DoxterProject *proj, const char* input_file_nam
   return true;
 }
 
+static int s_symbol_name_compare(const void *a, const void *b)
+{
+  const DoxterSymbol *sa = *(const DoxterSymbol * const *)a;
+  const DoxterSymbol *sb = *(const DoxterSymbol * const *)b;
+
+  size_t min_len = sa->name.length < sb->name.length ? sa->name.length : sb->name.length;
+  int cmp = memcmp(sa->name.ptr, sb->name.ptr, min_len);
+
+  if (cmp != 0)
+  {
+    return cmp;
+  }
+
+  if (sa->name.length < sb->name.length)
+  {
+    return -1;
+  }
+
+  if (sa->name.length > sb->name.length)
+  {
+    return 1;
+  }
+
+  return 0;
+}
+
+static u32 s_collect_sorted_symbols_for_type(
+    DoxterProject *proj,
+    u32 source_index,
+    DoxterType type,
+    DoxterSymbol **out_syms,
+    u32 max_syms)
+{
+  const DoxterSourceInfo *source = &proj->sources[source_index];
+  u32 first = source->first_symbol_index;
+  u32 end = first + source->num_symbols;
+  u32 count = 0;
+
+  for (u32 i = first; i < end; ++i)
+  {
+    DoxterSymbol *sym = x_array_get(proj->symbols, i);
+
+    if (sym->name.length == 0)
+    {
+      continue;
+    }
+
+    if (sym->type != type)
+    {
+      continue;
+    }
+
+    if (count < max_syms)
+    {
+      out_syms[count++] = sym;
+    }
+  }
+
+  qsort(out_syms, count, sizeof(out_syms[0]), s_symbol_name_compare);
+  return count;
+}
 
 bool doxter_symbol_map_get(DoxterProject *project, XSlice text, DoxterSymbol *out_sym)
 {
@@ -161,6 +224,61 @@ bool doxter_symbol_map_get(DoxterProject *project, XSlice text, DoxterSymbol *ou
 
   return x_hashtable_dox_symbol_map_get(project->symbol_map, key, out_sym);
 }
+
+static bool s_param_span_contains_name(
+    DoxterProject *project,
+    DoxterTokenSpan ts,
+    XSlice param_name)
+{
+  for (u32 i = 0; i < ts.count; ++i)
+  {
+    const DoxterToken *t =
+      (const DoxterToken *)x_array_get(project->tokens, ts.first + i);
+
+    if (t->kind == DOXTER_IDENT && x_slice_eq(t->text, param_name))
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static bool s_function_find_param_span(
+    DoxterProject *project,
+    const DoxterSymbol *sym,
+    XSlice param_name,
+    DoxterTokenSpan *out_param_ts)
+{
+  if (!project || !sym || !out_param_ts)
+  {
+    return false;
+  }
+
+  if (sym->type != DOXTER_FUNCTION)
+  {
+    printf("!!! %.*s is not function\n", (int) sym->name.length, sym->name.ptr);
+    return false;
+  }
+
+  for (u32 i = 0; i < sym->stmt.fn.param_count; ++i)
+  {
+    DoxterTokenSpan ts = sym->stmt.fn.param_ts[i];
+    if (ts.count == 0)
+    {
+      continue;
+    }
+
+    if (s_param_span_contains_name(project, ts, param_name))
+    {
+      *out_param_ts = ts;
+      return true;
+    }
+  }
+
+  return false;
+}
+
 
 // --------------------------------------------------------
 //  Comment tag parsing 
@@ -307,6 +425,10 @@ static void s_render_template(const char *tmpl,
     u32 source_index,
     XStrBuilder *out)
 {
+  DoxterTemplateCtx backup = s_template_ctx;
+  s_template_ctx.project = project;
+  s_template_ctx.source_index = source_index;
+
   const char *p = tmpl;
 
   while (*p != '\0')
@@ -335,17 +457,21 @@ static void s_render_template(const char *tmpl,
         (size_t) (close - (open + 2)));
     name_slice = x_slice_trim(name_slice);
 
-    char   placeholder[64];
+    char placeholder[64];
     size_t copy_len = name_slice.length;
     if (copy_len >= sizeof(placeholder))
     {
       copy_len = sizeof(placeholder) - 1;
     }
+
     memcpy(placeholder, name_slice.ptr, copy_len);
     placeholder[copy_len] = '\0';
+
     s_template_resolve_placeholder(placeholder, project, source_index, out);
     p = close + 2;
   }
+
+  s_template_ctx = backup;
 }
 
 // --------------------------------------------------------
@@ -436,12 +562,27 @@ static void s_render_params_block(const DoxterSymbol *sym,
       {
         if (tag.kind == DOX_TAG_PARAM)
         {
+          DoxterTokenSpan param_decl = {0};
+          bool has_param_decl = false;
+
+          if (sym->type == DOXTER_FUNCTION)
+          {
+            has_param_decl = s_function_find_param_span(
+                s_template_ctx.project,
+                sym,
+                tag.name,
+                &param_decl);
+          }
+
           DoxterTemplateCtx backup;
           s_template_ctx_push(&backup);
           s_template_ctx.role = DOX_TMPL_ROLE_PARAM_ITEM;
           s_template_ctx.param_name = tag.name;
           s_template_ctx.param_desc = tag.text;
+          s_template_ctx.param_decl = param_decl;
+          s_template_ctx.has_param_decl = has_param_decl;
           s_template_ctx.symbol = sym;
+          s_template_ctx.project = s_template_ctx.project;
 
           s_render_template(templates->param_item_html,
               s_template_ctx.project,
@@ -460,7 +601,7 @@ static void s_render_params_block(const DoxterSymbol *sym,
       DoxterTemplateCtx backup;
       s_template_ctx_push(&backup);
       s_template_ctx.role = DOX_TMPL_ROLE_PARAMS;
-      s_template_ctx.params_items = x_slice_init(items_str, (size_t) items->length);
+      s_template_ctx.params_items = x_slice_init(items_str, (size_t)items->length);
       s_template_ctx.symbol = sym;
 
       s_render_template(templates->params_html,
@@ -523,7 +664,8 @@ typedef struct
 /*
  * Render index page for an entire source file
  */
-static void s_render_index_for_type(DoxterProject *proj,
+static void s_render_index_for_type(
+    DoxterProject *proj,
     u32 source_index,
     DoxterType type,
     XStrBuilder *out)
@@ -531,20 +673,34 @@ static void s_render_index_for_type(DoxterProject *proj,
   const DoxterSourceInfo* source = &(proj->sources[source_index]);
 
   const u32 first = source->first_symbol_index;
-  const u32 count = first + source->num_symbols;
-  for (u32 symbol_i = first; symbol_i < count; symbol_i++)
+  const u32 end   = first + source->num_symbols;
+
+  DoxterSymbol *tmp[256];
+  u32 count = 0;
+
+  for (u32 i = first; i < end; ++i)
   {
-    DoxterSymbol *sym = (DoxterSymbol *) x_array_get(proj->symbols, symbol_i);
+    DoxterSymbol *sym = (DoxterSymbol*)x_array_get(proj->symbols, i);
 
     if (sym->name.length == 0) continue;
     if (sym->type != type) continue;
+
+    tmp[count++] = sym;
+  }
+
+  qsort(tmp, count, sizeof(tmp[0]), s_symbol_name_compare);
+
+  for (u32 i = 0; i < count; ++i)
+  {
+    DoxterSymbol *sym = tmp[i];
 
     DoxterTemplateCtx backup;
     s_template_ctx_push(&backup);
     s_template_ctx.role = DOX_TMPL_ROLE_INDEX_ITEM;
     s_template_ctx.symbol = sym;
 
-    s_render_template(proj->templates.index_item_html,
+    s_render_template(
+        proj->templates.index_item_html,
         proj,
         source_index,
         out);
@@ -635,9 +791,19 @@ static void s_template_resolve_placeholder(const char *placeholder,
   if (s_placeholder_match(placeholder, hash, DOX_PH_PARAM_NAME_STR,
         DOX_PH_PARAM_NAME_HASH))
   {
-    x_strbuilder_append_substring(out,
-        s_template_ctx.param_name.ptr,
-        s_template_ctx.param_name.length);
+    if (s_template_ctx.has_param_decl)
+    {
+      doxter_pretty_format_span(
+          s_template_ctx.project,
+          s_template_ctx.param_decl,
+          out);
+    }
+    else
+    {
+      x_strbuilder_append_substring(out,
+          s_template_ctx.param_name.ptr,
+          s_template_ctx.param_name.length);
+    }
     return;
   }
 

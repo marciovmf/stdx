@@ -20,21 +20,22 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#x_array_create">x_array_create</a></li>
-<li><a href="#x_array_get">x_array_get</a></li>
-<li><a href="#x_array_data">x_array_data</a></li>
+          <li><a href="#aaa_aaa_aaa_complex">aaa_aaa_aaa_complex</a></li>
 <li><a href="#x_array_add">x_array_add</a></li>
-<li><a href="#x_array_insert">x_array_insert</a></li>
-<li><a href="#x_array_delete_range">x_array_delete_range</a></li>
-<li><a href="#x_array_clear">x_array_clear</a></li>
-<li><a href="#x_array_delete_at">x_array_delete_at</a></li>
-<li><a href="#x_array_destroy">x_array_destroy</a></li>
-<li><a href="#x_array_count">x_array_count</a></li>
 <li><a href="#x_array_capacity">x_array_capacity</a></li>
-<li><a href="#x_array_push">x_array_push</a></li>
-<li><a href="#x_array_pop">x_array_pop</a></li>
-<li><a href="#x_array_top">x_array_top</a></li>
+<li><a href="#x_array_clear">x_array_clear</a></li>
+<li><a href="#x_array_count">x_array_count</a></li>
+<li><a href="#x_array_create">x_array_create</a></li>
+<li><a href="#x_array_data">x_array_data</a></li>
+<li><a href="#x_array_delete_at">x_array_delete_at</a></li>
+<li><a href="#x_array_delete_range">x_array_delete_range</a></li>
+<li><a href="#x_array_destroy">x_array_destroy</a></li>
+<li><a href="#x_array_get">x_array_get</a></li>
+<li><a href="#x_array_insert">x_array_insert</a></li>
 <li><a href="#x_array_is_empty">x_array_is_empty</a></li>
+<li><a href="#x_array_pop">x_array_pop</a></li>
+<li><a href="#x_array_push">x_array_push</a></li>
+<li><a href="#x_array_top">x_array_top</a></li>
 
         </ul>
       </details>
@@ -42,15 +43,15 @@
       <details open>
         <summary>Macros</summary>
         <ul>
-          <li><a href="#X_ARRAY_VERSION_MAJOR">X_ARRAY_VERSION_MAJOR</a></li>
-<li><a href="#X_ARRAY_VERSION_MINOR">X_ARRAY_VERSION_MINOR</a></li>
-<li><a href="#X_ARRAY_VERSION_PATCH">X_ARRAY_VERSION_PATCH</a></li>
-<li><a href="#X_ARRAY_VERSION">X_ARRAY_VERSION</a></li>
+          <li><a href="#X_ARRAY_ALLOC">X_ARRAY_ALLOC</a></li>
+<li><a href="#X_ARRAY_FREE">X_ARRAY_FREE</a></li>
+<li><a href="#X_ARRAY_REALLOC">X_ARRAY_REALLOC</a></li>
 <li><a href="#X_ARRAY_TYPE">X_ARRAY_TYPE</a></li>
 <li><a href="#X_ARRAY_TYPE_NAMED">X_ARRAY_TYPE_NAMED</a></li>
-<li><a href="#X_ARRAY_ALLOC">X_ARRAY_ALLOC</a></li>
-<li><a href="#X_ARRAY_REALLOC">X_ARRAY_REALLOC</a></li>
-<li><a href="#X_ARRAY_FREE">X_ARRAY_FREE</a></li>
+<li><a href="#X_ARRAY_VERSION">X_ARRAY_VERSION</a></li>
+<li><a href="#X_ARRAY_VERSION_MAJOR">X_ARRAY_VERSION_MAJOR</a></li>
+<li><a href="#X_ARRAY_VERSION_MINOR">X_ARRAY_VERSION_MINOR</a></li>
+<li><a href="#X_ARRAY_VERSION_PATCH">X_ARRAY_VERSION_PATCH</a></li>
 
         </ul>
       </details>
@@ -97,7 +98,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -163,7 +163,27 @@ additional runtime overhead.</p>
 </div>
       </header>
 
-      <article id="X_ARRAY_VERSION_MAJOR" class="symbol">
+      <article id="aaa_aaa_aaa_complex" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">aaa_aaa_aaa_complex</span></h2>
+  <p class="brief">Does it parse correctly ?</p>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">aaa_aaa_aaa_complex</span><span class="tok_pun">(</span>
+ <span class="tok_kw">int</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">foo</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">,</span> <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_pun">,</span>
+ <span class="tok_kw">bool</span> <span class="tok_id">call</span><span class="tok_pun">)</span>;</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">int</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">foo</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">,</span> <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">)</span></code></dt>
+<dd></dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_ARRAY_VERSION_MAJOR" class="symbol">
   <div class="meta">
     <span class="symbol-kind">Macro</span>
   </div>
@@ -241,9 +261,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>elementSize</code></dt>
+    <dt><code><span class="tok_id">size_t</span> <span class="tok_id">elementSize</span></code></dt>
 <dd>Size in bytes of a single element stored in the array.</dd>
-<dt><code>capacity</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">capacity</span></code></dt>
 <dd>Initial number of elements the array can hold.</dd>
 
   </dl>
@@ -267,9 +287,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
-<dt><code>index</code></dt>
+<dt><code><span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">index</span></code></dt>
 <dd>Zero-based index of the element.</dd>
 
   </dl>
@@ -291,7 +311,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
 
   </dl>
@@ -315,9 +335,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
-<dt><code>data</code></dt>
+<dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span></code></dt>
 <dd>Pointer to the element data to copy into the array.</dd>
 
   </dl>
@@ -342,11 +362,11 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
-<dt><code>data</code></dt>
+<dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span></code></dt>
 <dd>Pointer to the element data to copy into the array.</dd>
-<dt><code>index</code></dt>
+<dt><code><span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">index</span></code></dt>
 <dd>Index at which the element will be inserted.</dd>
 
   </dl>
@@ -371,11 +391,11 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
-<dt><code>start</code></dt>
+<dt><code><span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">start</span></code></dt>
 <dd>Index of the first element to delete.</dd>
-<dt><code>end</code></dt>
+<dt><code><span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">end</span></code></dt>
 <dd>Index of the last element to delete (inclusive).</dd>
 
   </dl>
@@ -397,7 +417,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
 
   </dl>
@@ -421,9 +441,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
-<dt><code>index</code></dt>
+<dt><code><span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">index</span></code></dt>
 <dd>Index of the element to remove.</dd>
 
   </dl>
@@ -445,7 +465,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
 
   </dl>
@@ -467,7 +487,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
 
   </dl>
@@ -489,7 +509,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arr</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
 <dd>Pointer to the array.</dd>
 
   </dl>
@@ -513,9 +533,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>array</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">array</span></code></dt>
 <dd>Pointer to the array.</dd>
-<dt><code>value</code></dt>
+<dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">value</span></code></dt>
 <dd>Pointer to the element data to copy into the array.</dd>
 
   </dl>
@@ -537,7 +557,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>array</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">array</span></code></dt>
 <dd>Pointer to the array.</dd>
 
   </dl>
@@ -559,7 +579,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>array</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">array</span></code></dt>
 <dd>Pointer to the array.</dd>
 
   </dl>
@@ -581,7 +601,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>array</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">array</span></code></dt>
 <dd>Pointer to the array.</dd>
 
   </dl>

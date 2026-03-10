@@ -20,13 +20,13 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#logger_init">logger_init</a></li>
-<li><a href="#logger_close">logger_close</a></li>
-<li><a href="#logger_set_console">logger_set_console</a></li>
+          <li><a href="#logger_close">logger_close</a></li>
 <li><a href="#logger_get_console">logger_get_console</a></li>
+<li><a href="#logger_init">logger_init</a></li>
 <li><a href="#logger_log">logger_log</a></li>
 <li><a href="#logger_log_to">logger_log_to</a></li>
 <li><a href="#logger_print">logger_print</a></li>
+<li><a href="#logger_set_console">logger_set_console</a></li>
 
         </ul>
       </details>
@@ -34,18 +34,18 @@
       <details open>
         <summary>Macros</summary>
         <ul>
-          <li><a href="#X_LOG_VERSION_MAJOR">X_LOG_VERSION_MAJOR</a></li>
+          <li><a href="#X_LOG_BREAK">X_LOG_BREAK</a></li>
+<li><a href="#X_LOG_BUFFER_SIZE">X_LOG_BUFFER_SIZE</a></li>
+<li><a href="#X_LOG_VERSION">X_LOG_VERSION</a></li>
+<li><a href="#X_LOG_VERSION_MAJOR">X_LOG_VERSION_MAJOR</a></li>
 <li><a href="#X_LOG_VERSION_MINOR">X_LOG_VERSION_MINOR</a></li>
 <li><a href="#X_LOG_VERSION_PATCH">X_LOG_VERSION_PATCH</a></li>
-<li><a href="#X_LOG_VERSION">X_LOG_VERSION</a></li>
-<li><a href="#X_LOG_BUFFER_SIZE">X_LOG_BUFFER_SIZE</a></li>
-<li><a href="#X_LOG_BREAK">X_LOG_BREAK</a></li>
-<li><a href="#x_log_raw">x_log_raw</a></li>
 <li><a href="#x_log_debug">x_log_debug</a></li>
-<li><a href="#x_log_info">x_log_info</a></li>
-<li><a href="#x_log_warning">x_log_warning</a></li>
 <li><a href="#x_log_error">x_log_error</a></li>
 <li><a href="#x_log_fatal">x_log_fatal</a></li>
+<li><a href="#x_log_info">x_log_info</a></li>
+<li><a href="#x_log_raw">x_log_raw</a></li>
+<li><a href="#x_log_warning">x_log_warning</a></li>
 
         </ul>
       </details>
@@ -60,10 +60,10 @@
       <details open>
         <summary>Enums</summary>
         <ul>
-          <li><a href="#XLogLevel">XLogLevel</a></li>
-<li><a href="#XLogOutputFlags">XLogOutputFlags</a></li>
+          <li><a href="#XLogColor">XLogColor</a></li>
 <li><a href="#XLogComponent">XLogComponent</a></li>
-<li><a href="#XLogColor">XLogColor</a></li>
+<li><a href="#XLogLevel">XLogLevel</a></li>
+<li><a href="#XLogOutputFlags">XLogOutputFlags</a></li>
 
         </ul>
       </details>
@@ -93,7 +93,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -254,11 +253,11 @@ Can be overriden before including this header</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>outputs</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_log.html#XLogOutputFlags">XLogOutputFlags</a></span> <span class="tok_id">outputs</span></code></dt>
 <dd>Bitmask specifying enabled log outputs (console, file, etc.).</dd>
-<dt><code>level</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span></code></dt>
 <dd>Minimum log level to emit.</dd>
-<dt><code>filename</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span></code></dt>
 <dd>Optional file path for file output, or NULL if unused.</dd>
 
   </dl>
@@ -318,21 +317,21 @@ Passing NULL resets to stdout.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>level</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span></code></dt>
 <dd>Log severity level.</dd>
-<dt><code>fg</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">fg</span></code></dt>
 <dd>Foreground color.</dd>
-<dt><code>bg</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_log.html#XLogColor">XLogColor</a></span> <span class="tok_id">bg</span></code></dt>
 <dd>Background color.</dd>
-<dt><code>components</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_log.html#XLogComponent">XLogComponent</a></span> <span class="tok_id">components</span></code></dt>
 <dd>Bitmask controlling which components (timestamp, file, line, etc.) are included.</dd>
-<dt><code>file</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span></code></dt>
 <dd>Source file name.</dd>
-<dt><code>line</code></dt>
+<dt><code><span class="tok_kw">int</span> <span class="tok_id">line</span></code></dt>
 <dd>Source line number.</dd>
-<dt><code>func</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">func</span></code></dt>
 <dd>Source function name.</dd>
-<dt><code>fmt</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span></code></dt>
 <dd>printf-style format string.</dd>
 
   </dl>
@@ -377,9 +376,9 @@ File output configured via logger_init() is still honored when XLOG_OUTPUT_FILE 
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>level</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_log.html#XLogLevel">XLogLevel</a></span> <span class="tok_id">level</span></code></dt>
 <dd>Log severity level.</dd>
-<dt><code>fmt</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">fmt</span></code></dt>
 <dd>printf-style format string.</dd>
 
   </dl>

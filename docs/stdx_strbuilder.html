@@ -20,26 +20,26 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#x_strbuilder_create">x_strbuilder_create</a></li>
-<li><a href="#x_strbuilder_append">x_strbuilder_append</a></li>
+          <li><a href="#x_strbuilder_append">x_strbuilder_append</a></li>
 <li><a href="#x_strbuilder_append_char">x_strbuilder_append_char</a></li>
 <li><a href="#x_strbuilder_append_format">x_strbuilder_append_format</a></li>
 <li><a href="#x_strbuilder_append_substring">x_strbuilder_append_substring</a></li>
-<li><a href="#x_strbuilder_to_string">x_strbuilder_to_string</a></li>
-<li><a href="#x_strbuilder_destroy">x_strbuilder_destroy</a></li>
-<li><a href="#x_strbuilder_clear">x_strbuilder_clear</a></li>
-<li><a href="#x_strbuilder_length">x_strbuilder_length</a></li>
 <li><a href="#x_strbuilder_append_utf8_substring">x_strbuilder_append_utf8_substring</a></li>
+<li><a href="#x_strbuilder_clear">x_strbuilder_clear</a></li>
+<li><a href="#x_strbuilder_create">x_strbuilder_create</a></li>
+<li><a href="#x_strbuilder_destroy">x_strbuilder_destroy</a></li>
+<li><a href="#x_strbuilder_length">x_strbuilder_length</a></li>
+<li><a href="#x_strbuilder_to_string">x_strbuilder_to_string</a></li>
 <li><a href="#x_strbuilder_utf8_charlen">x_strbuilder_utf8_charlen</a></li>
-<li><a href="#x_wstrbuilder_create">x_wstrbuilder_create</a></li>
 <li><a href="#x_wstrbuilder_append">x_wstrbuilder_append</a></li>
 <li><a href="#x_wstrbuilder_append_char">x_wstrbuilder_append_char</a></li>
 <li><a href="#x_wstrbuilder_append_format">x_wstrbuilder_append_format</a></li>
 <li><a href="#x_wstrbuilder_clear">x_wstrbuilder_clear</a></li>
+<li><a href="#x_wstrbuilder_create">x_wstrbuilder_create</a></li>
 <li><a href="#x_wstrbuilder_destroy">x_wstrbuilder_destroy</a></li>
-<li><a href="#x_wstrbuilder_to_string">x_wstrbuilder_to_string</a></li>
-<li><a href="#x_wstrbuilder_length">x_wstrbuilder_length</a></li>
 <li><a href="#x_wstrbuilder_grow">x_wstrbuilder_grow</a></li>
+<li><a href="#x_wstrbuilder_length">x_wstrbuilder_length</a></li>
+<li><a href="#x_wstrbuilder_to_string">x_wstrbuilder_to_string</a></li>
 
         </ul>
       </details>
@@ -47,15 +47,15 @@
       <details open>
         <summary>Macros</summary>
         <ul>
-          <li><a href="#X_STRBUILDER_VERSION_MAJOR">X_STRBUILDER_VERSION_MAJOR</a></li>
+          <li><a href="#STRBUILDER_STACK_BUFFER_SIZE">STRBUILDER_STACK_BUFFER_SIZE</a></li>
+<li><a href="#X_STRBUILDER_ALLOC">X_STRBUILDER_ALLOC</a></li>
+<li><a href="#X_STRBUILDER_FREE">X_STRBUILDER_FREE</a></li>
+<li><a href="#X_STRBUILDER_REALLOC">X_STRBUILDER_REALLOC</a></li>
+<li><a href="#X_STRBUILDER_VERSION">X_STRBUILDER_VERSION</a></li>
+<li><a href="#X_STRBUILDER_VERSION_MAJOR">X_STRBUILDER_VERSION_MAJOR</a></li>
 <li><a href="#X_STRBUILDER_VERSION_MINOR">X_STRBUILDER_VERSION_MINOR</a></li>
 <li><a href="#X_STRBUILDER_VERSION_PATCH">X_STRBUILDER_VERSION_PATCH</a></li>
-<li><a href="#X_STRBUILDER_VERSION">X_STRBUILDER_VERSION</a></li>
-<li><a href="#STRBUILDER_STACK_BUFFER_SIZE">STRBUILDER_STACK_BUFFER_SIZE</a></li>
 <li><a href="#x_strbuilder_append_cstr">x_strbuilder_append_cstr</a></li>
-<li><a href="#X_STRBUILDER_ALLOC">X_STRBUILDER_ALLOC</a></li>
-<li><a href="#X_STRBUILDER_REALLOC">X_STRBUILDER_REALLOC</a></li>
-<li><a href="#X_STRBUILDER_FREE">X_STRBUILDER_FREE</a></li>
 
         </ul>
       </details>
@@ -101,7 +101,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -247,9 +246,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Destination builder</dd>
-<dt><code>str</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">str</span></code></dt>
 <dd>Source null-terminated string (NULL is ignored)</dd>
 
   </dl>
@@ -269,9 +268,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Destination builder</dd>
-<dt><code>c</code></dt>
+<dt><code><span class="tok_kw">char</span> <span class="tok_id">c</span></code></dt>
 <dd>Character to append</dd>
 
   </dl>
@@ -292,9 +291,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Destination builder</dd>
-<dt><code>format</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">format</span></code></dt>
 <dd>Format string (printf-style)</dd>
 
   </dl>
@@ -315,11 +314,11 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Destination builder</dd>
-<dt><code>start</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">start</span></code></dt>
 <dd>Pointer to first byte</dd>
-<dt><code>length</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">length</span></code></dt>
 <dd>Number of bytes to copy</dd>
 
   </dl>
@@ -337,7 +336,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Builder to query</dd>
 
   </dl>
@@ -359,7 +358,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Builder to destroy (may be NULL)</dd>
 
   </dl>
@@ -377,7 +376,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Builder to clear</dd>
 
   </dl>
@@ -395,7 +394,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Builder to query</dd>
 
   </dl>
@@ -421,13 +420,13 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Destination builder</dd>
-<dt><code>utf8</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span></code></dt>
 <dd>Source UTF-8 string</dd>
-<dt><code>start_cp</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">start_cp</span></code></dt>
 <dd>Start code-point index</dd>
-<dt><code>len_cp</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">len_cp</span></code></dt>
 <dd>Number of code points to append</dd>
 
   </dl>
@@ -445,7 +444,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Builder to query</dd>
 
   </dl>
@@ -484,9 +483,9 @@ param (none)</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Destination builder</dd>
-<dt><code>str</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">str</span></code></dt>
 <dd>Source wide string (NULL is ignored)</dd>
 
   </dl>
@@ -506,9 +505,9 @@ param (none)</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Destination builder</dd>
-<dt><code>c</code></dt>
+<dt><code><span class="tok_id">wchar_t</span> <span class="tok_id">c</span></code></dt>
 <dd>Character to append</dd>
 
   </dl>
@@ -529,9 +528,9 @@ param (none)</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Destination builder</dd>
-<dt><code>format</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">format</span></code></dt>
 <dd>Wide format string</dd>
 
   </dl>
@@ -549,7 +548,7 @@ param (none)</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Builder to clear</dd>
 
   </dl>
@@ -567,7 +566,7 @@ param (none)</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sb</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span></code></dt>
 <dd>Builder to destroy (may be NULL)</dd>
 
   </dl>

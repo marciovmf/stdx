@@ -20,24 +20,24 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#x_hashtable_create_ex">x_hashtable_create_ex</a></li>
-<li><a href="#x_hashtable_create_full">x_hashtable_create_full</a></li>
-<li><a href="#x_hashtable_set">x_hashtable_set</a></li>
-<li><a href="#x_hashtable_get">x_hashtable_get</a></li>
-<li><a href="#x_hashtable_destroy">x_hashtable_destroy</a></li>
-<li><a href="#x_hashtable_count">x_hashtable_count</a></li>
-<li><a href="#stdx_str_eq">stdx_str_eq</a></li>
-<li><a href="#x_hashtable_has">x_hashtable_has</a></li>
-<li><a href="#x_hashtable_remove">x_hashtable_remove</a></li>
-<li><a href="#x_hashtable_hash_bytes">x_hashtable_hash_bytes</a></li>
-<li><a href="#x_hashtable_hash_cstr">x_hashtable_hash_cstr</a></li>
+          <li><a href="#stdx_str_eq">stdx_str_eq</a></li>
 <li><a href="#x_hashtable_clone_cstr">x_hashtable_clone_cstr</a></li>
 <li><a href="#x_hashtable_compare_cstr">x_hashtable_compare_cstr</a></li>
+<li><a href="#x_hashtable_count">x_hashtable_count</a></li>
+<li><a href="#x_hashtable_create_ex">x_hashtable_create_ex</a></li>
+<li><a href="#x_hashtable_create_full">x_hashtable_create_full</a></li>
+<li><a href="#x_hashtable_destroy">x_hashtable_destroy</a></li>
 <li><a href="#x_hashtable_free_cstr">x_hashtable_free_cstr</a></li>
+<li><a href="#x_hashtable_get">x_hashtable_get</a></li>
+<li><a href="#x_hashtable_has">x_hashtable_has</a></li>
+<li><a href="#x_hashtable_hash_bytes">x_hashtable_hash_bytes</a></li>
+<li><a href="#x_hashtable_hash_cstr">x_hashtable_hash_cstr</a></li>
 <li><a href="#x_hashtable_iter_begin">x_hashtable_iter_begin</a></li>
 <li><a href="#x_hashtable_iter_next">x_hashtable_iter_next</a></li>
 <li><a href="#x_hashtable_iter_next_const">x_hashtable_iter_next_const</a></li>
 <li><a href="#x_hashtable_iter_slot">x_hashtable_iter_slot</a></li>
+<li><a href="#x_hashtable_remove">x_hashtable_remove</a></li>
+<li><a href="#x_hashtable_set">x_hashtable_set</a></li>
 
         </ul>
       </details>
@@ -45,22 +45,22 @@
       <details open>
         <summary>Macros</summary>
         <ul>
-          <li><a href="#X_HASHTABLE_VERSION_MAJOR">X_HASHTABLE_VERSION_MAJOR</a></li>
-<li><a href="#X_HASHTABLE_VERSION_MINOR">X_HASHTABLE_VERSION_MINOR</a></li>
-<li><a href="#X_HASHTABLE_VERSION_PATCH">X_HASHTABLE_VERSION_PATCH</a></li>
-<li><a href="#X_HASHTABLE_VERSION">X_HASHTABLE_VERSION</a></li>
+          <li><a href="#X_HASHTABLE_ALLOC">X_HASHTABLE_ALLOC</a></li>
+<li><a href="#X_HASHTABLE_CALLOC">X_HASHTABLE_CALLOC</a></li>
+<li><a href="#X_HASHTABLE_FREE">X_HASHTABLE_FREE</a></li>
 <li><a href="#X_HASHTABLE_INITIAL_CAPACITY">X_HASHTABLE_INITIAL_CAPACITY</a></li>
 <li><a href="#X_HASHTABLE_LOAD_FACTOR">X_HASHTABLE_LOAD_FACTOR</a></li>
 <li><a href="#X_HASHTABLE_TYPE">X_HASHTABLE_TYPE</a></li>
+<li><a href="#X_HASHTABLE_TYPE_CSTR_KEY_NAMED">X_HASHTABLE_TYPE_CSTR_KEY_NAMED</a></li>
+<li><a href="#X_HASHTABLE_TYPE_CSTR_KEY_PTR_VALUE_NAMED">X_HASHTABLE_TYPE_CSTR_KEY_PTR_VALUE_NAMED</a></li>
 <li><a href="#X_HASHTABLE_TYPE_NAMED">X_HASHTABLE_TYPE_NAMED</a></li>
 <li><a href="#X_HASHTABLE_TYPE_PTR_KEY_NAMED">X_HASHTABLE_TYPE_PTR_KEY_NAMED</a></li>
-<li><a href="#X_HASHTABLE_TYPE_CSTR_KEY_NAMED">X_HASHTABLE_TYPE_CSTR_KEY_NAMED</a></li>
-<li><a href="#X_HASHTABLE_TYPE_PTR_VALUE_NAMED">X_HASHTABLE_TYPE_PTR_VALUE_NAMED</a></li>
 <li><a href="#X_HASHTABLE_TYPE_PTR_KEY_PTR_VALUE_NAMED">X_HASHTABLE_TYPE_PTR_KEY_PTR_VALUE_NAMED</a></li>
-<li><a href="#X_HASHTABLE_TYPE_CSTR_KEY_PTR_VALUE_NAMED">X_HASHTABLE_TYPE_CSTR_KEY_PTR_VALUE_NAMED</a></li>
-<li><a href="#X_HASHTABLE_ALLOC">X_HASHTABLE_ALLOC</a></li>
-<li><a href="#X_HASHTABLE_CALLOC">X_HASHTABLE_CALLOC</a></li>
-<li><a href="#X_HASHTABLE_FREE">X_HASHTABLE_FREE</a></li>
+<li><a href="#X_HASHTABLE_TYPE_PTR_VALUE_NAMED">X_HASHTABLE_TYPE_PTR_VALUE_NAMED</a></li>
+<li><a href="#X_HASHTABLE_VERSION">X_HASHTABLE_VERSION</a></li>
+<li><a href="#X_HASHTABLE_VERSION_MAJOR">X_HASHTABLE_VERSION_MAJOR</a></li>
+<li><a href="#X_HASHTABLE_VERSION_MINOR">X_HASHTABLE_VERSION_MINOR</a></li>
+<li><a href="#X_HASHTABLE_VERSION_PATCH">X_HASHTABLE_VERSION_PATCH</a></li>
 
         </ul>
       </details>
@@ -85,10 +85,10 @@
       <details open>
         <summary>Typedefs</summary>
         <ul>
-          <li><a href="#XHashFnHash">XHashFnHash</a></li>
+          <li><a href="#XHashFnClone">XHashFnClone</a></li>
 <li><a href="#XHashFnCompare">XHashFnCompare</a></li>
-<li><a href="#XHashFnClone">XHashFnClone</a></li>
 <li><a href="#XHashFnDestroy">XHashFnDestroy</a></li>
+<li><a href="#XHashFnHash">XHashFnHash</a></li>
 
         </ul>
       </details>
@@ -111,7 +111,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -342,17 +341,17 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>key_size</code></dt>
+    <dt><code><span class="tok_id">size_t</span> <span class="tok_id">key_size</span></code></dt>
 <dd>Size in bytes of the key type.</dd>
-<dt><code>key_null_terminated</code></dt>
+<dt><code><span class="tok_kw">bool</span> <span class="tok_id">key_null_terminated</span></code></dt>
 <dd>True if the key is a NUL-terminated string (C string).</dd>
-<dt><code>key_is_pointer</code></dt>
+<dt><code><span class="tok_kw">bool</span> <span class="tok_id">key_is_pointer</span></code></dt>
 <dd>True if the key is stored as a pointer value.</dd>
-<dt><code>value_size</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">value_size</span></code></dt>
 <dd>Size in bytes of the value type.</dd>
-<dt><code>value_null_terminated</code></dt>
+<dt><code><span class="tok_kw">bool</span> <span class="tok_id">value_null_terminated</span></code></dt>
 <dd>True if the value is a NUL-terminated string (C string).</dd>
-<dt><code>value_is_pointer</code></dt>
+<dt><code><span class="tok_kw">bool</span> <span class="tok_id">value_is_pointer</span></code></dt>
 <dd>True if the value is stored as a pointer value.</dd>
 
   </dl>
@@ -382,21 +381,21 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>key_size</code></dt>
+    <dt><code><span class="tok_id">size_t</span> <span class="tok_id">key_size</span></code></dt>
 <dd>Size in bytes of the key type.</dd>
-<dt><code>value_size</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">value_size</span></code></dt>
 <dd>Size in bytes of the value type.</dd>
-<dt><code>fn_key_hash</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashFnHash">XHashFnHash</a></span> <span class="tok_id">fn_key_hash</span></code></dt>
 <dd>Function used to hash keys.</dd>
-<dt><code>fn_key_compare</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashFnCompare">XHashFnCompare</a></span> <span class="tok_id">fn_key_compare</span></code></dt>
 <dd>Function used to compare keys for equality.</dd>
-<dt><code>fn_key_copy</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashFnClone">XHashFnClone</a></span> <span class="tok_id">fn_key_copy</span></code></dt>
 <dd>Function used to clone/copy keys into the table.</dd>
-<dt><code>fn_key_free</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashFnDestroy">XHashFnDestroy</a></span> <span class="tok_id">fn_key_free</span></code></dt>
 <dd>Function used to destroy/free keys owned by the table.</dd>
-<dt><code>fn_value_copy</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashFnClone">XHashFnClone</a></span> <span class="tok_id">fn_value_copy</span></code></dt>
 <dd>Function used to clone/copy values into the table.</dd>
-<dt><code>fn_value_free</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashFnDestroy">XHashFnDestroy</a></span> <span class="tok_id">fn_value_free</span></code></dt>
 <dd>Function used to destroy/free values owned by the table.</dd>
 
   </dl>
@@ -421,11 +420,11 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>table</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span></code></dt>
 <dd>Hashtable instance.</dd>
-<dt><code>key</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
 <dd>Pointer to the key data.</dd>
-<dt><code>value</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">value</span></code></dt>
 <dd>Pointer to the value data.</dd>
 
   </dl>
@@ -450,11 +449,11 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>table</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span></code></dt>
 <dd>Hashtable instance.</dd>
-<dt><code>key</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
 <dd>Pointer to the key data.</dd>
-<dt><code>out_value</code></dt>
+<dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
 <dd>Output buffer to receive the value.</dd>
 
   </dl>
@@ -476,7 +475,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>table</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span></code></dt>
 <dd>Hashtable instance to destroy.</dd>
 
   </dl>
@@ -498,7 +497,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>table</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span></code></dt>
 <dd>Hashtable instance.</dd>
 
   </dl>
@@ -522,9 +521,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>Pointer to the first string (const char*).</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">b</span></code></dt>
 <dd>Pointer to the second string (const char*).</dd>
 
   </dl>
@@ -548,9 +547,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>table</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span></code></dt>
 <dd>Hashtable instance.</dd>
-<dt><code>key</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
 <dd>Pointer to the key data.</dd>
 
   </dl>
@@ -574,9 +573,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>table</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span></code></dt>
 <dd>Hashtable instance.</dd>
-<dt><code>key</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
 <dd>Pointer to the key data.</dd>
 
   </dl>
@@ -600,9 +599,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ptr</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span></code></dt>
 <dd>Pointer to the bytes to hash.</dd>
-<dt><code>size</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>Number of bytes to hash.</dd>
 
   </dl>
@@ -626,9 +625,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>ptr</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span></code></dt>
 <dd>Pointer to the string data (typically const char*).</dd>
-<dt><code>size</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>Size parameter (typically ignored for C strings, or used as a limit depending on implementation).</dd>
 
   </dl>
@@ -652,9 +651,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>dest</code></dt>
+    <dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">dest</span></code></dt>
 <dd>Destination storage receiving the cloned string (implementation-defined: may store char*).</dd>
-<dt><code>src</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">src</span></code></dt>
 <dd>Source string pointer (const char*).</dd>
 
   </dl>
@@ -678,9 +677,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>First string pointer (const char*).</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">b</span></code></dt>
 <dd>Second string pointer (const char*).</dd>
 
   </dl>
@@ -702,7 +701,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>Pointer to the stored string (typically a char* or pointer slot containing it).</dd>
 
   </dl>
@@ -726,9 +725,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>table</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span></code></dt>
 <dd>Hashtable instance.</dd>
-<dt><code>it</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtableIter">XHashtableIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span></code></dt>
 <dd>Iterator to initialize.</dd>
 
   </dl>
@@ -753,11 +752,11 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>it</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtableIter">XHashtableIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span></code></dt>
 <dd>Iterator.</dd>
-<dt><code>out_key</code></dt>
+<dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_key</span></code></dt>
 <dd>Receives pointer to key (user-facing: dereferenced if stored as pointer/string).</dd>
-<dt><code>out_value</code></dt>
+<dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
 <dd>Receives pointer to value (user-facing: dereferenced if stored as pointer/string).</dd>
 
   </dl>
@@ -792,7 +791,7 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>it</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtableIter">XHashtableIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span></code></dt>
 <dd>Iterator.</dd>
 
   </dl>

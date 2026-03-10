@@ -20,21 +20,21 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#x_arena_create">x_arena_create</a></li>
-<li><a href="#x_arena_destroy">x_arena_destroy</a></li>
-<li><a href="#x_arena_reset">x_arena_reset</a></li>
-<li><a href="#x_arena_reset_keep_head">x_arena_reset_keep_head</a></li>
-<li><a href="#x_arena_trim">x_arena_trim</a></li>
-<li><a href="#x_arena_alloc">x_arena_alloc</a></li>
+          <li><a href="#x_arena_alloc">x_arena_alloc</a></li>
 <li><a href="#x_arena_alloc_zero">x_arena_alloc_zero</a></li>
-<li><a href="#x_arena_strdup">x_arena_strdup</a></li>
-<li><a href="#x_arena_slicedup">x_arena_slicedup</a></li>
-<li><a href="#x_arena_mark">x_arena_mark</a></li>
-<li><a href="#x_arena_release">x_arena_release</a></li>
-<li><a href="#x_arena_has_pointer">x_arena_has_pointer</a></li>
 <li><a href="#x_arena_chunk_count">x_arena_chunk_count</a></li>
+<li><a href="#x_arena_create">x_arena_create</a></li>
+<li><a href="#x_arena_destroy">x_arena_destroy</a></li>
+<li><a href="#x_arena_has_pointer">x_arena_has_pointer</a></li>
 <li><a href="#x_arena_head_capacity">x_arena_head_capacity</a></li>
 <li><a href="#x_arena_head_used">x_arena_head_used</a></li>
+<li><a href="#x_arena_mark">x_arena_mark</a></li>
+<li><a href="#x_arena_release">x_arena_release</a></li>
+<li><a href="#x_arena_reset">x_arena_reset</a></li>
+<li><a href="#x_arena_reset_keep_head">x_arena_reset_keep_head</a></li>
+<li><a href="#x_arena_slicedup">x_arena_slicedup</a></li>
+<li><a href="#x_arena_strdup">x_arena_strdup</a></li>
+<li><a href="#x_arena_trim">x_arena_trim</a></li>
 
         </ul>
       </details>
@@ -42,14 +42,14 @@
       <details open>
         <summary>Macros</summary>
         <ul>
-          <li><a href="#X_ARENA_VERSION_MAJOR">X_ARENA_VERSION_MAJOR</a></li>
+          <li><a href="#X_ARENA_ALIGN">X_ARENA_ALIGN</a></li>
+<li><a href="#X_ARENA_ALLOC">X_ARENA_ALLOC</a></li>
+<li><a href="#X_ARENA_DEBUG_FILL">X_ARENA_DEBUG_FILL</a></li>
+<li><a href="#X_ARENA_FREE">X_ARENA_FREE</a></li>
+<li><a href="#X_ARENA_VERSION">X_ARENA_VERSION</a></li>
+<li><a href="#X_ARENA_VERSION_MAJOR">X_ARENA_VERSION_MAJOR</a></li>
 <li><a href="#X_ARENA_VERSION_MINOR">X_ARENA_VERSION_MINOR</a></li>
 <li><a href="#X_ARENA_VERSION_PATCH">X_ARENA_VERSION_PATCH</a></li>
-<li><a href="#X_ARENA_VERSION">X_ARENA_VERSION</a></li>
-<li><a href="#X_ARENA_ALLOC">X_ARENA_ALLOC</a></li>
-<li><a href="#X_ARENA_FREE">X_ARENA_FREE</a></li>
-<li><a href="#X_ARENA_ALIGN">X_ARENA_ALIGN</a></li>
-<li><a href="#X_ARENA_DEBUG_FILL">X_ARENA_DEBUG_FILL</a></li>
 
         </ul>
       </details>
@@ -57,8 +57,8 @@
       <details open>
         <summary>Structs</summary>
         <ul>
-          <li><a href="#XArenaChunk">XArenaChunk</a></li>
-<li><a href="#XArena">XArena</a></li>
+          <li><a href="#XArena">XArena</a></li>
+<li><a href="#XArenaChunk">XArenaChunk</a></li>
 <li><a href="#XArenaMark">XArenaMark</a></li>
 
         </ul>
@@ -96,7 +96,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -223,7 +222,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to destroy.</dd>
 
   </dl>
@@ -241,7 +240,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to reset.</dd>
 
   </dl>
@@ -259,7 +258,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to reset.</dd>
 
   </dl>
@@ -279,9 +278,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to trim.</dd>
-<dt><code>keep_n</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">keep_n</span></code></dt>
 <dd>The number of chuncks to preserve.</dd>
 
   </dl>
@@ -301,9 +300,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to alloc from.</dd>
-<dt><code>size</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>The size in bytes to alloc.</dd>
 
   </dl>
@@ -327,9 +326,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to alloc from.</dd>
-<dt><code>size</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>The size in bytes to alloc.</dd>
 
   </dl>
@@ -353,9 +352,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to allocate string from.</dd>
-<dt><code>cstr</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span></code></dt>
 <dd>Pointer to a c string to duplicate into the arena.</dd>
 
   </dl>
@@ -381,11 +380,11 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to allocate string from.</dd>
-<dt><code>ptr</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span></code></dt>
 <dd>Pointer to a beggining of the data to duplicate into the arena.</dd>
-<dt><code>len</code></dt>
+<dt><code><span class="tok_id">size_t</span> <span class="tok_id">len</span></code></dt>
 <dd>How much data to copy from `ptr` into the arena.</dd>
 
   </dl>
@@ -407,7 +406,7 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to take snapshot from.</dd>
 
   </dl>
@@ -431,9 +430,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to apply the snapshot.</dd>
-<dt><code>mark</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_arena.html#XArenaMark">XArenaMark</a></span> <span class="tok_id">mark</span></code></dt>
 <dd>The snapshot to apply.</dd>
 
   </dl>
@@ -453,9 +452,9 @@ in <b>one</b> source file before including this header.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>arena</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to check for pointer ownership</dd>
-<dt><code>ptr</code></dt>
+<dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span></code></dt>
 <dd>The pointer to check</dd>
 
   </dl>

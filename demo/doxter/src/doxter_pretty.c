@@ -552,3 +552,14 @@ bool doxter_pretty_format_symbol(DoxterProject *project, const DoxterSymbol *sym
 
   return true;
 }
+
+bool doxter_pretty_format_span(DoxterProject *project, DoxterTokenSpan ts, XStrBuilder *out)
+{
+  if (!project || !out)
+  {
+    return false;
+  }
+
+  s_emit_span_tokens(project, ts, true, NULL, out);
+  return true;
+}
