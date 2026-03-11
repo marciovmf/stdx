@@ -37,8 +37,19 @@ Options
 ```
 
 These comment blocks are associated with the symbol that immediately follows them.
-
 The contents of the comment block become the documentation text in the generated HTML.
+
+## Functions Comments
+
+Comment bloks for Functions support specific tags:
+- `@Brief` is optional, and whatever content appears after /** is considered `brief` even if not marked with `@brief`
+- `@param <name> <optional description>` document a named function parameter.
+- `@return <details>` document the function return value
+
+## Global Comments
+
+A comment block that starts at line 1, column 1 and has an empty line immediately after closing the block is considered a file comment (or global comment) and doxter will place this content at the start of the documentation page.
+
 
 ---
 
