@@ -35,7 +35,8 @@ static bool s_is_c_keyword(XSlice s)
     "short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void",
     "volatile","while","_Alignas","_Alignof","_Atomic","_Bool","_Complex","_Generic",
     "_Imaginary","_Noreturn","_Static_assert","_Thread_local", "bool", "__FILE__", "__LINE__",
-    "int32_t", "uint32_t", "int8_t", "uint8_t", "int16_t", "uint16_t"
+    "int32_t", "uint32_t", "int8_t", "uint8_t", "int16_t", "uint16_t", "size_t", 
+    "__delcspec", "dllimport", "dllexport",
   };
 
   for (size_t i = 0; i < sizeof(kw) / sizeof(kw[0]); ++i)

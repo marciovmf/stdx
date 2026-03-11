@@ -238,7 +238,7 @@ additional runtime overhead.</p>
   </div>
   <h2><span class="symbol-name">XHashFnHash</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_id">size_t</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">XHashFnHash</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span> <span class="tok_id">size_t</span><span class="tok_pun">)</span><span class="tok_pun">;</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">size_t</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">XHashFnHash</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">key</span><span class="tok_pun">,</span> <span class="tok_kw">size_t</span><span class="tok_pun">)</span><span class="tok_pun">;</span></code></pre>
   
   
 </article>
@@ -291,10 +291,10 @@ additional runtime overhead.</p>
   <h2><span class="symbol-name">XHashtable</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">key_size</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">value_size</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">count</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">key_size</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">value_size</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">count</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
   <span class="tok_kw"><a href="stdx_hashtable.html#XHashEntry">XHashEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entries</span><span class="tok_pun">;</span>
   <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">keys</span><span class="tok_pun">;</span>
   <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">values</span><span class="tok_pun">;</span>
@@ -320,7 +320,7 @@ additional runtime overhead.</p>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
   <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">index</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">index</span><span class="tok_pun">;</span>
 <span class="tok_pun">}</span><span class="tok_id">XHashtableIter</span><span class="tok_pun">;</span></code></pre>
   
   
@@ -332,23 +332,23 @@ additional runtime overhead.</p>
   <h2><span class="symbol-name">x_hashtable_create_ex</span></h2>
   <p class="brief">Create a hashtable using raw size and explicit string/pointer traits for keys and values.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_hashtable_create_ex</span>(
- <span class="tok_id">size_t</span> <span class="tok_id">key_size</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">key_size</span>,
  <span class="tok_kw">bool</span> <span class="tok_id">key_null_terminated</span>,
  <span class="tok_kw">bool</span> <span class="tok_id">key_is_pointer</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">value_size</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">value_size</span>,
  <span class="tok_kw">bool</span> <span class="tok_id">value_null_terminated</span>,
  <span class="tok_kw">bool</span> <span class="tok_id">value_is_pointer</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code><span class="tok_id">size_t</span> <span class="tok_id">key_size</span></code></dt>
+    <dt><code><span class="tok_kw">size_t</span> <span class="tok_id">key_size</span></code></dt>
 <dd>Size in bytes of the key type.</dd>
 <dt><code><span class="tok_kw">bool</span> <span class="tok_id">key_null_terminated</span></code></dt>
 <dd>True if the key is a NUL-terminated string (C string).</dd>
 <dt><code><span class="tok_kw">bool</span> <span class="tok_id">key_is_pointer</span></code></dt>
 <dd>True if the key is stored as a pointer value.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">value_size</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">value_size</span></code></dt>
 <dd>Size in bytes of the value type.</dd>
 <dt><code><span class="tok_kw">bool</span> <span class="tok_id">value_null_terminated</span></code></dt>
 <dd>True if the value is a NUL-terminated string (C string).</dd>
@@ -371,8 +371,8 @@ additional runtime overhead.</p>
   <h2><span class="symbol-name">x_hashtable_create_full</span></h2>
   <p class="brief">Create a fully-configurable hashtable with custom hashing, comparison, cloning, and destruction.</p>
   <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_hashtable_create_full</span>(
- <span class="tok_id">size_t</span> <span class="tok_id">key_size</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">value_size</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">key_size</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">value_size</span>,
  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnHash">XHashFnHash</a></span> <span class="tok_id">fn_key_hash</span>,
  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnCompare">XHashFnCompare</a></span> <span class="tok_id">fn_key_compare</span>,
  <span class="tok_kw"><a href="stdx_hashtable.html#XHashFnClone">XHashFnClone</a></span> <span class="tok_id">fn_key_copy</span>,
@@ -383,9 +383,9 @@ additional runtime overhead.</p>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code><span class="tok_id">size_t</span> <span class="tok_id">key_size</span></code></dt>
+    <dt><code><span class="tok_kw">size_t</span> <span class="tok_id">key_size</span></code></dt>
 <dd>Size in bytes of the key type.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">value_size</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">value_size</span></code></dt>
 <dd>Size in bytes of the value type.</dd>
 <dt><code><span class="tok_kw"><a href="stdx_hashtable.html#XHashFnHash">XHashFnHash</a></span> <span class="tok_id">fn_key_hash</span></code></dt>
 <dd>Function used to hash keys.</dd>
@@ -497,7 +497,7 @@ additional runtime overhead.</p>
   </div>
   <h2><span class="symbol-name">x_hashtable_count</span></h2>
   <p class="brief">Get the number of stored entries in the hashtable.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_count</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span>);</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_count</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_id">table</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -600,16 +600,16 @@ additional runtime overhead.</p>
   </div>
   <h2><span class="symbol-name">x_hashtable_hash_bytes</span></h2>
   <p class="brief">Hash an arbitrary byte buffer.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_hash_bytes</span>(
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_hash_bytes</span>(
  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">size</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">size</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
     <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span></code></dt>
 <dd>Pointer to the bytes to hash.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>Number of bytes to hash.</dd>
 
   </dl>
@@ -627,16 +627,16 @@ additional runtime overhead.</p>
   </div>
   <h2><span class="symbol-name">x_hashtable_hash_cstr</span></h2>
   <p class="brief">Hash a NUL-terminated C string (or string-like buffer) for hashtable use.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_hash_cstr</span>(
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_hash_cstr</span>(
  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">size</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">size</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
     <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span></code></dt>
 <dd>Pointer to the string data (typically const char*).</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>Size parameter (typically ignored for C strings, or used as a limit depending on implementation).</dd>
 
   </dl>
@@ -801,7 +801,7 @@ additional runtime overhead.</p>
   </div>
   <h2><span class="symbol-name">x_hashtable_iter_slot</span></h2>
   <p class="brief">Get the raw slot index of the current entry (mainly for debugging).</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_iter_slot</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtableIter">XHashtableIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span>);</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HASHTABLE_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_iter_slot</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtableIter">XHashtableIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -859,7 +859,7 @@ additional runtime overhead.</p>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_destroy">x_hashtable_destroy</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
-<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
+<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_count">x_hashtable_count</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span></code></pre>
@@ -898,7 +898,7 @@ additional runtime overhead.</p>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_destroy">x_hashtable_destroy</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
-<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
+<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_count">x_hashtable_count</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span></code></pre>
@@ -937,7 +937,7 @@ additional runtime overhead.</p>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_destroy">x_hashtable_destroy</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
-<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
+<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_count">x_hashtable_count</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span></code></pre>
@@ -976,7 +976,7 @@ additional runtime overhead.</p>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_destroy">x_hashtable_destroy</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
-<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
+<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_count">x_hashtable_count</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span></code></pre>
@@ -1015,7 +1015,7 @@ additional runtime overhead.</p>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_destroy">x_hashtable_destroy</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
-<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
+<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_count">x_hashtable_count</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span></code></pre>
@@ -1054,7 +1054,7 @@ additional runtime overhead.</p>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_destroy">x_hashtable_destroy</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
-<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_id">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
+<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_count</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XHashtable_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_kw"><a href="stdx_hashtable.html#x_hashtable_count">x_hashtable_count</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hashtable.html#XHashtable">XHashtable</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">table</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span></code></pre>

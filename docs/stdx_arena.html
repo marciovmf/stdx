@@ -178,7 +178,7 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">XArena</span></h2>
   <p class="brief">Arena</p>
   <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XArena</span><span class="tok_pun">{</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">chunk_size</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">chunk_size</span><span class="tok_pun">;</span>
   <span class="tok_kw"><a href="stdx_arena.html#XArenaChunk">XArenaChunk</a></span> <span class="tok_pun">*</span><span class="tok_id">chunks</span><span class="tok_pun">;</span>
   <span class="tok_kw"><a href="stdx_arena.html#XArenaChunk">XArenaChunk</a></span> <span class="tok_pun">*</span><span class="tok_id">current</span><span class="tok_pun">;</span>
 <span class="tok_pun">}</span><span class="tok_id">XArena</span><span class="tok_pun">;</span></code></pre>
@@ -193,7 +193,7 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">A mark is a lightweight snapshot for scoped unwinds.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XArenaMark</span><span class="tok_pun">{</span>
   <span class="tok_kw"><a href="stdx_arena.html#XArenaChunk">XArenaChunk</a></span> <span class="tok_pun">*</span><span class="tok_id">chunk</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">used</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">used</span><span class="tok_pun">;</span>
 <span class="tok_pun">}</span><span class="tok_id">XArenaMark</span><span class="tok_pun">;</span></code></pre>
   
   
@@ -204,7 +204,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_arena_create</span></h2>
   <p class="brief">Create a new arena with the given default chunk size.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_create</span>(<span class="tok_id">size_t</span> <span class="tok_id">chunk_size</span>);</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_create</span>(<span class="tok_kw">size_t</span> <span class="tok_id">chunk_size</span>);</code></pre>
   
   <section class="returns">
   <h3>Returns</h3>
@@ -274,14 +274,14 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">Keep the first `keep_n` chunks, free the rest.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_arena_trim</span>(
  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">keep_n</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">keep_n</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
     <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to trim.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">keep_n</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">keep_n</span></code></dt>
 <dd>The number of chuncks to preserve.</dd>
 
   </dl>
@@ -297,14 +297,14 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">Allocate memory from the arena (aligned to X_ARENA_ALIGN).</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_alloc</span>(
  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">size</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">size</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
     <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to alloc from.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>The size in bytes to alloc.</dd>
 
   </dl>
@@ -324,14 +324,14 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">Allocate zero-initialized memory from the arena.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_alloc_zero</span>(
  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">size</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">size</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
     <dt><code><span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span></code></dt>
 <dd>The arena to alloc from.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>The size in bytes to alloc.</dd>
 
   </dl>
@@ -379,7 +379,7 @@ in <b>one</b> source file before including this header.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_ARENA_API</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_arena_slicedup</span>(
  <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">arena</span>,
  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">len</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">len</span>,
  <span class="tok_kw">bool</span> <span class="tok_id">null_terminate</span>
 );</code></pre>
   <section class="params">
@@ -389,7 +389,7 @@ in <b>one</b> source file before including this header.</p>
 <dd>The arena to allocate string from.</dd>
 <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">ptr</span></code></dt>
 <dd>Pointer to a beggining of the data to duplicate into the arena.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">len</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">len</span></code></dt>
 <dd>How much data to copy from `ptr` into the arena.</dd>
 
   </dl>
@@ -539,7 +539,7 @@ different implementation before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_arena_chunk_count</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_arena_chunk_count</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>);</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_arena_chunk_count</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>);</code></pre>
   
   
 </article>
@@ -549,7 +549,7 @@ different implementation before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_arena_head_capacity</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_arena_head_capacity</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>);</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_arena_head_capacity</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>);</code></pre>
   
   
 </article>
@@ -559,7 +559,7 @@ different implementation before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_arena_head_used</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_arena_head_used</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>);</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_arena_head_used</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_arena.html#XArena">XArena</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>);</code></pre>
   
   
 </article>

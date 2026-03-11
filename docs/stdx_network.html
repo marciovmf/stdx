@@ -666,10 +666,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_net_send</span></h2>
   <p class="brief">Send data on a connected socket.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_net_send</span>(
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_net_send</span>(
  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span>,
  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">len</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">len</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
@@ -678,7 +678,7 @@ in <b>one</b> source file before including this header.</p>
 <dd>Connected socket handle.</dd>
 <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span></code></dt>
 <dd>Data to send.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">len</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">len</span></code></dt>
 <dd>Number of bytes to send.</dd>
 
   </dl>
@@ -696,10 +696,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_net_recv</span></h2>
   <p class="brief">Receive data from a connected socket.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_net_recv</span>(
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_net_recv</span>(
  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span>,
  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">len</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">len</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
@@ -708,7 +708,7 @@ in <b>one</b> source file before including this header.</p>
 <dd>Connected socket handle.</dd>
 <dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span></code></dt>
 <dd>Output buffer to receive data.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">len</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">len</span></code></dt>
 <dd>Maximum number of bytes to read.</dd>
 
   </dl>
@@ -726,10 +726,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_net_sendto</span></h2>
   <p class="brief">Send data to a specific address (datagram sockets).</p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_net_sendto</span>(
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_net_sendto</span>(
  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span>,
  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">len</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">len</span>,
  <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">addr</span>
 );</code></pre>
   <section class="params">
@@ -739,7 +739,7 @@ in <b>one</b> source file before including this header.</p>
 <dd>Socket handle.</dd>
 <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span></code></dt>
 <dd>Data to send.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">len</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">len</span></code></dt>
 <dd>Number of bytes to send.</dd>
 <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">addr</span></code></dt>
 <dd>Destination address.</dd>
@@ -759,10 +759,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_net_recvfrom</span></h2>
   <p class="brief">Receive data from a socket and optionally retrieve the sender address.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_net_recvfrom</span>(
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_net_recvfrom</span>(
  <span class="tok_kw"><a href="stdx_network.html#XSocket">XSocket</a></span> <span class="tok_id">sock</span>,
  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">len</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">len</span>,
  <span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">out_addr</span>
 );</code></pre>
   <section class="params">
@@ -772,7 +772,7 @@ in <b>one</b> source file before including this header.</p>
 <dd>Socket handle.</dd>
 <dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">buf</span></code></dt>
 <dd>Output buffer to receive data.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">len</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">len</span></code></dt>
 <dd>Maximum number of bytes to read.</dd>
 <dt><code><span class="tok_kw"><a href="stdx_network.html#XAddress">XAddress</a></span> <span class="tok_pun">*</span><span class="tok_id">out_addr</span></code></dt>
 <dd>Output address receiving the sender address.</dd>

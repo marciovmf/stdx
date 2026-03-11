@@ -235,15 +235,15 @@ additional runtime overhead.</p>
   <h2><span class="symbol-name">x_array_create</span></h2>
   <p class="brief">Create a new dynamic array.</p>
   <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_array_create</span>(
- <span class="tok_id">size_t</span> <span class="tok_id">elementSize</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">capacity</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">elementSize</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">capacity</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code><span class="tok_id">size_t</span> <span class="tok_id">elementSize</span></code></dt>
+    <dt><code><span class="tok_kw">size_t</span> <span class="tok_id">elementSize</span></code></dt>
 <dd>Size in bytes of a single element stored in the array.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">capacity</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">capacity</span></code></dt>
 <dd>Initial number of elements the array can hold.</dd>
 
   </dl>
@@ -618,7 +618,7 @@ additional runtime overhead.</p>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_TYPE_NAMED</span><span class="tok_pun">(</span><span class="tok_id">T</span><span class="tok_pun">,</span> <span class="tok_id">suffix</span><span class="tok_pun">)</span> <span class="tok_pun">\</span>
 <span class="tok_kw">typedef</span> <span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_id">XArray_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
-<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_id">XArray_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">x_array_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_create</span><span class="tok_pun">(</span><span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
+<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_id">XArray_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">x_array_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_create</span><span class="tok_pun">(</span><span class="tok_kw">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span><span class="tok_pun">(</span><span class="tok_id">XArray_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_kw"><a href="stdx_array.html#x_array_create">x_array_create</a></span><span class="tok_pun">(</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_id">T</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_id">capacity</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
@@ -776,9 +776,9 @@ different implementation before including this header.</p>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">struct</span> <span class="tok_id">XArray_t</span><span class="tok_pun">{</span>
   <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">array</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">elementSize</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">size</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">elementSize</span><span class="tok_pun">;</span>
 <span class="tok_pun">}</span><span class="tok_pun">;</span></code></pre>
   
   

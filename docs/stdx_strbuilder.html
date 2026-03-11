@@ -186,8 +186,8 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XStrBuilder</span><span class="tok_pun">{</span>
   <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
 <span class="tok_pun">}</span><span class="tok_id">XStrBuilder</span><span class="tok_pun">;</span></code></pre>
   
   
@@ -200,8 +200,8 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XWStrBuilder</span><span class="tok_pun">{</span>
   <span class="tok_id">wchar_t</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">capacity</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">length</span><span class="tok_pun">;</span>
 <span class="tok_pun">}</span><span class="tok_id">XWStrBuilder</span><span class="tok_pun">;</span></code></pre>
   
   
@@ -313,7 +313,7 @@ in <b>one</b> source file before including this header.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_strbuilder_append_substring</span>(
  <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span>,
  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">start</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">length</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">length</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
@@ -322,7 +322,7 @@ in <b>one</b> source file before including this header.</p>
 <dd>Destination builder</dd>
 <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">start</span></code></dt>
 <dd>Pointer to first byte</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">length</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">length</span></code></dt>
 <dd>Number of bytes to copy</dd>
 
   </dl>
@@ -394,7 +394,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_strbuilder_length</span></h2>
   <p class="brief">Returns current length in bytes</p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_strbuilder_length</span>(<span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span>);</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_strbuilder_length</span>(<span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -419,8 +419,8 @@ in <b>one</b> source file before including this header.</p>
   <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_strbuilder_append_utf8_substring</span>(
  <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span>,
  <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">start_cp</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">len_cp</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">start_cp</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">len_cp</span>
 );</code></pre>
   <section class="params">
   <h3>Parameters</h3>
@@ -429,9 +429,9 @@ in <b>one</b> source file before including this header.</p>
 <dd>Destination builder</dd>
 <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">utf8</span></code></dt>
 <dd>Source UTF-8 string</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">start_cp</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">start_cp</span></code></dt>
 <dd>Start code-point index</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">len_cp</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">len_cp</span></code></dt>
 <dd>Number of code points to append</dd>
 
   </dl>
@@ -445,7 +445,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_strbuilder_utf8_charlen</span></h2>
   <p class="brief">Counts UTF-8 code points contained in the builder</p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_strbuilder_utf8_charlen</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span>);</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_strbuilder_utf8_charlen</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XStrBuilder">XStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
@@ -602,7 +602,7 @@ param (none)</p>
   <p class="brief">Returns current length in wide characters
  param sb Builder to query
  return Number of wchar_t (excluding the NUL)</p>
-  <pre class="symbol-decl"><code><span class="tok_id">size_t</span> <span class="tok_id">x_wstrbuilder_length</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span>);</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">size_t</span> <span class="tok_id">x_wstrbuilder_length</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span>);</code></pre>
   
   
 </article>
@@ -644,7 +644,7 @@ param (none)</p>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_id">X_STRBUILDER_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_wstrbuilder_grow</span>(
  <span class="tok_kw"><a href="stdx_strbuilder.html#XWStrBuilder">XWStrBuilder</a></span> <span class="tok_pun">*</span><span class="tok_id">sb</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">needed_len</span>
+ <span class="tok_kw">size_t</span> <span class="tok_id">needed_len</span>
 );</code></pre>
   
   

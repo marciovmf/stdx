@@ -260,8 +260,8 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">Represents a parsed INI source</p>
   <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XIni</span><span class="tok_pun">{</span>
   <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">pool</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">pool_size</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">pool_cap</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">pool_size</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">pool_cap</span><span class="tok_pun">;</span>
   <span class="tok_kw"><a href="stdx_ini.html#XIniSection">XIniSection</a></span> <span class="tok_pun">*</span><span class="tok_id">sections</span><span class="tok_pun">;</span>
   <span class="tok_kw">int</span> <span class="tok_id">sections_count</span><span class="tok_pun">;</span>
   <span class="tok_kw">int</span> <span class="tok_id">sections_cap</span><span class="tok_pun">;</span>
@@ -311,7 +311,7 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">Load and parse INI data from a memory buffer.</p>
   <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_load_mem</span>(
  <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span>,
- <span class="tok_id">size_t</span> <span class="tok_id">size</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">size</span>,
  <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">out_ini</span>,
  <span class="tok_kw"><a href="stdx_ini.html#XIniError">XIniError</a></span> <span class="tok_pun">*</span><span class="tok_id">err</span>
 );</code></pre>
@@ -320,7 +320,7 @@ in <b>one</b> source file before including this header.</p>
   <dl>
     <dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span></code></dt>
 <dd>Pointer to the INI data in memory.</dd>
-<dt><code><span class="tok_id">size_t</span> <span class="tok_id">size</span></code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">size</span></code></dt>
 <dd>Size of the data buffer in bytes.</dd>
 <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">out_ini</span></code></dt>
 <dd>Output structure receiving the parsed INI data.</dd>
