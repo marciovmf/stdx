@@ -10,63 +10,19 @@ Its purpose was to exercise and test the library in a real program while produci
 # Command Line Usage
 
 ```
-doxter [options] input_files
+Usage:
+
+  doxter [options] input_files
+
+Options
+
+  -f <path-to-doxter.init>         = Path to doxter.ini.
+  -d <path-to-output-dir>          = Specify output directory for generated files.
+  -p <project-name>                = Project name.
+  --skip-static                    = Skip static functions.
+  --skip-undocumented              = Skip undocumented symbols.
+  --skip-empty-defines             = Skip empty defines.
 ```
-
-## Options
-
-```
--f <path-to-doxter.ini>
-```
-
-Path to the configuration file.
-
-```
--d <path-to-output-dir>
-```
-
-Directory where the generated documentation files will be written.
-
-```
--p <project-name>
-```
-
-Override the project name defined in `doxter.ini`.
-
-```
---skip-static
-```
-
-Skip documentation for `static` functions.
-
-```
---skip-undocumented
-```
-
-Skip symbols that do not have documentation comments.
-
-```
---skip-empty-defines
-```
-
-Skip `#define` macros that have no assigned value.
-
----
-
-# Example
-
-Generate documentation for all headers in `include/` and source files in `src/`:
-
-```
-doxter -f doxter.ini -d docs include/*.h src/*.c
-```
-
-This will:
-
-1. Read configuration from `doxter.ini`
-2. Scan all specified source files
-3. Extract documentation comments
-4. Generate static HTML files inside `docs/`
 
 ---
 
@@ -133,116 +89,6 @@ font_symbol  = "Segoe UI"
 
 ---
 
-# `[project]` Section
-
-Project metadata and documentation behavior.
-
-### name
-
-Name of the project shown in the generated documentation.
-
-### url
-
-Project URL.
-
-### brief
-
-Short project description displayed in the documentation.
-
-### skip_static_functions
-
-Controls whether `static` functions are documented.
-
-```
-0 = include static functions
-1 = skip static functions
-```
-
-### skip_undocumented
-
-Controls whether undocumented symbols appear in the output.
-
-```
-0 = include undocumented symbols
-1 = skip undocumented symbols
-```
-
-### skip_empty_defines
-
-Controls whether empty `#define` macros appear in the output.
-
-```
-0 = include empty defines
-1 = skip empty defines
-```
-
-### markdown_gobal_comments
-
-If enabled, global file comments are interpreted as Markdown.
-
-### markdown_index_page
-
-If enabled, the generated index page is interpreted as Markdown.
-
----
-
-# `[theme]` Section
-
-The theme section controls the appearance of the generated HTML documentation.
-
-Most color fields use **hex values without the `#` prefix**.
-
-## Page Colors
-
-```
-color_page_background
-color_sidebar_background
-color_main_text
-color_secondary_text
-color_highlight
-color_light_borders
-color_code_blocks
-color_code_block_border
-```
-
-### border_radius
-
-Controls the rounding of UI elements in the generated documentation.
-
----
-
-# Syntax Highlighting
-
-The following settings control token colors in code blocks:
-
-```
-color_tok_pp
-color_tok_kw
-color_tok_id
-color_tok_num
-color_tok_str
-color_tok_crt
-color_tok_pun
-color_tok_doc
-```
-
----
-
-# Fonts
-
-Fonts used in the generated documentation.
-
-```
-font_code
-font_ui
-font_heading
-font_symbol
-```
-
-Each field accepts a comma-separated list of fonts that will be used by the browser.
-
----
-
 # Typical Workflow
 
 1. Create a `doxter.ini` configuration file.
@@ -250,13 +96,10 @@ Each field accepts a comma-separated list of fonts that will be used by the brow
 3. Run:
 
 ```
-doxter -f doxter.ini -d docs src/*.c include/*.h
+doxter -f doxter.ini -d docs file1.h file2.c file3.h 
 ```
 
 4. Open the generated HTML documentation in a browser.
 
 ---
 
-# License
-
-Same license as the STDX project.
