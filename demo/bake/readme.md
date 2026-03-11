@@ -18,18 +18,29 @@ The tool was written as a **demo application for the STDX library**, exercising 
 # Command Line Usage
 
 ```
-bake [options] input.ini
+usage:
+  bake.exe <input.ini> [-o out.h]
+
+The input INI file describes strings and files to bake into a C header.
+
+It accepts the following Top-level options (no section):
+  guard          = DATA_H            # Include guard macro name (required)
+  output         = out_file_name.h   # Optional; default is <ini filename>.h
+  no_enum        = 0|1               # If 0, do NOT emit enums for each [section].
+  no_strings     = 0|1               # If 0, do NOT emit const char* array for each [section].
+  no_crc         = 0|1               # If 0, do NOT compute CRC32 for embedded file contents.
+  bytes_per_line = N                 # Bytes per line for byte arrays (default: 8)
+  comment        = "text..."          # Comment emitted at the top of the generated header
+                                     # Supports \n and \t escapes
+
+Entries are grouped into [sections].
+IDs are assigned globally by order of appearance.
+
+Entry forms inside a [section]:
+  KEY = "string"      # Intern a string (quotes optional)
+  KEY = @path         # Embed file bytes (path is relative to the .ini file)
+  KEY = @@path        # Embed file bytes and append a null terminator. (path is relative to the .ini file)
 ```
-
-## Options
-
-```
--o <output.h>
-```
-
-Override the output header file name.
-
-If `-o` is not specified, the output file is determined by the `output` option inside the `.ini` file or defaults to the `.ini` filename with a `.h` extension. :contentReference[oaicite:1]{index=1}
 
 ---
 
