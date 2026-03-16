@@ -37,7 +37,7 @@
 #define X_IMPL_STRING
 #endif
 #endif
-#include <stdx_string.h>
+#include "stdx_string.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <time.h>
@@ -95,6 +95,16 @@ extern "C" {
     XFSWatchEventType action;
     const char* filename; // Valid until next poll
   } XFSWatchEvent;
+
+  typedef struct XFSTime
+  {
+    int year;
+    int month;
+    int day;
+    int hour;
+    int minute;
+    int second;
+  } XFSTime;
 
   // Filesystem operations
   // Path manipulation
@@ -265,7 +275,7 @@ extern "C" {
    */
   X_FILESYSTEM_API bool x_fs_path_(XFSPath* out, ...);
 
-  
+
 
   /* Join path segments (NULL-terminated varargs). Used by x_fs_path_join(). */
   X_FILESYSTEM_API size_t x_fs_path_join_(XFSPath* path, ...);
@@ -275,8 +285,8 @@ extern "C" {
 
   /* Full-path view as XSlice. Valid while the XFSPath is not modified. */
   X_FILESYSTEM_API XSlice x_fs_path_as_slice(const XFSPath* path);
-  
-/**
+
+  /**
    * @brief Check whether a path exists on disk.
    * @param path Path to check.
    * @return True if it exists, false otherwise.
@@ -591,6 +601,8 @@ extern "C" {
    * @return True on success, false on failure.
    */
   X_FILESYSTEM_API bool x_fs_make_temp_directory(const char* prefix, XFSPath* out_path);
+
+X_FILESYSTEM_API XFSTime x_fs_time_from_epoch(time_t t);
 
 #ifdef __cplusplus
 }
@@ -2110,6 +2122,27 @@ extern "C" {
     }
 
     return x_fs_path_from_slice(x_fs_path_extension_as_slice(input), out);
+  }
+
+  X_FILESYSTEM_API XFSTime x_fs_time_from_epoch(time_t t)
+  {
+    XFSTime out;
+    struct tm tmv;
+
+#if defined(_WIN32)
+    localtime_s(&tmv, &t);
+#else
+    localtime_r(&t, &tmv);
+#endif
+
+    out.year   = tmv.tm_year + 1900;
+    out.month  = tmv.tm_mon + 1;
+    out.day    = tmv.tm_mday;
+    out.hour   = tmv.tm_hour;
+    out.minute = tmv.tm_min;
+    out.second = tmv.tm_sec;
+
+    return out;
   }
 
 #ifdef __cplusplus
