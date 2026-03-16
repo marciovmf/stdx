@@ -124,4 +124,6 @@ add_subdirectory(demo/md2html)
 add_subdirectory(demo/doxter)
 # minima
 add_subdirectory(demo/minima)
+# slab
+add_subdirectory(demo/slab)
 

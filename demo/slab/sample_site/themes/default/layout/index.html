@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!-- Template by https://www.html.am/templates/downloads/view-source.cfm?template=layout-templates/2-column-left-menu-header-footer.cfm -->
+<html>
+  <% template (format "${template_dir}\\include\\header.html") %>
+  <% template (format "${template_dir}\\include\\top.html") %>
+  <body>		
+    <div id="wrapper">
+      <main>
+        <div id="content">
+          <div class="innertube">
+            <%= $post_body %>
+          </div>
+        </div>
+      </main>
+      <nav>
+        <div class="innertube">
+          <h3>Posts</h3>
+          <ul>
+            <% foreach p $all_pages {
+                if (expr (page is_post $p) == 1) { continue; }
+                set date (format "$(page year $p)-$(page month $p)-$(page day $p)")
+             %>
+                <li><a href="<%= (page url $p) %>"><%= (page title $p) %></a>
+                <time datetime="<%= $date %>">??</time></a></li>
+             <% } %>
+          </ul>
+          <h3>Pages</h3>
+          <ul>
+            <% foreach p $all_pages {
+                if (expr (page is_post $p) != 1) { continue; }
+             %>
+              <li><a href="<%= (page url $p) %>"><%= (page title $p) %></a>
+            <% } %>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <% template (format "${template_dir}\\include\\footer.html") %>
+  </body>
+</html>

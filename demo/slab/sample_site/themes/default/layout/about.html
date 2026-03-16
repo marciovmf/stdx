@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html>
+  <% template (format "${template_dir}\\include\\header.html") %>
+  <% template (format "${template_dir}\\include\\top.html") %>
+  <body>		
+    <div id="wrapper">
+      <main>
+          <div class="innertube">
+            <h1><% print $post_title %></h1>
+            <p>
+            <% print $post_body %>
+            </p>
+          </div>
+      </main>
+    </div>
+    <% template (format "${template_dir}\\include\\footer.html") %>
+  </body>
+</html>

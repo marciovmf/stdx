@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html>
+  <% template (format "${template_dir}\\include\\header.html") %>
+  <body>
+    <div class="content">
+      <% template (format "${template_dir}\\include\\top.html") %>
+      <h2><%= $post_title %></h2>
+      <article><%= $post_body %></article>
+      <a href="index.html"/>Back</a>
+      <% template (format "${template_dir}\\include\\footer.html") %>
+    </div>
+  </body>
+</html>
