@@ -10,6 +10,9 @@
 // Syntax Highlight render
 // --------------------------------------------------------
 
+
+static void s_emit_function_param_list(DoxterProject *project, const DoxterSymbol *sym, XStrBuilder *out);
+
 static void s_append_html_escaped(XStrBuilder* out, XSlice s)
 {
   for (size_t i = 0; i < s.length; ++i)
@@ -32,7 +35,8 @@ static bool s_is_c_keyword(XSlice s)
     "short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void",
     "volatile","while","_Alignas","_Alignof","_Atomic","_Bool","_Complex","_Generic",
     "_Imaginary","_Noreturn","_Static_assert","_Thread_local", "bool", "__FILE__", "__LINE__",
-    "int32_t", "uint32_t", "int8_t", "uint8_t", "int16_t", "uint16_t"
+    "int32_t", "uint32_t", "int8_t", "uint8_t", "int16_t", "uint16_t", "size_t", 
+    "__delcspec", "dllimport", "dllexport",
   };
 
   for (size_t i = 0; i < sizeof(kw) / sizeof(kw[0]); ++i)
@@ -279,6 +283,18 @@ static void s_emit_span_tokens(
   }
 }
 
+static void s_emit_decl_function(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
+{
+  s_emit_span_tokens(project, sym->stmt.fn.return_ts, false, sym, out);
+  x_strbuilder_append_char(out, ' ');
+
+  const DoxterToken* name = (const DoxterToken*)x_array_get(project->tokens, sym->stmt.fn.name_tok);
+  s_emit_token_highlighted(project, out, name, sym);
+
+  s_emit_function_param_list(project, sym, out);
+  x_strbuilder_append_char(out, ';');
+}
+
 static bool s_params_has_multiple_args(DoxterProject* project, DoxterTokenSpan params_ts)
 {
   int paren_depth = 0;
@@ -357,22 +373,6 @@ static void s_emit_function_params(DoxterProject* project,
 
     prev = t;
   }
-}
-
-static void s_emit_decl_function(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
-{
-  s_emit_span_tokens(project, sym->stmt.fn.return_ts, false, sym, out);
-
-  /* Always separate return part and name. This enforces: "char * x_func". */
-  x_strbuilder_append_char(out, ' ');
-
-  const DoxterToken* name = (const DoxterToken*)x_array_get(project->tokens, sym->stmt.fn.name_tok);
-  s_emit_token_highlighted(project, out, name, sym);
-
-  bool multiline = s_params_has_multiple_args(project, sym->stmt.fn.params_ts);
-  s_emit_function_params(project, sym->stmt.fn.params_ts, multiline, out);
-
-  x_strbuilder_append_char(out, ';');
 }
 
 static void s_emit_decl_macro(DoxterProject* project, const DoxterSymbol* sym, XStrBuilder* out)
@@ -517,6 +517,41 @@ static void s_emit_decl_record(DoxterProject* project, const DoxterSymbol* sym, 
   }
 }
 
+static void s_emit_function_param_list(DoxterProject *project, const DoxterSymbol *sym, XStrBuilder *out)
+{
+  x_strbuilder_append_char(out, '(');
+
+  if (sym->stmt.fn.param_count == 0)
+  {
+    x_strbuilder_append_char(out, ')');
+    return;
+  }
+
+  if (sym->stmt.fn.param_count == 1)
+  {
+    doxter_pretty_format_span(project, sym->stmt.fn.param_ts[0], out);
+    x_strbuilder_append_char(out, ')');
+    return;
+  }
+
+  x_strbuilder_append_char(out, '\n');
+
+  for (u32 i = 0; i < sym->stmt.fn.param_count; ++i)
+  {
+    x_strbuilder_append_cstr(out, FUNCTION_PARAM_INDENT);
+    doxter_pretty_format_span(project, sym->stmt.fn.param_ts[i], out);
+
+    if ((i + 1) < sym->stmt.fn.param_count)
+    {
+      x_strbuilder_append_char(out, ',');
+    }
+
+    x_strbuilder_append_char(out, '\n');
+  }
+
+  x_strbuilder_append_char(out, ')');
+}
+
 bool doxter_pretty_format_symbol(DoxterProject *project, const DoxterSymbol *sym, XStrBuilder *out)
 {
   if (!project || !sym || !out)
@@ -550,5 +585,16 @@ bool doxter_pretty_format_symbol(DoxterProject *project, const DoxterSymbol *sym
       } break;
   }
 
+  return true;
+}
+
+bool doxter_pretty_format_span(DoxterProject *project, DoxterTokenSpan ts, XStrBuilder *out)
+{
+  if (!project || !out)
+  {
+    return false;
+  }
+
+  s_emit_span_tokens(project, ts, true, NULL, out);
   return true;
 }

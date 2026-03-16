@@ -20,18 +20,18 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#x_timer_elapsed">x_timer_elapsed</a></li>
-<li><a href="#x_time_milliseconds">x_time_milliseconds</a></li>
-<li><a href="#x_time_microseconds">x_time_microseconds</a></li>
-<li><a href="#x_time_nanoseconds">x_time_nanoseconds</a></li>
+          <li><a href="#x_time_add">x_time_add</a></li>
 <li><a href="#x_time_diff">x_time_diff</a></li>
-<li><a href="#x_time_add">x_time_add</a></li>
-<li><a href="#x_time_sub">x_time_sub</a></li>
 <li><a href="#x_time_equals">x_time_equals</a></li>
-<li><a href="#x_time_less_than">x_time_less_than</a></li>
 <li><a href="#x_time_greater_than">x_time_greater_than</a></li>
-<li><a href="#x_time_sleep">x_time_sleep</a></li>
+<li><a href="#x_time_less_than">x_time_less_than</a></li>
+<li><a href="#x_time_microseconds">x_time_microseconds</a></li>
+<li><a href="#x_time_milliseconds">x_time_milliseconds</a></li>
+<li><a href="#x_time_nanoseconds">x_time_nanoseconds</a></li>
 <li><a href="#x_time_now">x_time_now</a></li>
+<li><a href="#x_time_sleep">x_time_sleep</a></li>
+<li><a href="#x_time_sub">x_time_sub</a></li>
+<li><a href="#x_timer_elapsed">x_timer_elapsed</a></li>
 <li><a href="#x_timer_start">x_timer_start</a></li>
 
         </ul>
@@ -40,10 +40,10 @@
       <details open>
         <summary>Macros</summary>
         <ul>
-          <li><a href="#X_TIME_VERSION_MAJOR">X_TIME_VERSION_MAJOR</a></li>
+          <li><a href="#X_TIME_VERSION">X_TIME_VERSION</a></li>
+<li><a href="#X_TIME_VERSION_MAJOR">X_TIME_VERSION_MAJOR</a></li>
 <li><a href="#X_TIME_VERSION_MINOR">X_TIME_VERSION_MINOR</a></li>
 <li><a href="#X_TIME_VERSION_PATCH">X_TIME_VERSION_PATCH</a></li>
-<li><a href="#X_TIME_VERSION">X_TIME_VERSION</a></li>
 
         </ul>
       </details>
@@ -89,7 +89,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -180,11 +179,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_timer_elapsed</span></h2>
   <p class="brief">Get the elapsed time since a timer was started.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_timer_elapsed</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_id">XTimer</span> <span class="tok_pun">*</span><span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_timer_elapsed</span>(<span class="tok_kw">const</span> <span class="tok_id">XTimer</span> <span class="tok_pun">*</span><span class="tok_id">t</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>t</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_id">XTimer</span> <span class="tok_pun">*</span><span class="tok_id">t</span></code></dt>
 <dd>Pointer to an initialized timer.</dd>
 
   </dl>
@@ -202,11 +201,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_milliseconds</span></h2>
   <p class="brief">Convert a time value to milliseconds.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">double</span> <span class="tok_id">x_time_milliseconds</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">double</span> <span class="tok_id">x_time_milliseconds</span>(<span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>t</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span></code></dt>
 <dd>Time value to convert.</dd>
 
   </dl>
@@ -224,11 +223,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_microseconds</span></h2>
   <p class="brief">Convert a time value to microseconds.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">double</span> <span class="tok_id">x_time_microseconds</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">double</span> <span class="tok_id">x_time_microseconds</span>(<span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>t</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span></code></dt>
 <dd>Time value to convert.</dd>
 
   </dl>
@@ -246,11 +245,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_nanoseconds</span></h2>
   <p class="brief">Convert a time value to nanoseconds.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">double</span> <span class="tok_id">x_time_nanoseconds</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">double</span> <span class="tok_id">x_time_nanoseconds</span>(<span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>t</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span></code></dt>
 <dd>Time value to convert.</dd>
 
   </dl>
@@ -268,15 +267,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_diff</span></h2>
   <p class="brief">Compute the difference between two time values.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_diff</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">end</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">start</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_diff</span>(
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">end</span>,
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">start</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>end</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">end</span></code></dt>
 <dd>End time.</dd>
-<dt><code>start</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">start</span></code></dt>
 <dd>Start time.</dd>
 
   </dl>
@@ -294,15 +294,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_add</span></h2>
   <p class="brief">Add two time values.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_add</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_add</span>(
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span>,
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span></code></dt>
 <dd>First time value.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span></code></dt>
 <dd>Second time value.</dd>
 
   </dl>
@@ -320,15 +321,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_sub</span></h2>
   <p class="brief">Subtract one time value from another.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_sub</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_sub</span>(
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span>,
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span></code></dt>
 <dd>Minuend time value.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span></code></dt>
 <dd>Subtrahend time value.</dd>
 
   </dl>
@@ -346,15 +348,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_equals</span></h2>
   <p class="brief">Compare two time values for equality.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_equals</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_equals</span>(
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span>,
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span></code></dt>
 <dd>First time value.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span></code></dt>
 <dd>Second time value.</dd>
 
   </dl>
@@ -372,15 +375,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_less_than</span></h2>
   <p class="brief">Test whether one time value is less than another.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_less_than</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_less_than</span>(
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span>,
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span></code></dt>
 <dd>First time value.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span></code></dt>
 <dd>Second time value.</dd>
 
   </dl>
@@ -398,15 +402,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_greater_than</span></h2>
   <p class="brief">Test whether one time value is greater than another.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_greater_than</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">int32_t</span> <span class="tok_id">x_time_greater_than</span>(
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span>,
+ <span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">a</span></code></dt>
 <dd>First time value.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">b</span></code></dt>
 <dd>Second time value.</dd>
 
   </dl>
@@ -424,11 +429,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_sleep</span></h2>
   <p class="brief">Sleep the current thread for the specified duration.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_time_sleep</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_time_sleep</span>(<span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>t</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">t</span></code></dt>
 <dd>Duration to sleep.</dd>
 
   </dl>
@@ -442,7 +447,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_time_now</span></h2>
   <p class="brief">Get the current wall-clock time.</p>
-  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_now</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw"><a href="stdx_time.html#XTime">XTime</a></span> <span class="tok_id">x_time_now</span>(<span class="tok_kw">void</span>);</code></pre>
   
   <section class="returns">
   <h3>Returns</h3>
@@ -456,7 +461,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_timer_start</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_timer_start</span><span class="tok_pun">(</span><span class="tok_id">XTimer</span> <span class="tok_pun">*</span><span class="tok_id">t</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_kw">void</span> <span class="tok_id">x_timer_start</span>(<span class="tok_id">XTimer</span> <span class="tok_pun">*</span><span class="tok_id">t</span>);</code></pre>
   
   
 </article>

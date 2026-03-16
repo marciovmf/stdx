@@ -62,11 +62,22 @@ typedef struct DoxterTokenSpan
   u32 count; /* number of tokens */
 } DoxterTokenSpan;
 
+#ifndef DOXTER_MAX_PARAMS
+#define DOXTER_MAX_PARAMS 32
+#endif
+
 typedef struct DoxterSymbolFunction
 {
   u32 name_tok;
-  DoxterTokenSpan return_ts;  /* return type + pointer stars tied to return */
+
+  DoxterTokenSpan return_ts;
   DoxterTokenSpan params_ts;
+
+  /* NEW: span individual de cada argumento */
+  DoxterTokenSpan param_ts[DOXTER_MAX_PARAMS];
+
+  u32 param_count;
+
 } DoxterSymbolFunction;
 
 typedef struct DoxterSymbolMacro
@@ -227,5 +238,7 @@ typedef struct DoxterPretty
 X_HASHTABLE_TYPE_NAMED(XSmallstr, DoxterSymbol, dox_symbol_map);
 
 bool doxter_pretty_format_symbol(DoxterProject *project, const DoxterSymbol *sym, XStrBuilder *out);
+
+bool doxter_pretty_format_span(DoxterProject *project, DoxterTokenSpan ts, XStrBuilder *out);
 
 #endif //DOXTER_H

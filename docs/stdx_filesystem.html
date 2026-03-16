@@ -20,39 +20,55 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#x_fs_find_first_file">x_fs_find_first_file</a></li>
+          <li><a href="#x_fs_cwd_get">x_fs_cwd_get</a></li>
+<li><a href="#x_fs_cwd_set">x_fs_cwd_set</a></li>
+<li><a href="#x_fs_cwd_set_from_executable_path">x_fs_cwd_set_from_executable_path</a></li>
 <li><a href="#x_fs_directory_create">x_fs_directory_create</a></li>
 <li><a href="#x_fs_directory_create_recursive">x_fs_directory_create_recursive</a></li>
 <li><a href="#x_fs_directory_delete">x_fs_directory_delete</a></li>
 <li><a href="#x_fs_file_copy">x_fs_file_copy</a></li>
+<li><a href="#x_fs_file_creation_time">x_fs_file_creation_time</a></li>
+<li><a href="#x_fs_file_modification_time">x_fs_file_modification_time</a></li>
+<li><a href="#x_fs_file_permissions">x_fs_file_permissions</a></li>
 <li><a href="#x_fs_file_rename">x_fs_file_rename</a></li>
+<li><a href="#x_fs_file_set_permissions">x_fs_file_set_permissions</a></li>
+<li><a href="#x_fs_file_stat">x_fs_file_stat</a></li>
+<li><a href="#x_fs_find_close">x_fs_find_close</a></li>
+<li><a href="#x_fs_find_first_file">x_fs_find_first_file</a></li>
 <li><a href="#x_fs_find_next_file">x_fs_find_next_file</a></li>
 <li><a href="#x_fs_get_temp_folder">x_fs_get_temp_folder</a></li>
-<li><a href="#x_fs_cwd_get">x_fs_cwd_get</a></li>
-<li><a href="#x_fs_cwd_set">x_fs_cwd_set</a></li>
-<li><a href="#x_fs_cwd_set_from_executable_path">x_fs_cwd_set_from_executable_path</a></li>
-<li><a href="#x_fs_find_close">x_fs_find_close</a></li>
-<li><a href="#x_fs_watch_open">x_fs_watch_open</a></li>
-<li><a href="#x_fs_watch_close">x_fs_watch_close</a></li>
-<li><a href="#x_fs_watch_poll">x_fs_watch_poll</a></li>
-<li><a href="#x_fs_path_normalize">x_fs_path_normalize</a></li>
-<li><a href="#x_fs_path_stem_cstr">x_fs_path_stem_cstr</a></li>
-<li><a href="#x_fs_path_stem_as_slice">x_fs_path_stem_as_slice</a></li>
-<li><a href="#x_fs_path_stem">x_fs_path_stem</a></li>
-<li><a href="#x_fs_path_basename_cstr">x_fs_path_basename_cstr</a></li>
-<li><a href="#x_fs_path_basename_as_slice">x_fs_path_basename_as_slice</a></li>
-<li><a href="#x_fs_path_basename">x_fs_path_basename</a></li>
-<li><a href="#x_fs_path_dirname_cstr">x_fs_path_dirname_cstr</a></li>
-<li><a href="#x_fs_path_dirname_as_slice">x_fs_path_dirname_as_slice</a></li>
-<li><a href="#x_fs_path_dirname">x_fs_path_dirname</a></li>
+<li><a href="#x_fs_is_directory">x_fs_is_directory</a></li>
+<li><a href="#x_fs_is_file">x_fs_is_file</a></li>
+<li><a href="#x_fs_is_symlink">x_fs_is_symlink</a></li>
+<li><a href="#x_fs_make_temp_directory">x_fs_make_temp_directory</a></li>
+<li><a href="#x_fs_make_temp_file">x_fs_make_temp_file</a></li>
 <li><a href="#x_fs_path_">x_fs_path_</a></li>
-<li><a href="#x_fs_path_join_">x_fs_path_join_</a></li>
-<li><a href="#x_fs_path_join_slice_">x_fs_path_join_slice_</a></li>
+<li><a href="#x_fs_path_append">x_fs_path_append</a></li>
 <li><a href="#x_fs_path_as_slice">x_fs_path_as_slice</a></li>
+<li><a href="#x_fs_path_basename">x_fs_path_basename</a></li>
+<li><a href="#x_fs_path_basename_as_slice">x_fs_path_basename_as_slice</a></li>
+<li><a href="#x_fs_path_basename_cstr">x_fs_path_basename_cstr</a></li>
+<li><a href="#x_fs_path_change_extension">x_fs_path_change_extension</a></li>
+<li><a href="#x_fs_path_clone">x_fs_path_clone</a></li>
+<li><a href="#x_fs_path_common_prefix">x_fs_path_common_prefix</a></li>
+<li><a href="#x_fs_path_compare">x_fs_path_compare</a></li>
+<li><a href="#x_fs_path_compare_cstr">x_fs_path_compare_cstr</a></li>
+<li><a href="#x_fs_path_cstr">x_fs_path_cstr</a></li>
+<li><a href="#x_fs_path_dirname">x_fs_path_dirname</a></li>
+<li><a href="#x_fs_path_dirname_as_slice">x_fs_path_dirname_as_slice</a></li>
+<li><a href="#x_fs_path_dirname_cstr">x_fs_path_dirname_cstr</a></li>
+<li><a href="#x_fs_path_eq">x_fs_path_eq</a></li>
+<li><a href="#x_fs_path_eq_cstr">x_fs_path_eq_cstr</a></li>
 <li><a href="#x_fs_path_exists">x_fs_path_exists</a></li>
 <li><a href="#x_fs_path_exists_cstr">x_fs_path_exists_cstr</a></li>
 <li><a href="#x_fs_path_exists_quick">x_fs_path_exists_quick</a></li>
 <li><a href="#x_fs_path_exists_quick_cstr">x_fs_path_exists_quick_cstr</a></li>
+<li><a href="#x_fs_path_extension">x_fs_path_extension</a></li>
+<li><a href="#x_fs_path_extension_as_slice">x_fs_path_extension_as_slice</a></li>
+<li><a href="#x_fs_path_extension_cstr">x_fs_path_extension_cstr</a></li>
+<li><a href="#x_fs_path_from_executable">x_fs_path_from_executable</a></li>
+<li><a href="#x_fs_path_from_slice">x_fs_path_from_slice</a></li>
+<li><a href="#x_fs_path_init">x_fs_path_init</a></li>
 <li><a href="#x_fs_path_is_absolute">x_fs_path_is_absolute</a></li>
 <li><a href="#x_fs_path_is_absolute_cstr">x_fs_path_is_absolute_cstr</a></li>
 <li><a href="#x_fs_path_is_absolute_native">x_fs_path_is_absolute_native</a></li>
@@ -63,38 +79,22 @@
 <li><a href="#x_fs_path_is_file_cstr">x_fs_path_is_file_cstr</a></li>
 <li><a href="#x_fs_path_is_relative">x_fs_path_is_relative</a></li>
 <li><a href="#x_fs_path_is_relative_cstr">x_fs_path_is_relative_cstr</a></li>
-<li><a href="#x_fs_path_cstr">x_fs_path_cstr</a></li>
-<li><a href="#x_fs_path_append">x_fs_path_append</a></li>
-<li><a href="#x_fs_path_change_extension">x_fs_path_change_extension</a></li>
-<li><a href="#x_fs_path_compare">x_fs_path_compare</a></li>
-<li><a href="#x_fs_path_compare_cstr">x_fs_path_compare_cstr</a></li>
-<li><a href="#x_fs_path_eq">x_fs_path_eq</a></li>
-<li><a href="#x_fs_path_eq_cstr">x_fs_path_eq_cstr</a></li>
-<li><a href="#x_fs_path_extension_cstr">x_fs_path_extension_cstr</a></li>
-<li><a href="#x_fs_path_extension_as_slice">x_fs_path_extension_as_slice</a></li>
-<li><a href="#x_fs_path_extension">x_fs_path_extension</a></li>
-<li><a href="#x_fs_path_from_slice">x_fs_path_from_slice</a></li>
+<li><a href="#x_fs_path_join_">x_fs_path_join_</a></li>
+<li><a href="#x_fs_path_join_one">x_fs_path_join_one</a></li>
+<li><a href="#x_fs_path_join_one_slice">x_fs_path_join_one_slice</a></li>
+<li><a href="#x_fs_path_join_slice_">x_fs_path_join_slice_</a></li>
+<li><a href="#x_fs_path_normalize">x_fs_path_normalize</a></li>
 <li><a href="#x_fs_path_relative_to_cstr">x_fs_path_relative_to_cstr</a></li>
-<li><a href="#x_fs_path_common_prefix">x_fs_path_common_prefix</a></li>
 <li><a href="#x_fs_path_set">x_fs_path_set</a></li>
 <li><a href="#x_fs_path_set_slice">x_fs_path_set_slice</a></li>
 <li><a href="#x_fs_path_split">x_fs_path_split</a></li>
-<li><a href="#x_fs_path_from_executable">x_fs_path_from_executable</a></li>
-<li><a href="#x_fs_file_stat">x_fs_file_stat</a></li>
-<li><a href="#x_fs_file_modification_time">x_fs_file_modification_time</a></li>
-<li><a href="#x_fs_file_creation_time">x_fs_file_creation_time</a></li>
-<li><a href="#x_fs_file_permissions">x_fs_file_permissions</a></li>
-<li><a href="#x_fs_file_set_permissions">x_fs_file_set_permissions</a></li>
-<li><a href="#x_fs_is_file">x_fs_is_file</a></li>
-<li><a href="#x_fs_is_directory">x_fs_is_directory</a></li>
-<li><a href="#x_fs_is_symlink">x_fs_is_symlink</a></li>
+<li><a href="#x_fs_path_stem">x_fs_path_stem</a></li>
+<li><a href="#x_fs_path_stem_as_slice">x_fs_path_stem_as_slice</a></li>
+<li><a href="#x_fs_path_stem_cstr">x_fs_path_stem_cstr</a></li>
 <li><a href="#x_fs_read_symlink">x_fs_read_symlink</a></li>
-<li><a href="#x_fs_make_temp_file">x_fs_make_temp_file</a></li>
-<li><a href="#x_fs_make_temp_directory">x_fs_make_temp_directory</a></li>
-<li><a href="#x_fs_path_join_one_slice">x_fs_path_join_one_slice</a></li>
-<li><a href="#x_fs_path_join_one">x_fs_path_join_one</a></li>
-<li><a href="#x_fs_path_clone">x_fs_path_clone</a></li>
-<li><a href="#x_fs_path_init">x_fs_path_init</a></li>
+<li><a href="#x_fs_watch_close">x_fs_watch_close</a></li>
+<li><a href="#x_fs_watch_open">x_fs_watch_open</a></li>
+<li><a href="#x_fs_watch_poll">x_fs_watch_poll</a></li>
 
         </ul>
       </details>
@@ -102,23 +102,23 @@
       <details open>
         <summary>Macros</summary>
         <ul>
-          <li><a href="#X_FILESYSTEM_VERSION_MAJOR">X_FILESYSTEM_VERSION_MAJOR</a></li>
-<li><a href="#X_FILESYSTEM_VERSION_MINOR">X_FILESYSTEM_VERSION_MINOR</a></li>
-<li><a href="#X_FILESYSTEM_VERSION_PATCH">X_FILESYSTEM_VERSION_PATCH</a></li>
-<li><a href="#X_FILESYSTEM_VERSION">X_FILESYSTEM_VERSION</a></li>
-<li><a href="#X_FS_PAHT_MAX_LENGTH">X_FS_PAHT_MAX_LENGTH</a></li>
-<li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
-<li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
-<li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
-<li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
-<li><a href="#x_fs_path">x_fs_path</a></li>
-<li><a href="#x_fs_path_join">x_fs_path_join</a></li>
-<li><a href="#x_fs_path_join_slice">x_fs_path_join_slice</a></li>
-<li><a href="#MAX_PATH">MAX_PATH</a></li>
-<li><a href="#X_FS_MAX_PATH">X_FS_MAX_PATH</a></li>
+          <li><a href="#MAX_PATH">MAX_PATH</a></li>
 <li><a href="#X_FILESYSTEM_ALLOC">X_FILESYSTEM_ALLOC</a></li>
 <li><a href="#X_FILESYSTEM_CALLOC">X_FILESYSTEM_CALLOC</a></li>
 <li><a href="#X_FILESYSTEM_FREE">X_FILESYSTEM_FREE</a></li>
+<li><a href="#X_FILESYSTEM_VERSION">X_FILESYSTEM_VERSION</a></li>
+<li><a href="#X_FILESYSTEM_VERSION_MAJOR">X_FILESYSTEM_VERSION_MAJOR</a></li>
+<li><a href="#X_FILESYSTEM_VERSION_MINOR">X_FILESYSTEM_VERSION_MINOR</a></li>
+<li><a href="#X_FILESYSTEM_VERSION_PATCH">X_FILESYSTEM_VERSION_PATCH</a></li>
+<li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
+<li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
+<li><a href="#X_FS_MAX_PATH">X_FS_MAX_PATH</a></li>
+<li><a href="#X_FS_PAHT_MAX_LENGTH">X_FS_PAHT_MAX_LENGTH</a></li>
+<li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
+<li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
+<li><a href="#x_fs_path">x_fs_path</a></li>
+<li><a href="#x_fs_path_join">x_fs_path_join</a></li>
+<li><a href="#x_fs_path_join_slice">x_fs_path_join_slice</a></li>
 
         </ul>
       </details>
@@ -126,12 +126,12 @@
       <details open>
         <summary>Structs</summary>
         <ul>
-          <li><a href="#XFSDireEntry">XFSDireEntry</a></li>
+          <li><a href="#FSFileStat">FSFileStat</a></li>
+<li><a href="#XFSDireEntry">XFSDireEntry</a></li>
+<li><a href="#XFSDireEntry_t">XFSDireEntry_t</a></li>
 <li><a href="#XFSDireHandle">XFSDireHandle</a></li>
 <li><a href="#XFSWatch">XFSWatch</a></li>
-<li><a href="#XFSDireEntry_t">XFSDireEntry_t</a></li>
 <li><a href="#XFSWatchEvent">XFSWatchEvent</a></li>
-<li><a href="#FSFileStat">FSFileStat</a></li>
 <li><a href="#dirent">dirent</a></li>
 <li><a href="#stat">stat</a></li>
 
@@ -172,7 +172,6 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
-<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -336,7 +335,7 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">struct</span> <span class="tok_id">XFSDireEntry_t</span><span class="tok_pun">{</span>
   <span class="tok_kw">char</span> <span class="tok_id">name</span><span class="tok_pun">[</span><span class="tok_kw"><a href="stdx_filesystem.html#X_FS_PAHT_MAX_LENGTH">X_FS_PAHT_MAX_LENGTH</a></span><span class="tok_pun">]</span><span class="tok_pun">;</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">size</span><span class="tok_pun">;</span>
   <span class="tok_id">time_t</span> <span class="tok_id">last_modified</span><span class="tok_pun">;</span>
   <span class="tok_kw">int32_t</span> <span class="tok_id">is_directory</span><span class="tok_pun">;</span>
 <span class="tok_pun">}</span><span class="tok_pun">;</span></code></pre>
@@ -410,7 +409,7 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">FSFileStat</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span><span class="tok_pun">{</span>
-  <span class="tok_id">size_t</span> <span class="tok_id">size</span><span class="tok_pun">;</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">size</span><span class="tok_pun">;</span>
   <span class="tok_id">time_t</span> <span class="tok_id">creation_time</span><span class="tok_pun">;</span>
   <span class="tok_id">time_t</span> <span class="tok_id">modification_time</span><span class="tok_pun">;</span>
   <span class="tok_kw">uint32_t</span> <span class="tok_id">permissions</span><span class="tok_pun">;</span>
@@ -424,15 +423,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_find_first_file</span></h2>
   <p class="brief">Begin a directory enumeration and retrieve the first entry.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_fs_find_first_file</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSDireEntry">XFSDireEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entry</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_fs_find_first_file</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSDireEntry">XFSDireEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entry</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Directory path to search.</dd>
-<dt><code>entry</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSDireEntry">XFSDireEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
 <dd>Output directory entry filled with the first result.</dd>
 
   </dl>
@@ -450,11 +450,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_directory_create</span></h2>
   <p class="brief">Create a directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_directory_create</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_directory_create</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Directory path to create.</dd>
 
   </dl>
@@ -472,11 +472,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_directory_create_recursive</span></h2>
   <p class="brief">Create a directory and any missing parent directories.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_directory_create_recursive</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_directory_create_recursive</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Directory path to create.</dd>
 
   </dl>
@@ -494,11 +494,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_directory_delete</span></h2>
   <p class="brief">Delete an empty directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_directory_delete</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">directory</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_directory_delete</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">directory</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>directory</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">directory</span></code></dt>
 <dd>Directory path to delete.</dd>
 
   </dl>
@@ -516,15 +516,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_file_copy</span></h2>
   <p class="brief">Copy a file to a new path.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_copy</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">newFile</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_copy</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">newFile</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>file</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span></code></dt>
 <dd>Source file path.</dd>
-<dt><code>newFile</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">newFile</span></code></dt>
 <dd>Destination file path.</dd>
 
   </dl>
@@ -542,15 +543,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_file_rename</span></h2>
   <p class="brief">Rename (move) a file to a new path.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_rename</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">newFile</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_rename</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">newFile</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>file</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span></code></dt>
 <dd>Source file path.</dd>
-<dt><code>newFile</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">newFile</span></code></dt>
 <dd>Destination file path.</dd>
 
   </dl>
@@ -568,15 +570,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_find_next_file</span></h2>
   <p class="brief">Continue a directory enumeration and retrieve the next entry.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_find_next_file</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">dirHandle</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSDireEntry">XFSDireEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entry</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_find_next_file</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">dirHandle</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSDireEntry">XFSDireEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entry</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>dirHandle</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">dirHandle</span></code></dt>
 <dd>Enumeration handle returned by x_fs_find_first_file().</dd>
-<dt><code>entry</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSDireEntry">XFSDireEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
 <dd>Output directory entry filled with the next result.</dd>
 
   </dl>
@@ -594,11 +597,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_get_temp_folder</span></h2>
   <p class="brief">Get the system temporary folder path.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_get_temp_folder</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_get_temp_folder</span>(<span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>out</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
 <dd>Output path buffer to receive the temp folder.</dd>
 
   </dl>
@@ -616,11 +619,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_cwd_get</span></h2>
   <p class="brief">Get the current working directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_cwd_get</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_cwd_get</span>(<span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Output path buffer to receive the current working directory.</dd>
 
   </dl>
@@ -638,11 +641,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_cwd_set</span></h2>
   <p class="brief">Set the current working directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_cwd_set</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_cwd_set</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>New working directory path.</dd>
 
   </dl>
@@ -660,7 +663,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_cwd_set_from_executable_path</span></h2>
   <p class="brief">Set the current working directory to the executable's directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_cwd_set_from_executable_path</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_cwd_set_from_executable_path</span>(<span class="tok_kw">void</span>);</code></pre>
   
   <section class="returns">
   <h3>Returns</h3>
@@ -674,11 +677,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_find_close</span></h2>
   <p class="brief">Close a directory enumeration handle.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_fs_find_close</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">dirHandle</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_fs_find_close</span>(<span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">dirHandle</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>dirHandle</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSDireHandle">XFSDireHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">dirHandle</span></code></dt>
 <dd>Enumeration handle to close.</dd>
 
   </dl>
@@ -696,11 +699,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_watch_open</span></h2>
   <p class="brief">Open a filesystem watcher for the given path.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_fs_watch_open</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_fs_watch_open</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to watch (directory or file, depending on platform support).</dd>
 
   </dl>
@@ -718,11 +721,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_watch_close</span></h2>
   <p class="brief">Close a filesystem watcher.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_fs_watch_close</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span><span class="tok_id">fw</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_fs_watch_close</span>(<span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span><span class="tok_id">fw</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>fw</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span><span class="tok_id">fw</span></code></dt>
 <dd>Watch handle to close.</dd>
 
   </dl>
@@ -740,18 +743,19 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_watch_poll</span></h2>
   <p class="brief">Poll a filesystem watcher for pending events.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_fs_watch_poll</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span><span class="tok_id">fw</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSWatchEvent">XFSWatchEvent</a></span> <span class="tok_pun">*</span><span class="tok_id">out_events</span><span class="tok_pun">,</span>
- <span class="tok_kw">int32_t</span> <span class="tok_id">max_events</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_fs_watch_poll</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span><span class="tok_id">fw</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSWatchEvent">XFSWatchEvent</a></span> <span class="tok_pun">*</span><span class="tok_id">out_events</span>,
+ <span class="tok_kw">int32_t</span> <span class="tok_id">max_events</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>fw</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSWatch">XFSWatch</a></span> <span class="tok_pun">*</span><span class="tok_id">fw</span></code></dt>
 <dd>Watch handle.</dd>
-<dt><code>out_events</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSWatchEvent">XFSWatchEvent</a></span> <span class="tok_pun">*</span><span class="tok_id">out_events</span></code></dt>
 <dd>Output array to receive events.</dd>
-<dt><code>max_events</code></dt>
+<dt><code><span class="tok_kw">int32_t</span> <span class="tok_id">max_events</span></code></dt>
 <dd>Maximum number of events to write to out_events.</dd>
 
   </dl>
@@ -769,11 +773,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_normalize</span></h2>
   <p class="brief">Normalize a path in-place (e.g., separators, ".", ".." where possible).</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_fs_path_normalize</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_fs_path_normalize</span>(<span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path to normalize.</dd>
 
   </dl>
@@ -791,11 +795,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_stem_cstr</span></h2>
   <p class="brief">Get the filename stem (basename without extension) from a path string.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_stem_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_stem_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
 
   </dl>
@@ -813,7 +817,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_stem_as_slice</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_stem_as_slice</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_stem_as_slice</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span>);</code></pre>
   
   
 </article>
@@ -823,9 +827,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_stem</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_stem</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_stem</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>
+);</code></pre>
   
   
 </article>
@@ -835,11 +840,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_basename_cstr</span></h2>
   <p class="brief">Get the basename (final component) from a path string.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_basename_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_basename_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
 
   </dl>
@@ -857,7 +862,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_basename_as_slice</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_basename_as_slice</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_basename_as_slice</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span>);</code></pre>
   
   
 </article>
@@ -867,9 +872,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_basename</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_basename</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_basename</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>
+);</code></pre>
   
   
 </article>
@@ -879,11 +885,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_dirname_cstr</span></h2>
   <p class="brief">Get the directory name (everything before the final component) from a path string.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_dirname_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_dirname_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
 
   </dl>
@@ -901,7 +907,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_dirname_as_slice</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_dirname_as_slice</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_dirname_as_slice</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span>);</code></pre>
   
   
 </article>
@@ -911,9 +917,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_dirname</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_dirname</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_dirname</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>
+);</code></pre>
   
   
 </article>
@@ -923,13 +930,14 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_</span></h2>
   <p class="brief">Build a path from one or more C string components (variadic), writing to out.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">,</span>
- <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>,
+ <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>out</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
 <dd>Output path to receive the resulting path.</dd>
 
   </dl>
@@ -947,9 +955,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_join_</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_join_</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_join_</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span>
+);</code></pre>
   
   
 </article>
@@ -959,9 +968,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_join_slice_</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_join_slice_</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_join_slice_</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span>
+);</code></pre>
   
   
 </article>
@@ -971,7 +981,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_as_slice</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_as_slice</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_as_slice</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   
   
 </article>
@@ -981,11 +991,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_exists</span></h2>
   <p class="brief">Check whether a path exists on disk.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_exists</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_exists</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1003,11 +1013,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_exists_cstr</span></h2>
   <p class="brief">Check whether a C-string path exists on disk.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_exists_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_exists_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1025,11 +1035,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_exists_quick</span></h2>
   <p class="brief">Check whether a path exists on disk using a faster, less thorough method.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_exists_quick</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_exists_quick</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1047,11 +1057,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_exists_quick_cstr</span></h2>
   <p class="brief">Check whether a C-string path exists on disk using a faster, less thorough method.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_exists_quick_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_exists_quick_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1069,11 +1079,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_absolute</span></h2>
   <p class="brief">Check whether a path is absolute.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_absolute</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_absolute</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1091,11 +1101,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_absolute_cstr</span></h2>
   <p class="brief">Check whether a C-string path is absolute.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_absolute_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_absolute_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1113,11 +1123,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_absolute_native</span></h2>
   <p class="brief">Check whether a path is absolute using native platform rules.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_absolute_native</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_absolute_native</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1135,11 +1145,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_absolute_native_cstr</span></h2>
   <p class="brief">Check whether a C-string path is absolute using native platform rules.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_absolute_native_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_absolute_native_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1157,11 +1167,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_directory</span></h2>
   <p class="brief">Check whether a path points to an existing directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_directory</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_directory</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1179,11 +1189,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_directory_cstr</span></h2>
   <p class="brief">Check whether a C-string path points to an existing directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_directory_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_directory_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1201,11 +1211,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_file</span></h2>
   <p class="brief">Check whether a path points to an existing file.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_file</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_file</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1223,11 +1233,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_file_cstr</span></h2>
   <p class="brief">Check whether a C-string path points to an existing file.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_file_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_file_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1245,11 +1255,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_relative</span></h2>
   <p class="brief">Check whether a path is relative.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_relative</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_relative</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1267,11 +1277,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_is_relative_cstr</span></h2>
   <p class="brief">Check whether a C-string path is relative.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_relative_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_is_relative_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1289,11 +1299,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_cstr</span></h2>
   <p class="brief">Get a NUL-terminated C string view of an XFSPath.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_fs_path_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span> <span class="tok_id">x_fs_path_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>p</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span></code></dt>
 <dd>Path object.</dd>
 
   </dl>
@@ -1311,15 +1321,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_append</span></h2>
   <p class="brief">Append a single component to a path.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_append</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">comp</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_append</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">comp</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>p</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span></code></dt>
 <dd>Path to append to.</dd>
-<dt><code>comp</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">comp</span></code></dt>
 <dd>Component to append.</dd>
 
   </dl>
@@ -1337,15 +1348,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_change_extension</span></h2>
   <p class="brief">Replace or set the extension of a path.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_change_extension</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">new_ext</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_change_extension</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">new_ext</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to modify.</dd>
-<dt><code>new_ext</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">new_ext</span></code></dt>
 <dd>New extension (with or without leading dot, depending on implementation).</dd>
 
   </dl>
@@ -1363,15 +1375,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_compare</span></h2>
   <p class="brief">Compare two paths, ignoring separator type.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_compare</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_compare</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>First path.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span></code></dt>
 <dd>Second path.</dd>
 
   </dl>
@@ -1389,15 +1402,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_compare_cstr</span></h2>
   <p class="brief">Compare a path against a C string path, ignoring separator type.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_fs_path_compare_cstr</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_fs_path_compare_cstr</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>Path.</dd>
-<dt><code>cstr</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span></code></dt>
 <dd>C string path.</dd>
 
   </dl>
@@ -1415,15 +1429,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_eq</span></h2>
   <p class="brief">Check whether a path equals a small string.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_eq</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_eq</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>Path.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSmallstr">XSmallstr</a></span> <span class="tok_pun">*</span><span class="tok_id">b</span></code></dt>
 <dd>Small string to compare against.</dd>
 
   </dl>
@@ -1441,15 +1456,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_eq_cstr</span></h2>
   <p class="brief">Check whether a path equals a C string path.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_eq_cstr</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_eq_cstr</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>a</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">a</span></code></dt>
 <dd>Path.</dd>
-<dt><code>b</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">b</span></code></dt>
 <dd>C string path.</dd>
 
   </dl>
@@ -1467,11 +1483,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_extension_cstr</span></h2>
   <p class="brief">Get the extension from a path string.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_extension_cstr</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_extension_cstr</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
 
   </dl>
@@ -1489,7 +1505,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_extension_as_slice</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_extension_as_slice</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">x_fs_path_extension_as_slice</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span>);</code></pre>
   
   
 </article>
@@ -1499,9 +1515,10 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_extension</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_extension</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_extension</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">input</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>
+);</code></pre>
   
   
 </article>
@@ -1511,15 +1528,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_from_slice</span></h2>
   <p class="brief">Convert a slice into an XFSPath.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_from_slice</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_from_slice</span>(
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>sv</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">sv</span></code></dt>
 <dd>Input slice containing a path string.</dd>
-<dt><code>out</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
 <dd>Output path to receive the converted string.</dd>
 
   </dl>
@@ -1537,18 +1555,19 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_relative_to_cstr</span></h2>
   <p class="brief">Compute a relative path from one C-string path to another.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_relative_to_cstr</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">from_path</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">to_path</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_relative_to_cstr</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">from_path</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">to_path</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>from_path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">from_path</span></code></dt>
 <dd>Base path.</dd>
-<dt><code>to_path</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">to_path</span></code></dt>
 <dd>Target path.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the relative path.</dd>
 
   </dl>
@@ -1566,18 +1585,19 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_common_prefix</span></h2>
   <p class="brief">Compute the common prefix of two paths.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_common_prefix</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">from_path</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">to_path</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_common_prefix</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">from_path</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">to_path</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>from_path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">from_path</span></code></dt>
 <dd>First path.</dd>
-<dt><code>to_path</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">to_path</span></code></dt>
 <dd>Second path.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the common prefix.</dd>
 
   </dl>
@@ -1595,15 +1615,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_set</span></h2>
   <p class="brief">Set a path from a C string.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_set</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_set</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>p</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span></code></dt>
 <dd>Path to set.</dd>
-<dt><code>cstr</code></dt>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">cstr</span></code></dt>
 <dd>Source C string.</dd>
 
   </dl>
@@ -1621,15 +1642,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_set_slice</span></h2>
   <p class="brief">Set a path from a stdx slice.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_set_slice</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">slice</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_set_slice</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">slice</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>p</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span></code></dt>
 <dd>Path to set.</dd>
-<dt><code>slice</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">slice</span></code></dt>
 <dd>stdx slice string.</dd>
 
   </dl>
@@ -1647,21 +1669,22 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_split</span></h2>
   <p class="brief">Split a path string into components.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_split</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_components</span><span class="tok_pun">,</span>
- <span class="tok_id">size_t</span> <span class="tok_id">max_components</span><span class="tok_pun">,</span>
- <span class="tok_id">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_count</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_path_split</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_components</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">max_components</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_count</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>input</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">input</span></code></dt>
 <dd>Path as a C string.</dd>
-<dt><code>out_components</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_components</span></code></dt>
 <dd>Output array of components.</dd>
-<dt><code>max_components</code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">max_components</span></code></dt>
 <dd>Maximum number of components to write.</dd>
-<dt><code>out_count</code></dt>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_count</span></code></dt>
 <dd>Output count of components written.</dd>
 
   </dl>
@@ -1679,11 +1702,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_from_executable</span></h2>
   <p class="brief">Get the executable path (or executable directory, depending on implementation).</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_id">size_t</span> <span class="tok_id">x_fs_path_from_executable</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_from_executable</span>(<span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>out</code></dt>
+    <dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
 <dd>Output path to receive the executable path.</dd>
 
   </dl>
@@ -1701,15 +1724,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_file_stat</span></h2>
   <p class="brief">Retrieve metadata about a file or directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_stat</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#FSFileStat">FSFileStat</a></span> <span class="tok_pun">*</span><span class="tok_id">out_stat</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_stat</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#FSFileStat">FSFileStat</a></span> <span class="tok_pun">*</span><span class="tok_id">out_stat</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>out_stat</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#FSFileStat">FSFileStat</a></span> <span class="tok_pun">*</span><span class="tok_id">out_stat</span></code></dt>
 <dd>Output struct receiving the metadata.</dd>
 
   </dl>
@@ -1727,15 +1751,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_file_modification_time</span></h2>
   <p class="brief">Retrieve the last modification time of a file or directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_modification_time</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_id">time_t</span> <span class="tok_pun">*</span><span class="tok_id">out_time</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_modification_time</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_id">time_t</span> <span class="tok_pun">*</span><span class="tok_id">out_time</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>out_time</code></dt>
+<dt><code><span class="tok_id">time_t</span> <span class="tok_pun">*</span><span class="tok_id">out_time</span></code></dt>
 <dd>Output time receiving the modification time.</dd>
 
   </dl>
@@ -1753,15 +1778,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_file_creation_time</span></h2>
   <p class="brief">Retrieve the creation time of a file or directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_creation_time</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_id">time_t</span> <span class="tok_pun">*</span><span class="tok_id">out_time</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_creation_time</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_id">time_t</span> <span class="tok_pun">*</span><span class="tok_id">out_time</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>out_time</code></dt>
+<dt><code><span class="tok_id">time_t</span> <span class="tok_pun">*</span><span class="tok_id">out_time</span></code></dt>
 <dd>Output time receiving the creation time.</dd>
 
   </dl>
@@ -1779,15 +1805,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_file_permissions</span></h2>
   <p class="brief">Retrieve permissions metadata for a file or directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_permissions</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_permissions</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_permissions</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_permissions</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>out_permissions</code></dt>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_permissions</span></code></dt>
 <dd>Output value receiving the permissions (platform-dependent).</dd>
 
   </dl>
@@ -1805,15 +1832,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_file_set_permissions</span></h2>
   <p class="brief">Set permissions metadata for a file or directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_set_permissions</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_kw">uint32_t</span> <span class="tok_id">permissions</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_set_permissions</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">permissions</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>File or directory path.</dd>
-<dt><code>permissions</code></dt>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_id">permissions</span></code></dt>
 <dd>Permissions value to set (platform-dependent).</dd>
 
   </dl>
@@ -1831,11 +1859,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_is_file</span></h2>
   <p class="brief">Check whether a path points to an existing regular file.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_is_file</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_is_file</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1853,11 +1881,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_is_directory</span></h2>
   <p class="brief">Check whether a path points to an existing directory.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_is_directory</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_is_directory</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1875,11 +1903,11 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_is_symlink</span></h2>
   <p class="brief">Check whether a path is a symbolic link.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_is_symlink</span><span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_is_symlink</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Path to check.</dd>
 
   </dl>
@@ -1897,15 +1925,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_read_symlink</span></h2>
   <p class="brief">Read the target of a symbolic link.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_read_symlink</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_read_symlink</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>path</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
 <dd>Symbolic link path.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the resolved link target.</dd>
 
   </dl>
@@ -1923,15 +1952,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_make_temp_file</span></h2>
   <p class="brief">Create a temporary file with the given prefix.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_make_temp_file</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_make_temp_file</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>prefix</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span></code></dt>
 <dd>Prefix to use for the temporary file name.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the created temp file path.</dd>
 
   </dl>
@@ -1949,15 +1979,16 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_make_temp_directory</span></h2>
   <p class="brief">Create a temporary directory with the given prefix.</p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_make_temp_directory</span><span class="tok_pun">(</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span><span class="tok_pun">,</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_make_temp_directory</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span>
+);</code></pre>
   <section class="params">
   <h3>Parameters</h3>
   <dl>
-    <dt><code>prefix</code></dt>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">prefix</span></code></dt>
 <dd>Prefix to use for the temporary directory name.</dd>
-<dt><code>out_path</code></dt>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
 <dd>Output path receiving the created temp directory path.</dd>
 
   </dl>
@@ -2075,9 +2106,10 @@ different implementation before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_join_one_slice</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_fs_path_join_one_slice</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">segment</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_fs_path_join_one_slice</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">segment</span>
+);</code></pre>
   
   
 </article>
@@ -2087,9 +2119,10 @@ different implementation before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_join_one</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_fs_path_join_one</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">segment</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">int32_t</span> <span class="tok_id">x_fs_path_join_one</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">segment</span>
+);</code></pre>
   
   
 </article>
@@ -2099,9 +2132,10 @@ different implementation before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_clone</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_fs_path_clone</span><span class="tok_pun">(</span>
- <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span><span class="tok_pun">,</span>
- <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_fs_path_clone</span>(
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>
+);</code></pre>
   
   
 </article>
@@ -2111,7 +2145,7 @@ different implementation before including this header.</p>
   </div>
   <h2><span class="symbol-name">x_fs_path_init</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_fs_path_init</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span><span class="tok_pun">)</span>;</code></pre>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_fs_path_init</span>(<span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
   
   
 </article>

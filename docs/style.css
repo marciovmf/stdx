@@ -11,9 +11,9 @@
   --radius:       10px;
 
   /* Font roles (more granular than --mono/--sans) */
-  --font-ui:       Segoe UI;
-  --font-heading:  Segoe UI;
-  --font-code:     Segoe UI;
+  --font-ui:       Helvetica;
+  --font-heading:  Helvetica;
+  --font-code:     Cascadia Mono;
   --font-symbol:   Segoe UI;
 
   /* Syntax highlight palette */

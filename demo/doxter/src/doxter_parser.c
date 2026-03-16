@@ -564,6 +564,63 @@ static void s_symbol_fill_function_stmt(DoxterProject* proj, DoxterSymbol* sym)
     sym->stmt.fn.params_ts.count = (close_paren - open_paren) + 1;
   }
 
+  /* Span per param */
+  sym->stmt.fn.param_count = 0;
+  {
+    u32 start = sym->stmt.fn.params_ts.first;
+    u32 end   = sym->stmt.fn.params_ts.first + sym->stmt.fn.params_ts.count;
+
+    int paren_depth = 0;
+    u32 param_begin = 0;
+    bool in_param = false;
+
+    for (u32 i = start; i < end; ++i)
+    {
+      const DoxterToken *t = x_array_get(proj->tokens, i);
+
+      if (t->kind == DOXTER_PUNCT && t->text.length == 1)
+      {
+        char c = t->text.ptr[0];
+
+        if (c == '(')
+        {
+          paren_depth++;
+          if (paren_depth == 1)
+          {
+            param_begin = i + 1;
+            in_param = true;
+          }
+          continue;
+        }
+
+        if (c == ',' && paren_depth == 1)
+        {
+          if (in_param && sym->stmt.fn.param_count < DOXTER_MAX_PARAMS)
+          {
+            sym->stmt.fn.param_ts[sym->stmt.fn.param_count].first = param_begin;
+            sym->stmt.fn.param_ts[sym->stmt.fn.param_count].count = i - param_begin;
+            sym->stmt.fn.param_count++;
+          }
+
+          param_begin = i + 1;
+          continue;
+        }
+
+        if (c == ')')
+        {
+          if (paren_depth == 1 && in_param && sym->stmt.fn.param_count < DOXTER_MAX_PARAMS)
+          {
+            sym->stmt.fn.param_ts[sym->stmt.fn.param_count].first = param_begin;
+            sym->stmt.fn.param_ts[sym->stmt.fn.param_count].count = i - param_begin;
+            sym->stmt.fn.param_count++;
+          }
+
+          paren_depth--;
+        }
+      }
+    }
+  }
+
   /* Return span: everything before name token */
   sym->stmt.fn.return_ts.first = first;
   sym->stmt.fn.return_ts.count = (name_i > first) ? (name_i - first) : 0;
@@ -1296,11 +1353,11 @@ static bool s_classify_statement(XSlice stmt, XSlice comment, u32 line, u32 col,
   {
     out->type = DOXTER_STRUCT;
     /*
-      typedef struct/enum/union naming:
-      - For "typedef struct { ... } Name;" the exported name is after '}'.
-      - For "typedef struct Tag Name;" the exported name is the typedef alias.
-      In both cases, the last IDENT before ';' is the typedef name.
-    */
+       typedef struct/enum/union naming:
+       - For "typedef struct { ... } Name;" the exported name is after '}'.
+       - For "typedef struct Tag Name;" the exported name is the typedef alias.
+       In both cases, the last IDENT before ';' is the typedef name.
+       */
     out->name = saw_typedef ? last_ident : struct_name;
     return out->name.length > 0;
   }
