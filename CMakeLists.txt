@@ -122,4 +122,6 @@ add_subdirectory(demo/bake)
 add_subdirectory(demo/md2html)
 # Doxter
 add_subdirectory(demo/doxter)
+# minima
+add_subdirectory(demo/minima)
 

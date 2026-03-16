@@ -15,6 +15,9 @@
 #define X_IMPL_HASHTABLE
 #include <stdx_hashtable.h>
 
+#define X_IMPL_FILESYSTEM
+#include <stdx_filesystem.h>
+
 #define X_IMPL_ARRAY
 #include <stdx_array.h>
 

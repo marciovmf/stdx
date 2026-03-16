@@ -1683,19 +1683,24 @@ static MiExecResult mi_list_expect_index(MiContext *ctx, MiValue value, uint32_t
   return mi_exec_error();
 }
 
-bool mi_list_push_value(MiValue list_value, MiValue value)
+MiExecResult mi_call_cmd_list_push_value(MiValue list_value, MiValue value)
 {
   MiList *list;
-  XArrayError err;
 
   list = mi_list_from_value(list_value);
   if (!list)
   {
-    return false;
+    return mi_exec_error();
   }
 
-  err = x_array_MiValue_push(list->items, value);
-  return err == XARRAY_OK;
+  XArrayError err = x_array_MiValue_push(list->items, value);
+  if (err != XARRAY_OK)
+  {
+    x_array_MiValue_destroy(list->items);
+    free(list);
+    return mi_exec_error();
+  }
+  return mi_exec_ok(mi_value_number(0));
 }
 
 MiExecResult mi_list_cmd_create(MiContext *ctx, i32 argc, MiNode **argv)
@@ -1747,7 +1752,6 @@ MiExecResult mi_list_cmd_create(MiContext *ctx, i32 argc, MiNode **argv)
     return mi_exec_ok(mi_value_user(&List_type, list));
   }
 }
-
 
 MiExecResult mi_list_cmd_len(MiContext *ctx, i32 argc, MiNode **argv)
 {
@@ -2339,6 +2343,211 @@ MiExecResult mi_cmd_foreach(MiContext *ctx, i32 argc, MiNode **argv)
 }
 
 //
+// EVAL
+//
+
+MiExecResult mi_cmd_eval(MiContext *ctx, int argc, MiNode **argv)
+{
+  MiExecResult result = mi_exec_null();
+  MiExecResult eval_result;
+  MiValue src_value;
+  XSlice source;
+  XArena *arena;
+  MiParseResult p_res;
+
+  if (!ctx)
+  {
+    return mi_exec_error();
+  }
+
+  if (argc < 1 || !argv || !argv[0])
+  {
+    mi_context_set_error(ctx, "eval expects a source argument", 0, 0);
+    return mi_exec_error();
+  }
+
+  /*
+   * Evaluate first argument.
+   */
+  eval_result = mi_eval_node(ctx, argv[0]);
+  if (eval_result.signal == MI_SIGNAL_ERROR)
+  {
+    return eval_result;
+  }
+
+  src_value = eval_result.value;
+
+  if (src_value.kind != MI_VAL_STRING)
+  {
+    mi_context_set_error(ctx, "eval source must evaluate to a string", 0, 0);
+    return mi_exec_error();
+  }
+
+  source = src_value.as.string;
+
+  /*
+   * Parse source.
+   */
+  arena = x_arena_create(4096);
+  if (!arena)
+  {
+    mi_context_set_error(ctx, "eval failed to create parse arena", 0, 0);
+    return mi_exec_error();
+  }
+
+  p_res = mi_parse(arena, source);
+  if (!p_res.ok || !p_res.root)
+  {
+    mi_context_set_error(
+        ctx,
+        p_res.error_message ? p_res.error_message : "eval parse error",
+        p_res.error_line,
+        p_res.error_column);
+
+    return mi_exec_error();
+  }
+
+  /*
+   * Execute program block.
+   */
+  result = mi_exec_block(ctx, p_res.root, false);
+
+  return result;
+}
+
+MiExecResult mi_call_cmd_eval(MiContext *ctx, XSlice source)
+{
+  MiExecResult result;
+  XArena *arena;
+  MiParseResult p_res;
+
+  result = mi_exec_null();
+
+  arena = x_arena_create(4096);
+  if (!arena)
+  {
+    mi_context_set_error(ctx, "failed to create parse arena", 0, 0);
+    return mi_exec_error();
+  }
+
+  p_res = mi_parse(arena, source);
+  if (!p_res.ok || !p_res.root)
+  {
+    mi_context_set_error(
+        ctx,
+        p_res.error_message ? p_res.error_message : "parse error",
+        p_res.error_line,
+        p_res.error_column);
+
+    return mi_exec_error();
+  }
+
+  result = mi_exec_block(ctx, p_res.root, false);
+  return result;
+}
+
+
+//
+// INCLUDE
+//
+MiExecResult mi_cmd_include(MiContext *ctx, int argc, MiNode **argv)
+{
+  MiExecResult eval_result;
+  MiValue path_value;
+  XSlice path;
+  XFSPath path_cstr;
+  FILE *f;
+  long fsize;
+  size_t size;
+  char *file_buf;
+  MiExecResult result;
+
+  result = mi_exec_null();
+  file_buf = NULL;
+
+  if (!ctx)
+  {
+    return mi_exec_error();
+  }
+
+  if (argc < 1 || !argv || !argv[0])
+  {
+    mi_context_set_error(ctx, "include expects a path argument", 0, 0);
+    return mi_exec_error();
+  }
+
+  eval_result = mi_eval_node(ctx, argv[0]);
+  if (eval_result.signal == MI_SIGNAL_ERROR)
+  {
+    return eval_result;
+  }
+
+  path_value = eval_result.value;
+  if (path_value.kind != MI_VAL_STRING)
+  {
+    mi_context_set_error(ctx, "include path must evaluate to a string", 0, 0);
+    return mi_exec_error();
+  }
+
+  path = path_value.as.string;
+  x_fs_path_from_slice(path, &path_cstr);
+
+  f = fopen(path_cstr.buf, "rb");
+  if (!f)
+  {
+    mi_context_set_error(ctx, "include could not open file", 0, 0);
+    return mi_exec_error();
+  }
+
+  if (fseek(f, 0, SEEK_END) != 0)
+  {
+    fclose(f);
+    mi_context_set_error(ctx, "include failed to seek file", 0, 0);
+    return mi_exec_error();
+  }
+
+  fsize = ftell(f);
+  if (fsize < 0)
+  {
+    fclose(f);
+    mi_context_set_error(ctx, "include failed to get file size", 0, 0);
+    return mi_exec_error();
+  }
+
+  if (fseek(f, 0, SEEK_SET) != 0)
+  {
+    fclose(f);
+    mi_context_set_error(ctx, "include failed to rewind file", 0, 0);
+    return mi_exec_error();
+  }
+
+  size = (size_t)fsize;
+  file_buf = (char *)malloc(size + 1u);
+  if (!file_buf)
+  {
+    fclose(f);
+    mi_context_set_error(ctx, "include failed to allocate file buffer", 0, 0);
+    return mi_exec_error();
+  }
+
+  if (fread(file_buf, 1u, size, f) != size)
+  {
+    fclose(f);
+    free(file_buf);
+    mi_context_set_error(ctx, "include failed to read file", 0, 0);
+    return mi_exec_error();
+  }
+
+  fclose(f);
+  file_buf[size] = '\0';
+
+  result = mi_call_cmd_eval(ctx, x_slice_init(file_buf, size));
+
+  return result;
+}
+
+
+//
 // Register all builtin commands
 //
 
@@ -2390,6 +2599,11 @@ bool mi_register_builtins(MiContext *ctx)
   }
 
   if (!mi_register_command(ctx, "foreach", mi_cmd_foreach))
+  {
+    return false;
+  }
+
+  if (!mi_register_command(ctx, "include", mi_cmd_include))
   {
     return false;
   }
