@@ -196,12 +196,6 @@ MiExecResult slab_cmd_page(MiContext *ctx, i32 argc, MiNode **argv)
     return mi_exec_ok(mi_value_number(page->draft ? 1.0 : 0.0));
   }
 
-  if (mi_page_slice_equals_cstr(prop_name, "is_post"))
-  {
-    i32 is_post = (page->type == SLAB_PAGE_TYPE_POST ? 1 : 0);
-    return mi_exec_ok(mi_value_number(is_post));
-  }
-
   mi_context_set_error(ctx, "unknown page property", 0, 0);
   return mi_exec_error();
 }

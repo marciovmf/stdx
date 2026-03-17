@@ -2,7 +2,7 @@
   title     : Markdown is now supported
   slug      : markdown_support
   template  : post
-  category  : posts
+  category  : post
   tags      : markdown programming c
   date      : 2024.09.16
 ---

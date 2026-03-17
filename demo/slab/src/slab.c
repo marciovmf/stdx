@@ -430,7 +430,7 @@ static i32 s_slab_process_directory_metadata_recursive(SlabSite* site, const cha
   do
   {
     if (strncmp(dir_entry.name, ".", 1) == 0 || strncmp(dir_entry.name, "..", 2) == 0 ||
-        x_cstr_starts_with(dir_entry.name, "_")
+        x_cstr_starts_with(dir_entry.name, "_") // We ignore anything that starts with '_'
        ) 
     {
       continue;

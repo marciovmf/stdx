@@ -17,6 +17,8 @@
 #define log_warning(msg, ...)  x_log_raw(stdout, XLOG_LEVEL_WARNING, XLOG_COLOR_YELLOW, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
 #define log_error(msg, ...)    x_log_raw(stderr, XLOG_LEVEL_ERROR, XLOG_COLOR_RED, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
 
+X_ARRAY_TYPE_NAMED(char*, cstr);
+
 typedef enum SlabFrontmatterParseResult
 {
   SLAB_FRONTMATTER_SUCCESS          = 0,
@@ -58,8 +60,6 @@ typedef struct SlabPage
   char* source_path;    // full path to source file
   char* output_path;    // where to write final HTML, optional for now
   char* url;            // Page url
-  SlabPageType type;          // post / static / unknown
- 
   char* title;
   char* template_name;
   char* date;
@@ -84,6 +84,7 @@ typedef struct SlabSite
   SlabConfig config;
 }
 SlabSite;
+
 
 SlabSite* slab_site_create(size_t arena_size, SlabConfig* config);                        // Create a Site
 void slab_site_destroy(SlabSite* site);                                                   // Destroy the Site

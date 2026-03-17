@@ -16,19 +16,23 @@
         <div class="innertube">
           <h3>Posts</h3>
           <ul>
-            <% foreach p $all_pages {
-                if (expr (page is_post $p) == 1) { continue; }
+            <% # List all pages from POST category
+              foreach p $all_pages {
+                set is_post (str equals_i (page category $p) "post")
+                if  (expr not $is_post) { continue; }
                 set date (format "$(page year $p)-$(page month $p)-$(page day $p)")
              %>
-                <li><a href="<%= (page url $p) %>"><%= (page title $p) %></a>
+             <li><a href="<%= (page url $p) %>"><%= (page title $p) %></a>
                 <time datetime="<%= $date %>">??</time></a></li>
              <% } %>
           </ul>
           <h3>Pages</h3>
           <ul>
-            <% foreach p $all_pages {
-                if (expr (page is_post $p) != 1) { continue; }
-             %>
+            <% # List all pages NOT from POST category
+              foreach p $all_pages {
+                set is_post (str equals_i (page category $p) "post")
+                if (expr $is_post)  { continue; }
+            %>
               <li><a href="<%= (page url $p) %>"><%= (page title $p) %></a>
             <% } %>
           </ul>

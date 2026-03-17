@@ -4,7 +4,7 @@ template: post
 tags:     markdown programming c
 slug:     sily_walks
 date:     2025-09-22
-category: posts
+category: post
 ---
 
 The **Ministry of Silly Walks** is a government organization established in the United Kingdom to promote the art and practice of silly walking as a form of physical activity and entertainment. The ministry was created with the aim of promoting the health benefits of silly walking, as well as encouraging people of all ages to embrace the fun and creativity that comes with this unique form of movement.

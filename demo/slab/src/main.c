@@ -35,6 +35,7 @@ MI_DEFINE_TYPE(Page);
 
 i32 slab_generate_site(const char* site_root)
 {
+
   if (!x_fs_path_is_directory_cstr(site_root))
   {
     log_error("Site path not found: %s\n", site_root);
@@ -54,14 +55,46 @@ i32 slab_generate_site(const char* site_root)
   slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.template_dir));
   slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.content_dir));
 
+  //
+  // Collect all categories
+  //
+  u32 category_count = 0;
+  XArray_cstr *array_categories = x_array_cstr_create(4);
+  {
+    for(u32 i = 0; i < site->page_count; i++)
+    {
+      bool category_found = false;
+      SlabPage* page = &site->pages[i]; 
+
+      // if array does not contain it, add
+      u32 count = x_array_cstr_count(array_categories);
+      for (u32 i = 0; i < count; i++)
+      {
+        const char** e = x_array_cstr_get(array_categories, i);
+        u32 category_len = (u32) strlen(page->category);
+        if (strnicmp(*e, page->category, category_len) == 0)
+        {
+          category_found = true; 
+          break;
+        }
+      }
+      if (!category_found)
+      {
+        x_array_cstr_push(array_categories, page->category);
+        category_count++;
+      }
+    }
+  }
+
   x_log_info("Generating pages...");
 
+  i32 return_code = 0;
+
+  // Process each page
   for(u32 i = 0; i < site->page_count; i++)
   {
-    SlabPage* page = &site->pages[i]; 
-    page->type = SLAB_PAGE_TYPE_POST;
-
     XFSPath out_folder;
+    SlabPage* page = &site->pages[i]; 
     x_fs_path(&out_folder, page->output_path);
     x_fs_path_dirname(&out_folder, &out_folder);
     x_fs_directory_create_recursive(out_folder.buf);
@@ -70,6 +103,7 @@ i32 slab_generate_site(const char* site_root)
     if (!out)
     {
       log_error("[FAIL] %s -> Failed to create file '%s'.\n", page->source_path, page->output_path);
+      return_code = 1;
       continue;
     }
 
@@ -78,6 +112,7 @@ i32 slab_generate_site(const char* site_root)
     if (! slab_register_mi_commands(&ctx) )
     {
       log_error("[FAIL] %s -> Failed to register commands\n", page->source_path);
+      return_code = 1;
       continue;
     }
 
@@ -125,6 +160,8 @@ i32 slab_generate_site(const char* site_root)
     if(!post_body)
     {
       log_error("[FAIL] %s -> Failed to read contents file\n", page->source_path);
+      return_code = 1;
+      fclose(out);
       continue;
     }
 
@@ -145,12 +182,25 @@ i32 slab_generate_site(const char* site_root)
       MiValue all_pages = mi_value_list((i32)site->page_count);
       for (i32 i = 0; i < site->page_count; i++)
       {
-        MiValue p = mi_value_Page(&site->pages[i]);
-        mi_call_cmd_list_push_value(all_pages, p);
+        MiValue mi_value = mi_value_Page(&site->pages[i]);
+        mi_call_cmd_list_push_value(all_pages, mi_value);
       }
       mi_scope_define(ctx.global_scope, x_slice_from_cstr("all_pages"), all_pages);
     }
 
+    //
+    // Inject 'all_categories' variable
+    //
+    {
+      MiValue all_categories = mi_value_list((i32)category_count);
+      for (u32 i = 0; i < category_count; i++)
+      {
+        const char** category_name = x_array_cstr_get(array_categories, i);
+        MiValue mi_value = mi_value_string(x_slice(*category_name));
+        mi_call_cmd_list_push_value(all_categories, mi_value);
+      }
+      mi_scope_define(ctx.global_scope, x_slice_from_cstr("all_categories"), all_categories);
+    }
 
     // Append .html to template name
     XSmallstr template_name;
@@ -168,6 +218,9 @@ i32 slab_generate_site(const char* site_root)
       log_error(
           "[FAIL] %s -> layout not found '%s'\n",
           page->source_path, template_path.buf);
+      return_code = 1;
+      free(post_body);
+      fclose(out);
       continue;
     }
 
@@ -187,7 +240,10 @@ i32 slab_generate_site(const char* site_root)
             parse_result.error_line,
             parse_result.error_column,
             parse_result.error_message);
-        return 1;
+        return_code = 1;
+        free(post_body);
+        fclose(out);
+        continue;
       }
 
       MiExecResult exec = mi_exec_block(&ctx, parse_result.root, false);
@@ -199,6 +255,11 @@ i32 slab_generate_site(const char* site_root)
             ctx.error_line,
             ctx.error_column,
             ctx.error_message);
+
+        return_code = 1;
+        free(post_body);
+        fclose(out);
+        continue;
       }
     }
 
@@ -211,7 +272,7 @@ i32 slab_generate_site(const char* site_root)
   slab_config_unload(&site_config);
 
   x_log_info("Done");
-  return 0;
+  return return_code;
 }
 
 i32 main(i32 argc, char **argv)
