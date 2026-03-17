@@ -37,7 +37,7 @@ i32 slab_generate_site(const char* site_root)
 {
   if (!x_fs_path_is_directory_cstr(site_root))
   {
-    x_log_error("Site path not found: %s", site_root);
+    log_error("Site path not found: %s\n", site_root);
     return 1;
   }
 
@@ -49,10 +49,12 @@ i32 slab_generate_site(const char* site_root)
   XStrBuilder* sb = x_strbuilder_create();
 
   // Collect metadata
-  x_log_info("Collecting metedata.");
+  x_log_info("Processing site folder...");
 
   slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.template_dir));
   slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.content_dir));
+
+  x_log_info("Generating pages...");
 
   for(u32 i = 0; i < site->page_count; i++)
   {
@@ -67,7 +69,7 @@ i32 slab_generate_site(const char* site_root)
 
     if (!out)
     {
-      x_log_error("Failed to create file '%s'.", page->output_path);
+      log_error("[FAIL] %s -> Failed to create file '%s'.\n", page->source_path, page->output_path);
       continue;
     }
 
@@ -75,7 +77,7 @@ i32 slab_generate_site(const char* site_root)
     mi_context_init(&ctx, rt_arena, out, stderr);
     if (! slab_register_mi_commands(&ctx) )
     {
-      x_log_error("Failed to register commands", 0);
+      log_error("[FAIL] %s -> Failed to register commands\n", page->source_path);
       continue;
     }
 
@@ -122,7 +124,7 @@ i32 slab_generate_site(const char* site_root)
     char* post_body = x_io_read_text(page->source_path, &post_body_len);
     if(!post_body)
     {
-      x_log_error("Failed to read post '%s'\n", page->source_path + page->meta.past_meta_offset);
+      log_error("[FAIL] %s -> Failed to read contents file\n", page->source_path);
       continue;
     }
 
@@ -136,21 +138,18 @@ i32 slab_generate_site(const char* site_root)
     mi_scope_define(ctx.global_scope, x_slice("post_body"),
         mi_value_string(x_slice(post_body)));
 
-
     //
-    // Post list
+    // Inject 'all_pages' variable
     //
-
-#if 1
-    MiValue all_pages = mi_value_list((i32)site->page_count);
-    for (i32 i = 0; i < site->page_count; i++)
     {
-      MiValue p = mi_value_Page(&site->pages[i]);
-      mi_call_cmd_list_push_value(all_pages, p);
+      MiValue all_pages = mi_value_list((i32)site->page_count);
+      for (i32 i = 0; i < site->page_count; i++)
+      {
+        MiValue p = mi_value_Page(&site->pages[i]);
+        mi_call_cmd_list_push_value(all_pages, p);
+      }
+      mi_scope_define(ctx.global_scope, x_slice_from_cstr("all_pages"), all_pages);
     }
-    mi_scope_define(ctx.global_scope, x_slice_from_cstr("all_pages"), all_pages);
-#endif
-
 
 
     // Append .html to template name
@@ -166,10 +165,9 @@ i32 slab_generate_site(const char* site_root)
 
     if (!x_fs_path_is_file(&template_path))
     {
-      x_log_error(
-          "Invalid layout '%s' requested by '%s'",
-          template_path.buf,
-          page->source_path);
+      log_error(
+          "[FAIL] %s -> layout not found '%s'\n",
+          page->source_path, template_path.buf);
       continue;
     }
 
@@ -180,13 +178,12 @@ i32 slab_generate_site(const char* site_root)
     const char* expanded = x_strbuilder_to_string(sb);
 
     { // Execute page script
-
       MiParseResult parse_result = mi_parse(rt_arena, x_slice(expanded));
 
       if (!parse_result.ok)
       {
-        fprintf(stderr,
-            "Parse error at %d:%d: %s\n",
+        log_error("[FAIL] %s -> Parse error at %d:%d: %s\n",
+            page->source_path,
             parse_result.error_line,
             parse_result.error_column,
             parse_result.error_message);
@@ -197,8 +194,8 @@ i32 slab_generate_site(const char* site_root)
 
       if (exec.signal == MI_SIGNAL_ERROR)
       {
-        fprintf(stderr,
-            "Runtime error at %d:%d: %s\n",
+        log_error("[FAIL] %s -> Runtime error at %d:%d: %s\n",
+            page->source_path,
             ctx.error_line,
             ctx.error_column,
             ctx.error_message);
@@ -207,19 +204,13 @@ i32 slab_generate_site(const char* site_root)
 
     free(post_body);
     fclose(out);
+    log_info("[ OK ] generate %s -> %s\n", page->source_path, page->url);
   }
-
-
-  // Copy asset folders
-
-  //XFSPath asset_dir_out;
-  //x_fs_path(&asset_dir_out, site->config.assets_dir);
-  //x_fs_directory_create_recursive(site->config->
-  //x_fs_directory_copy
-
 
   slab_site_destroy(site);
   slab_config_unload(&site_config);
+
+  x_log_info("Done");
   return 0;
 }
 
@@ -234,7 +225,7 @@ i32 main(i32 argc, char **argv)
   const char* site_root = argv[1];
   if (!x_fs_path_is_directory_cstr(site_root))
   {
-    x_log_error("Site path not found: %s", site_root);
+    log_error("Site path not found: %s\n", site_root);
     return 1;
   }
 

@@ -36,7 +36,7 @@ static void s_parse_date_yyyy_mm_dd(const char *s, int *year, int *month, int *d
 
   if (digits != 4)
   {
-    x_log_warning("Date format '%s': year must have 4 digits, using 1900\n", s);
+    log_warning("Date format '%s': year must have 4 digits, using 1900\n", s);
     y = 1900;
   }
 
@@ -62,7 +62,7 @@ static void s_parse_date_yyyy_mm_dd(const char *s, int *year, int *month, int *d
 
   if (m <= 0 || m > 12)
   {
-    x_log_warning("Date format '%s': month out of range (%d), using 1\n", s, m);
+    log_warning("Date format '%s': month out of range (%d), using 1\n", s, m);
     m = 1;
   }
 
@@ -87,7 +87,7 @@ static void s_parse_date_yyyy_mm_dd(const char *s, int *year, int *month, int *d
 
   if (d <= 0 || d > 31)
   {
-    x_log_warning("Date format '%s': day out of range (%d), using 1\n", s, d);
+    log_warning("Date format '%s': day out of range (%d), using 1\n", s, d);
     d = 1;
   }
 
@@ -146,18 +146,7 @@ static void s_slab_page_property_set(SlabPage* page, XArena* arena, XSlice* key,
     return;
   }
 
-  if (MATCH("type"))
-  {
-    if (strncmp(copied, "post", 4) == 0)
-    {
-      page->type = SLAB_PAGE_TYPE_POST;
-    }
-    else
-    {
-      page->type = SLAB_PAGE_TYPE_STATIC;
-    }
-  }
-  else if (MATCH("title"))
+  if (MATCH("title"))
   {
     page->title = copied;
   }
@@ -237,10 +226,10 @@ static void s_slab_path_to_url_separators(XFSPath* path)
 }
 
 static bool s_slab_copy_file_to_output(
-  SlabSite* site,
-  const char* root_path,
-  const char* full_path
-)
+    SlabSite* site,
+    const char* root_path,
+    const char* full_path
+    )
 {
   XFSPath relative_path;
   XFSPath output_path;
@@ -248,7 +237,7 @@ static bool s_slab_copy_file_to_output(
 
   if (!x_fs_path_relative_to_cstr(root_path, full_path, &relative_path))
   {
-    x_log_error("Failed to compute relative path for %s\n", full_path);
+    log_error("[FAIL] copy %s - Failed to compute relative path\n", full_path);
     return false;
   }
 
@@ -258,27 +247,29 @@ static bool s_slab_copy_file_to_output(
 
   if (!x_fs_directory_create_recursive(output_dir.buf))
   {
-    x_log_error("Failed to create output directory %s\n", output_dir.buf);
+    log_error("[FAIL] copy %s -> Failed to create output directory %s\n",
+        full_path,
+        output_dir.buf);
     return false;
   }
 
   if (!x_fs_file_copy(full_path, output_path.buf))
   {
-    x_log_error("Failed to copy file %s -> %s\n", full_path, output_path.buf);
+    log_error("[FAIL] copy %s -> Failed to copy to %s\n", full_path, output_path.buf);
     return false;
   }
 
-  x_log_info("[COPY] %s -> %s", full_path, output_path.buf);
+  log_info("[ OK ] copy %s -> %s\n", full_path, output_path.buf);
   return true;
 }
 
 static bool s_slab_build_page_defaults(
-  SlabSite* site,
-  SlabPage* page,
-  const char* root_path,
-  const char* full_path,
-  const XFSDireEntry* dir_entry
-)
+    SlabSite* site,
+    SlabPage* page,
+    const char* root_path,
+    const char* full_path,
+    const XFSDireEntry* dir_entry
+    )
 {
   XArena* site_arena = site->arena;
   XFSPath relative_path;
@@ -286,12 +277,12 @@ static bool s_slab_build_page_defaults(
   XFSPath output_path;
   XSmallstr date_buf;
 
-  page->type = SLAB_PAGE_TYPE_STATIC;
+  page->category = "";
   page->source_path = (char*)x_arena_strdup(site_arena, full_path);
 
   if (!x_fs_path_relative_to_cstr(root_path, full_path, &relative_path))
   {
-    x_log_error("Failed to compute relative path for %s", full_path);
+    log_error("Failed to compute relative path for %s\n", full_path);
     return false;
   }
 
@@ -299,7 +290,7 @@ static bool s_slab_build_page_defaults(
 
   if (!page->slug)
   {
-    
+
     x_fs_path(&slug_path, &relative_path);
     x_fs_path_change_extension(&slug_path, "");
     s_slab_path_to_url_separators(&slug_path);
@@ -327,11 +318,11 @@ static bool s_slab_build_page_defaults(
 }
 
 static i32 s_slab_process_content_file(
-  SlabSite* site,
-  const char* root_path,
-  const char* current_path,
-  const XFSDireEntry* dir_entry
-)
+    SlabSite* site,
+    const char* root_path,
+    const char* current_path,
+    const XFSDireEntry* dir_entry
+    )
 {
   XArena* site_arena = site->arena;
   XFSPath full_path;
@@ -359,11 +350,9 @@ static i32 s_slab_process_content_file(
   buf = x_io_read_text(page.source_path, &buf_size);
   if (!buf)
   {
-    x_log_error("Failed to read file %s\n", page.source_path);
+    log_error("Failed to read file %s\n", page.source_path);
     return 1;
   }
-
-  x_log_info("[META] %s", page.source_path);
 
   meta = &page.meta;
   input = x_slice_init(buf, buf_size);
@@ -376,7 +365,7 @@ static i32 s_slab_process_content_file(
 
   if (status != SLAB_FRONTMATTER_SUCCESS)
   {
-    x_log_error("Error parsing meta block in %s: %d\n", dir_entry->name, status);
+    log_error("Error parsing meta block in %s: %d\n", dir_entry->name, status);
     return 1;
   }
 
@@ -387,10 +376,6 @@ static i32 s_slab_process_content_file(
     s_slab_page_property_set(&page, site_arena, key, value);
   }
 
-  /*
-    Se o frontmatter sobrescreveu o slug, reconstruimos url/output_path
-    para manter tudo consistente.
-  */
   {
     XFSPath output_path;
 
@@ -414,17 +399,18 @@ static i32 s_slab_process_content_file(
 
     if (!x_fs_directory_create_recursive(page_dir.buf))
     {
-      x_log_error("Failed to create page output directory %s\n", page_dir.buf);
+      log_error("Failed to create page output directory %s\n", page_dir.buf);
       return 1;
     }
   }
 
   if (!s_slab_site_add_page(site, &page, site_arena))
   {
-    x_log_error("Failed to register page %s\n", dir_entry->name);
+    log_error("Failed to register page %s\n", dir_entry->name);
     return 1;
   }
 
+  log_info("[ OK ] parse %s -> %s\n", page.source_path, page.output_path);
   return 0;
 }
 
@@ -437,7 +423,7 @@ static i32 s_slab_process_directory_metadata_recursive(SlabSite* site, const cha
   handle = x_fs_find_first_file(current_path, &dir_entry);
   if (!handle)
   {
-    x_log_error("Failed to scan directory %s\n", current_path);
+    log_error("Failed to scan directory %s\n", current_path);
     return 1;
   }
 
@@ -445,7 +431,7 @@ static i32 s_slab_process_directory_metadata_recursive(SlabSite* site, const cha
   {
     if (strncmp(dir_entry.name, ".", 1) == 0 || strncmp(dir_entry.name, "..", 2) == 0 ||
         x_cstr_starts_with(dir_entry.name, "_")
-        ) 
+       ) 
     {
       continue;
     }
@@ -480,107 +466,6 @@ i32 slab_process_directory_metadata(SlabSite* site, const char* path)
 {
   return s_slab_process_directory_metadata_recursive(site, path, path);
 }
-
-#if LEGACY_CODE
-i32 slab_process_directory_metadata(SlabSite* site, const char* path)
-{
-  XFSDireEntry dir_entry;
-  XArena* site_arena = site->arena;
-  XFSDireHandle* handle = x_fs_find_first_file(path, &dir_entry);
-  if (!handle)
-  {
-    x_log_error("Failed to scan posts directory %s\n", path);
-    return 1;
-  }
-
-  do
-  {
-    if (! (x_cstr_ends_with(dir_entry.name, ".md")  ||
-          x_cstr_ends_with(dir_entry.name, ".html") ||
-          x_cstr_ends_with(dir_entry.name, ".htm")))
-      continue;
-
-    SlabPage page = {0};
-    page.type = SLAB_PAGE_TYPE_STATIC;
-    size_t buf_size;
-
-    { // Fill page attributes
-
-      XFSPath full_path, basename;
-
-      // Source path 
-      x_fs_path(&full_path, path, dir_entry.name);
-      page.source_path = (char*) x_arena_strdup(site_arena, full_path.buf);
-
-      // Slug
-      if (!page.slug)
-      {
-        x_fs_path(&basename, page.source_path);
-        x_fs_path_stem(&basename, &basename);
-        x_fs_path_basename(&basename, &basename);
-        page.slug = (char*) x_arena_strdup(site_arena, basename.buf);
-      }
-
-      // Output path
-      x_fs_path(&full_path, site->config.output_dir, page.slug);
-      x_fs_path_change_extension(&full_path, ".html");
-      page.output_path = (char*) x_arena_strdup(site_arena, full_path.buf);
-
-
-      // URL
-      {
-        XSmallstr url;
-        x_smallstr_format(&url, "%s.html", page.slug);
-        page.url = (char*) x_arena_strdup(site_arena, url.buf);
-      }
-
-
-      // Date
-      if (!page.date)
-      {
-        XSmallstr buf;
-        XFSTime t = x_fs_time_from_epoch(dir_entry.last_modified);
-        x_smallstr_format(&buf, "%d-%d-%d", t.year, t.month, t.day);
-        page.date = x_arena_strdup(site_arena, buf.buf);
-      }
-    }
-
-    // read source
-    char* buf = x_io_read_text(page.source_path, &buf_size);
-    if (! buf)
-    {
-      x_log_error("Failed to read from file %s\n", page.source_path);
-      return 1;
-    }
-
-    x_log_info("Processing %s", page.source_path);
-
-    SlabFrontmatter* meta = &page.meta;
-    XSlice input = x_slice_init(buf, buf_size);
-    SlabFrontmatterParseResult status = slab_frontammter_parse(&input, meta);
-    if (status != SLAB_FRONTMATTER_SUCCESS)
-    {
-      x_log_error("Error %d parsing meta block: %s\n", dir_entry.name, status);
-      continue;
-    }
-
-    for (u32 i = 0; i < meta->entry_count; i++)
-    {
-      XSlice* key = &meta->entry_key[i];
-      XSlice* value = &meta->entry_value[i];
-      s_slab_page_property_set(&page, site_arena, key, value);
-    }
-
-    if (!s_slab_site_add_page(site, &page, site_arena))
-    {
-      x_log_error("Failed to register page %s\n", dir_entry.name);
-      continue;
-    }
-  }
-  while (x_fs_find_next_file(handle, &dir_entry));
-  return 0;
-}
-#endif
 
 SlabFrontmatterParseResult slab_frontammter_parse(XSlice* input, SlabFrontmatter* out)
 {
@@ -670,13 +555,13 @@ bool slab_config_load(const char* site_root, SlabConfig* out_config)
   XFSPath site_config_file;
   x_fs_path(&site_config_file, site_root, "_site.ini");
   const char* ini_file_path = x_smallstr_cstr(&site_config_file);
-  x_log_info("Loading ini file: %s", ini_file_path);
+  log_info("Loading ini file: %s\n", ini_file_path);
 
   size_t file_size;
   char *data = x_io_read_text(ini_file_path, &file_size);
   if (!data)
   {
-    x_log_error("Unable to load site configuration file '%s'", ini_file_path);
+    log_error("Unable to load site configuration file '%s'\n", ini_file_path);
     return false;
   }
 
@@ -684,7 +569,7 @@ bool slab_config_load(const char* site_root, SlabConfig* out_config)
   XIniError iniError;
   if (! x_ini_load_mem(data, strlen(data), &ini, &iniError))
   {
-    x_log_error("Unable to parse site configuration file '%s'", ini_file_path);
+    log_error("Unable to parse site configuration file '%s'\n", ini_file_path);
     free(data);
     return false;
   }
@@ -715,7 +600,7 @@ bool slab_config_load(const char* site_root, SlabConfig* out_config)
     x_fs_path(&out_config->template_dir, site_root, s);
   x_fs_path_normalize(&out_config->template_dir);
 
-  x_log_info("Site config:\n"
+  log_info("Site config:\n"
       "\tname = %s\n"
       "\turl = %s\n"
       "\toutput_dir = %s\n"

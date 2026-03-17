@@ -1,9 +1,9 @@
 ---
-title:    Hello, Sailor!
-template: index
-tags:     index
-slug:     index
 category: page
+slug:     index
+tags:     index
+template: index
+title:    Hello, Sailor!
 ---
 
 Wellcome to the demo site generated with *static*
