@@ -163,8 +163,6 @@ static void s_slab_page_property_set(SlabPage* page, XArena* arena, XSlice* key,
   }
   else if (MATCH("slug"))
   {
-    /* For posts, slug usually comes from filename; you can decide
-     * whether to allow overriding it here. For now, override. */
     page->slug = copied;
   }
   else if (MATCH("template"))
@@ -203,6 +201,287 @@ static void s_slab_page_property_set(SlabPage* page, XArena* arena, XSlice* key,
 // SLAB Public API
 //
 
+static bool s_slab_is_processable_content_file(const char* name)
+{
+  if (x_cstr_ends_with(name, ".md"))
+  {
+    return true;
+  }
+
+  if (x_cstr_ends_with(name, ".htm"))
+  {
+    return true;
+  }
+
+  if (x_cstr_ends_with(name, ".html"))
+  {
+    return true;
+  }
+
+  return false;
+}
+
+static void s_slab_path_to_url_separators(XFSPath* path)
+{
+  char* s = path->buf;
+
+  while (*s)
+  {
+    if (*s == '\\')
+    {
+      *s = '/';
+    }
+
+    s++;
+  }
+}
+
+static bool s_slab_copy_file_to_output(
+  SlabSite* site,
+  const char* root_path,
+  const char* full_path
+)
+{
+  XFSPath relative_path;
+  XFSPath output_path;
+  XFSPath output_dir;
+
+  if (!x_fs_path_relative_to_cstr(root_path, full_path, &relative_path))
+  {
+    x_log_error("Failed to compute relative path for %s\n", full_path);
+    return false;
+  }
+
+  x_fs_path_normalize(&relative_path);
+  x_fs_path(&output_path, site->config.output_dir, relative_path.buf);
+  x_fs_path_dirname(&output_path, &output_dir);
+
+  if (!x_fs_directory_create_recursive(output_dir.buf))
+  {
+    x_log_error("Failed to create output directory %s\n", output_dir.buf);
+    return false;
+  }
+
+  if (!x_fs_file_copy(full_path, output_path.buf))
+  {
+    x_log_error("Failed to copy file %s -> %s\n", full_path, output_path.buf);
+    return false;
+  }
+
+  x_log_info("[COPY] %s -> %s", full_path, output_path.buf);
+  return true;
+}
+
+static bool s_slab_build_page_defaults(
+  SlabSite* site,
+  SlabPage* page,
+  const char* root_path,
+  const char* full_path,
+  const XFSDireEntry* dir_entry
+)
+{
+  XArena* site_arena = site->arena;
+  XFSPath relative_path;
+  XFSPath slug_path;
+  XFSPath output_path;
+  XSmallstr date_buf;
+
+  page->type = SLAB_PAGE_TYPE_STATIC;
+  page->source_path = (char*)x_arena_strdup(site_arena, full_path);
+
+  if (!x_fs_path_relative_to_cstr(root_path, full_path, &relative_path))
+  {
+    x_log_error("Failed to compute relative path for %s", full_path);
+    return false;
+  }
+
+  x_fs_path_normalize(&relative_path);
+
+  if (!page->slug)
+  {
+    
+    x_fs_path(&slug_path, &relative_path);
+    x_fs_path_change_extension(&slug_path, "");
+    s_slab_path_to_url_separators(&slug_path);
+    page->slug = (char*)x_arena_strdup(site_arena, slug_path.buf);
+  }
+
+  x_fs_path(&output_path, site->config.output_dir, page->slug);
+  x_fs_path_change_extension(&output_path, ".html");
+  page->output_path = (char*)x_arena_strdup(site_arena, output_path.buf);
+
+  {
+    XSmallstr url;
+    x_smallstr_format(&url, "%s.html", page->slug);
+    page->url = (char*)x_arena_strdup(site_arena, url.buf);
+  }
+
+  if (!page->date)
+  {
+    XFSTime t = x_fs_time_from_epoch(dir_entry->last_modified);
+    x_smallstr_format(&date_buf, "%04d-%02d-%02d", t.year, t.month, t.day);
+    page->date = (char*)x_arena_strdup(site_arena, date_buf.buf);
+  }
+
+  return true;
+}
+
+static i32 s_slab_process_content_file(
+  SlabSite* site,
+  const char* root_path,
+  const char* current_path,
+  const XFSDireEntry* dir_entry
+)
+{
+  XArena* site_arena = site->arena;
+  XFSPath full_path;
+  SlabPage page = {0};
+  char* buf;
+  size_t buf_size;
+  XSlice input;
+  SlabFrontmatter* meta;
+  SlabFrontmatterParseResult status;
+  u32 i;
+
+  x_fs_path(&full_path, current_path, dir_entry->name);
+  x_fs_path_normalize(&full_path);
+
+  if (!s_slab_is_processable_content_file(dir_entry->name))
+  {
+    return s_slab_copy_file_to_output(site, root_path, full_path.buf) ? 0 : 1;
+  }
+
+  if (!s_slab_build_page_defaults(site, &page, root_path, full_path.buf, dir_entry))
+  {
+    return 1;
+  }
+
+  buf = x_io_read_text(page.source_path, &buf_size);
+  if (!buf)
+  {
+    x_log_error("Failed to read file %s\n", page.source_path);
+    return 1;
+  }
+
+  x_log_info("[META] %s", page.source_path);
+
+  meta = &page.meta;
+  input = x_slice_init(buf, buf_size);
+  status = slab_frontammter_parse(&input, meta);
+
+  if (status == SLAB_FRONTMATTER_MISSING)
+  {
+    return s_slab_copy_file_to_output(site, root_path, full_path.buf) ? 0 : 1;
+  }
+
+  if (status != SLAB_FRONTMATTER_SUCCESS)
+  {
+    x_log_error("Error parsing meta block in %s: %d\n", dir_entry->name, status);
+    return 1;
+  }
+
+  for (i = 0; i < meta->entry_count; i++)
+  {
+    XSlice* key = &meta->entry_key[i];
+    XSlice* value = &meta->entry_value[i];
+    s_slab_page_property_set(&page, site_arena, key, value);
+  }
+
+  /*
+    Se o frontmatter sobrescreveu o slug, reconstruimos url/output_path
+    para manter tudo consistente.
+  */
+  {
+    XFSPath output_path;
+
+    x_fs_path(&output_path, site->config.output_dir, page.slug);
+    x_fs_path_change_extension(&output_path, ".html");
+
+    page.output_path = (char*)x_arena_strdup(site_arena, output_path.buf);
+
+    {
+      XSmallstr url;
+      x_smallstr_format(&url, "%s.html", page.slug);
+      page.url = (char*)x_arena_strdup(site_arena, url.buf);
+    }
+  }
+
+  {
+    XFSPath page_dir;
+
+    x_fs_path(&page_dir, page.output_path);
+    x_fs_path_dirname(&page_dir, &page_dir);
+
+    if (!x_fs_directory_create_recursive(page_dir.buf))
+    {
+      x_log_error("Failed to create page output directory %s\n", page_dir.buf);
+      return 1;
+    }
+  }
+
+  if (!s_slab_site_add_page(site, &page, site_arena))
+  {
+    x_log_error("Failed to register page %s\n", dir_entry->name);
+    return 1;
+  }
+
+  return 0;
+}
+
+static i32 s_slab_process_directory_metadata_recursive(SlabSite* site, const char* root_path, const char* current_path)
+{
+  XFSDireEntry dir_entry;
+  XFSDireHandle* handle;
+  i32 result = 0;
+
+  handle = x_fs_find_first_file(current_path, &dir_entry);
+  if (!handle)
+  {
+    x_log_error("Failed to scan directory %s\n", current_path);
+    return 1;
+  }
+
+  do
+  {
+    if (strncmp(dir_entry.name, ".", 1) == 0 || strncmp(dir_entry.name, "..", 2) == 0 ||
+        x_cstr_starts_with(dir_entry.name, "_")
+        ) 
+    {
+      continue;
+    }
+
+    if (dir_entry.is_directory)
+    {
+      XFSPath child_path;
+
+      x_fs_path(&child_path, current_path, dir_entry.name);
+      x_fs_path_normalize(&child_path);
+
+      if (s_slab_process_directory_metadata_recursive(site, root_path, child_path.buf) != 0)
+      {
+        result = 1;
+      }
+
+      continue;
+    }
+
+    if (s_slab_process_content_file(site, root_path, current_path, &dir_entry) != 0)
+    {
+      result = 1;
+    }
+  }
+  while (x_fs_find_next_file(handle, &dir_entry));
+
+  x_fs_find_close(handle);
+  return result;
+}
+
+i32 slab_process_directory_metadata(SlabSite* site, const char* path)
+{
+  return s_slab_process_directory_metadata_recursive(site, path, path);
+}
+
+#if LEGACY_CODE
 i32 slab_process_directory_metadata(SlabSite* site, const char* path)
 {
   XFSDireEntry dir_entry;
@@ -301,6 +580,7 @@ i32 slab_process_directory_metadata(SlabSite* site, const char* path)
   while (x_fs_find_next_file(handle, &dir_entry));
   return 0;
 }
+#endif
 
 SlabFrontmatterParseResult slab_frontammter_parse(XSlice* input, SlabFrontmatter* out)
 {
@@ -388,7 +668,7 @@ bool slab_config_load(const char* site_root, SlabConfig* out_config)
     return false;
 
   XFSPath site_config_file;
-  x_fs_path(&site_config_file, site_root, "site.ini");
+  x_fs_path(&site_config_file, site_root, "_site.ini");
   const char* ini_file_path = x_smallstr_cstr(&site_config_file);
   x_log_info("Loading ini file: %s", ini_file_path);
 
@@ -421,19 +701,12 @@ bool slab_config_load(const char* site_root, SlabConfig* out_config)
     x_fs_path(&out_config->output_dir, site_root, s);
   x_fs_path_normalize(&out_config->output_dir);
 
-  s = x_ini_get(&ini, "site", "pages_dir", ".");
+  s = x_ini_get(&ini, "site", "content_dir", ".");
   if (x_fs_path_is_absolute_cstr(s))
-    x_fs_path(&out_config->pages_dir, s);
+    x_fs_path(&out_config->content_dir, s);
   else
-    x_fs_path(&out_config->pages_dir, site_root, s);
-  x_fs_path_normalize(&out_config->pages_dir);
-
-  s = x_ini_get(&ini, "site", "posts_dir", ".");
-  if (x_fs_path_is_absolute_cstr(s))
-    x_fs_path(&out_config->posts_dir, s);
-  else
-    x_fs_path(&out_config->posts_dir, site_root, s);
-  x_fs_path_normalize(&out_config->posts_dir);
+    x_fs_path(&out_config->content_dir, site_root, s);
+  x_fs_path_normalize(&out_config->content_dir);
 
   s = x_ini_get(&ini, "site", "template_dir", "");
   if (x_fs_path_is_absolute_cstr(s))
@@ -442,27 +715,16 @@ bool slab_config_load(const char* site_root, SlabConfig* out_config)
     x_fs_path(&out_config->template_dir, site_root, s);
   x_fs_path_normalize(&out_config->template_dir);
 
-  s = x_ini_get(&ini, "site", "assets_dir", "");
-  if (x_fs_path_is_absolute_cstr(s))
-    x_fs_path(&out_config->assets_dir, s);
-  else
-    x_fs_path(&out_config->assets_dir, site_root, s);
-  x_fs_path_normalize(&out_config->assets_dir);
-
   x_log_info("Site config:\n"
       "\tname = %s\n"
       "\turl = %s\n"
-      "\tassets_dir = %s\n"
       "\toutput_dir = %s\n"
-      "\tposts_dir = %s\n"
-      "\tpages_dir = %s\n"
+      "\tcontent_dir = %s\n"
       "\ttemplate_dir = %s\n",
       out_config->site_name,
       out_config->site_url,
-      x_fs_path_cstr(&out_config->assets_dir),
       x_fs_path_cstr(&out_config->output_dir),
-      x_fs_path_cstr(&out_config->posts_dir),
-      x_fs_path_cstr(&out_config->pages_dir),
+      x_fs_path_cstr(&out_config->content_dir),
       x_fs_path_cstr(&out_config->template_dir));
   return true;
 }

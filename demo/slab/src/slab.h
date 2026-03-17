@@ -35,10 +35,8 @@ typedef struct SlabConfig
 {
   const char* site_url;
   const char* site_name;
-  XFSPath pages_dir;
-  XFSPath assets_dir;
   XFSPath output_dir;
-  XFSPath posts_dir;
+  XFSPath content_dir;
   XFSPath template_dir;
   void* data;
 } SlabConfig;

@@ -51,12 +51,8 @@ i32 slab_generate_site(const char* site_root)
   // Collect metadata
   x_log_info("Collecting metedata.");
 
-  // Pages directory
-  slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.pages_dir));
-
-  // Posts directory
-  if (! x_fs_path_eq(&site_config.pages_dir, &site_config.posts_dir))
-    slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.posts_dir));
+  slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.template_dir));
+  slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.content_dir));
 
   for(u32 i = 0; i < site->page_count; i++)
   {
@@ -93,17 +89,11 @@ i32 slab_generate_site(const char* site_root)
     mi_scope_define(ctx.global_scope, x_slice("site_name"),
         mi_value_string(x_slice(site->config.site_name)));
 
-    mi_scope_define(ctx.global_scope, x_slice("pages_dir"),
-        mi_value_string(x_slice(site->config.pages_dir.buf)));
-
-    mi_scope_define(ctx.global_scope, x_slice("assets_dir"),
-        mi_value_string(x_slice(site->config.assets_dir.buf)));
-
     mi_scope_define(ctx.global_scope, x_slice("output_dir"),
         mi_value_string(x_slice(site->config.output_dir.buf)));
 
-    mi_scope_define(ctx.global_scope, x_slice("posts_dir"),
-        mi_value_string(x_slice(site->config.posts_dir.buf)));
+    mi_scope_define(ctx.global_scope, x_slice("content_dir"),
+        mi_value_string(x_slice(site->config.content_dir.buf)));
 
     mi_scope_define(ctx.global_scope, x_slice("template_dir"),
         mi_value_string(x_slice(site->config.template_dir.buf)));
@@ -170,7 +160,7 @@ i32 slab_generate_site(const char* site_root)
     // Compose full path to template file
     size_t len;
     XFSPath template_path;
-    x_fs_path(&template_path, site_config.template_dir, "layout", template_name.buf);
+    x_fs_path(&template_path, site_config.template_dir, "_layout", template_name.buf);
     XSmallstr full_path;
     x_smallstr_format(&full_path, "%s.html", template_path.buf);
 
