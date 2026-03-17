@@ -275,8 +275,6 @@ extern "C" {
    */
   X_FILESYSTEM_API bool x_fs_path_(XFSPath* out, ...);
 
-
-
   /* Join path segments (NULL-terminated varargs). Used by x_fs_path_join(). */
   X_FILESYSTEM_API size_t x_fs_path_join_(XFSPath* path, ...);
 
@@ -602,7 +600,27 @@ extern "C" {
    */
   X_FILESYSTEM_API bool x_fs_make_temp_directory(const char* prefix, XFSPath* out_path);
 
-X_FILESYSTEM_API XFSTime x_fs_time_from_epoch(time_t t);
+
+  /**
+   * @brief Convert a time value from epoch to XFSTime.
+   * @param t Time in seconds since Unix epoch.
+   * @return XFSTime representation of the given epoch time.
+   */
+  X_FILESYSTEM_API XFSTime x_fs_time_from_epoch(time_t t);
+
+  /**
+   * @brief Compute a relative path from one path to another.
+   * @param from_path Base path to compute the relative path from.
+   * @param to_path Target path to compute the relative path to.
+   * @param out_path Output path receiving the relative result.
+   * @return Length of the resulting path on success, 0 on failure.
+   *
+   * @note The function assumes both paths are normalized.
+   * @note The result may contain ".." segments if needed.
+   */
+  X_FILESYSTEM_API size_t x_fs_path_relative_to(const XFSPath* from_path, const XFSPath* to_path, XFSPath* out_path);
+
+
 
 #ifdef __cplusplus
 }
@@ -2143,6 +2161,218 @@ extern "C" {
     out.second = tmv.tm_sec;
 
     return out;
+  }
+
+  //
+  // Relative directory
+  //
+
+  static bool s_x_fs_is_separator(char c)
+  {
+    return c == '/' || c == '\\';
+  }
+
+  static char s_x_fs_fold_path_char(char c)
+  {
+#if defined(_WIN32)
+    if (c >= 'A' && c <= 'Z')
+    {
+      return (char)(c - 'A' + 'a');
+    }
+#endif
+    return c;
+  }
+
+  static bool s_x_fs_path_char_equal(char a, char b)
+  {
+    if (s_x_fs_is_separator(a) && s_x_fs_is_separator(b))
+    {
+      return true;
+    }
+
+    return s_x_fs_fold_path_char(a) == s_x_fs_fold_path_char(b);
+  }
+
+  static size_t s_x_fs_count_remaining_segments(const char* s)
+  {
+    size_t count = 0;
+    bool in_segment = false;
+
+    while (*s)
+    {
+      if (s_x_fs_is_separator(*s))
+      {
+        if (in_segment)
+        {
+          count++;
+          in_segment = false;
+        }
+      }
+      else
+      {
+        in_segment = true;
+      }
+
+      s++;
+    }
+
+    if (in_segment)
+    {
+      count++;
+    }
+
+    return count;
+  }
+
+  static size_t s_x_fs_find_common_prefix_boundary(const char* a, const char* b)
+  {
+    size_t i = 0;
+    size_t last_boundary = 0;
+
+    while (a[i] && b[i] && s_x_fs_path_char_equal(a[i], b[i]))
+    {
+      i++;
+
+      if (!a[i] || !b[i])
+      {
+        break;
+      }
+
+      if (s_x_fs_is_separator(a[i - 1]) && s_x_fs_is_separator(b[i - 1]))
+      {
+        last_boundary = i;
+      }
+    }
+
+    if (i > 0)
+    {
+      if (!a[i] && !b[i])
+      {
+        return i;
+      }
+
+      if (!a[i] && s_x_fs_is_separator(b[i]))
+      {
+        return i + 1;
+      }
+
+      if (!b[i] && s_x_fs_is_separator(a[i]))
+      {
+        return i + 1;
+      }
+
+      if (s_x_fs_is_separator(a[i]) && s_x_fs_is_separator(b[i]))
+      {
+        return i + 1;
+      }
+    }
+
+    return last_boundary;
+  }
+
+  X_FILESYSTEM_API size_t x_fs_path_relative_to(const XFSPath* from_path, const XFSPath* to_path, XFSPath* out_path)
+  {
+    XFSPath from_norm;
+    XFSPath to_norm;
+    const char* from;
+    const char* to;
+    size_t common;
+    size_t up_count;
+    char tmp[sizeof(out_path->buf)];
+    size_t pos = 0;
+    size_t i;
+
+    if (!from_path || !to_path || !out_path)
+    {
+      return 0;
+    }
+
+    x_fs_path_clone(&from_norm, from_path);
+    x_fs_path_clone(&to_norm, to_path);
+
+    x_fs_path_normalize(&from_norm);
+    x_fs_path_normalize(&to_norm);
+
+    from = from_norm.buf;
+    to = to_norm.buf;
+
+    common = s_x_fs_find_common_prefix_boundary(from, to);
+
+    while (from[common] && s_x_fs_is_separator(from[common]))
+    {
+      common++;
+    }
+
+    while (to[common] && s_x_fs_is_separator(to[common]))
+    {
+      common++;
+    }
+
+    up_count = s_x_fs_count_remaining_segments(from + common);
+
+    for (i = 0; i < up_count; i++)
+    {
+      if (pos + 3 >= sizeof(tmp))
+      {
+        return 0;
+      }
+
+      tmp[pos++] = '.';
+      tmp[pos++] = '.';
+      tmp[pos++] = '/';
+    }
+
+    while (to[common] && s_x_fs_is_separator(to[common]))
+    {
+      common++;
+    }
+
+    while (to[common])
+    {
+      char c = to[common++];
+
+      if (pos + 1 >= sizeof(tmp))
+      {
+        return 0;
+      }
+
+      if (s_x_fs_is_separator(c))
+      {
+        c = '/';
+      }
+
+      tmp[pos++] = c;
+    }
+
+    if (pos == 0)
+    {
+      if (sizeof(tmp) < 2)
+      {
+        return 0;
+      }
+
+      tmp[pos++] = '.';
+    }
+
+    tmp[pos] = '\0';
+    x_fs_path(out_path, tmp);
+    return out_path->length;
+  }
+
+  X_FILESYSTEM_API size_t x_fs_path_relative_to_cstr(const char* from_path, const char* to_path, XFSPath* out_path)
+  {
+    XFSPath from;
+    XFSPath to;
+
+    if (!from_path || !to_path || !out_path)
+    {
+      return 0;
+    }
+
+    x_fs_path(&from, from_path);
+    x_fs_path(&to, to_path);
+
+    return x_fs_path_relative_to(&from, &to, out_path);
   }
 
 #ifdef __cplusplus

@@ -84,6 +84,7 @@
 <li><a href="#x_fs_path_join_one_slice">x_fs_path_join_one_slice</a></li>
 <li><a href="#x_fs_path_join_slice_">x_fs_path_join_slice_</a></li>
 <li><a href="#x_fs_path_normalize">x_fs_path_normalize</a></li>
+<li><a href="#x_fs_path_relative_to">x_fs_path_relative_to</a></li>
 <li><a href="#x_fs_path_relative_to_cstr">x_fs_path_relative_to_cstr</a></li>
 <li><a href="#x_fs_path_set">x_fs_path_set</a></li>
 <li><a href="#x_fs_path_set_slice">x_fs_path_set_slice</a></li>
@@ -92,6 +93,7 @@
 <li><a href="#x_fs_path_stem_as_slice">x_fs_path_stem_as_slice</a></li>
 <li><a href="#x_fs_path_stem_cstr">x_fs_path_stem_cstr</a></li>
 <li><a href="#x_fs_read_symlink">x_fs_read_symlink</a></li>
+<li><a href="#x_fs_time_from_epoch">x_fs_time_from_epoch</a></li>
 <li><a href="#x_fs_watch_close">x_fs_watch_close</a></li>
 <li><a href="#x_fs_watch_open">x_fs_watch_open</a></li>
 <li><a href="#x_fs_watch_poll">x_fs_watch_poll</a></li>
@@ -130,6 +132,7 @@
 <li><a href="#XFSDireEntry">XFSDireEntry</a></li>
 <li><a href="#XFSDireEntry_t">XFSDireEntry_t</a></li>
 <li><a href="#XFSDireHandle">XFSDireHandle</a></li>
+<li><a href="#XFSTime">XFSTime</a></li>
 <li><a href="#XFSWatch">XFSWatch</a></li>
 <li><a href="#XFSWatchEvent">XFSWatchEvent</a></li>
 <li><a href="#dirent">dirent</a></li>
@@ -172,6 +175,7 @@
 <li><a href="stdx_test.html">stdx_test.h</a></li>
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
 
         </ul>
       </details>
@@ -369,6 +373,23 @@ in <b>one</b> source file before including this header.</p>
   <span class="tok_kw"><a href="stdx_filesystem.html#XFSWatchEventType">XFSWatchEventType</a></span> <span class="tok_id">action</span><span class="tok_pun">;</span>
   <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">filename</span><span class="tok_pun">;</span>
 <span class="tok_pun">}</span><span class="tok_id">XFSWatchEvent</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XFSTime" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XFSTime</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XFSTime</span><span class="tok_pun">{</span>
+  <span class="tok_kw">int</span> <span class="tok_id">year</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">month</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">day</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">hour</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">minute</span><span class="tok_pun">;</span>
+  <span class="tok_kw">int</span> <span class="tok_id">second</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XFSTime</span><span class="tok_pun">;</span></code></pre>
   
   
 </article>
@@ -1997,6 +2018,58 @@ in <b>one</b> source file before including this header.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_fs_time_from_epoch" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_fs_time_from_epoch</span></h2>
+  <p class="brief">Convert a time value from epoch to XFSTime.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSTime">XFSTime</a></span> <span class="tok_id">x_fs_time_from_epoch</span>(<span class="tok_id">time_t</span> <span class="tok_id">t</span>);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_id">time_t</span> <span class="tok_id">t</span></code></dt>
+<dd>Time in seconds since Unix epoch.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>XFSTime representation of the given epoch time.</p>
+</section>
+
+</article>
+<article id="x_fs_path_relative_to" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_fs_path_relative_to</span></h2>
+  <p class="brief">Compute a relative path from one path to another.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_relative_to</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">from_path</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">to_path</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">from_path</span></code></dt>
+<dd>Base path to compute the relative path from.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">to_path</span></code></dt>
+<dd>Target path to compute the relative path to.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
+<dd>Output path receiving the relative result.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Length of the resulting path on success, 0 on failure.</p>
 </section>
 
 </article>
