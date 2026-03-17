@@ -1,4 +1,3 @@
-
 #include "mi_builtins.h"
 #include "mi_parser.h"
 #include "mi_runtime.h"
@@ -10,6 +9,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+static MiExecResult s_eval_subcmd(MiContext *ctx, MiNode *node, XSlice *out_name)
+{
+  MiExecResult result;
+
+  result = mi_eval_node(ctx, node);
+
+  if (result.signal != MI_SIGNAL_NONE)
+  {
+    return result;
+  }
+
+  if (result.value.kind == MI_VAL_STRING)
+  {
+    *out_name = result.value.as.string;
+    return mi_exec_null();
+  }
+
+  if (result.value.kind == MI_VAL_RAW)
+  {
+    *out_name = result.value.as.raw;
+    return mi_exec_null();
+  }
+
+  mi_context_set_error(ctx, "subcommand must evaluate to string or raw", 0, 0);
+  return mi_exec_error();
+}
 
 //
 // EXPR
@@ -300,7 +326,7 @@ static bool mi_expr_parse_primary(MiExprParser *p, double *out_value)
     return true;
   }
 
-  if (mi_expr_match(p, "!"))
+  if (mi_expr_match(p, "not"))
   {
     double v;
 
@@ -579,7 +605,7 @@ static bool mi_expr_parse_and(MiExprParser *p, double *out_value)
     return false;
   }
 
-  while (mi_expr_match(p, "&&"))
+  while (mi_expr_match(p, "and"))
   {
     double rhs;
 
@@ -604,7 +630,7 @@ static bool mi_expr_parse_or(MiExprParser *p, double *out_value)
     return false;
   }
 
-  while (mi_expr_match(p, "||"))
+  while (mi_expr_match(p, "or"))
   {
     double rhs;
 
@@ -666,7 +692,6 @@ static MiExecResult mi_cmd_expr(MiContext *ctx, i32 argc, MiNode **argv)
   return mi_exec_ok(mi_value_number(value));
 }
 
-
 //
 // SET
 //
@@ -677,8 +702,7 @@ MiExecResult mi_cmd_set(MiContext *ctx, i32 argc, MiNode **argv)
   MiExecResult r;
   MiNode *name_node;
 
-  if (argc != 2)
-  {
+  if (argc != 2) {
     mi_context_set_error(ctx, "set expects 2 arguments", 0, 0);
     return mi_exec_error();
   }
@@ -1137,7 +1161,6 @@ MiExecResult mi_cmd_print(MiContext *ctx, i32 argc, MiNode **argv)
 // IF
 //
 
-
 MiExecResult mi_cmd_if(MiContext *ctx, i32 argc, MiNode **argv)
 {
   if (argc < 2)
@@ -1438,7 +1461,7 @@ MiValue mi_value_list(i32 capacity)
 
 static MiExecResult mi_list_cmd_create(MiContext *ctx, i32 argc, MiNode **argv);
 
-static bool mi_list_slice_equals_cstr(XSlice slice, const char *cstr)
+static bool x_slice_eq_cstr(XSlice slice, const char *cstr)
 {
   size_t len;
 
@@ -1472,50 +1495,50 @@ static bool mi_list_value_equals(MiValue a, MiValue b)
   switch (a.kind)
   {
     case MI_VAL_NULL:
-    {
-      return true;
-    }
+      {
+        return true;
+      }
 
     case MI_VAL_STRING:
-    {
-      if (a.as.string.length != b.as.string.length)
       {
-        return false;
-      }
+        if (a.as.string.length != b.as.string.length)
+        {
+          return false;
+        }
 
-      if (a.as.string.length == 0)
-      {
-        return true;
-      }
+        if (a.as.string.length == 0)
+        {
+          return true;
+        }
 
-      return memcmp(a.as.string.ptr, b.as.string.ptr, a.as.string.length) == 0;
-    }
+        return memcmp(a.as.string.ptr, b.as.string.ptr, a.as.string.length) == 0;
+      }
 
     case MI_VAL_RAW:
-    {
-      if (a.as.raw.length != b.as.raw.length)
       {
-        return false;
-      }
+        if (a.as.raw.length != b.as.raw.length)
+        {
+          return false;
+        }
 
-      if (a.as.raw.length == 0)
-      {
-        return true;
-      }
+        if (a.as.raw.length == 0)
+        {
+          return true;
+        }
 
-      return memcmp(a.as.raw.ptr, b.as.raw.ptr, a.as.raw.length) == 0;
-    }
+        return memcmp(a.as.raw.ptr, b.as.raw.ptr, a.as.raw.length) == 0;
+      }
 
     case MI_VAL_NUMBER:
-    {
-      return a.as.number == b.as.number;
-    }
+      {
+        return a.as.number == b.as.number;
+      }
 
     case MI_VAL_USER:
-    {
-      return a.as.user.type == b.as.user.type
+      {
+        return a.as.user.type == b.as.user.type
           && a.as.user.data == b.as.user.data;
-    }
+      }
   }
 
   return false;
@@ -1583,33 +1606,6 @@ static MiExecResult mi_list_eval_arg(MiContext *ctx, MiNode *node, MiValue *out_
 
   *out_value = result.value;
   return mi_exec_null();
-}
-
-static MiExecResult mi_list_eval_subcommand(MiContext *ctx, MiNode *node, XSlice *out_name)
-{
-  MiExecResult result;
-
-  result = mi_eval_node(ctx, node);
-
-  if (result.signal != MI_SIGNAL_NONE)
-  {
-    return result;
-  }
-
-  if (result.value.kind == MI_VAL_STRING)
-  {
-    *out_name = result.value.as.string;
-    return mi_exec_null();
-  }
-
-  if (result.value.kind == MI_VAL_RAW)
-  {
-    *out_name = result.value.as.raw;
-    return mi_exec_null();
-  }
-
-  mi_context_set_error(ctx, "list subcommand must evaluate to string or raw", 0, 0);
-  return mi_exec_error();
 }
 
 static MiExecResult mi_list_expect_list(MiContext *ctx, MiValue value, MiList **out_list)
@@ -2154,7 +2150,7 @@ MiExecResult mi_cmd_list(MiContext *ctx, i32 argc, MiNode **argv)
     return mi_exec_error();
   }
 
-  result = mi_list_eval_subcommand(ctx, argv[0], &subcommand);
+  result = s_eval_subcmd(ctx, argv[0], &subcommand);
   if (result.signal != MI_SIGNAL_NONE)
   {
     return result;
@@ -2163,52 +2159,52 @@ MiExecResult mi_cmd_list(MiContext *ctx, i32 argc, MiNode **argv)
   argc--;
   argv++;
 
-  if (mi_list_slice_equals_cstr(subcommand, "create"))
+  if (x_slice_eq_cstr(subcommand, "create"))
   {
     return mi_list_cmd_create(ctx, argc, argv);
   }
 
-  if (mi_list_slice_equals_cstr(subcommand, "len"))
+  if (x_slice_eq_cstr(subcommand, "len"))
   {
     return mi_list_cmd_len(ctx, argc, argv);
   }
 
-  if (mi_list_slice_equals_cstr(subcommand, "get"))
+  if (x_slice_eq_cstr(subcommand, "get"))
   {
     return mi_list_cmd_get(ctx, argc, argv);
   }
 
-  if (mi_list_slice_equals_cstr(subcommand, "set"))
+  if (x_slice_eq_cstr(subcommand, "set"))
   {
     return mi_list_cmd_set(ctx, argc, argv);
   }
 
-  if (mi_list_slice_equals_cstr(subcommand, "push"))
+  if (x_slice_eq_cstr(subcommand, "push"))
   {
     return mi_list_cmd_push(ctx, argc, argv);
   }
 
-  if (mi_list_slice_equals_cstr(subcommand, "pop"))
+  if (x_slice_eq_cstr(subcommand, "pop"))
   {
     return mi_list_cmd_pop(ctx, argc, argv);
   }
 
-  if (mi_list_slice_equals_cstr(subcommand, "clear"))
+  if (x_slice_eq_cstr(subcommand, "clear"))
   {
     return mi_list_cmd_clear(ctx, argc, argv);
   }
 
-  if (mi_list_slice_equals_cstr(subcommand, "destroy"))
+  if (x_slice_eq_cstr(subcommand, "destroy"))
   {
     return mi_list_cmd_destroy(ctx, argc, argv);
   }
 
-  if (mi_list_slice_equals_cstr(subcommand, "append"))
+  if (x_slice_eq_cstr(subcommand, "append"))
   {
     return mi_list_cmd_append(ctx, argc, argv);
   }
 
-  if (mi_list_slice_equals_cstr(subcommand, "index_of"))
+  if (x_slice_eq_cstr(subcommand, "index_of"))
   {
     return mi_list_cmd_index_of(ctx, argc, argv);
   }
@@ -2450,6 +2446,7 @@ MiExecResult mi_call_cmd_eval(MiContext *ctx, XSlice source)
 //
 // INCLUDE
 //
+
 MiExecResult mi_cmd_include(MiContext *ctx, int argc, MiNode **argv)
 {
   MiExecResult eval_result;
@@ -2548,65 +2545,209 @@ MiExecResult mi_cmd_include(MiContext *ctx, int argc, MiNode **argv)
 
 
 //
+// STR
+//
+
+static MiExecResult s_str_arg_cmp(MiContext *ctx, i32 argc, MiNode **argv, bool case_sensitive)
+{
+  MiExecResult r;
+  MiValue left_node;
+  MiValue right_node;
+
+  if (argc != 2) {
+    mi_context_set_error(ctx, "strcmp expects 2 arguments", 0, 0);
+    return mi_exec_error();
+  }
+
+  r = mi_eval_node(ctx, argv[0]);
+  if (r.signal != MI_SIGNAL_NONE)
+    return r;
+
+  if (r.value.kind == MI_VAL_STRING || r.value.kind == MI_VAL_RAW)
+  {
+    left_node = r.value;
+  }
+  else
+  {
+    mi_context_set_error(ctx, "strcmp arguments must be string or raw",
+        argv[0]->line, argv[0]->column);
+    return mi_exec_error();
+  }
+
+  r = mi_eval_node(ctx, argv[1]);
+  if (r.signal != MI_SIGNAL_NONE)
+    return r;
+
+  if (r.value.kind == MI_VAL_STRING || r.value.kind == MI_VAL_RAW)
+  {
+    right_node = r.value;
+  }
+  else
+  {
+    mi_context_set_error(ctx, "strcmp arguments must be string or raw",
+        argv[1]->line, argv[1]->column);
+    return mi_exec_error();
+  }
+
+  i32 cmp_result = (case_sensitive) ?
+    x_slice_cmp(left_node.as.string, right_node.as.string) :
+    x_slice_cmp_ci(left_node.as.string, right_node.as.string);
+
+  return mi_exec_ok(mi_value_number(cmp_result));
+}
+
+static MiExecResult mi_cmd_strlen(MiContext *ctx, i32 argc, MiNode **argv)
+{
+  MiExecResult r;
+  MiValue node;
+
+  if (argc != 1) {
+    mi_context_set_error(ctx, "strlen expects 1 arguments", 0, 0);
+    return mi_exec_error();
+  }
+
+  r = mi_eval_node(ctx, argv[0]);
+  if (r.signal != MI_SIGNAL_NONE)
+    return r;
+
+  if (r.value.kind == MI_VAL_STRING || r.value.kind == MI_VAL_RAW)
+  {
+    node = r.value;
+  }
+  else
+  {
+    mi_context_set_error(ctx, "strcmp arguments must be string or raw",
+        argv[0]->line, argv[0]->column);
+    return mi_exec_error();
+  }
+
+
+  return mi_exec_ok(mi_value_number((i32)node.as.string.length));
+}
+
+MiExecResult mi_cmd_strcmp(MiContext *ctx, i32 argc, MiNode **argv)
+{
+  MiExecResult r = s_str_arg_cmp(ctx, argc, argv, true);
+  return r;
+}
+
+static MiExecResult mi_cmd_strcmpi(MiContext *ctx, i32 argc, MiNode **argv)
+{
+  MiExecResult r = s_str_arg_cmp(ctx, argc, argv, false);
+  return r;
+}
+
+static MiExecResult mi_cmd_streq(MiContext *ctx, i32 argc, MiNode **argv)
+{
+  MiExecResult r = s_str_arg_cmp(ctx, argc, argv, true);
+  if (r.signal != MI_SIGNAL_NONE)
+    return r;
+
+  bool match = 0 == (i32)r.value.as.number;
+  return mi_exec_ok((mi_value_number(match)));
+}
+
+static MiExecResult mi_cmd_streqi(MiContext *ctx, i32 argc, MiNode **argv)
+{
+  MiExecResult r = s_str_arg_cmp(ctx, argc, argv, false);
+  if (r.signal != MI_SIGNAL_NONE)
+    return r;
+
+  return mi_exec_ok((mi_value_number(((i32)r.value.as.number) == 0 ? 1 : 0)));
+}
+
+MiExecResult mi_cmd_str(MiContext *ctx, i32 argc, MiNode **argv)
+{
+  XSlice subcommand;
+  MiExecResult result;
+
+  if (argc < 1)
+  {
+    mi_context_set_error(ctx, "list requires a subcommand", 0, 0);
+    return mi_exec_error();
+  }
+
+  result = s_eval_subcmd(ctx, argv[0], &subcommand);
+  if (result.signal != MI_SIGNAL_NONE)
+  {
+    return result;
+  }
+
+  argc--;
+  argv++;
+
+
+  if (x_slice_eq_cstr(subcommand, "compare"))
+  {
+    return mi_cmd_strcmp(ctx, argc, argv);
+  }
+
+  if (x_slice_eq_cstr(subcommand, "compare_i"))
+  {
+    return mi_cmd_strcmpi(ctx, argc, argv);
+  }
+
+  if (x_slice_eq_cstr(subcommand, "equals"))
+  {
+    return mi_cmd_streq(ctx, argc, argv);
+  }
+
+  if (x_slice_eq_cstr(subcommand, "equals_i"))
+  {
+    return mi_cmd_streqi(ctx, argc, argv);
+  }
+
+  if (x_slice_eq_cstr(subcommand, "length"))
+  {
+    return mi_cmd_strlen(ctx, argc, argv);
+  }
+
+  mi_context_set_error(ctx, "unknown str subcommand", 0, 0);
+  return mi_exec_error();
+}
+
+//
 // Register all builtin commands
 //
 
 bool mi_register_builtins(MiContext *ctx)
 {
   if (!mi_register_command(ctx, "set", mi_cmd_set))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "format", mi_cmd_format))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "print", mi_cmd_print))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "if", mi_cmd_if))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "expr", mi_cmd_expr))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "while", mi_cmd_while))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "break", mi_cmd_break))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "continue", mi_cmd_continue))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "list", mi_cmd_list))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "foreach", mi_cmd_foreach))
-  {
     return false;
-  }
 
   if (!mi_register_command(ctx, "include", mi_cmd_include))
-  {
     return false;
-  }
+
+  if (!mi_register_command(ctx, "str", mi_cmd_str))
+    return false;
 
   return true;
 }
+

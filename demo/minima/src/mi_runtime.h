@@ -69,11 +69,11 @@ typedef struct MiValue
 
 typedef enum MiExecSignal
 {
-  MI_SIGNAL_NONE,
-  MI_SIGNAL_RETURN,
-  MI_SIGNAL_BREAK,
-  MI_SIGNAL_CONTINUE,
-  MI_SIGNAL_ERROR,
+  MI_SIGNAL_NONE      = 0,
+  MI_SIGNAL_RETURN    = 1,
+  MI_SIGNAL_BREAK     = 2,
+  MI_SIGNAL_CONTINUE  = 3,
+  MI_SIGNAL_ERROR     = 4,
 } MiExecSignal;
 
 typedef struct MiExecResult
