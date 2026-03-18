@@ -214,7 +214,7 @@ extern "C" {
    * @param array Pointer to the array.
    * @return Pointer to the last element.
    */
-  void* x_array_top(XArray* array);
+  void* x_array_back(XArray* array);
 
   /**
    * @brief Check whether the array is empty.
@@ -286,13 +286,13 @@ extern "C" {
   { \
     return (const T*)x_array_data((XArray*)arr); \
   } \
-  static inline T* x_array_##suffix##_top(XArray_##suffix* arr) \
+  static inline T* x_array_##suffix##_back(XArray_##suffix* arr) \
   { \
-    return (T*)x_array_top((XArray*)arr); \
+    return (T*)x_array_back((XArray*)arr); \
   } \
-  static inline const T* x_array_##suffix##_top_const(const XArray_##suffix* arr) \
+  static inline const T* x_array_##suffix##_back_const(const XArray_##suffix* arr) \
   { \
-    return (const T*)x_array_top((XArray*)arr); \
+    return (const T*)x_array_back((XArray*)arr); \
   } \
   static inline void x_array_##suffix##_clear(XArray_##suffix* arr) \
   { \
@@ -551,7 +551,7 @@ extern "C" {
     }
   }
 
-  void* x_array_top(XArray* array)
+  void* x_array_back(XArray* array)
   {
     uint32_t count = x_array_count(array);
 

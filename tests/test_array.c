@@ -165,7 +165,7 @@ int test_x_array_delete_at()
   return 0;
 }
 
-int test_x_array_push_and_top()
+int test_x_array_push_and_back()
 {
   XArray* arr = x_array_create(sizeof(int), 10);
   ASSERT_TRUE(arr != NULL);
@@ -173,7 +173,7 @@ int test_x_array_push_and_top()
   int value = 42;
   x_array_push(arr, &value);
 
-  int* top = (int*)x_array_top(arr);
+  int* top = (int*)x_array_back(arr);
   ASSERT_TRUE(top != NULL);
   ASSERT_EQ(*top, 42);
 
@@ -194,7 +194,7 @@ int test_x_array_push_multiple()
   x_array_push(arr, &c);
 
   {
-    int* top = (int*)x_array_top(arr);
+    int* top = (int*)x_array_back(arr);
     ASSERT_TRUE(top != NULL);
     ASSERT_EQ(*top, 3);
   }
@@ -215,7 +215,7 @@ int test_x_array_pop()
   x_array_pop(arr);
 
   {
-    int* top = (int*)x_array_top(arr);
+    int* top = (int*)x_array_back(arr);
     ASSERT_TRUE(top != NULL);
     ASSERT_EQ(*top, 100);
   }
@@ -266,7 +266,7 @@ int test_x_array_int_create_and_push(void)
   return 0;
 }
 
-int test_x_array_int_insert_delete_and_top(void)
+int test_x_array_int_insert_delete_and_back(void)
 {
   XArray_int* arr = x_array_int_create(2);
   ASSERT_TRUE(arr != NULL);
@@ -279,7 +279,7 @@ int test_x_array_int_insert_delete_and_top(void)
   ASSERT_TRUE(*x_array_int_get(arr, 0) == 1);
   ASSERT_TRUE(*x_array_int_get(arr, 1) == 2);
   ASSERT_TRUE(*x_array_int_get(arr, 2) == 3);
-  ASSERT_TRUE(*x_array_int_top(arr) == 3);
+  ASSERT_TRUE(*x_array_int_back(arr) == 3);
 
   x_array_int_delete_at(arr, 1);
   ASSERT_TRUE(x_array_int_count(arr) == 2);
@@ -288,7 +288,7 @@ int test_x_array_int_insert_delete_and_top(void)
 
   x_array_int_pop(arr);
   ASSERT_TRUE(x_array_int_count(arr) == 1);
-  ASSERT_TRUE(*x_array_int_top(arr) == 1);
+  ASSERT_TRUE(*x_array_int_back(arr) == 1);
 
   x_array_int_destroy(arr);
   return 0;
@@ -337,7 +337,7 @@ int test_x_array_test_point_struct(void)
   ASSERT_TRUE(x_array_test_point_get(arr, 1)->x == 3);
   ASSERT_TRUE(x_array_test_point_get(arr, 1)->y == 4);
 
-  top = x_array_test_point_top(arr);
+  top = x_array_test_point_back(arr);
   ASSERT_TRUE(top != NULL);
   ASSERT_TRUE(top->x == 3);
   ASSERT_TRUE(top->y == 4);
@@ -385,12 +385,12 @@ int main()
     X_TEST(test_x_array_delete_range),
     X_TEST(test_x_array_clear),
     X_TEST(test_x_array_delete_at),
-    X_TEST(test_x_array_push_and_top),
+    X_TEST(test_x_array_push_and_back),
     X_TEST(test_x_array_push_multiple),
     X_TEST(test_x_array_pop),
     X_TEST(test_x_array_is_empty),
     X_TEST(test_x_array_int_create_and_push),
-    X_TEST(test_x_array_int_insert_delete_and_top),
+    X_TEST(test_x_array_int_insert_delete_and_back),
     X_TEST(test_x_array_uint_named_type),
     X_TEST(test_x_array_test_point_struct),
     X_TEST(test_x_array_int_delete_range),
