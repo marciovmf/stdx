@@ -23,10 +23,6 @@
 #define MD_IMPL
 #include "markdown.h"
 
-#include <mi_parser.h>
-#include <mi_runtime.h>
-#include <mi_builtins.h>
-
 #include "slab.h"
 
 #include <stdio.h>
@@ -35,7 +31,6 @@ MI_DEFINE_TYPE(Page);
 
 i32 slab_generate_site(const char* site_root)
 {
-
   if (!x_fs_path_is_directory_cstr(site_root))
   {
     log_error("Site path not found: %s\n", site_root);
@@ -51,41 +46,7 @@ i32 slab_generate_site(const char* site_root)
 
   // Collect metadata
   x_log_info("Processing site folder...");
-
-  slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.template_dir));
-  slab_process_directory_metadata(site, x_fs_path_cstr(&site_config.content_dir));
-
-  //
-  // Collect all categories
-  //
-  u32 category_count = 0;
-  XArray_cstr *array_categories = x_array_cstr_create(4);
-  {
-    for(u32 i = 0; i < site->page_count; i++)
-    {
-      bool category_found = false;
-      SlabPage* page = &site->pages[i]; 
-
-      // if array does not contain it, add
-      u32 count = x_array_cstr_count(array_categories);
-      for (u32 i = 0; i < count; i++)
-      {
-        const char** e = x_array_cstr_get(array_categories, i);
-        u32 category_len = (u32) strlen(page->category);
-        if (strnicmp(*e, page->category, category_len) == 0)
-        {
-          category_found = true; 
-          break;
-        }
-      }
-      if (!category_found)
-      {
-        x_array_cstr_push(array_categories, page->category);
-        category_count++;
-      }
-    }
-  }
-
+  slab_process_site(site);
   x_log_info("Generating pages...");
 
   i32 return_code = 0;
@@ -192,11 +153,11 @@ i32 slab_generate_site(const char* site_root)
     // Inject 'all_categories' variable
     //
     {
-      MiValue all_categories = mi_value_list((i32)category_count);
-      for (u32 i = 0; i < category_count; i++)
+      MiValue all_categories = mi_value_list((i32)site->category_count);
+      for (i32 i = 0; i < (i32)site->category_count; i++)
       {
-        const char** category_name = x_array_cstr_get(array_categories, i);
-        MiValue mi_value = mi_value_string(x_slice(*category_name));
+        SlabCategory* category = &site->categories[i];
+        MiValue mi_value = mi_value_string(x_slice(category->name ? category->name : ""));
         mi_call_cmd_list_push_value(all_categories, mi_value);
       }
       mi_scope_define(ctx.global_scope, x_slice_from_cstr("all_categories"), all_categories);
@@ -250,8 +211,9 @@ i32 slab_generate_site(const char* site_root)
 
       if (exec.signal == MI_SIGNAL_ERROR)
       {
-        log_error("[FAIL] %s -> Runtime error at %d:%d: %s\n",
+        log_error("[FAIL] %s -> Runtime error at %s %d:%d: %s\n",
             page->source_path,
+            ctx.error_source_file.buf,
             ctx.error_line,
             ctx.error_column,
             ctx.error_message);

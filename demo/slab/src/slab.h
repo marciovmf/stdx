@@ -6,18 +6,15 @@
 #include <stdx_string.h>
 #include <stdx_filesystem.h>
 #include <stdx_log.h>
+#include <minima.h>
 
-#include <mi_parser.h>
-#include <mi_runtime.h>
-#include <mi_builtins.h>
+X_ARRAY_TYPE_NAMED(char*, cstr); // declares Xarray_cstr
 
 #define SLAB_FRONTMATTER_MAX_ENTRIES 32
 
 #define log_info(msg, ...)     x_log_raw(stdout, XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
 #define log_warning(msg, ...)  x_log_raw(stdout, XLOG_LEVEL_WARNING, XLOG_COLOR_YELLOW, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
 #define log_error(msg, ...)    x_log_raw(stderr, XLOG_LEVEL_ERROR, XLOG_COLOR_RED, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
-
-X_ARRAY_TYPE_NAMED(char*, cstr);
 
 typedef enum SlabFrontmatterParseResult
 {
@@ -74,27 +71,36 @@ typedef struct SlabPage
   bool draft;
 } SlabPage;
 
+typedef struct SlabCategory
+{
+  char* name;
+} SlabCategory;
+
+
 typedef struct SlabSite
 {
-  XArena*   arena;      // this arena provides memory for everything necessary
-                        // during site metadata collection and config loading.
-  SlabPage* pages;
-  size_t    page_count;
-  size_t    page_capacity;
-  SlabConfig config;
+  XArena*      arena;      // this arena provides memory for everything necessary
+                           // during site metadata collection and config loading.
+  SlabPage*    pages;
+  size_t       page_count;
+  size_t       page_capacity;
+
+  SlabCategory* categories;
+  size_t        category_count;
+  size_t        category_capacity;
+
+  SlabConfig   config;
 }
 SlabSite;
-
 
 SlabSite* slab_site_create(size_t arena_size, SlabConfig* config);                        // Create a Site
 void slab_site_destroy(SlabSite* site);                                                   // Destroy the Site
 bool slab_config_load(const char* site_root, SlabConfig* out_config);                     // Load configuration from site root
 void slab_config_unload(SlabConfig* config);                                              // Unload configuration
-i32 slab_process_directory_metadata(SlabSite* site, const char* path);                    // Processes pages/posts from a directory
-SlabFrontmatterParseResult slab_frontammter_parse(XSlice* input, SlabFrontmatter* out);   // Parses front matter from start of buffer
+i32 slab_process_site(SlabSite* site);  // Processes pages/posts from a directory
 
 //
-// Template 2 minima code expansion
+// Template/minima code expansion
 //
 
 typedef struct SlabTemplateResult
@@ -112,6 +118,7 @@ SlabTemplateResult slab_expand_minima_template(XSlice input, XStrBuilder* out);
 //
 
 MI_IMPORT_TYPE(Page);
+
 bool slab_register_mi_commands(MiContext *ctx);
 
 #endif // SLAB_H

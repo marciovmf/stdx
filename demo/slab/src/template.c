@@ -1,9 +1,7 @@
 #include "slab.h"
-
 #include <stdx_filesystem.h>
 #include <stdx_strbuilder.h>
-#include <mi_runtime.h>
-#include <mi_builtins.h>
+#include <minima.h>
 
 //
 // Templating helpers

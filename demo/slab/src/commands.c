@@ -122,7 +122,8 @@ MiExecResult slab_cmd_page(MiContext *ctx, i32 argc, MiNode **argv)
   page = mi_page_from_value(page_value);
   if (!page)
   {
-    mi_context_set_error(ctx, "expected page", 0, 0);
+    mi_context_set_error(ctx, "expected page",
+        argv[1]->line, argv[1]->column);
     return mi_exec_error();
   }
 
@@ -196,7 +197,8 @@ MiExecResult slab_cmd_page(MiContext *ctx, i32 argc, MiNode **argv)
     return mi_exec_ok(mi_value_number(page->draft ? 1.0 : 0.0));
   }
 
-  mi_context_set_error(ctx, "unknown page property", 0, 0);
+  mi_context_set_error(ctx, "unknown page property", 
+      argv[0]->line, argv[0]->column);
   return mi_exec_error();
 }
 
@@ -225,7 +227,8 @@ MiExecResult slab_cmd_template(MiContext *ctx, int argc, MiNode **argv)
 
   if (argc < 1 || !argv || !argv[0])
   {
-    mi_context_set_error(ctx, "template expects a path argument", 0, 0);
+    mi_context_set_error(ctx, "template expects a path argument",
+        argv[0]->line, argv[0]->column);
     return mi_exec_error();
   }
 
@@ -238,7 +241,8 @@ MiExecResult slab_cmd_template(MiContext *ctx, int argc, MiNode **argv)
   path_value = eval_result.value;
   if (path_value.kind != MI_VAL_STRING)
   {
-    mi_context_set_error(ctx, "template path must evaluate to a string", 0, 0);
+    mi_context_set_error(ctx, "template path must evaluate to a string", 
+        argv[0]->line, argv[0]->column);
     return mi_exec_error();
   }
 
@@ -248,14 +252,16 @@ MiExecResult slab_cmd_template(MiContext *ctx, int argc, MiNode **argv)
   f = fopen(path_cstr.buf, "rb");
   if (!f)
   {
-    mi_context_set_error(ctx, "template could not open file", 0, 0);
+    mi_context_set_error(ctx, "template could not open file",
+        argv[0]->line, argv[0]->column);
     return mi_exec_error();
   }
 
   if (fseek(f, 0, SEEK_END) != 0)
   {
     fclose(f);
-    mi_context_set_error(ctx, "template failed to seek file", 0, 0);
+    mi_context_set_error(ctx, "template failed to seek file",
+        argv[0]->line, argv[0]->column);
     return mi_exec_error();
   }
 
@@ -263,14 +269,16 @@ MiExecResult slab_cmd_template(MiContext *ctx, int argc, MiNode **argv)
   if (fsize < 0)
   {
     fclose(f);
-    mi_context_set_error(ctx, "template failed to get file size", 0, 0);
+    mi_context_set_error(ctx, "template failed to get file size",
+        argv[0]->line, argv[0]->column);
     return mi_exec_error();
   }
 
   if (fseek(f, 0, SEEK_SET) != 0)
   {
     fclose(f);
-    mi_context_set_error(ctx, "template failed to rewind file", 0, 0);
+    mi_context_set_error(ctx, "template failed to rewind file",
+        argv[0]->line, argv[0]->column);
     return mi_exec_error();
   }
 
@@ -279,7 +287,9 @@ MiExecResult slab_cmd_template(MiContext *ctx, int argc, MiNode **argv)
   if (!file_buf)
   {
     fclose(f);
-    mi_context_set_error(ctx, "template failed to allocate file buffer", 0, 0);
+    free(file_buf);
+    mi_context_set_error(ctx, "template failed to allocate file buffer",
+        argv[0]->line, argv[0]->column);
     return mi_exec_error();
   }
 
@@ -287,7 +297,8 @@ MiExecResult slab_cmd_template(MiContext *ctx, int argc, MiNode **argv)
   {
     fclose(f);
     free(file_buf);
-    mi_context_set_error(ctx, "template failed to read file", 0, 0);
+    mi_context_set_error(ctx, "template failed to read file",
+        argv[0]->line, argv[0]->column);
     return mi_exec_error();
   }
 
@@ -298,7 +309,8 @@ MiExecResult slab_cmd_template(MiContext *ctx, int argc, MiNode **argv)
   if (!sb)
   {
     free(file_buf);
-    mi_context_set_error(ctx, "template failed to create string builder", 0, 0);
+    mi_context_set_error(ctx, "template failed to create string builder",
+        argv[0]->line, argv[0]->column);
     return mi_exec_error();
   }
 
@@ -314,16 +326,12 @@ MiExecResult slab_cmd_template(MiContext *ctx, int argc, MiNode **argv)
   script_src = x_strbuilder_to_string(sb);
   script_len = x_strbuilder_length(sb);
 
-  /*
-   * Execute expanded Minima source through Minima's internal source-eval API.
-   *
-   * Lifetime note:
-   * If the parser/runtime keeps slices pointing into script_src memory,
-   * destroying sb here may be unsafe. Preserving conservative behavior.
-   */
   free(file_buf);
 
-  return mi_call_cmd_eval(ctx, x_slice_init(script_src, script_len));
+  mi_context_push_source(ctx, x_slice_init(path_cstr.buf, path_cstr.length));
+  MiExecResult result = mi_call_cmd_eval(ctx, x_slice_init(script_src, script_len));
+  mi_context_pop_source(ctx);
+  return result;
 }
 
 bool slab_register_mi_commands(MiContext *ctx)

@@ -4,11 +4,16 @@
 #include <stdx_ini.h>
 #include <stdx_io.h>
 #include <stdx_log.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "slab.h"
 #include "stdx_arena.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+SlabFrontmatterParseResult slab_frontammter_parse(XSlice* input, SlabFrontmatter* out);
 
 //
 // Helpers
@@ -186,6 +191,105 @@ static void s_slab_page_property_set(SlabPage* page, XArena* arena, XSlice* key,
 #undef MATCH
 }
 
+static i32 s_slab_site_add_category(SlabSite* site, const SlabCategory* category, XArena* arena)
+{
+  if (!site || !category)
+  {
+    return 0;
+  }
+
+  if (site->category_count == site->category_capacity)
+  {
+    size_t new_cap;
+    size_t bytes;
+    SlabCategory* new_categories;
+
+    new_cap = (site->category_capacity == 0) ? 16 : site->category_capacity * 2;
+    bytes = new_cap * sizeof(SlabCategory);
+
+    new_categories = (SlabCategory*)x_arena_alloc(arena, bytes);
+    if (!new_categories)
+    {
+      return 0;
+    }
+
+    if (site->categories && site->category_count > 0)
+    {
+      memcpy(new_categories, site->categories, site->category_count * sizeof(SlabCategory));
+    }
+
+    site->categories = new_categories;
+    site->category_capacity = new_cap;
+  }
+
+  {
+    SlabCategory* dest = &site->categories[site->category_count++];
+    *dest = *category;
+  }
+
+  return 1;
+}
+
+static bool s_slab_site_has_category(const SlabSite* site, const char* name)
+{
+
+  if (!site || !name || !name[0])
+  {
+    return false;
+  }
+
+  size_t name_len = strlen(name);
+  for (u32 i = 0; i < site->category_count; i++)
+  {
+    const SlabCategory* category = &site->categories[i];
+    if (category->name && strncmp(category->name, name, name_len) == 0)
+    {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static i32 s_slab_collect_categories(SlabSite* site)
+{
+  size_t i;
+
+  if (!site)
+  {
+    return 1;
+  }
+
+  site->categories = NULL;
+  site->category_count = 0;
+  site->category_capacity = 0;
+
+  for (i = 0; i < site->page_count; i++)
+  {
+    SlabPage* page = &site->pages[i];
+    SlabCategory category = {0};
+
+    if (!page->category || !page->category[0])
+    {
+      continue;
+    }
+
+    if (s_slab_site_has_category(site, page->category))
+    {
+      continue;
+    }
+
+    category.name = page->category;
+
+    if (!s_slab_site_add_category(site, &category, site->arena))
+    {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
 //
 // SLAB Public API
 //
@@ -298,7 +402,7 @@ static bool s_slab_build_page_defaults(
   }
 
   x_fs_path(&output_path, site->config.output_dir, page->slug);
-  x_fs_path_change_extension(&output_path, ".html");
+  x_fs_path_change_extension(&output_path, "html");
   page->output_path = (char*)x_arena_strdup(site_arena, output_path.buf);
 
   {
@@ -380,7 +484,7 @@ static i32 s_slab_process_content_file(
     XFSPath output_path;
 
     x_fs_path(&output_path, site->config.output_dir, page.slug);
-    x_fs_path_change_extension(&output_path, ".html");
+    x_fs_path_change_extension(&output_path, "html");
 
     page.output_path = (char*)x_arena_strdup(site_arena, output_path.buf);
 
@@ -462,9 +566,18 @@ static i32 s_slab_process_directory_metadata_recursive(SlabSite* site, const cha
   return result;
 }
 
-i32 slab_process_directory_metadata(SlabSite* site, const char* path)
+static i32 slab_process_directory_metadata(SlabSite* site, const char* path)
 {
   return s_slab_process_directory_metadata_recursive(site, path, path);
+}
+
+i32 slab_process_site(SlabSite* site)
+{
+  i32 result = 0;
+  result |= slab_process_directory_metadata(site, x_fs_path_cstr(&site->config.template_dir));
+  result |= slab_process_directory_metadata(site, x_fs_path_cstr(&site->config.content_dir));
+  result |= s_slab_collect_categories(site);
+  return result;
 }
 
 SlabFrontmatterParseResult slab_frontammter_parse(XSlice* input, SlabFrontmatter* out)
