@@ -1583,6 +1583,7 @@ extern "C" {
     const char* path_str = x_smallstr_cstr(path);
     const char* last_dot = NULL;
     const char* last_sep = NULL;
+    const size_t new_ext_len = strlen(new_ext);
 
     // Scan from the end to locate '.' and path separator
     for (ptrdiff_t i = (ptrdiff_t)(path->length - 1); i >= 0; --i)
@@ -1608,7 +1609,7 @@ extern "C" {
     path->length = base_len;
 
     // Append the new extension
-    if (new_ext[0] != '.')
+    if (new_ext[0] != '.' && new_ext_len > 0)
     {
       if (x_smallstr_append_char(path, '.') <= 0)
         return 0;
@@ -1616,6 +1617,7 @@ extern "C" {
 
     return x_smallstr_append_cstr(path, new_ext);
   }
+
 
   X_FILESYSTEM_API bool x_fs_path_is_absolute_native_cstr(const char* path)
   {
