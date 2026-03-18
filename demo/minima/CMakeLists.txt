@@ -9,11 +9,9 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY  "${OUTPUT_DIR}/lib")
 
 set(SOURCES 
   src/mi_parser.c
-  src/mi_parser.h
   src/mi_runtime.c
-  src/mi_runtime.h
   src/mi_builtins.c
-  src/mi_builtins.h
+  src/minima.h
 )
 
 add_library(minimalib ${SOURCES})

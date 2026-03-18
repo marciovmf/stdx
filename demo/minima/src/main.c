@@ -21,9 +21,7 @@
 #define X_IMPL_ARRAY
 #include <stdx_array.h>
 
-#include "mi_parser.h"
-#include "mi_runtime.h"
-#include "mi_builtins.h"
+#include "minima.h"
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -1,5 +1,4 @@
-#include "mi_runtime.h"
-#include "mi_parser.h"
+#include "minima.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -293,6 +292,7 @@ bool mi_context_init(MiContext *ctx, XArena *arena, FILE* out_stream, FILE* err_
   ctx->output = x_strbuilder_create();
   ctx->out = out_stream ? out_stream : stdout;
   ctx->err = err_stream ? err_stream : stderr;
+  ctx->source_stack = x_array_create(sizeof(MiSourceFrame), 8);
 
   if (!ctx->commands || !ctx->funcs || !ctx->output)
   {
@@ -324,6 +324,8 @@ void mi_context_reset(MiContext *ctx)
   ctx->error_message = NULL;
   ctx->error_line = 0;
   ctx->error_column = 0;
+  x_array_clear(ctx->source_stack);
+  ctx->error_source_file.length = 0;
 
   if (ctx->output)
   {
@@ -343,6 +345,7 @@ void mi_context_set_error(MiContext *ctx, const char *message, int line, int col
     ctx->error_message = x_arena_strdup(ctx->arena, message ? message : "error");
     ctx->error_line = line;
     ctx->error_column = column;
+    x_fs_path_set_slice(&ctx->error_source_file, mi_context_current_source(ctx));
   }
 }
 
@@ -715,4 +718,45 @@ MiExecResult mi_exec_block(MiContext *ctx, MiNode *block, bool create_scope)
   return result;
 }
 
+bool mi_context_push_source(MiContext *ctx, XSlice file_name)
+{
+  MiSourceFrame frame;
 
+  if (!ctx || !ctx->source_stack)
+  {
+    return false;
+  }
+
+  x_fs_path_from_slice(file_name, &frame.source_name);
+  x_array_push(ctx->source_stack, &frame);
+  return true;
+}
+
+void mi_context_pop_source(MiContext *ctx)
+{
+  if (!ctx)
+  {
+    return;
+  }
+
+  if (x_array_is_empty(ctx->source_stack))
+  {
+    return;
+  }
+
+  x_array_pop(ctx->source_stack);
+}
+
+XSlice mi_context_current_source(MiContext *ctx)
+{
+  MiSourceFrame *frame;
+  
+  if (!ctx || x_array_is_empty(ctx->source_stack))
+  {
+    return x_slice_from_cstr("<unknown>");
+  }
+
+  frame = (MiSourceFrame *)x_array_back(ctx->source_stack);
+  
+  return x_slice_init(frame->source_name.buf, frame->source_name.length);
+}

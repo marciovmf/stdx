@@ -1,6 +1,3 @@
-#include "mi_builtins.h"
-#include "mi_parser.h"
-#include "mi_runtime.h"
 
 #include <stdx_array.h>
 #include <stdx_filesystem.h>
@@ -9,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#include "minima.h"
 
 static MiExecResult s_eval_subcmd(MiContext *ctx, MiNode *node, XSlice *out_name)
 {
@@ -1950,7 +1949,7 @@ MiExecResult mi_list_cmd_pop(MiContext *ctx, i32 argc, MiNode **argv)
     return result;
   }
 
-  top = x_array_MiValue_top(list->items);
+  top = x_array_MiValue_back(list->items);
   if (!top)
   {
     return mi_exec_null();
@@ -2400,6 +2399,7 @@ MiExecResult mi_cmd_eval(MiContext *ctx, int argc, MiNode **argv)
         p_res.error_line,
         p_res.error_column);
 
+    x_arena_destroy(arena);
     return mi_exec_error();
   }
 
@@ -2407,6 +2407,7 @@ MiExecResult mi_cmd_eval(MiContext *ctx, int argc, MiNode **argv)
    * Execute program block.
    */
   result = mi_exec_block(ctx, p_res.root, false);
+  x_arena_destroy(arena);
 
   return result;
 }
@@ -2435,10 +2436,12 @@ MiExecResult mi_call_cmd_eval(MiContext *ctx, XSlice source)
         p_res.error_line,
         p_res.error_column);
 
+    x_arena_destroy(arena);
     return mi_exec_error();
   }
 
   result = mi_exec_block(ctx, p_res.root, false);
+  x_arena_destroy(arena);
   return result;
 }
 
@@ -2537,8 +2540,10 @@ MiExecResult mi_cmd_include(MiContext *ctx, int argc, MiNode **argv)
 
   fclose(f);
   file_buf[size] = '\0';
-
+  mi_context_push_source(ctx, x_slice_init(path_cstr.buf, path_cstr.length));
   result = mi_call_cmd_eval(ctx, x_slice_init(file_buf, size));
+  mi_context_pop_source(ctx);
+  free(file_buf);
 
   return result;
 }

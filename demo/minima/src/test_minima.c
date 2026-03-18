@@ -24,8 +24,8 @@
 #define X_IMPL_TEST
 #include <stdx_test.h>
 
-#include "mi_parser.h"
-#include "mi_runtime.h"
+#include "minima.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 

@@ -4,10 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mi_parser.h"
-#include "stdx_string.h"
-#include "stdx_arena.h"
-
+#include "minima.h"
 
 typedef enum MiTokenKind
 {
