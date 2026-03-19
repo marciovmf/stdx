@@ -846,8 +846,6 @@ static void render_inline(Str *out, const char *p, const char *end)
 
     // default
     if (*p == '&') str_puts(out, "&amp;");
-    else if (*p == '<') str_puts(out, "&lt;");
-    else if (*p == '>') str_puts(out, "&gt;");
     else str_putc(out, *p);
     p += 1;
   }
