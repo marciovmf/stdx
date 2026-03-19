@@ -105,7 +105,16 @@ i32 slab_generate_site(const char* site_root)
         mi_value_string(x_slice(page->title ? page->title : "")));
 
     mi_scope_define(ctx.global_scope, x_slice("post_date"),
-        mi_value_string(x_slice(page->date ? page->date : "")));
+        mi_value_string(x_slice(page->date ? page->date : "1900-01-01")));
+
+    mi_scope_define(ctx.global_scope, x_slice("post_year"),
+        mi_value_number(page->year ? page->year : 1900));
+
+    mi_scope_define(ctx.global_scope, x_slice("post_month"),
+        mi_value_number(page->month ? page->month : 1));
+
+    mi_scope_define(ctx.global_scope, x_slice("post_day"),
+        mi_value_number(page->day ? page->day : 1));
 
     mi_scope_define(ctx.global_scope, x_slice("post_slug"),
         mi_value_string(x_slice(page->slug ? page->slug : "")));
