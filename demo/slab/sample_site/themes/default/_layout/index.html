@@ -16,20 +16,29 @@
         <div class="innertube">
           <h3>Posts</h3>
           <ul>
-            <% # List all pages from POST category
-              foreach p $all_pages {
+            <% 
+             # List all pages from POST category, sorted by date, newer first
+             # Possible arguments for the sort command are:
+             # newer, older, name, category, name_desc, category_dec
+
+             # The all_pages list is a global list created by slab containing
+             # all pages objects in the site.
+             
+             set sorted_pages (page_sort newer $all_pages)
+
+              foreach p $sorted_pages {
                 set is_post (str equals_i (page category $p) "post")
                 if  (expr not $is_post) { continue; }
                 set date (format "$(page year $p)-$(page month $p)-$(page day $p)")
              %>
              <li><a href="<%= (page url $p) %>"><%= (page title $p) %></a>
-                <time datetime="<%= $date %>">??</time></a></li>
+                <time datetime="<%= $date %>"></time></a></li>
              <% } %>
           </ul>
           <h3>Pages</h3>
           <ul>
             <% # List all pages NOT from POST category
-              foreach p $all_pages {
+              foreach p $sorted_pages {
                 set is_post (str equals_i (page category $p) "post")
                 if (expr $is_post)  { continue; }
             %>

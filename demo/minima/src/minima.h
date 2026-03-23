@@ -539,6 +539,18 @@ MiExecResult mi_exec_block(MiContext *ctx, MiNode *block, bool create_scope);
  */
 MiExecResult mi_call_func(MiContext *ctx, const MiFunc *func, int argc, MiNode **argv);
 
+
+X_ARRAY_TYPE(MiValue);
+MI_IMPORT_TYPE(List);
+
+typedef struct MiList
+{
+  uint32_t magic;
+  bool destroyed;
+  XArray_MiValue *items;
+} MiList;
+
+
 /**
  * Push a value into a builtin list object.
  *
@@ -588,7 +600,6 @@ bool mi_context_push_source(MiContext *ctx, XSlice file_name);
 void mi_context_pop_source(MiContext *ctx);
 
 XSlice mi_context_current_source(MiContext *ctx);
-
 
 #ifdef __cplusplus
 }

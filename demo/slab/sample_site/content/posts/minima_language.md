@@ -2,8 +2,9 @@
 title:    The Minima language
 template: post
 tags:     programming c project
-date:     2025-03-17
+date:     2026-03-22
 category: post
+slug:     the_minima_language
 ---
 
 
@@ -471,16 +472,9 @@ str equals "a" "b"
 ## Final idea
 
 Minima is intentionally very simple.
-
 It does not try to do much by itself.
-
-Instead, it gives you a small set of rules:
-
-- commands
-- variables
-- blocks
-- subcommands
-
+Instead, it gives you a small set of rules: variables, blocks, commands and subcommands.
 And everything else is built on top of that.
 
 If you understand those pieces, you understand the language.
+For mor details, please refer to the project's [README](https://github.com/marciovmf/stdx/blob/main/demo/minima/readme.md) file.

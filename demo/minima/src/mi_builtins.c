@@ -1409,16 +1409,7 @@ MiExecResult mi_cmd_continue(MiContext *ctx, i32 argc, MiNode **argv)
 // LIST
 //
 
-
-X_ARRAY_TYPE(MiValue);
 MI_DEFINE_TYPE(List);
-
-typedef struct MiList
-{
-  uint32_t magic;
-  bool destroyed;
-  XArray_MiValue *items;
-} MiList;
 
 #define MI_LIST_MAGIC 0x4D494C53u
 

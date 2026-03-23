@@ -1,55 +1,71 @@
 
-# set template_dir "sample_site\\themes\\default"
-# print (format "${template_dir}//include//header.html")
-
-print "=== LIST TEST ===\n"
-
-print "create + len\n"
-set xs (list create a b c)
-print (format "$(list len $xs)\n")
-
-print "get\n"
-print (format "$(list get $xs 0)\n")
-print (format "$(list get $xs 1)\n")
-print (format "$(list get $xs 2)\n")
-
-print "set\n"
-list set $xs 1 z
-print (format "$(list get $xs 1)\n")
-
-print "push\n"
-list push $xs d
-print (format "$(list len $xs)\n")
-print (format "$(list get $xs 3)\n")
-
-print "pop\n"
-set last (list pop $xs)
-print (format "${last}\n")
-print (format "$(list len $xs)\n")
-
-print "append\n"
-set ys (list create x y)
-list append $xs $ys
-print (format "$(list len $xs)\n")
-print (format "$(list get $xs 3)\n")
-print (format "$(list get $xs 4)\n")
-
-print "index_of\n"
-print (format "$(list index_of $xs a)\n")
-print (format "$(list index_of $xs y)\n")
-print (format "$(list index_of $xs q)\n")
-
-print "clear\n"
-list clear $xs
-print (format "$(list len $xs)\n")
+  set msg "Hello, Sailor!"
+  if (str length $msg) {
+    print
+      $msg
+  }
 
 
-print "=== FOREACH TEST ===\n"
+# set a "hello"
+# set b "Hello"
+# 
+# if (str equals_i $a $b) {
+#   print "match\n" 
+# } else {
+#   print "does not match\n"
+# }
 
-set xs (list create a b c "Hello, Sailor" 20)
-
-foreach item $xs {
-  print (format "${item}\n")
-}
-
-print "=== DONE ===\n"
+# print "=== LIST TEST ===\n"
+# 
+# print "create + len\n"
+# set xs (list create a b c)
+# print (format "$(list len $xs)\n")
+# 
+# print "get\n"
+# print (format "$(list get $xs 0)\n")
+# print (format "$(list get $xs 1)\n")
+# print (format "$(list get $xs 2)\n")
+# 
+# print "set\n"
+# list set $xs 1 z
+# print (format "$(list get $xs 1)\n")
+# 
+# print "push\n"
+# list push $xs d
+# print (format "$(list len $xs)\n")
+# print (format "$(list get $xs 3)\n")
+# 
+# print "pop\n"
+# set last (list pop $xs)
+# print (format "${last}\n")
+# print (format "$(list len $xs)\n")
+# 
+# print "append\n"
+# set ys (list create x y)
+# list append $xs $ys
+# print (format "$(list len $xs)\n")
+# print (format "$(list get $xs 3)\n")
+# print (format "$(list get $xs 4)\n")
+# 
+# print "index_of\n"
+# print (format "$(list index_of $xs a)\n")
+# print (format "$(list index_of $xs y)\n")
+# print (format "$(list index_of $xs q)\n")
+# 
+# print "clear\n"
+# list clear $xs
+# print (format "$(list len $xs)\n")
+# 
+# 
+# print "=== FOREACH TEST ===\n"
+# 
+# set xs (list create a b c "Hello, Sailor" 20)
+# 
+# foreach item $xs {
+#   print (format "${item}\n")
+# }
+# 
+# print "=== DONE ===\n"
+# 
+# set x 100
+# print (format "x = $( expr 2 * $x)" )
