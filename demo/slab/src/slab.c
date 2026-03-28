@@ -394,7 +394,6 @@ static bool s_slab_build_page_defaults(
 
   if (!page->slug)
   {
-
     x_fs_path(&slug_path, &relative_path);
     x_fs_path_change_extension(&slug_path, "");
     s_slab_path_to_url_separators(&slug_path);
@@ -416,7 +415,13 @@ static bool s_slab_build_page_defaults(
     XFSTime t = x_fs_time_from_epoch(dir_entry->last_modified);
     x_smallstr_format(&date_buf, "%04d-%02d-%02d", t.year, t.month, t.day);
     page->date = (char*)x_arena_strdup(site_arena, date_buf.buf);
+    page->year = t.year;
+    page->month = t.month;
+    page->day = t.day;
   }
+
+  page->author = "Unknown";
+  page->template_name = "post";
 
   return true;
 }
