@@ -436,6 +436,79 @@ static const char *skip_ws(const char *p, const char *end)
   return p;
 }
 
+
+static bool is_html_block_line(const char *p, const char *eol)
+{
+  const char *q = p;
+
+  while (q < eol && (*q == ' ' || *q == '\t'))
+  {
+    q += 1;
+  }
+
+  if (q >= eol || *q != '<')
+  {
+    return false;
+  }
+
+  if (starts_with(q, eol, "<div") ||
+      starts_with(q, eol, "</div>") ||
+      starts_with(q, eol, "<section") ||
+      starts_with(q, eol, "</section>") ||
+      starts_with(q, eol, "<article") ||
+      starts_with(q, eol, "</article>") ||
+      starts_with(q, eol, "<main") ||
+      starts_with(q, eol, "</main>") ||
+      starts_with(q, eol, "<aside") ||
+      starts_with(q, eol, "</aside>") ||
+      starts_with(q, eol, "<header") ||
+      starts_with(q, eol, "</header>") ||
+      starts_with(q, eol, "<footer") ||
+      starts_with(q, eol, "</footer>") ||
+      starts_with(q, eol, "<nav") ||
+      starts_with(q, eol, "</nav>") ||
+      starts_with(q, eol, "<figure") ||
+      starts_with(q, eol, "</figure>") ||
+      starts_with(q, eol, "<figcaption") ||
+      starts_with(q, eol, "</figcaption>") ||
+      starts_with(q, eol, "<details") ||
+      starts_with(q, eol, "</details>") ||
+      starts_with(q, eol, "<summary") ||
+      starts_with(q, eol, "</summary>") ||
+      starts_with(q, eol, "<table") ||
+      starts_with(q, eol, "</table>") ||
+      starts_with(q, eol, "<thead") ||
+      starts_with(q, eol, "</thead>") ||
+      starts_with(q, eol, "<tbody") ||
+      starts_with(q, eol, "</tbody>") ||
+      starts_with(q, eol, "<tr") ||
+      starts_with(q, eol, "</tr>") ||
+      starts_with(q, eol, "<td") ||
+      starts_with(q, eol, "</td>") ||
+      starts_with(q, eol, "<th") ||
+      starts_with(q, eol, "</th>") ||
+      starts_with(q, eol, "<ul") ||
+      starts_with(q, eol, "</ul>") ||
+      starts_with(q, eol, "<ol") ||
+      starts_with(q, eol, "</ol>") ||
+      starts_with(q, eol, "<li") ||
+      starts_with(q, eol, "</li>") ||
+      starts_with(q, eol, "<blockquote") ||
+      starts_with(q, eol, "</blockquote>") ||
+      starts_with(q, eol, "<pre") ||
+      starts_with(q, eol, "</pre>") ||
+      starts_with(q, eol, "<script") ||
+      starts_with(q, eol, "</script>") ||
+      starts_with(q, eol, "<style") ||
+      starts_with(q, eol, "</style>"))
+  {
+    return true;
+  }
+
+  return false;
+}
+
+
 // Headers
 static void render_header_line(Str *out, const char *line, const char *eol)
 {
@@ -1134,6 +1207,24 @@ static void render_text_block(Str *out, const char *begin, const char *end)
     while (rt > p && (rt[-1] == ' ' || rt[-1] == '\t')) rt--;
 
     bool is_blank = (rt == p);
+
+    if (!is_blank && is_html_block_line(p, eol))
+    {
+      if (in_para)
+      {
+        str_puts(out, "<p>");
+        str_append_str(out, &para);
+        str_puts(out, "</p>\n");
+        str_clear(&para);
+        in_para = false;
+      }
+
+      str_putn(out, p, (size_t)(eol - p));
+      str_putc(out, '\n');
+
+      p = (eol < end) ? eol + 1 : eol;
+      continue;
+    }
 
     if (!is_blank && *p == '>')
     {
