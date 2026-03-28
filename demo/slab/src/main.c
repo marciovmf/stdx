@@ -101,6 +101,16 @@ i32 slab_generate_site(const char* site_root)
     // Exposes post frontmatter as variables
     //
 
+    X_ASSERT(page->title != NULL);
+    X_ASSERT(page->date != NULL);
+    X_ASSERT(page->year);
+    X_ASSERT(page->month);
+    X_ASSERT(page->day);
+    X_ASSERT(page->slug != NULL);
+    X_ASSERT(page->tags != NULL);
+    X_ASSERT(page->author != NULL);
+    X_ASSERT(page->template_name != NULL);
+
     mi_scope_define(ctx.global_scope, x_slice("post_title"),
         mi_value_string(x_slice(page->title ? page->title : "")));
 
@@ -125,9 +135,12 @@ i32 slab_generate_site(const char* site_root)
     mi_scope_define(ctx.global_scope, x_slice("post_author"),
         mi_value_string(x_slice(page->author ? page->author : "")));
 
-    size_t post_body_len = 0;
-    char* post_body = x_io_read_text(page->source_path, &post_body_len);
-    if(!post_body)
+    mi_scope_define(ctx.global_scope, x_slice("post_template"),
+        mi_value_string(x_slice(page->template_name ? page->template_name : "")));
+
+    size_t source_file_len = 0;
+    char* source_file = x_io_read_text(page->source_path, &source_file_len);
+    if(!source_file)
     {
       log_error("[FAIL] %s -> Failed to read contents file\n", page->source_path);
       return_code = 1;
@@ -135,10 +148,14 @@ i32 slab_generate_site(const char* site_root)
       continue;
     }
 
+    const char* post_body = source_file + page->meta.past_meta_offset;
+    const size_t post_body_len = source_file_len - page->meta.past_meta_offset;
+
     if (x_cstr_ends_with(page->source_path, ".md"))
     {
-      char* markdown = md_to_html(post_body + page->meta.past_meta_offset, post_body_len);
-      free(post_body);
+      char* markdown = md_to_html(post_body, post_body_len);
+      free(source_file);
+      source_file = markdown;
       post_body = markdown;
     }
 
@@ -189,7 +206,7 @@ i32 slab_generate_site(const char* site_root)
           "[FAIL] %s -> layout not found '%s'\n",
           page->source_path, template_path.buf);
       return_code = 1;
-      free(post_body);
+      free(source_file);
       fclose(out);
       continue;
     }
@@ -211,7 +228,7 @@ i32 slab_generate_site(const char* site_root)
             parse_result.error_column,
             parse_result.error_message);
         return_code = 1;
-        free(post_body);
+        free(source_file);
         fclose(out);
         continue;
       }
@@ -228,13 +245,13 @@ i32 slab_generate_site(const char* site_root)
             ctx.error_message);
 
         return_code = 1;
-        free(post_body);
+        free(source_file);
         fclose(out);
         continue;
       }
     }
 
-    free(post_body);
+    free(source_file);
     fclose(out);
     log_info("[ OK ] generate %s -> %s\n", page->source_path, page->url);
   }
