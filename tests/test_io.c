@@ -108,6 +108,6 @@ int main()
     X_TEST(test_allocator_usage)
   };
 
-  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]), NULL);
 }
 

@@ -769,5 +769,5 @@ int main()
     X_TEST(test_x_smallstr_try_append_cstr_null_input)
   };
 
-  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]), NULL);
 }

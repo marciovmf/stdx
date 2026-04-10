@@ -371,5 +371,5 @@ int main(void)
     X_TEST(test_x_hpool_is_alive_dead_is_false)
   };
 
-  return x_tests_run(cases, (uint32_t)(sizeof(cases) / sizeof(cases[0])));
+  return x_tests_run(cases, (uint32_t)(sizeof(cases) / sizeof(cases[0])), NULL);
 }

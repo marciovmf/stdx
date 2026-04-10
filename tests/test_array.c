@@ -396,5 +396,5 @@ int main()
     X_TEST(test_x_array_int_delete_range),
   };
 
-  return x_tests_run(tests, sizeof(tests) / sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests) / sizeof(tests[0]), NULL);
 }

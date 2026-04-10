@@ -503,5 +503,5 @@ int main(void)
     X_TEST(test_mat4_minor_cofactor_out_of_range_returns_zero),
   };
 
-  return x_tests_run(tests, sizeof(tests) / sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests) / sizeof(tests[0]), NULL);
 }

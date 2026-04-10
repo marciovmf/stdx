@@ -72,21 +72,20 @@ extern "C" {
 #endif
 #include <stdx_time.h>
 
-
 #include <stdint.h>
 #include <math.h>
 
-#ifndef X_TEST_SUCCESS  
+#ifndef X_TEST_SUCCESS
 #define X_TEST_SUCCESS 0
 #endif
 
-#ifndef X_TEST_FAIL  
-#define X_TEST_FAIL -1 
+#ifndef X_TEST_FAIL
+#define X_TEST_FAIL -1
 #endif
 
-#define XLOG_GREEN(msg, ...)  x_log_raw(stdout, XLOG_LEVEL_INFO, XLOG_COLOR_GREEN, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
-#define XLOG_WHITE(msg, ...)  x_log_raw(stdout, XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
-#define XLOG_RED(msg, ...)    x_log_raw(stderr, XLOG_LEVEL_INFO, XLOG_COLOR_RED, XLOG_COLOR_BLACK, 0, msg, __VA_ARGS__, 0)
+#define XLOG_GREEN(msg, ...)  x_log_raw(x_test_logger(), stdout, XLOG_LEVEL_INFO, XLOG_COLOR_GREEN, XLOG_COLOR_BLACK, 0, msg, ##__VA_ARGS__)
+#define XLOG_WHITE(msg, ...)  x_log_raw(x_test_logger(), stdout, XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, 0, msg, ##__VA_ARGS__)
+#define XLOG_RED(msg, ...)    x_log_raw(x_test_logger(), stderr, XLOG_LEVEL_INFO, XLOG_COLOR_RED, XLOG_COLOR_BLACK, 0, msg, ##__VA_ARGS__)
 
   /**
    * @brief Assert that an expression evaluates to true; logs an error and returns 1 from the test on failure.
@@ -95,7 +94,7 @@ extern "C" {
    */
 #define ASSERT_TRUE(expr) do { \
   if (!(expr)) { \
-    x_log_error("\t%s:%d: Assertion failed: %s\n", __FILE__, __LINE__, (#expr)); \
+    x_log_error(x_test_logger(), "\t%s:%d: Assertion failed: %s\n", __FILE__, __LINE__, (#expr)); \
     return 1; \
   } \
 } while (0)
@@ -115,7 +114,7 @@ extern "C" {
  */
 #define ASSERT_EQ(actual, expected) do { \
   if ((actual) != (expected)) { \
-    x_log_error("\t%s:%d: Assertion failed: %s == %s", __FILE__, __LINE__, #actual, #expected); \
+    x_log_error(x_test_logger(), "\t%s:%d: Assertion failed: %s == %s", __FILE__, __LINE__, #actual, #expected); \
     return 1; \
   } \
 } while (0)
@@ -135,7 +134,7 @@ extern "C" {
  */
 #define ASSERT_FLOAT_EQ(actual, expected) do { \
   if (fabs((actual) - (expected)) > X_TEST_FLOAT_EPSILON) { \
-    x_log_error("\t%s:%d: Assertion failed: %s == %s", __FILE__, __LINE__, #actual, #expected); \
+    x_log_error(x_test_logger(), "\t%s:%d: Assertion failed: %s == %s", __FILE__, __LINE__, #actual, #expected); \
     return 1; \
   } \
 } while (0)
@@ -148,7 +147,7 @@ extern "C" {
  */
 #define ASSERT_NEQ(actual, expected) do { \
   if ((actual) == (expected)) { \
-    x_log_error("\t%s:%d: Assertion failed: %s != %s", __FILE__, __LINE__, #actual, #expected); \
+    x_log_error(x_test_logger(), "\t%s:%d: Assertion failed: %s != %s", __FILE__, __LINE__, #actual, #expected); \
     return 1; \
   } \
 } while (0)
@@ -168,6 +167,9 @@ typedef struct
 
 #define X_TEST(name) {#name, name}
 
+  XLogger* x_test_logger(void);
+  int x_tests_run(STDXTestCase* tests, int32_t num_tests, XLogger* logger);
+
 #ifdef __cplusplus
 }
 #endif
@@ -176,7 +178,6 @@ typedef struct
 
 #include <stdio.h>
 #include <signal.h>
-
 
 #ifdef _WIN32
 #  include <windows.h>
@@ -188,10 +189,18 @@ typedef struct
 extern "C" {
 #endif
 
+  static XLogger* s_logger = NULL;
+
+  XLogger* x_test_logger(void)
+  {
+    return s_logger;
+  }
+
   static void s_tests_on_signal(int signal)
   {
     const char* signalName = "Unknown signal";
-    switch(signal)
+
+    switch (signal)
     {
       case SIGABRT: signalName = (const char*) "SIGABRT"; break;
       case SIGFPE:  signalName = (const char*) "SIGFPE"; break;
@@ -203,11 +212,22 @@ extern "C" {
 
     fflush(stderr);
     fflush(stdout);
-    x_log_error("\n[!!!!]  Test Crashed! %s", signalName);
+
+    if (s_logger != NULL)
+    {
+      x_log_error(s_logger, "\n[!!!!]  Test Crashed! %s", signalName);
+    }
   }
 
-  int x_tests_run(STDXTestCase* tests, int32_t num_tests)
-  { 
+  int x_tests_run(STDXTestCase* tests, int32_t num_tests, XLogger* logger)
+  {
+    int32_t passed = 0;
+    double total_time = 0;
+
+    s_logger = logger;
+
+    x_log_init(logger, XLOG_OUTPUT_BOTH, XLOG_LEVEL_DEBUG, "stdx_tests.log");
+
     signal(SIGABRT, s_tests_on_signal);
     signal(SIGFPE,  s_tests_on_signal);
     signal(SIGILL,  s_tests_on_signal);
@@ -215,38 +235,47 @@ extern "C" {
     signal(SIGSEGV, s_tests_on_signal);
     signal(SIGTERM, s_tests_on_signal);
 
-    int32_t passed = 0; 
-    double total_time = 0;
     for (int32_t i = 0; i < num_tests; ++i)
     {
+      XTimer timer;
+      int32_t result;
+      XTime elapsed;
+      double milliseconds;
+
       fflush(stdout);
 
-      XTimer timer;
       x_timer_start(&timer);
-      int32_t result = tests[i].func();
-      XTime elapsed = x_timer_elapsed(&timer);
-      const double milliseconds = x_time_milliseconds(elapsed);
+      result = tests[i].func();
+      elapsed = x_timer_elapsed(&timer);
+      milliseconds = x_time_milliseconds(elapsed);
       total_time += milliseconds;
 
       if (result == 0)
       {
-        XLOG_WHITE(" [", 0);
-        XLOG_GREEN("PASS", 0);
-        XLOG_WHITE("]  %d/%d\t %f ms -> %s\n", i+1, num_tests, milliseconds, tests[i].name);
+        XLOG_WHITE(" [");
+        XLOG_GREEN("PASS");
+        XLOG_WHITE("]  %d/%d\t %f ms -> %s\n", i + 1, num_tests, milliseconds, tests[i].name);
         passed++;
       }
       else
       {
-        XLOG_WHITE(" [", 0);
-        XLOG_RED("FAIL", 0);
-        XLOG_WHITE("]  %d/%d\t %f ms -> %s\n", i+1, num_tests, milliseconds, tests[i].name);
+        XLOG_WHITE(" [");
+        XLOG_RED("FAIL");
+        XLOG_WHITE("]  %d/%d\t %f ms -> %s\n", i + 1, num_tests, milliseconds, tests[i].name);
       }
     }
 
     if (passed == num_tests)
+    {
       XLOG_GREEN(" Tests passed: %d / %d  - total time %f ms\n", passed, num_tests, total_time);
+    }
     else
+    {
       XLOG_RED(" Tests failed: %d / %d - total time %f ms\n", num_tests - passed, num_tests, total_time);
+    }
+
+    x_log_close(logger);
+    s_logger = NULL;
 
     return passed != num_tests;
   }
@@ -264,6 +293,6 @@ extern "C" {
 
 #ifdef X_INTERNAL_LOGGER_IMPL
 #undef X_IMPL_LOG
-#undef X_INTERNAL_LOG_IMPL
+#undef X_INTERNAL_LOGGER_IMPL
 #endif
 #endif // X_TEST_H
