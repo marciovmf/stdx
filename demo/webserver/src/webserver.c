@@ -167,18 +167,18 @@ void handle_client(const WSConfig* config, XSocket client)
 {
   if (!x_net_socket_is_valid(client))
   {
-    x_log_fatal("Invalid client socket");
+    x_log_fatal(NULL, "Invalid client socket");
     return;
   }
 
   char buffer[BUFFER_SIZE] =
   {0};
   size_t received = x_net_recv(client, buffer, sizeof(buffer) - 1);
-  x_log_info("Received %zu bytes: %.*s", received, (int)received, buffer);
+  x_log_info(NULL, "Received %zu bytes: %.*s", received, (int)received, buffer);
 
   if (received <= 0)
   {
-    x_log_error("No data received.\n");
+    x_log_error(NULL, "No data received.\n");
     return;
   }
 
@@ -225,7 +225,7 @@ void handle_client(const WSConfig* config, XSocket client)
 static void* client_thread(void* arg)
 {
   WSClientData* data = ((WSClientData*)arg);
-  x_log_info("client_thread started for doc_root = %s", data->config->docroot);
+  x_log_info(NULL, "client_thread started for doc_root = %s", data->config->docroot);
   XSocket client = data->client;
   handle_client(data->config, client);
   x_net_close(client);
@@ -238,7 +238,7 @@ int main()
   XFSPath cwd;
   x_fs_cwd_set_from_executable_path();
   x_fs_cwd_get(&cwd);
-  x_log_info("running from %.*s", cwd.length, cwd.buf);
+  x_log_info(NULL, "running from %.*s", cwd.length, cwd.buf);
 
   WSConfig config = {0};
   config.port = 8080;
@@ -249,13 +249,13 @@ int main()
   XIniError iniError;
   if (!x_ini_load_file(DEFAULT_CONFIG_FILE_NAME, &ini, &iniError))
   {
-    x_log_error("Failed to load '%s'Error %d: %s on line %d, %d. ",
+    x_log_error(NULL, "Failed to load '%s'Error %d: %s on line %d, %d. ",
         DEFAULT_CONFIG_FILE_NAME,
         iniError.code,
         iniError.message,
         iniError.line,
         iniError.column);
-    x_log_error("Using default settings.");
+    x_log_error(NULL, "Using default settings.");
   }
 
   config.port = x_ini_get_i32(&ini, "webserver", "port", 80);
@@ -264,13 +264,13 @@ int main()
 
   if (! x_fs_is_directory(config.docroot))
   {
-    x_log_fatal("docroot folder '%s' does not exist. ", config.docroot);
+    x_log_fatal(NULL, "docroot folder '%s' does not exist. ", config.docroot);
     return 1;
   }
 
   if (!x_net_init())
   {
-    x_log_fatal("Failed to initialize networking.");
+    x_log_fatal(NULL, "Failed to initialize networking.");
     return 1;
   }
 
@@ -287,7 +287,7 @@ int main()
     return 1;
   }
 
-  x_log_info("Serving HTTP on port %d from %s...", config.port, config.docroot);
+  x_log_info(NULL, "Serving HTTP on port %d from %s...", config.port, config.docroot);
 
   while (1)
   {
@@ -302,7 +302,7 @@ int main()
     XThread *t;
     if (x_thread_create(&t, client_thread, data) != 0)
     {
-      x_log_error("Failed to Accept client");
+      x_log_error(NULL, "Failed to Accept client");
       free(data);
     }
     else

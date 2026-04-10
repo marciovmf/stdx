@@ -541,7 +541,7 @@ int run_tests()
     X_TEST(test_mi_parser_basic_ast)
   };
 
-  return x_tests_run(tests, sizeof(tests) / sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests) / sizeof(tests[0]), NULL);
 }
 
 #if 0 

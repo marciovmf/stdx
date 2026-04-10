@@ -45,9 +45,9 @@ i32 slab_generate_site(const char* site_root)
   XStrBuilder* sb = x_strbuilder_create();
 
   // Collect metadata
-  x_log_info("Processing site folder...");
+  x_log_info(NULL, "Processing site folder...");
   slab_process_site(site);
-  x_log_info("Generating pages...");
+  x_log_info(NULL, "Generating pages...");
 
   i32 return_code = 0;
 
@@ -259,7 +259,7 @@ i32 slab_generate_site(const char* site_root)
   slab_site_destroy(site);
   slab_config_unload(&site_config);
 
-  x_log_info("Done");
+  x_log_info(NULL, "Done");
   return return_code;
 }
 

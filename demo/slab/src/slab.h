@@ -12,9 +12,9 @@ X_ARRAY_TYPE_NAMED(char*, cstr); // declares Xarray_cstr
 
 #define SLAB_FRONTMATTER_MAX_ENTRIES 32
 
-#define log_info(msg, ...)     x_log_raw(stdout, XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
-#define log_warning(msg, ...)  x_log_raw(stdout, XLOG_LEVEL_WARNING, XLOG_COLOR_YELLOW, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
-#define log_error(msg, ...)    x_log_raw(stderr, XLOG_LEVEL_ERROR, XLOG_COLOR_RED, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
+#define log_info(msg, ...)     x_log_raw(NULL, stdout, XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
+#define log_warning(msg, ...)  x_log_raw(NULL, stdout, XLOG_LEVEL_WARNING, XLOG_COLOR_YELLOW, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
+#define log_error(msg, ...)    x_log_raw(NULL, stderr, XLOG_LEVEL_ERROR, XLOG_COLOR_RED, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, msg, __VA_ARGS__, 0)
 
 typedef enum SlabFrontmatterParseResult
 {
