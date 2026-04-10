@@ -203,46 +203,47 @@ extern "C" {
 #define X_LOG_BREAK() ((void)0)
 #endif
 
-  /**
-   * @brief Emit a raw log message with explicit formatting and components.
-   *
-   * Automatically injects source file, line, and function information.
-   */
+/**
+ * @brief Emit a raw log message with explicit formatting and components.
+ *
+ * Automatically injects source file, line, and function information.
+ */
 #define x_log_raw(logger, out, level, fg, bg, components, fmt, ...) \
-  x_log_message_to((logger), (out), (level), (fg), (bg), (components), __FILE__, __LINE__, __func__, fmt, ##__VA_ARGS__)
+  x_log_message_to((logger), (out), (level), (fg), (bg), (components), __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
-  /**
-   * @brief Emit a debug-level log message.
-   */
+/**
+ * @brief Emit a debug-level log message.
+ */
 #define x_log_debug(logger, fmt, ...) \
-  x_log_message((logger), XLOG_LEVEL_DEBUG, XLOG_COLOR_BLUE, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__)
+  x_log_message((logger), XLOG_LEVEL_DEBUG, XLOG_COLOR_BLUE, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
-  /**
-   * @brief Emit an informational log message with timestamp.
-   */
+/**
+ * @brief Emit an informational log message with timestamp.
+ */
 #define x_log_info(logger, fmt, ...) \
-  x_log_message((logger), XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__)
+  x_log_message((logger), XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
-  /**
-   * @brief Emit a warning-level log message.
-   */
+/**
+ * @brief Emit a warning-level log message.
+ */
 #define x_log_warning(logger, fmt, ...) \
-  x_log_message((logger), XLOG_LEVEL_WARNING, XLOG_COLOR_YELLOW, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__)
+  x_log_message((logger), XLOG_LEVEL_WARNING, XLOG_COLOR_YELLOW, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
-  /**
-   * @brief Emit an error-level log message.
-   */
+/**
+ * @brief Emit an error-level log message.
+ */
 #define x_log_error(logger, fmt, ...) \
-  x_log_message((logger), XLOG_LEVEL_ERROR, XLOG_COLOR_RED, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__)
+  x_log_message((logger), XLOG_LEVEL_ERROR, XLOG_COLOR_RED, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
-  /**
-   * @brief Emit a fatal log message and trigger a break action.
-   *
-   * Calls X_LOG_BREAK() after logging.
-   */
+/**
+ * @brief Emit a fatal log message and trigger a break action.
+ *
+ * Calls X_LOG_BREAK() after logging.
+ */
 #define x_log_fatal(logger, fmt, ...) \
-  do { \
-    x_log_message((logger), XLOG_LEVEL_FATAL, XLOG_COLOR_WHITE, XLOG_COLOR_RED, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (const char*)fmt "\n", ##__VA_ARGS__); \
+  do \
+  { \
+    x_log_message((logger), XLOG_LEVEL_FATAL, XLOG_COLOR_WHITE, XLOG_COLOR_RED, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__); \
     X_LOG_BREAK(); \
   } while (0)
 
