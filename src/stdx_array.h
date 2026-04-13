@@ -88,7 +88,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-
 #ifndef X_ARRAY_API
 #define X_ARRAY_API
 #endif
@@ -378,7 +377,7 @@ extern "C" {
     size_t elementSize;
   };
 
-  X_ARRAY_API XArray* x_array_create(size_t elementSize, size_t capacity)
+  XArray* x_array_create(size_t elementSize, size_t capacity)
   {
     XArray* arr = (XArray*) X_ARRAY_ALLOC(sizeof(XArray));
     if (arr == NULL)
@@ -404,7 +403,7 @@ extern "C" {
     return arr;
   }
 
-  X_ARRAY_API XArrayError x_array_add(XArray* arr, void* data)
+  XArrayError x_array_add(XArray* arr, void* data)
   {
     void* new_array;
     size_t new_capacity;
@@ -433,7 +432,7 @@ extern "C" {
     return XARRAY_OK;
   }
 
-  X_ARRAY_API XArrayError x_array_insert(XArray* arr, void* data, unsigned int index)
+  XArrayError x_array_insert(XArray* arr, void* data, unsigned int index)
   {
     void* new_array;
     size_t new_capacity;
@@ -471,7 +470,7 @@ extern "C" {
     return XARRAY_OK;
   }
 
-  X_ARRAY_API void* x_array_get(XArray* arr, unsigned int index)
+  void* x_array_get(XArray* arr, unsigned int index)
   {
     X_ASSERT(arr != NULL);
 
@@ -483,7 +482,7 @@ extern "C" {
     return (uint8_t*)arr->array + (index * arr->elementSize);
   }
 
-  X_ARRAY_API void x_array_destroy(XArray* arr)
+  void x_array_destroy(XArray* arr)
   {
     X_ASSERT(arr != NULL);
 
@@ -491,7 +490,7 @@ extern "C" {
     X_ARRAY_FREE(arr);
   }
 
-  X_ARRAY_API XArrayError x_array_delete_range(XArray* arr, unsigned int start, unsigned int end)
+  XArrayError x_array_delete_range(XArray* arr, unsigned int start, unsigned int end)
   {
     size_t delete_count;
 
@@ -513,42 +512,42 @@ extern "C" {
     return XARRAY_OK;
   }
 
-  X_ARRAY_API void x_array_clear(XArray* arr)
+  void x_array_clear(XArray* arr)
   {
     X_ASSERT(arr != NULL);
     arr->size = 0;
   }
 
-  X_ARRAY_API uint32_t x_array_count(XArray* arr)
+  uint32_t x_array_count(XArray* arr)
   {
     X_ASSERT(arr != NULL);
     return (uint32_t) arr->size;
   }
 
-  X_ARRAY_API uint32_t x_array_capacity(XArray* arr)
+  uint32_t x_array_capacity(XArray* arr)
   {
     X_ASSERT(arr != NULL);
     return (uint32_t) arr->capacity;
   }
 
-  X_ARRAY_API void x_array_delete_at(XArray* arr, unsigned int index)
+  void x_array_delete_at(XArray* arr, unsigned int index)
   {
     X_ASSERT(arr != NULL);
     x_array_delete_range(arr, index, index);
   }
 
-  X_ARRAY_API void* x_array_data(XArray* arr)
+  void* x_array_data(XArray* arr)
   {
     X_ASSERT(arr != NULL);
     return arr->array;
   }
 
-  X_ARRAY_API void x_array_push(XArray* array, void* value)
+  void x_array_push(XArray* array, void* value)
   {
     x_array_add(array, value);
   }
 
-  X_ARRAY_API void x_array_pop(XArray* array)
+  void x_array_pop(XArray* array)
   {
     uint32_t count = x_array_count(array);
     if (count > 0) {
@@ -556,7 +555,7 @@ extern "C" {
     }
   }
 
-  X_ARRAY_API void* x_array_back(XArray* array)
+  void* x_array_back(XArray* array)
   {
     uint32_t count = x_array_count(array);
 
@@ -568,7 +567,7 @@ extern "C" {
     return x_array_get(array, count - 1);
   }
 
-  X_ARRAY_API bool x_array_is_empty(XArray* array)
+  bool x_array_is_empty(XArray* array)
   {
     return x_array_count(array) == 0;
   }
