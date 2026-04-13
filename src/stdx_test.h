@@ -62,7 +62,7 @@ extern "C" {
 #define X_IMPL_LOG
 #endif
 #endif
-#include <stdx_log.h>
+#include "stdx_log.h"
 
 #ifdef X_IMPL_TEST
 #ifndef X_IMPL_TIME
@@ -70,7 +70,7 @@ extern "C" {
 #define X_IMPL_TIME
 #endif
 #endif
-#include <stdx_time.h>
+#include "stdx_time.h"
 
 #include <stdint.h>
 #include <math.h>
