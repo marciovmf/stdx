@@ -1,8 +1,6 @@
 
 # Markdown 2 HTML
 
-
-## Overview
    Markdown is deceptively simple until you try to parse it for real.
    Every edge case (nested lists, backticks, emphasis ambiguity, link titles)
    drags you toward a full grammar engine—something Markdown never had to begin with.
