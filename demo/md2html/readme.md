@@ -1,10 +1,6 @@
 
-![Markdown 2 html](rube-goldberg.png)
-
 # Markdown 2 HTML
 
-
-## Overview
    Markdown is deceptively simple until you try to parse it for real.
    Every edge case (nested lists, backticks, emphasis ambiguity, link titles)
    drags you toward a full grammar engine—something Markdown never had to begin with.
@@ -36,8 +32,8 @@
 
 ### Phase 1 — Fence and code extraction
 
- - Splits the document into TEXT and CODE chunks based on ``` or ~~~ fences.
- - These are emitted verbatim later as <pre><code> blocks and skipped during
+ - Splits the document into TEXT and CODE chunks based on \`\`\` or \~\~\~ fences.
+ - These are emitted verbatim later as \<pre\>\<code\> blocks and skipped during
  - inline/structural parsing, isolating code content from further rewriting.
 
 ### Phase 2 — TEXT block rendering
@@ -74,22 +70,7 @@ Anything inside backticks or fences is sacred. Everything else is fair game.
 In short, it transforms the most useful and visually consistent subset of Markdown
 into safe HTML without the usual chaos or regex nightmares.
 
-````
-  // We support code blocks
-  *((int*)(0)) = "Ka-boom!";
-
-```` 
-
-> We also support quotation blocks
-
-- We also support 
- - unordered
- - lists
-
-1. Ordered lists
-2. Are also supported, but a bit hacky at the moment...
-
 ## Final considerations
+I hate parsing Markdown.
 
-> **I hate parsing Markdown.**
-> **F*37c Markdown.**
+F#c%! Markdown.
