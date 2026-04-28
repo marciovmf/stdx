@@ -19,7 +19,7 @@
 #endif
 
 #define X_MATH_VERSION_MAJOR 1
-#define X_MATH_VERSION_MINOR 0
+#define X_MATH_VERSION_MINOR 1
 #define X_MATH_VERSION_PATCH 0
 
 #define X_MATH_VERSION                                                                   \
@@ -43,37 +43,48 @@ extern "C" {
 typedef struct {
   float x, y;
 } Vec2;
+
 typedef struct {
   float x, y, z;
 } Vec3;
+
 typedef struct {
   float x, y, z, w;
 } Vec4;
+
 typedef struct {
   float m[4];
 } Mat2;
+
 typedef struct {
   float m[9];
 } Mat3;
+
 typedef struct {
   float m[16];
 } Mat4;
+
 typedef struct {
   float x, y, z, w;
 } Quat;
+
 typedef struct {
   Quat real;
   Quat dual;
 } QuatDual;
 
+
+inline int32_t i32_max(int32_t a, int32_t b) { return (a > b) ? a : b; }
+inline int32_t i32_min(int32_t a, int32_t b) { return (a < b) ? a : b; }
+
+inline float float_max(float a, float b) { return (a > b) ? a : b; }
+inline float float_min(float a, float b) { return (a < b) ? a : b; }
+
 X_MATH_API bool float_eq(float a, float b); /* Compare floats using epsilon tolerance. */
 X_MATH_API bool float_is_zero(float a); /* Returns true if |a| <= STDXM_EPS. */
-X_MATH_API float float_clamp(
-    float x, float a, float b); /* brief Clamp x between [a,b]. */
-X_MATH_API float float_lerp(
-    float a, float b, float t); /* Linear interpolation between a and b. */
-X_MATH_API float float_smoothstep(float a, float b,
-    float t); /* Smooth Hermite interpolation between a and b (ease-in/out). */
+X_MATH_API float float_clamp(float x, float a, float b); /* brief Clamp x between [a,b]. */
+X_MATH_API float float_lerp(float a, float b, float t); /* Linear interpolation between a and b. */
+X_MATH_API float float_smoothstep(float a, float b, float t); /* Smooth Hermite interpolation between a and b (ease-in/out). */
 X_MATH_API float deg_to_rad(float d); /* Degrees → radians conversion. */
 X_MATH_API float rad_to_deg(float r); /* Radians → degrees conversion. */
 
