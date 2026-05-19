@@ -7,358 +7,319 @@
 #include <string.h>
 #include <stdint.h>
 
-static const char *g_tml_src =
-"level:\n"
-"  tutorial:\n"
-"    enabled: true\n"
-"    seed: 934784\n"
-"    description: \"\"\"\n"
-"    Multi line strings are\n"
-"    also supported!\n"
-"\"\"\"\n"
-"    objects:\n"
-"      - position: 1.0, 2.0, 0.0\n"
-"        scale: 1.0, 1.0, 1.0\n"
-"        weights: 10, 20, 40, 103,\n"
-"                 99, 71, 44, -1,\n"
-"                 18, 5, 7, 91\n"
-"      - position: 7.0, 0.0, 0.0\n"
-"        scale: 1.0, 1.0, 1.0\n"
-"        weights: 10, 20, 40, 103,\n"
-"                 18, 3, 0, -91\n"
-"  green_hills:\n"
-"    enabled: true\n"
-"    seed: 934784\n"
-"    description: \"\"\"\n"
-"    Multi line strings are\n"
-"    also supported!\n"
-"\"\"\"\n"
-"    objects:\n"
-"      - position: 1.0, 2.0, 0.0\n"
-"        scale: 1.0, 1.0, 1.0\n"
-"        weights: 10, 20, 40, 103,\n"
-"                 99, 71, 44, -1,\n"
-"                 18, 5, 7, 91\n"
-"      - position: 7.0, 0.0, 0.0\n"
-"        scale: 1.0, 1.0, 1.0\n"
-"        weights: 10, 20, 40, 103,\n"
-"                 18, 3, 0, -91\n";
-
-/* Open and root children */
-int test_tml_open_and_root_children(void)
+int test_parse_empty_document(void)
 {
-  XTml *doc = NULL;
-  int ok = x_tml_load(g_tml_src, (uint32_t)strlen(g_tml_src), 0, &doc);
-  ASSERT_TRUE(ok == 1);
+  TMLParseResult result;
 
-#if 0
-  x_tml_dump(doc, NULL);
-#endif
+  result = tml_parse("");
 
-  XTmlCursor root = x_tml_root(doc);
-  uint32_t root_children = 0;
-  ok = x_tml_child_count(doc, root, &root_children);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(root_children == 1);
+  ASSERT_TRUE(result.ok);
+  ASSERT_TRUE(result.document != NULL);
+  ASSERT_TRUE(result.document->node_count == 0);
+  ASSERT_TRUE(result.document->entry_count == 0);
 
-  XTmlCursor level;
-  ok = x_tml_get_section(doc, root, "level", &level);
-  ASSERT_TRUE(ok == 1);
+  tml_document_free(result.document);
 
-  uint32_t level_children = 0;
-  ok = x_tml_child_count(doc, level, &level_children);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(level_children == 2);
-
-  x_tml_unload(doc);
   return 0;
 }
 
-/* Get section by dot path */
-int test_tml_get_section_by_path(void)
+int test_parse_single_node(void)
 {
-  XTml *doc = NULL;
-  int ok = x_tml_load(g_tml_src, (uint32_t)strlen(g_tml_src), 0, &doc);
-  ASSERT_TRUE(ok == 1);
+  char const* source = "root:\n";
 
-  XTmlCursor root = x_tml_root(doc);
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+  ASSERT_TRUE(result.document->node_count == 1);
 
-  XTmlCursor tut;
-  ok = x_tml_get_section(doc, root, "level.tutorial", &tut);
-  ASSERT_TRUE(ok == 1);
+  TMLNode const* node = tml_root_node_at(result.document, 0);
 
-  XTmlCursor gh;
-  ok = x_tml_get_section(doc, root, "level.green_hills", &gh);
-  ASSERT_TRUE(ok == 1);
+  ASSERT_TRUE(node != NULL);
+  ASSERT_TRUE(node->name.size == 4);
+  ASSERT_TRUE(memcmp(node->name.data, "root", 4) == 0);
 
-  x_tml_unload(doc);
+  ASSERT_TRUE(node->child_count == 0);
+  ASSERT_TRUE(node->entry_count == 0);
+
+  tml_document_free(result.document);
+
   return 0;
 }
 
-/* Discovery iteration */
-int test_tml_discovery_iteration(void)
+int test_parse_node_with_entries(void)
 {
-  XTml *doc = NULL;
-  int ok = x_tml_load(g_tml_src, (uint32_t)strlen(g_tml_src), 0, &doc);
-  ASSERT_TRUE(ok == 1);
 
-  XTmlCursor root = x_tml_root(doc);
+  char const* source = 
+    "player:\n"
+    "  enabled: true\n"
+    "  health: 100\n";
 
-  XTmlCursor level;
-  ok = x_tml_get_section(doc, root, "level", &level);
-  ASSERT_TRUE(ok == 1);
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
 
-  uint32_t n_levels = 0;
-  ok = x_tml_child_count(doc, level, &n_levels);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(n_levels == 2);
+  TMLNode const* node = tml_root_node_at(result.document, 0);
+  ASSERT_TRUE(node != NULL);
+  ASSERT_TRUE(node->entry_count == 2);
 
-  XTmlCursor first_level;
-  ok = x_tml_child_at(doc, level, 0, &first_level);
-  ASSERT_TRUE(ok == 1);
+  TMLEntry const* enabled = tml_node_find_entry(result.document, node, "enabled");
+  ASSERT_TRUE(enabled != NULL);
+  ASSERT_TRUE(enabled->type == TML_VALUE_BOOL);
+  ASSERT_TRUE(enabled->boolean == 1);
 
-  XTmlCursor objs;
-  ok = x_tml_get_section(doc, first_level, "objects", &objs);
-  ASSERT_TRUE(ok == 1);
+  TMLEntry const* health = tml_node_find_entry(result.document, node, "health");
+  ASSERT_TRUE(health != NULL);
+  ASSERT_TRUE(health->type == TML_VALUE_I64);
+  ASSERT_TRUE(health->integer == 100);
 
-  uint32_t n_objs = 0;
-  ok = x_tml_child_count(doc, objs, &n_objs);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(n_objs == 2);
+  tml_document_free(result.document);
 
-  XTmlCursor obj0;
-  ok = x_tml_child_at(doc, objs, 0, &obj0);
-  ASSERT_TRUE(ok == 1);
-
-  XTmlCursor obj1;
-  ok = x_tml_child_at(doc, objs, 1, &obj1);
-  ASSERT_TRUE(ok == 1);
-
-  x_tml_unload(doc);
   return 0;
 }
 
-/* Scalar entries, arrays and value types */
-int test_tml_scalar_entries_and_types(void)
+int test_parse_nested_nodes(void)
 {
-  XTml *doc = NULL;
-  int ok = x_tml_load(g_tml_src, (uint32_t)strlen(g_tml_src), 0, &doc);
-  ASSERT_TRUE(ok == 1);
+  char const* source =
+    "entity:\n"
+    "  transform:\n"
+    "    enabled: true\n";
 
-  XTmlCursor root = x_tml_root(doc);
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+  ASSERT_TRUE(result.document->node_count == 2);
 
-  XTmlCursor tut;
-  ok = x_tml_get_section(doc, root, "level.tutorial", &tut);
-  ASSERT_TRUE(ok == 1);
+  TMLNode const* root = tml_root_node_at(result.document, 0);
+  ASSERT_TRUE(root != NULL);
+  ASSERT_TRUE(root->child_count == 1);
 
-  int enabled = 0;
-  ok = x_tml_get_bool(doc, tut, "enabled", &enabled);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(enabled == 1);
+  TMLNode const* transform = tml_node_child_at(result.document, root, 0);
+  ASSERT_TRUE(transform != NULL);
+  ASSERT_TRUE(transform->name.size == 9);
+  ASSERT_TRUE(memcmp(transform->name.data, "transform", 9) == 0);
+  ASSERT_TRUE(transform->entry_count == 1);
 
-  int64_t seed = 0;
-  ok = x_tml_get_i64(doc, tut, "seed", &seed);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(seed == 934784);
+  tml_document_free(result.document);
 
-  const char *desc = NULL;
-  uint32_t desc_len = 0;
-  ok = x_tml_get_str(doc, tut, "description", &desc, &desc_len);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(desc_len > 0);
-
-  /* Verifica que contém o início do texto multilinha */
-  int found = 0;
-
-  for (uint32_t i = 0; i + 22 <= desc_len; i++)
-  {
-    if (memcmp(desc + i, "Multi line strings are", 22) == 0)
-    {
-      found = 1;
-      break;
-    }
-  }
-  ASSERT_TRUE(found == 1);
-
-  XTmlCursor objs;
-  ok = x_tml_get_section(doc, tut, "objects", &objs);
-  ASSERT_TRUE(ok == 1);
-
-  XTmlCursor obj0;
-  ok = x_tml_child_at(doc, objs, 0, &obj0);
-  ASSERT_TRUE(ok == 1);
-
-  const double *pos = NULL;
-  uint32_t pos_n = 0;
-  ok = x_tml_get_array_f64(doc, obj0, "position", &pos, &pos_n);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(pos_n == 3);
-  ASSERT_TRUE(pos[0] == 1.0);
-  ASSERT_TRUE(pos[1] == 2.0);
-  ASSERT_TRUE(pos[2] == 0.0);
-
-  const double *scale = NULL;
-  uint32_t scale_n = 0;
-  ok = x_tml_get_array_f64(doc, obj0, "scale", &scale, &scale_n);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(scale_n == 3);
-
-  const int64_t *weights = NULL;
-  uint32_t w_n = 0;
-  ok = x_tml_get_array_i64(doc, obj0, "weights", &weights, &w_n);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(w_n == 12);
-  ASSERT_TRUE(weights[0] == 10);
-  ASSERT_TRUE(weights[3] == 103);
-  ASSERT_TRUE(weights[7] == -1);
-
-  x_tml_unload(doc);
   return 0;
 }
 
-int test_tml_arrays_numeric_single_and_multiline(void)
+int test_parse_anonymous_nodes(void)
 {
-  XTml *doc = NULL;
-  int ok = x_tml_load(g_tml_src, (uint32_t)strlen(g_tml_src), 0, &doc);
-  ASSERT_TRUE(ok == 1);
+  char const* source =
+    "scene:\n"
+    "  objects:\n"
+    "    - name: \"a\"\n"
+    "    - name: \"b\"\n";
 
-  XTmlCursor root = x_tml_root(doc);
+  TMLParseResult result= tml_parse(source);
+  ASSERT_TRUE(result.ok);
 
-  XTmlCursor gh;
-  ok = x_tml_get_section(doc, root, "level.green_hills", &gh);
-  ASSERT_TRUE(ok == 1);
+  TMLNode const* objects = tml_node_find_child(result.document,
+      tml_root_node_at(result.document, 0), "objects");
+  ASSERT_TRUE(objects != NULL);
+  ASSERT_TRUE(objects->child_count == 2);
 
-  XTmlCursor objs;
-  ok = x_tml_get_section(doc, gh, "objects", &objs);
-  ASSERT_TRUE(ok == 1);
+  TMLNode const* child0 = tml_node_child_at(result.document, objects, 0);
+  TMLNode const* child1 = tml_node_child_at(result.document, objects, 1);
+  ASSERT_TRUE(child0 != NULL);
+  ASSERT_TRUE(child1 != NULL);
 
-  XTmlCursor obj1;
-  ok = x_tml_child_at(doc, objs, 1, &obj1);
-  ASSERT_TRUE(ok == 1);
+  TMLEntry const* name0 = tml_node_find_entry(result.document, child0, "name");
+  ASSERT_TRUE(child0->name.size == 0);
+  ASSERT_TRUE(name0 != NULL);
+  ASSERT_TRUE(name0->type == TML_VALUE_STRING);
+  ASSERT_TRUE(strcmp(name0->string.data, "a") == 0);
 
-  const int64_t *weights = NULL;
-  uint32_t w_n = 0;
-  ok = x_tml_get_array_i64(doc, obj1, "weights", &weights, &w_n);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(w_n == 8);
-  ASSERT_TRUE(weights[0] == 10);
-  ASSERT_TRUE(weights[3] == 103);
-  ASSERT_TRUE(weights[7] == -91);
+  TMLEntry const* name1 = tml_node_find_entry(result.document, child1, "name");
+  ASSERT_TRUE(child1->name.size == 0);
+  ASSERT_TRUE(name1 != NULL);
+  ASSERT_TRUE(name1->type == TML_VALUE_STRING);
+  ASSERT_TRUE(strcmp(name1->string.data, "b") == 0);
 
-  x_tml_unload(doc);
+  tml_document_free(result.document);
   return 0;
 }
 
-/* Missing paths and bad lookups */
-int test_tml_missing_and_error_paths(void)
+int test_parse_i64_array(void)
 {
-  XTml *doc = NULL;
-  int ok = x_tml_load(g_tml_src, (uint32_t)strlen(g_tml_src), 0, &doc);
-  ASSERT_TRUE(ok == 1);
+  char const* source =
+    "data:\n"
+    "  values: 1, 2,\n 3, 4\n";
 
-  XTmlCursor root = x_tml_root(doc);
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
 
-  XTmlCursor missing;
-  ok = x_tml_get_section(doc, root, "level.not_here", &missing);
-  ASSERT_TRUE(ok == 0);
+  TMLNode const* node = tml_root_node_at(result.document, 0);
+  TMLEntry const* values = tml_node_find_entry(result.document, node, "values");
 
-  XTmlCursor tut;
-  ok = x_tml_get_section(doc, root, "level.tutorial", &tut);
-  ASSERT_TRUE(ok == 1);
+  ASSERT_TRUE(values != NULL);
+  ASSERT_TRUE(values->type == TML_VALUE_ARRAY_I64);
+  ASSERT_TRUE(values->array.count == 4);
 
-  int has = x_tml_has_key(doc, tut, "nope");
-  ASSERT_TRUE(has == 0);
+  ASSERT_TRUE(result.document->array_i64[values->array.first + 0] == 1);
+  ASSERT_TRUE(result.document->array_i64[values->array.first + 1] == 2);
+  ASSERT_TRUE(result.document->array_i64[values->array.first + 2] == 3);
+  ASSERT_TRUE(result.document->array_i64[values->array.first + 3] == 4);
 
-  int b = 0;
-  ok = x_tml_get_bool(doc, tut, "seed", &b);
-  ASSERT_TRUE(ok == 0);
+  tml_document_free(result.document);
 
-  x_tml_unload(doc);
   return 0;
 }
 
-/* Iteration over objects (list semantics) */
-int test_tml_iteration_over_objects(void)
+int test_parse_f64_array(void)
 {
-  XTml *doc = NULL;
-  int ok = x_tml_load(g_tml_src, (uint32_t)strlen(g_tml_src), 0, &doc);
-  ASSERT_TRUE(ok == 1);
+  char const*  source =
+    "data:\n"
+    "  values: 1.0, 2.5, 3.75\n";
 
-  XTmlCursor root = x_tml_root(doc);
+  TMLParseResult result = tml_parse(source);
 
-  XTmlCursor tut;
-  ok = x_tml_get_section(doc, root, "level.tutorial", &tut);
-  ASSERT_TRUE(ok == 1);
+  ASSERT_TRUE(result.ok);
 
-  XTmlCursor objs;
-  ok = x_tml_get_section(doc, tut, "objects", &objs);
-  ASSERT_TRUE(ok == 1);
+  TMLNode const* node = tml_root_node_at(result.document, 0);
+  TMLEntry const* values = tml_node_find_entry(result.document, node, "values");
+  ASSERT_TRUE(values != NULL);
+  ASSERT_TRUE(values->type == TML_VALUE_ARRAY_F64);
+  ASSERT_TRUE(values->array.count == 3);
 
-  uint32_t n = 0;
-  ok = x_tml_child_count(doc, objs, &n);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(n == 2);
+  ASSERT_TRUE(result.document->array_f64[values->array.first + 0] == 1.0);
+  ASSERT_TRUE(result.document->array_f64[values->array.first + 1] == 2.5);
+  ASSERT_TRUE(result.document->array_f64[values->array.first + 2] == 3.75);
 
-  XTmlCursor c0;
-  ok = x_tml_child_at(doc, objs, 0, &c0);
-  ASSERT_TRUE(ok == 1);
+  tml_document_free(result.document);
 
-  XTmlCursor c1;
-  ok = x_tml_child_at(doc, objs, 1, &c1);
-  ASSERT_TRUE(ok == 1);
-
-  x_tml_unload(doc);
   return 0;
 }
 
-/* BTML round-trip: encode, load, navigate */
-int test_btml_roundtrip_and_nav(void)
+int test_parse_multiline_string(void)
 {
-  XTml *doc = NULL;
-  int ok = x_tml_load(g_tml_src, (uint32_t)strlen(g_tml_src), 0, &doc);
-  ASSERT_TRUE(ok == 1);
+  char const* source =
+    "meta:\n"
+    "  text: \"hello\n"
+    "world\"\n";
 
-  const char *tmp_path = "tmp_scene.btml";
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
 
-  ok = x_btml_encode_to_file(doc, tmp_path);
-  ASSERT_TRUE(ok == 1);
+  TMLNode const* node = tml_root_node_at(result.document, 0);
+  TMLEntry const* text = tml_node_find_entry(result.document, node, "text");
+  ASSERT_TRUE(text != NULL);
+  ASSERT_TRUE(text->type == TML_VALUE_STRING);
+  ASSERT_TRUE(strcmp(text->string.data, "hello\nworld") == 0);
 
-  XBtml bin;
-  memset(&bin, 0, sizeof(bin));
+  tml_document_free(result.document);
 
-  ok = x_btml_load_from_file(tmp_path, &bin);
-  ASSERT_TRUE(ok == 1);
+  return 0;
+}
 
-  int node_level = -1;
-  ok = x_btml_get_section_by_dotpath(&bin, -1, "level", &node_level);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(node_level >= 0);
+int test_parse_string_escape_sequences(void)
+{
+  char const* source =
+    "meta:\n"
+    "  text: \"hello\\nworld\\t!\\\"\"\n";
 
-  uint32_t n_lv = 0;
-  ok = x_btml_child_count(&bin, node_level, &n_lv);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(n_lv == 2);
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
 
-  int node_tut = -1;
-  ok = x_btml_get_section_by_dotpath(&bin, node_level, "tutorial", &node_tut);
-  ASSERT_TRUE(ok == 1);
+  TMLNode const* node = tml_root_node_at(result.document, 0);
+  TMLEntry const* text = tml_node_find_entry(result.document, node, "text");
+  ASSERT_TRUE(text != NULL);
+  ASSERT_TRUE(strcmp(text->string.data, "hello\nworld\t!\"") == 0);
 
-  int node_objs = -1;
-  ok = x_btml_get_section_by_dotpath(&bin, node_tut, "objects", &node_objs);
-  ASSERT_TRUE(ok == 1);
+  tml_document_free(result.document);
 
-  uint32_t n_objs = 0;
-  ok = x_btml_child_count(&bin, node_objs, &n_objs);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(n_objs == 2);
+  return 0;
+}
 
-  int node_obj1 = -1;
-  ok = x_btml_child_at(&bin, node_objs, 1, &node_obj1);
-  ASSERT_TRUE(ok == 1);
-  ASSERT_TRUE(node_obj1 >= 0);
+int test_parse_hex_integer(void)
+{
+  char const* source =
+    "meta:\n"
+    "  magic: 0xCAFEBABE\n";
 
-  x_btml_unload(&bin);
-  x_tml_unload(doc);
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  TMLNode const* node = tml_root_node_at(result.document, 0);
+  TMLEntry const* magic = tml_node_find_entry(result.document, node, "magic");
+  ASSERT_TRUE(magic != NULL);
+  ASSERT_TRUE(magic->type == TML_VALUE_I64);
+  ASSERT_TRUE(magic->integer == 0xCAFEBABE);
+
+  tml_document_free(result.document);
+
+  return 0;
+}
+
+int test_reject_duplicate_names(void)
+{
+  char const* source =
+    "root:\n"
+    "  value: 1\n"
+    "  value: 2\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(!result.ok);
+
+  return 0;
+}
+
+int test_reject_tabs_for_indent(void)
+{
+  char const* source =
+    "root:\n"
+    "\tvalue: 1\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(!result.ok);
+
+  return 0;
+}
+
+int test_reject_mixed_array_types(void)
+{
+  char const* source =
+    "root:\n"
+    "  values: 1, 2.0, 3\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(!result.ok);
+
+  return 0;
+}
+
+int test_reject_top_level_entry(void)
+{
+  char const* source = "value: 10\n";
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(!result.ok);
+
+  return 0;
+}
+
+int test_child_indices_are_stable(void)
+{
+  char const* source =
+    "root:\n"
+    "  foo:\n"
+    "  bar:\n"
+    "  - enabled: true\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  TMLNode const* root = tml_root_node_at(result.document, 0);
+  ASSERT_TRUE(root->child_count == 3);
+  TMLNode const* child0 = tml_node_child_at(result.document, root, 0);
+  TMLNode const* child1 = tml_node_child_at(result.document, root, 1);
+  TMLNode const* child2 = tml_node_child_at(result.document, root, 2);
+  ASSERT_TRUE(child0 != NULL);
+  ASSERT_TRUE(child1 != NULL);
+  ASSERT_TRUE(child2 != NULL);
+  ASSERT_TRUE(strcmp(child0->name.data, "foo") == 0);
+  ASSERT_TRUE(strcmp(child1->name.data, "bar") == 0);
+  ASSERT_TRUE(child2->name.size == 0);
+
+  tml_document_free(result.document);
+
   return 0;
 }
 
@@ -366,18 +327,23 @@ int main()
 {
   STDXTestCase tests[] =
   {
-    X_TEST(test_tml_get_section_by_path),
-    X_TEST(test_tml_open_and_root_children),
-    X_TEST(test_tml_get_section_by_path),
-    X_TEST(test_tml_discovery_iteration),
-    X_TEST(test_tml_scalar_entries_and_types),
-    X_TEST(test_tml_arrays_numeric_single_and_multiline),
-    X_TEST(test_tml_missing_and_error_paths),
-    X_TEST(test_tml_iteration_over_objects),
-    X_TEST(test_btml_roundtrip_and_nav)
-
+    X_TEST(test_parse_empty_document),
+    X_TEST(test_parse_single_node),
+    X_TEST(test_parse_node_with_entries),
+    X_TEST(test_parse_nested_nodes),
+    X_TEST(test_parse_anonymous_nodes),
+    X_TEST(test_parse_i64_array),
+    X_TEST(test_parse_f64_array),
+    X_TEST(test_parse_multiline_string),
+    X_TEST(test_parse_string_escape_sequences),
+    X_TEST(test_parse_hex_integer),
+    X_TEST(test_reject_duplicate_names),
+    X_TEST(test_reject_tabs_for_indent),
+    X_TEST(test_reject_mixed_array_types),
+    X_TEST(test_reject_top_level_entry),
+    X_TEST(test_child_indices_are_stable),
   };
 
-  return stdx_run_tests(tests, sizeof(tests)/sizeof(tests[0]));
+  return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]), NULL);
 }
 

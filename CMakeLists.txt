@@ -109,6 +109,7 @@ create_test(TARGET test_time SOURCES tests/test_time.c)
 create_test(TARGET test_ini SOURCES tests/test_ini.c)
 create_test(TARGET test_math SOURCES tests/test_math.c)
 create_test(TARGET test_hpool SOURCES tests/test_hpool.c)
+create_test(TARGET test_tml SOURCES tests/test_tml.c)
 build_and_run_tests()
 
 #---------------------------------------------------------------------------
