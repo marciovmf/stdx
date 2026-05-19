@@ -145,6 +145,7 @@
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
 <li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
 
         </ul>
       </details>
@@ -525,42 +526,6 @@ export/import macros, assertions and more.</p>
   
   
 </article>
-<article id="X_STATIC_ASSERT" class="symbol">
-  <div class="meta">
-    <span class="symbol-kind">Macro</span>
-  </div>
-  <h2><span class="symbol-name">X_STATIC_ASSERT</span></h2>
-  <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STATIC_ASSERT</span><span class="tok_pun">(</span><span class="tok_id">cond</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">)</span> <span class="tok_kw">typedef</span> <span class="tok_kw">char</span> <span class="tok_id">static_assert_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">msg</span><span class="tok_pun">[</span><span class="tok_pun">(</span><span class="tok_id">cond</span><span class="tok_pun">)</span><span class="tok_pun">?</span><span class="tok_num">1</span><span class="tok_pun">:</span><span class="tok_pun">-</span><span class="tok_num">1</span><span class="tok_pun">]</span></code></pre>
-  
-  
-</article>
-<article id="X_ASSERT" class="symbol">
-  <div class="meta">
-    <span class="symbol-kind">Macro</span>
-  </div>
-  <h2><span class="symbol-name">X_ASSERT</span></h2>
-  <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ASSERT</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span> <span class="tok_pun">\</span>
-<span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
-<span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_pun">!</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
-<span class="tok_id">fprintf</span><span class="tok_pun">(</span><span class="tok_id">stderr</span><span class="tok_pun">,</span> <span class="tok_str">&quot;Assertion failed: %s, file %s, line %d\n&quot;</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expr</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
-<span class="tok_id">abort</span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
-<span class="tok_pun">}</span><span class="tok_pun">\</span>
-<span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
-  
-  
-</article>
-<article id="X_ASSERT" class="symbol">
-  <div class="meta">
-    <span class="symbol-kind">Macro</span>
-  </div>
-  <h2><span class="symbol-name">X_ASSERT</span></h2>
-  <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ASSERT</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
-  
-  
-</article>
 <article id="X_BIG_ENDIAN" class="symbol">
   <div class="meta">
     <span class="symbol-kind">Macro</span>
@@ -915,6 +880,42 @@ export/import macros, assertions and more.</p>
   <h2><span class="symbol-name">X_ARRAY_COUNT</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_COUNT</span><span class="tok_pun">(</span><span class="tok_id">a</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_id">a</span><span class="tok_pun">)</span><span class="tok_pun">/</span><span class="tok_kw">sizeof</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">a</span><span class="tok_pun">)</span><span class="tok_pun">[</span><span class="tok_num">0</span><span class="tok_pun">]</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_STATIC_ASSERT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_STATIC_ASSERT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STATIC_ASSERT</span><span class="tok_pun">(</span><span class="tok_id">cond</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">)</span> <span class="tok_kw">typedef</span> <span class="tok_kw">char</span> <span class="tok_id">static_assert_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">msg</span><span class="tok_pun">[</span><span class="tok_pun">(</span><span class="tok_id">cond</span><span class="tok_pun">)</span><span class="tok_pun">?</span><span class="tok_num">1</span><span class="tok_pun">:</span><span class="tok_pun">-</span><span class="tok_num">1</span><span class="tok_pun">]</span></code></pre>
+  
+  
+</article>
+<article id="X_ASSERT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ASSERT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ASSERT</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span> <span class="tok_pun">\</span>
+<span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
+<span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_pun">!</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
+<span class="tok_id">fprintf</span><span class="tok_pun">(</span><span class="tok_id">stderr</span><span class="tok_pun">,</span> <span class="tok_str">&quot;Assertion failed: %s, file %s, line %d\n&quot;</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expr</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
+<span class="tok_id">abort</span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
+<span class="tok_pun">}</span><span class="tok_pun">\</span>
+<span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_ASSERT" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_ASSERT</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ASSERT</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">void</span><span class="tok_pun">)</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
   
   
 </article>

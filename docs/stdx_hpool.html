@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_hpool.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_hpool.h">stdx_hpool.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#x_handle_is_null">x_handle_is_null</a></li>
+<li><a href="#x_handle_null">x_handle_null</a></li>
+<li><a href="#x_hpool_add_page">x_hpool_add_page</a></li>
+<li><a href="#x_hpool_alive_add">x_hpool_alive_add</a></li>
+<li><a href="#x_hpool_alive_count">x_hpool_alive_count</a></li>
+<li><a href="#x_hpool_alive_remove">x_hpool_alive_remove</a></li>
+<li><a href="#x_hpool_alive_reserve">x_hpool_alive_reserve</a></li>
+<li><a href="#x_hpool_alloc">x_hpool_alloc</a></li>
+<li><a href="#x_hpool_capacity">x_hpool_capacity</a></li>
+<li><a href="#x_hpool_clear">x_hpool_clear</a></li>
+<li><a href="#x_hpool_ensure_page_for_index">x_hpool_ensure_page_for_index</a></li>
+<li><a href="#x_hpool_ensure_pages_array">x_hpool_ensure_pages_array</a></li>
+<li><a href="#x_hpool_free">x_hpool_free</a></li>
+<li><a href="#x_hpool_get">x_hpool_get</a></li>
+<li><a href="#x_hpool_get_fast">x_hpool_get_fast</a></li>
+<li><a href="#x_hpool_get_unchecked">x_hpool_get_unchecked</a></li>
+<li><a href="#x_hpool_init">x_hpool_init</a></li>
+<li><a href="#x_hpool_is_alive">x_hpool_is_alive</a></li>
+<li><a href="#x_hpool_item_by_index">x_hpool_item_by_index</a></li>
+<li><a href="#x_hpool_iter_begin">x_hpool_iter_begin</a></li>
+<li><a href="#x_hpool_iter_next">x_hpool_iter_next</a></li>
+<li><a href="#x_hpool_page_base">x_hpool_page_base</a></li>
+<li><a href="#x_hpool_page_capacity">x_hpool_page_capacity</a></li>
+<li><a href="#x_hpool_page_index">x_hpool_page_index</a></li>
+<li><a href="#x_hpool_slot_hdr">x_hpool_slot_hdr</a></li>
+<li><a href="#x_hpool_slot_index">x_hpool_slot_index</a></li>
+<li><a href="#x_hpool_slot_item">x_hpool_slot_item</a></li>
+<li><a href="#x_hpool_slot_stride">x_hpool_slot_stride</a></li>
+<li><a href="#x_hpool_term">x_hpool_term</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#X_HPOOL_ALLOC">X_HPOOL_ALLOC</a></li>
+<li><a href="#X_HPOOL_FOREACH">X_HPOOL_FOREACH</a></li>
+<li><a href="#X_HPOOL_FREE">X_HPOOL_FREE</a></li>
+<li><a href="#X_HPOOL_NULL_INDEX">X_HPOOL_NULL_INDEX</a></li>
+<li><a href="#X_HPOOL_REALLOC">X_HPOOL_REALLOC</a></li>
+<li><a href="#X_HPOOL_VERSION">X_HPOOL_VERSION</a></li>
+<li><a href="#X_HPOOL_VERSION_MAJOR">X_HPOOL_VERSION_MAJOR</a></li>
+<li><a href="#X_HPOOL_VERSION_MINOR">X_HPOOL_VERSION_MINOR</a></li>
+<li><a href="#X_HPOOL_VERSION_PATCH">X_HPOOL_VERSION_PATCH</a></li>
+<li><a href="#X_POOL_SLOT_ALIVE">X_POOL_SLOT_ALIVE</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#XHPool">XHPool</a></li>
+<li><a href="#XHPoolConfig">XHPoolConfig</a></li>
+<li><a href="#XHPoolIter">XHPoolIter</a></li>
+<li><a href="#XHPoolSlotHeader">XHPoolSlotHeader</a></li>
+<li><a href="#XHandle">XHandle</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          <li><a href="#XHPoolCtorFn">XHPoolCtorFn</a></li>
+<li><a href="#XHPoolDtorFn">XHPoolDtorFn</a></li>
+
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_hpool.h">
+      <header class="page-header">
+        <h1>stdx_hpool.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Handle Pool
+Part of the STDX General Purpose C Library by marciovmf
+License: MIT
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">Overview</h2>
+<p> A paged object pool with versioned handles and fast iteration.</p>
+<p> This module provides a stable storage container where objects are
+ referenced through lightweight handles instead of raw pointers.
+ It is designed for systems that create and destroy objects frequently
+ while still needing
+  - O(1) allocation and free
+  - safe handle validation
+  - stable storage (objects are never moved)
+  - fast iteration over live objects</p>
+<p> Implementation details:
+  - <b>Paged storage</b></p>
+<pre><code>Objects are stored in pages. New pages are allocated as needed,
+and existing objects never move in memory.
+</code></pre>
+<p>  - <b>Versioned handles</b></p>
+<pre><code>A handle is `{ index, version }`. When a slot is freed the version
+is incremented, automatically invalidating any stale handles that
+still reference the old object.
+</code></pre>
+<p>  - <b>Free list</b></p>
+<pre><code>Freed slots are recycled through a linked free list, allowing
+constant-time allocation without scanning.
+</code></pre>
+<p>  - <b>Alive list</b></p>
+<pre><code>Live objects are tracked in a dense array so iteration does not
+need to scan empty slots.
+</code></pre>
+<p> Key properties:</p>
+<p>  - Handle = <code>{ index, version }</code>
+  - Storage grows by pages (no moving existing items)
+  - Free is per-item (free list) + version bump to kill stale handles
+  - Iteration is dense over <code>alive[]</code> (no hole scanning)</p>
+<h2 id="basic-usage">Basic Usage</h2>
+<p> 1) Define the pool</p>
+<pre><code>XHPool pool;
+</code></pre>
+<p> 2) Initialize it</p>
+<pre><code>XHPoolConfig cfg = {0};
+cfg.page_capacity = 1024;   // slots per page (must be power of two)
+cfg.initial_pages = 1;
+</code></pre>
+<pre><code>x_hpool_init(&amp;pool, sizeof(MyType), cfg, NULL, NULL, NULL);
+</code></pre>
+<p> 3) Allocate an object</p>
+<pre><code>XHandle h = x_hpool_alloc(&amp;pool);
+</code></pre>
+<pre><code>MyType* obj = (MyType*)x_hpool_get(&amp;pool, h);
+</code></pre>
+<p> 4) Use the object normally through the returned pointer.</p>
+<p> 5) Free the object</p>
+<pre><code>x_hpool_free(&amp;pool, h);
+</code></pre>
+<h2 id="iterating-over-live-objects">Iterating Over Live Objects</h2>
+<p> Iteration skips empty slots and visits only live items.</p>
+<pre><code>XHPoolIter it;
+XHandle h;
+MyType* obj;
+</code></pre>
+<pre><code>for (obj = x_hpool_iter_begin(&amp;pool, &amp;it, &amp;h);
+obj;
+obj = x_hpool_iter_next(&amp;pool, &amp;it, &amp;h))
+{
+// use obj
+}
+</code></pre>
+<p> Or use the convenience macro:</p>
+<pre><code>X_HPOOL_FOREACH(&amp;pool, MyType, it, h, obj)
+{
+// use obj
+}
+</code></pre>
+<h2 id="optional-constructors-destructors">Optional Constructors / Destructors</h2>
+<p> A constructor and destructor may be supplied when the pool is
+ initialized. These functions are automatically invoked when items
+ are allocated or freed.</p>
+<pre><code>void ctor(void* user, void* item);
+void dtor(void* user, void* item);
+</code></pre>
+<pre><code>x_hpool_init(&amp;pool, sizeof(MyType), cfg, ctor, dtor, user_ptr);
+</code></pre>
+<h2 id="how-to-compile">How to compile</h2>
+<p> To compile the implementation define <code>X_IMPL_HPOOL</code>
+ in <b>one</b> source file before including this header.</p>
+<pre><code>#define X_IMPL_HPOOL
+#include "stdx_hpool.h"
+</code></pre>
+<h2 id="custom-memory-allocation">Custom memory allocation</h2>
+<p> To override how this module allocates memory define the following
+ macros before including this header:</p>
+<pre><code>X_HPOOL_ALLOC(sz)
+X_HPOOL_REALLOC(ptr, sz)
+X_HPOOL_FREE(ptr)
+</code></pre>
+</div>
+      </header>
+
+      <article id="X_HPOOL_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HPOOL_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HPOOL_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_HPOOL_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HPOOL_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HPOOL_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_HPOOL_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HPOOL_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HPOOL_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_HPOOL_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HPOOL_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HPOOL_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hpool.html#X_HPOOL_VERSION_MAJOR">X_HPOOL_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_hpool.html#X_HPOOL_VERSION_MINOR">X_HPOOL_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_hpool.html#X_HPOOL_VERSION_PATCH">X_HPOOL_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_HPOOL_NULL_INDEX" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HPOOL_NULL_INDEX</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HPOOL_NULL_INDEX</span> <span class="tok_num">0xFFFFFFFFu</span></code></pre>
+  
+  
+</article>
+<article id="XHandle" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XHandle</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XHandle</span><span class="tok_pun">{</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">version</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XHandle</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHPoolCtorFn" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">XHPoolCtorFn</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">void</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">XHPoolCtorFn</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">user</span><span class="tok_pun">,</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">item</span><span class="tok_pun">)</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHPoolDtorFn" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">XHPoolDtorFn</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">void</span><span class="tok_pun">(</span><span class="tok_pun">*</span><span class="tok_id">XHPoolDtorFn</span><span class="tok_pun">)</span><span class="tok_pun">(</span><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">user</span><span class="tok_pun">,</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">item</span><span class="tok_pun">)</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHPoolConfig" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XHPoolConfig</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XHPoolConfig</span><span class="tok_pun">{</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">page_capacity</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">initial_pages</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XHPoolConfig</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHPoolIter" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XHPoolIter</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XHPoolIter</span><span class="tok_pun">{</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">alive_pos</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XHPoolIter</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="XHPool" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XHPool</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XHPool</span><span class="tok_pun">{</span>
+  <span class="tok_kw">size_t</span> <span class="tok_id">item_size</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">page_capacity</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">page_shift</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">page_mask</span><span class="tok_pun">;</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">*</span><span class="tok_id">pages</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">page_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">page_cap</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">free_head</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">next_index</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">alive</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">alive_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">alive_cap</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_hpool.html#XHPoolCtorFn">XHPoolCtorFn</a></span> <span class="tok_id">ctor</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_hpool.html#XHPoolDtorFn">XHPoolDtorFn</a></span> <span class="tok_id">dtor</span><span class="tok_pun">;</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">user</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XHPool</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="x_handle_null" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_handle_null</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw"><a href="stdx_hpool.html#XHandle">XHandle</a></span> <span class="tok_id">x_handle_null</span>(<span class="tok_kw">void</span>);</code></pre>
+  
+  
+</article>
+<article id="x_handle_is_null" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_handle_is_null</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_handle_is_null</span>(<span class="tok_kw"><a href="stdx_hpool.html#XHandle">XHandle</a></span> <span class="tok_id">h</span>);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_init" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_init</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_hpool_init</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">item_size</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPoolConfig">XHPoolConfig</a></span> <span class="tok_id">cfg</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPoolCtorFn">XHPoolCtorFn</a></span> <span class="tok_id">ctor</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPoolDtorFn">XHPoolDtorFn</a></span> <span class="tok_id">dtor</span>,
+ <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">user</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_term" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_term</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_hpool_term</span>(<span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_page_capacity" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_page_capacity</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_hpool_page_capacity</span>(<span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_capacity" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_capacity</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_hpool_capacity</span>(<span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_alive_count" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_alive_count</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_hpool_alive_count</span>(<span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_is_alive" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_is_alive</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_hpool_is_alive</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHandle">XHandle</a></span> <span class="tok_id">h</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_get" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_get</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_hpool_get</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHandle">XHandle</a></span> <span class="tok_id">h</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_get_fast" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_get_fast</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_hpool_get_fast</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHandle">XHandle</a></span> <span class="tok_id">h</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_get_unchecked" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_get_unchecked</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_hpool_get_unchecked</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_alloc" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_alloc</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw"><a href="stdx_hpool.html#XHandle">XHandle</a></span> <span class="tok_id">x_hpool_alloc</span>(<span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_free" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_free</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_hpool_free</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHandle">XHandle</a></span> <span class="tok_id">h</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_clear" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_clear</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_hpool_clear</span>(<span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_iter_begin" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_iter_begin</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_hpool_iter_begin</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPoolIter">XHPoolIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHandle">XHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">out_h</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_iter_next" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_iter_next</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_hpool_iter_next</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPoolIter">XHPoolIter</a></span> <span class="tok_pun">*</span><span class="tok_id">it</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHandle">XHandle</a></span> <span class="tok_pun">*</span><span class="tok_id">out_h</span>
+);</code></pre>
+  
+  
+</article>
+<article id="X_HPOOL_FOREACH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HPOOL_FOREACH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HPOOL_FOREACH</span><span class="tok_pun">(</span><span class="tok_id">pHPool</span><span class="tok_pun">,</span> <span class="tok_id">Type</span><span class="tok_pun">,</span> <span class="tok_id">itVar</span><span class="tok_pun">,</span> <span class="tok_id">hVar</span><span class="tok_pun">,</span> <span class="tok_id">ptrVar</span><span class="tok_pun">)</span> <span class="tok_pun">\</span>
+<span class="tok_kw">for</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_hpool.html#XHPoolIter">XHPoolIter</a></span> <span class="tok_id">itVar</span><span class="tok_pun">=</span><span class="tok_pun">{</span><span class="tok_num">0</span><span class="tok_pun">}</span><span class="tok_pun">,</span><span class="tok_pun">*</span><span class="tok_id">x__hpool_once_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">itVar</span><span class="tok_pun">=</span><span class="tok_pun">&amp;</span><span class="tok_pun">(</span><span class="tok_id">itVar</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_id">x__hpool_once_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">itVar</span><span class="tok_pun">!=</span><span class="tok_id">NULL</span><span class="tok_pun">;</span><span class="tok_id">x__hpool_once_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">itVar</span><span class="tok_pun">=</span><span class="tok_id">NULL</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
+<span class="tok_kw">for</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">ptrVar</span><span class="tok_pun">)</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_id">Type</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_kw"><a href="stdx_hpool.html#x_hpool_iter_begin">x_hpool_iter_begin</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">pHPool</span><span class="tok_pun">)</span><span class="tok_pun">,</span><span class="tok_pun">&amp;</span><span class="tok_pun">(</span><span class="tok_id">itVar</span><span class="tok_pun">)</span><span class="tok_pun">,</span><span class="tok_pun">&amp;</span><span class="tok_pun">(</span><span class="tok_id">hVar</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">(</span><span class="tok_id">ptrVar</span><span class="tok_pun">)</span><span class="tok_pun">!=</span><span class="tok_id">NULL</span><span class="tok_pun">;</span><span class="tok_pun">(</span><span class="tok_id">ptrVar</span><span class="tok_pun">)</span><span class="tok_pun">=</span><span class="tok_pun">(</span><span class="tok_id">Type</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_kw"><a href="stdx_hpool.html#x_hpool_iter_next">x_hpool_iter_next</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">pHPool</span><span class="tok_pun">)</span><span class="tok_pun">,</span><span class="tok_pun">&amp;</span><span class="tok_pun">(</span><span class="tok_id">itVar</span><span class="tok_pun">)</span><span class="tok_pun">,</span><span class="tok_pun">&amp;</span><span class="tok_pun">(</span><span class="tok_id">hVar</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="X_HPOOL_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HPOOL_ALLOC</span></h2>
+  <p class="brief">Internal macro for allocating memory.
+To override how this header allocates memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HPOOL_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">malloc</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to alloc.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_HPOOL_REALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HPOOL_REALLOC</span></h2>
+  <p class="brief">Internal macro for resizing memory.
+To override how this header resizes memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HPOOL_REALLOC</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">,</span> <span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">realloc</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to resize.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_HPOOL_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_HPOOL_FREE</span></h2>
+  <p class="brief">Internal macro for freeing memory.
+To override how this header frees memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_HPOOL_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>p</code></dt>
+<dd>The address of memory region to free.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="XHPoolSlotHeader" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">XHPoolSlotHeader</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">XHPoolSlotHeader</span><span class="tok_pun">{</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">version</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">next_free</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">alive_pos</span><span class="tok_pun">;</span>
+  <span class="tok_kw">uint32_t</span> <span class="tok_id">flags</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">XHPoolSlotHeader</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="X_POOL_SLOT_ALIVE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_POOL_SLOT_ALIVE</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_POOL_SLOT_ALIVE</span> <span class="tok_num">1u</span></code></pre>
+  
+  
+</article>
+<article id="x_hpool_page_index" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_page_index</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_hpool_page_index</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_slot_index" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_slot_index</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_hpool_slot_index</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_slot_stride" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_slot_stride</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_hpool_slot_stride</span>(<span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_page_base" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_page_base</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">uint8_t</span> <span class="tok_pun">*</span> <span class="tok_id">x_hpool_page_base</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">page_index</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_slot_hdr" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_slot_hdr</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw"><a href="stdx_hpool.html#XHPoolSlotHeader">XHPoolSlotHeader</a></span> <span class="tok_pun">*</span> <span class="tok_id">x_hpool_slot_hdr</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_slot_item" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_slot_item</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_hpool_slot_item</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPoolSlotHeader">XHPoolSlotHeader</a></span> <span class="tok_pun">*</span><span class="tok_id">hdr</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_item_by_index" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_item_by_index</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span> <span class="tok_id">x_hpool_item_by_index</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_ensure_pages_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_ensure_pages_array</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_hpool_ensure_pages_array</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">want</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_add_page" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_add_page</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_hpool_add_page</span>(<span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_ensure_page_for_index" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_ensure_page_for_index</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_hpool_ensure_page_for_index</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_alive_reserve" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_alive_reserve</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">int</span> <span class="tok_id">x_hpool_alive_reserve</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">want</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_alive_add" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_alive_add</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_hpool_alive_add</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span>
+);</code></pre>
+  
+  
+</article>
+<article id="x_hpool_alive_remove" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_hpool_alive_remove</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_HPOOL_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_hpool_alive_remove</span>(
+ <span class="tok_kw"><a href="stdx_hpool.html#XHPool">XHPool</a></span> <span class="tok_pun">*</span><span class="tok_id">p</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">index</span>
+);</code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

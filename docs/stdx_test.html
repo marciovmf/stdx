@@ -20,7 +20,8 @@
       <details open>
         <summary>Functions</summary>
         <ul>
-          <li><a href="#x_tests_run">x_tests_run</a></li>
+          <li><a href="#x_test_logger">x_test_logger</a></li>
+<li><a href="#x_tests_run">x_tests_run</a></li>
 
         </ul>
       </details>
@@ -90,6 +91,7 @@
 <li><a href="stdx_thread.html">stdx_thread.h</a></li>
 <li><a href="stdx_time.html">stdx_time.h</a></li>
 <li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
 
         </ul>
       </details>
@@ -192,7 +194,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">XLOG_GREEN</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">XLOG_GREEN</span><span class="tok_pun">(</span><span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_log.html#x_log_raw">x_log_raw</a></span><span class="tok_pun">(</span><span class="tok_id">stdout</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_GREEN</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_id">__VA_ARGS__</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">XLOG_GREEN</span><span class="tok_pun">(</span><span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_log.html#x_log_raw">x_log_raw</a></span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_test.html#x_test_logger">x_test_logger</a></span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_id">stdout</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_GREEN</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span></code></pre>
   
   
 </article>
@@ -202,7 +204,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">XLOG_WHITE</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">XLOG_WHITE</span><span class="tok_pun">(</span><span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_log.html#x_log_raw">x_log_raw</a></span><span class="tok_pun">(</span><span class="tok_id">stdout</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_WHITE</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_id">__VA_ARGS__</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">XLOG_WHITE</span><span class="tok_pun">(</span><span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_log.html#x_log_raw">x_log_raw</a></span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_test.html#x_test_logger">x_test_logger</a></span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_id">stdout</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_WHITE</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span></code></pre>
   
   
 </article>
@@ -212,7 +214,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">XLOG_RED</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">XLOG_RED</span><span class="tok_pun">(</span><span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_log.html#x_log_raw">x_log_raw</a></span><span class="tok_pun">(</span><span class="tok_id">stderr</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_RED</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_id">__VA_ARGS__</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">XLOG_RED</span><span class="tok_pun">(</span><span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">.</span><span class="tok_pun">)</span> <span class="tok_kw"><a href="stdx_log.html#x_log_raw">x_log_raw</a></span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_test.html#x_test_logger">x_test_logger</a></span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_id">stderr</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_LEVEL_INFO</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_RED</span><span class="tok_pun">,</span> <span class="tok_id">XLOG_COLOR_BLACK</span><span class="tok_pun">,</span> <span class="tok_num">0</span><span class="tok_pun">,</span> <span class="tok_id">msg</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">__VA_ARGS__</span><span class="tok_pun">)</span></code></pre>
   
   
 </article>
@@ -224,7 +226,7 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">Assert that an expression evaluates to true; logs an error and returns 1 from the test on failure.</p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">ASSERT_TRUE</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span> <span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_pun">!</span><span class="tok_pun">(</span><span class="tok_id">expr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
-<span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_str">&quot;\t%s:%d: Assertion failed: %s\n&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_pun">#</span><span class="tok_id">expr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
+<span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_test.html#x_test_logger">x_test_logger</a></span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_str">&quot;\t%s:%d: Assertion failed: %s\n&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_pun">#</span><span class="tok_id">expr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_num">1</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
@@ -273,7 +275,7 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">Assert that two values are equal; logs an error and returns 1 from the test on failure.</p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">ASSERT_EQ</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_id">expected</span><span class="tok_pun">)</span> <span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">)</span><span class="tok_pun">!=</span><span class="tok_pun">(</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
-<span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_str">&quot;\t%s:%d: Assertion failed: %s == %s&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
+<span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_test.html#x_test_logger">x_test_logger</a></span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_str">&quot;\t%s:%d: Assertion failed: %s == %s&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_num">1</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
@@ -320,7 +322,7 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">Assert that two floating-point values are approximately equal within X_TEST_FLOAT_EPSILON.</p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">ASSERT_FLOAT_EQ</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_id">expected</span><span class="tok_pun">)</span> <span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_id">fabs</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">)</span><span class="tok_pun">-</span><span class="tok_pun">(</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">&gt;</span><span class="tok_kw"><a href="stdx_test.html#X_TEST_FLOAT_EPSILON">X_TEST_FLOAT_EPSILON</a></span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
-<span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_str">&quot;\t%s:%d: Assertion failed: %s == %s&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
+<span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_test.html#x_test_logger">x_test_logger</a></span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_str">&quot;\t%s:%d: Assertion failed: %s == %s&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_num">1</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
@@ -349,7 +351,7 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief">Assert that two values are not equal; logs an error and returns 1 from the test on failure.</p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">ASSERT_NEQ</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_id">expected</span><span class="tok_pun">)</span> <span class="tok_kw">do</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_kw">if</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">actual</span><span class="tok_pun">)</span><span class="tok_pun">==</span><span class="tok_pun">(</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">{</span><span class="tok_pun">\</span>
-<span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_str">&quot;\t%s:%d: Assertion failed: %s != %s&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
+<span class="tok_kw"><a href="stdx_log.html#x_log_error">x_log_error</a></span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_test.html#x_test_logger">x_test_logger</a></span><span class="tok_pun">(</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_str">&quot;\t%s:%d: Assertion failed: %s != %s&quot;</span><span class="tok_pun">,</span> <span class="tok_kw">__FILE__</span><span class="tok_pun">,</span> <span class="tok_kw">__LINE__</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">actual</span><span class="tok_pun">,</span> <span class="tok_pun">#</span><span class="tok_id">expected</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_num">1</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_kw">while</span><span class="tok_pun">(</span><span class="tok_num">0</span><span class="tok_pun">)</span></code></pre>
@@ -411,6 +413,16 @@ in <b>one</b> source file before including this header.</p>
   
   
 </article>
+<article id="x_test_logger" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_test_logger</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_id">XLogger</span> <span class="tok_pun">*</span> <span class="tok_id">x_test_logger</span>(<span class="tok_kw">void</span>);</code></pre>
+  
+  
+</article>
 <article id="x_tests_run" class="symbol">
   <div class="meta">
     <span class="symbol-kind">Function</span>
@@ -419,7 +431,8 @@ in <b>one</b> source file before including this header.</p>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">int</span> <span class="tok_id">x_tests_run</span>(
  <span class="tok_kw"><a href="stdx_test.html#STDXTestCase">STDXTestCase</a></span> <span class="tok_pun">*</span><span class="tok_id">tests</span>,
- <span class="tok_kw">int32_t</span> <span class="tok_id">num_tests</span>
+ <span class="tok_kw">int32_t</span> <span class="tok_id">num_tests</span>,
+ <span class="tok_id">XLogger</span> <span class="tok_pun">*</span><span class="tok_id">logger</span>
 );</code></pre>
   
   

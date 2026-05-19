@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stdx/stdx_tml.h Reference</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Index</h1>
+
+      <div class="file-name">
+        <a href="index.html">home</a>
+        <span>/</span>
+        <a href="#stdx_tml.h">stdx_tml.h</a>
+      </div>
+
+      <details open>
+        <summary>Functions</summary>
+        <ul>
+          <li><a href="#tml_document_free">tml_document_free</a></li>
+<li><a href="#tml_entry_at">tml_entry_at</a></li>
+<li><a href="#tml_entry_get_bool">tml_entry_get_bool</a></li>
+<li><a href="#tml_entry_get_f64">tml_entry_get_f64</a></li>
+<li><a href="#tml_entry_get_f64_array">tml_entry_get_f64_array</a></li>
+<li><a href="#tml_entry_get_i64">tml_entry_get_i64</a></li>
+<li><a href="#tml_entry_get_i64_array">tml_entry_get_i64_array</a></li>
+<li><a href="#tml_entry_get_string">tml_entry_get_string</a></li>
+<li><a href="#tml_entry_get_string_array">tml_entry_get_string_array</a></li>
+<li><a href="#tml_node_at">tml_node_at</a></li>
+<li><a href="#tml_node_child_at">tml_node_child_at</a></li>
+<li><a href="#tml_node_entry_at">tml_node_entry_at</a></li>
+<li><a href="#tml_node_find_child">tml_node_find_child</a></li>
+<li><a href="#tml_node_find_entry">tml_node_find_entry</a></li>
+<li><a href="#tml_node_get_bool">tml_node_get_bool</a></li>
+<li><a href="#tml_node_get_f64">tml_node_get_f64</a></li>
+<li><a href="#tml_node_get_f64_array">tml_node_get_f64_array</a></li>
+<li><a href="#tml_node_get_i64">tml_node_get_i64</a></li>
+<li><a href="#tml_node_get_i64_array">tml_node_get_i64_array</a></li>
+<li><a href="#tml_node_get_string">tml_node_get_string</a></li>
+<li><a href="#tml_node_get_string_array">tml_node_get_string_array</a></li>
+<li><a href="#tml_parse">tml_parse</a></li>
+<li><a href="#tml_path_find_entry">tml_path_find_entry</a></li>
+<li><a href="#tml_path_find_node">tml_path_find_node</a></li>
+<li><a href="#tml_path_get_bool">tml_path_get_bool</a></li>
+<li><a href="#tml_path_get_f64">tml_path_get_f64</a></li>
+<li><a href="#tml_path_get_f64_array">tml_path_get_f64_array</a></li>
+<li><a href="#tml_path_get_i64">tml_path_get_i64</a></li>
+<li><a href="#tml_path_get_i64_array">tml_path_get_i64_array</a></li>
+<li><a href="#tml_path_get_string">tml_path_get_string</a></li>
+<li><a href="#tml_path_get_string_array">tml_path_get_string_array</a></li>
+<li><a href="#tml_root_node_at">tml_root_node_at</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Macros</summary>
+        <ul>
+          <li><a href="#TML_INVALID_INDEX">TML_INVALID_INDEX</a></li>
+<li><a href="#X_TML_ALLOC">X_TML_ALLOC</a></li>
+<li><a href="#X_TML_FREE">X_TML_FREE</a></li>
+<li><a href="#X_TML_VERSION">X_TML_VERSION</a></li>
+<li><a href="#X_TML_VERSION_MAJOR">X_TML_VERSION_MAJOR</a></li>
+<li><a href="#X_TML_VERSION_MINOR">X_TML_VERSION_MINOR</a></li>
+<li><a href="#X_TML_VERSION_PATCH">X_TML_VERSION_PATCH</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Structs</summary>
+        <ul>
+          <li><a href="#TMLArray">TMLArray</a></li>
+<li><a href="#TMLDocument">TMLDocument</a></li>
+<li><a href="#TMLEntry">TMLEntry</a></li>
+<li><a href="#TMLF64Slice">TMLF64Slice</a></li>
+<li><a href="#TMLI64Slice">TMLI64Slice</a></li>
+<li><a href="#TMLNode">TMLNode</a></li>
+<li><a href="#TMLParseResult">TMLParseResult</a></li>
+<li><a href="#TMLParser">TMLParser</a></li>
+<li><a href="#TMLScalar">TMLScalar</a></li>
+<li><a href="#TMLScope">TMLScope</a></li>
+<li><a href="#TMLStats">TMLStats</a></li>
+<li><a href="#TMLString">TMLString</a></li>
+<li><a href="#TMLStringSlice">TMLStringSlice</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Enums</summary>
+        <ul>
+          <li><a href="#TMLParseMode">TMLParseMode</a></li>
+<li><a href="#TMLScalarKind">TMLScalarKind</a></li>
+<li><a href="#TMLValueType">TMLValueType</a></li>
+
+        </ul>
+      </details>
+
+      <details open>
+        <summary>Typedefs</summary>
+        <ul>
+          <li><a href="#f64">f64</a></li>
+
+        </ul>
+      </details>
+
+      <details>
+        <summary>Modules</summary>
+        <ul>
+          <li><a href="stdx_arena.html">stdx_arena.h</a></li>
+<li><a href="stdx_array.html">stdx_array.h</a></li>
+<li><a href="stdx_common.html">stdx_common.h</a></li>
+<li><a href="stdx_cpuid.html">stdx_cpuid.h</a></li>
+<li><a href="stdx_filesystem.html">stdx_filesystem.h</a></li>
+<li><a href="stdx_hashtable.html">stdx_hashtable.h</a></li>
+<li><a href="stdx_ini.html">stdx_ini.h</a></li>
+<li><a href="stdx_io.html">stdx_io.h</a></li>
+<li><a href="stdx_log.html">stdx_log.h</a></li>
+<li><a href="stdx_network.html">stdx_network.h</a></li>
+<li><a href="stdx_strbuilder.html">stdx_strbuilder.h</a></li>
+<li><a href="stdx_string.html">stdx_string.h</a></li>
+<li><a href="stdx_test.html">stdx_test.h</a></li>
+<li><a href="stdx_thread.html">stdx_thread.h</a></li>
+<li><a href="stdx_time.html">stdx_time.h</a></li>
+<li><a href="stdx_hpool.html">stdx_hpool.h</a></li>
+<li><a href="stdx_tml.html">stdx_tml.h</a></li>
+
+        </ul>
+      </details>
+    </nav>
+
+    <main class="content" id="stdx_tml.h">
+      <header class="page-header">
+        <h1>stdx_tml.h</h1>
+        <a class="home-link" href="index.html">home</a>
+        <div class="subtitle"><p>STDX - Lightweight String Utilities<br/>
+Part of the STDX General Purpose C Library by marciovmf<br/>
+License: MIT<br/>
+<a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
+<h2 id="overview">OVERVIEW</h2>
+<p>TML (Tree Markup Language) is a minimal indentation-based hierarchical
+data format designed for:</p>
+<ul><li>Human readability</li><li>Deterministic parsing</li><li>Compact immutable runtime representation</li><li>Single-allocation arena-style loading</li><li>Fast traversal without dynamic allocations</li></ul><p>TML borrows some readability ideas from YAML while intentionally avoiding
+many of its parsing ambiguities and complexity.</p>
+<p>The parser operates in two passes:</p>
+<ol><li> Validation + memory counting</li><li> Final parse into a single contiguous allocation</li></ol><p>The final document is intended primarily for reading/traversal.</p>
+<h2 id="how-to-compile">How to compile</h2>
+<p>To compile the implementation define X<em>IMPL</em>TML
+in <b>one</b> source file before including this header.</p>
+<p>To customize how this module allocates memory, define
+<code>X_ARRAY_ALLOC</code> / <code>X_ARRAY_REALLOC</code> / <code>X_ARRAY_FREE</code>
+before including this header.</p>
+<h2 id="implementation-details">Implementation details</h2>
+<ul><li>Nodes are stored sequentially in document order.</li><li>Entries (key:value pairs) are stored sequentially.</li><li>Strings are stored in a contiguous string buffer.</li><li>Arrays are stored in contiguous typed buffers.</li><li>The loaded document is immutable after parsing.</li></ul><p>Direct children are linked using:</p>
+<p>  first<em>child + next</em>sibling</p>
+<p>because child nodes are not necessarily contiguous in memory due to
+depth-first document ordering.</p>
+<h2 id="syntax">Syntax</h2>
+<h3 id="comments">COMMENTS</h3>
+<p>Comments start with '#':
+  # this is a comment</p>
+<p>Comments are ignored until the end of the line.</p>
+<h3 id="indentation">Indentation</h3>
+<p>Indentation defines hierarchy.
+The first indented line defines the indentation unit. Valid values are 2 or 4
+spaces.</p>
+<p>Tabs are invalid for indentation.</p>
+<h3 id="nodes">Nodes</h3>
+<p>Nodes are declared using:</p>
+<pre><code>  identifier:
+</code></pre>
+<p>Example:</p>
+<pre><code>  player:
+  transform:
+</code></pre>
+<p>Valid identifiers follow standard C variable naming rules:</p>
+<pre><code>  valid_name:
+  _another_name:
+
+</code></pre>
+<p>Invalid:</p>
+<pre><code>  0_invalid: # identifier can't start with number
+
+</code></pre>
+<p>Nodes are hierarchical containers.
+Nodes are NOT values.</p>
+<h3 id="entries-key-value-pairs">Entries (KEY/VALUE pairs)</h3>
+<p>Entries use:</p>
+<pre><code>  key: value
+</code></pre>
+<p>Example:</p>
+<pre><code>  enabled: true
+  health: 100
+  speed: 3.5
+</code></pre>
+<p>Entries are never anonymous.</p>
+<h3 id="anonymous-nodes">Anonymous Nodes</h3>
+<p>Anonymous child nodes are declared with '-':</p>
+<pre><code>  objects:
+    - name: "tree"
+      enabled: true
+</code></pre>
+<p>Anonymous nodes still have stable child indices inside their parent scope.
+The first key:value pair must appear on the same line as '-'.</p>
+<h3 id="strings">Strings</h3>
+<p>Strings use double quotes: <code>name: "Player"</code>
+Strings support escape sequences: n r t " \</p>
+<p>Example:</p>
+<pre><code>  text: "Hello\nWorld"
+</code></pre>
+<p>Strings may span multiple lines.
+A string only ends at the matching closing quote.</p>
+<p>Example:</p>
+<pre><code>  text: "This is a
+multiline string."
+</code></pre>
+<p>Indentation inside multiline strings is preserved exactly.
+Comments inside strings are treated as literal text.
+Internally strings are stored as views (ptr + size) but are also
+NUL-terminated for easy interoperability with C APIs.</p>
+<h3 id="arrays">Arrays</h3>
+<p>Arrays are homogeneous lists of values declared using
+comma-separated values:</p>
+<pre><code>  values: 1, 2, 3
+</code></pre>
+<p>The type of the array is determined by the type of the first element.
+Supported array types are i64, f64 and  string</p>
+<p>Valid:</p>
+<pre><code>  values: 1, 2, 3
+  points: 1.0, 2.0, 3.0
+  names: "a", "b", "c"
+</code></pre>
+<p>Invalid:</p>
+<pre><code>  values: 1, 2.0, 3 # arrays do not support mixed types!
+</code></pre>
+<p>Array elements may span multiple lines.
+If a line ends with ',' the next line is considered part of the same array.
+Indentation is ignored while continuing multiline arrays.
+Example:</p>
+<pre><code>  vertices:
+    1.0, 2.0, 3.0,
+    4.0, 5.0, 6.0,
+    7.0, 8.0, 9.0
+</code></pre>
+<h3 id="dot-paths">Dot-paths</h3>
+<p>Every node or entry can be uniquely addressed using a dot path.
+Example: <code>scene.objects.1.position</code></p>
+<p>Path segments may refer to: named child nodes,
+ child node indices or entry names</p>
+<p>Child indices are stable and include BOTH named and anonymous nodes.</p>
+<p>Example:</p>
+<pre><code>  root:
+    foo:
+    bar:
+    - enabled: true
+</code></pre>
+<p>Child indices:</p>
+<p>  foo -> 0
+  bar -> 1
+  anonymous node -> 2</p>
+<h2 id="basic-usage">Basic Usage</h2>
+<p>Parsing a document:</p>
+<pre><code>  TMLParseResult result;
+
+  result = tml_parse(source);
+
+  if (!result.ok)
+  {
+    printf("Parse error at %u:%u : %s\n",
+      result.line,
+      result.column,
+      result.error);
+  }
+
+</code></pre>
+<p>Accessing nodes:</p>
+<pre><code>  TMLNode const* root;
+  root = tml_root_node_at(result.document, 0);
+</code></pre>
+<p>Accessing entries:</p>
+<pre><code>  i64 health;
+
+  if (tml_node_get_i64(result.document, root, "health", &amp;health))
+  {
+    printf("%lld\n", (long long)health);
+  }
+
+Accessing paths:
+
+  f64 speed;
+
+  if (tml_path_get_f64(
+    result.document,
+    "player.movement.speed",
+    &amp;speed))
+  {
+    ...
+  }
+</code></pre>
+<p>Accessing arrays:</p>
+<pre><code>  TMLF64Slice vertices;
+
+  if (tml_path_get_f64_array(
+    result.document,
+    "mesh.vertices",
+    &amp;vertices))
+  {
+    for (u32 i = 0; i &lt; vertices.count; ++i)
+    {
+      printf("%f\n", vertices.data[i]);
+    }
+  }
+</code></pre>
+<p>Releasing memory:</p>
+<pre><code>  tml_document_free(result.document);
+</code></pre>
+</div>
+      </header>
+
+      <article id="X_TML_VERSION_MAJOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TML_VERSION_MAJOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  
+  
+</article>
+<article id="X_TML_VERSION_MINOR" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TML_VERSION_MINOR</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_TML_VERSION_PATCH" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TML_VERSION_PATCH</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  
+  
+</article>
+<article id="X_TML_VERSION" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TML_VERSION</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_VERSION</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_tml.html#X_TML_VERSION_MAJOR">X_TML_VERSION_MAJOR</a></span> <span class="tok_pun">*</span><span class="tok_num">10000</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_tml.html#X_TML_VERSION_MINOR">X_TML_VERSION_MINOR</a></span> <span class="tok_pun">*</span><span class="tok_num">100</span><span class="tok_pun">+</span><span class="tok_kw"><a href="stdx_tml.html#X_TML_VERSION_PATCH">X_TML_VERSION_PATCH</a></span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="f64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Typedef</span>
+  </div>
+  <h2><span class="symbol-name">f64</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">double</span> <span class="tok_id">f64</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLString" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLString</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLString</span><span class="tok_pun">{</span>
+  <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">size</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLString</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLValueType" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">TMLValueType</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span> <span class="tok_id">TMLValueType</span><span class="tok_pun">{</span>
+  <span class="tok_id">TML_VALUE_BOOL</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_VALUE_I64</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_VALUE_F64</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_VALUE_STRING</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_VALUE_ARRAY_I64</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_VALUE_ARRAY_F64</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_VALUE_ARRAY_STRING</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLValueType</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLArray" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLArray</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLArray</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">first</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">count</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLArray</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLI64Slice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLI64Slice</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLI64Slice</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">count</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLI64Slice</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLF64Slice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLF64Slice</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLF64Slice</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">count</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLF64Slice</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLStringSlice" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLStringSlice</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLStringSlice</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">data</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">count</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLStringSlice</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLEntry" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLEntry</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLEntry</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_id">name</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLValueType">TMLValueType</a></span> <span class="tok_id">type</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">parent</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">next_entry</span><span class="tok_pun">;</span>
+  <span class="tok_kw">union</span><span class="tok_pun">{</span><span class="tok_kw"><a href="stdx_common.html#u8">u8</a></span> <span class="tok_id">boolean</span><span class="tok_pun">;</span><span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_id">integer</span><span class="tok_pun">;</span><span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_id">number</span><span class="tok_pun">;</span><span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_id">string</span><span class="tok_pun">;</span><span class="tok_kw"><a href="stdx_tml.html#TMLArray">TMLArray</a></span> <span class="tok_id">array</span><span class="tok_pun">;</span><span class="tok_pun">}</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLEntry</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLNode" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLNode</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLNode</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_id">name</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">parent</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">next_sibling</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">first_child</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">last_child</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">child_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">first_entry</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">last_entry</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">entry_count</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLNode</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLDocument" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLDocument</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLDocument</span><span class="tok_pun">{</span>
+  <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">memory</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u64">u64</a></span> <span class="tok_id">memory_size</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_pun">*</span><span class="tok_id">nodes</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_pun">*</span><span class="tok_id">entries</span><span class="tok_pun">;</span>
+  <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">string_data</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_pun">*</span><span class="tok_id">array_i64</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_pun">*</span><span class="tok_id">array_f64</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_pun">*</span><span class="tok_id">array_string</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">node_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">entry_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">string_size</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">array_i64_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">array_f64_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">array_string_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">first_root_node</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">last_root_node</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">root_node_count</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLDocument</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLParseResult" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLParseResult</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLParseResult</span><span class="tok_pun">{</span>
+  <span class="tok_kw">int</span> <span class="tok_id">ok</span><span class="tok_pun">;</span>
+  <span class="tok_kw">char</span> <span class="tok_id">error</span><span class="tok_pun">[</span><span class="tok_num">256</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">line</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">column</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_pun">*</span><span class="tok_id">document</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLParseResult</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="tml_document_free" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_document_free</span></h2>
+  <p class="brief">Release all memory associated with a parsed TML document.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">void</span> <span class="tok_id">tml_document_free</span>(<span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_pun">*</span><span class="tok_id">doc</span>);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the document returned by tml_parse().
+
+The document and all associated internal memory become invalid after this call.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="tml_parse" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_parse</span></h2>
+  <p class="brief">Parse a TML document from a UTF-8 source string.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLParseResult">TMLParseResult</a></span> <span class="tok_id">tml_parse</span>(<span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">source</span>);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">source</span></code></dt>
+<dd>Null-terminated source text.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Parse result structure.
+
+On success:
+- result.ok is non-zero
+- result.document contains the parsed immutable document
+
+On failure:
+- result.ok is 0
+- result.error contains a human-readable error message
+- result.line and result.column identify the error location
+
+The returned document must be released with:
+
+  tml_document_free()</p>
+</section>
+
+</article>
+<article id="tml_node_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_at</span></h2>
+  <p class="brief">Retrieve a node by global node index.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span> <span class="tok_id">tml_node_at</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span></code></dt>
+<dd>Zero-based global node index.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the node, or NULL if the index is invalid.
+
+Nodes are stored sequentially in document order.</p>
+</section>
+
+</article>
+<article id="tml_entry_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_entry_at</span></h2>
+  <p class="brief">Retrieve an entry by global entry index.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span> <span class="tok_id">tml_entry_at</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span></code></dt>
+<dd>Zero-based global entry index.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the entry, or NULL if the index is invalid.
+
+Entries are stored sequentially in document order.</p>
+</section>
+
+</article>
+<article id="tml_root_node_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_root_node_at</span></h2>
+  <p class="brief">Retrieve a root node by index.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span> <span class="tok_id">tml_root_node_at</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span></code></dt>
+<dd>Zero-based root node index.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the root node, or NULL if the index is invalid.</p>
+</section>
+
+</article>
+<article id="tml_node_child_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_child_at</span></h2>
+  <p class="brief">Retrieve a direct child node by index.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span> <span class="tok_id">tml_node_child_at</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span></code></dt>
+<dd>Zero-based child node index.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the child node, or NULL if the index is invalid.
+
+Child indices are stable and include both named and anonymous nodes.</p>
+</section>
+
+</article>
+<article id="tml_node_entry_at" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_entry_at</span></h2>
+  <p class="brief">Retrieve a direct entry from a node by index.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span> <span class="tok_id">tml_node_entry_at</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">index</span></code></dt>
+<dd>Zero-based entry index.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the entry, or NULL if the index is invalid.</p>
+</section>
+
+</article>
+<article id="tml_node_find_child" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_find_child</span></h2>
+  <p class="brief">Find a direct child node by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span> <span class="tok_id">tml_node_find_child</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Child node name.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the matching child node, or NULL if no child matches.</p>
+</section>
+
+</article>
+<article id="tml_node_find_entry" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_find_entry</span></h2>
+  <p class="brief">Find a direct entry by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span> <span class="tok_id">tml_node_find_entry</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Entry name.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the matching entry, or NULL if no entry matches.</p>
+</section>
+
+</article>
+<article id="tml_entry_get_bool" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_entry_get_bool</span></h2>
+  <p class="brief">Retrieve a boolean value from an entry.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_entry_get_bool</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span>,
+ <span class="tok_kw"><a href="stdx_common.html#u8">u8</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
+<dd>Pointer to the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#u8">u8</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output boolean value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry is NULL or not a boolean.</p>
+</section>
+
+</article>
+<article id="tml_entry_get_i64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_entry_get_i64</span></h2>
+  <p class="brief">Retrieve a signed 64-bit integer value from an entry.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_entry_get_i64</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span>,
+ <span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
+<dd>Pointer to the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output integer value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry is NULL or not an integer.</p>
+</section>
+
+</article>
+<article id="tml_entry_get_f64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_entry_get_f64</span></h2>
+  <p class="brief">Retrieve a double-precision floating point value from an entry.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_entry_get_f64</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
+<dd>Pointer to the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output floating point value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry is NULL or not a float.</p>
+</section>
+
+</article>
+<article id="tml_entry_get_string" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_entry_get_string</span></h2>
+  <p class="brief">Retrieve a string value from an entry.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_entry_get_string</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
+<dd>Pointer to the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output string view.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry is NULL or not a string.</p>
+</section>
+
+</article>
+<article id="tml_entry_get_i64_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_entry_get_i64_array</span></h2>
+  <p class="brief">Retrieve an i64 array slice from an entry.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_entry_get_i64_array</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLI64Slice">TMLI64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
+<dd>Pointer to the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLI64Slice">TMLI64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output array slice.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry is NULL or not an i64 array.</p>
+</section>
+
+</article>
+<article id="tml_entry_get_f64_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_entry_get_f64_array</span></h2>
+  <p class="brief">Retrieve an f64 array slice from an entry.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_entry_get_f64_array</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLF64Slice">TMLF64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
+<dd>Pointer to the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLF64Slice">TMLF64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output array slice.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry is NULL or not an f64 array.</p>
+</section>
+
+</article>
+<article id="tml_entry_get_string_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_entry_get_string_array</span></h2>
+  <p class="brief">Retrieve a string array slice from an entry.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_entry_get_string_array</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLStringSlice">TMLStringSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">entry</span></code></dt>
+<dd>Pointer to the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLStringSlice">TMLStringSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output array slice.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry is NULL or not a string array.</p>
+</section>
+
+</article>
+<article id="tml_node_get_bool" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_get_bool</span></h2>
+  <p class="brief">Retrieve a boolean entry value from a node by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_node_get_bool</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span>,
+ <span class="tok_kw"><a href="stdx_common.html#u8">u8</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Name of the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#u8">u8</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output boolean value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry does not exist or is not a boolean.</p>
+</section>
+
+</article>
+<article id="tml_node_get_i64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_get_i64</span></h2>
+  <p class="brief">Retrieve a signed 64-bit integer entry value from a node by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_node_get_i64</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span>,
+ <span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Name of the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output integer value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry does not exist or is not an integer.</p>
+</section>
+
+</article>
+<article id="tml_node_get_f64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_get_f64</span></h2>
+  <p class="brief">Retrieve a double-precision floating point entry value from a node by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_node_get_f64</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Name of the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output floating point value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry does not exist or is not a float.</p>
+</section>
+
+</article>
+<article id="tml_node_get_string" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_get_string</span></h2>
+  <p class="brief">Retrieve a string entry value from a node by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_node_get_string</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Name of the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output string view.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry does not exist or is not a string.</p>
+</section>
+
+</article>
+<article id="tml_node_get_i64_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_get_i64_array</span></h2>
+  <p class="brief">Retrieve an i64 array entry from a node by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_node_get_i64_array</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLI64Slice">TMLI64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Name of the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLI64Slice">TMLI64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output array slice.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry does not exist or is not an i64 array.</p>
+</section>
+
+</article>
+<article id="tml_node_get_f64_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_get_f64_array</span></h2>
+  <p class="brief">Retrieve an f64 array entry from a node by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_node_get_f64_array</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLF64Slice">TMLF64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Name of the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLF64Slice">TMLF64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output array slice.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry does not exist or is not an f64 array.</p>
+</section>
+
+</article>
+<article id="tml_node_get_string_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_node_get_string_array</span></h2>
+  <p class="brief">Retrieve a string array entry from a node by name.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_node_get_string_array</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLStringSlice">TMLStringSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">node</span></code></dt>
+<dd>Pointer to the parent node.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Name of the entry.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLStringSlice">TMLStringSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output array slice.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the entry does not exist or is not a string array.</p>
+</section>
+
+</article>
+<article id="tml_path_find_node" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_path_find_node</span></h2>
+  <p class="brief">Find a node using a dot path.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLNode">TMLNode</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span> <span class="tok_id">tml_path_find_node</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Dot-separated node path.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the matching node, or NULL if the path does not resolve.
+
+Path segments may refer to:
+- named child nodes
+- child node indices
+
+Example:
+
+  scene.objects.1</p>
+</section>
+
+</article>
+<article id="tml_path_find_entry" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_path_find_entry</span></h2>
+  <p class="brief">Find an entry using a dot path.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw"><a href="stdx_tml.html#TMLEntry">TMLEntry</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span> <span class="tok_id">tml_path_find_entry</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Dot-separated entry path.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Pointer to the matching entry, or NULL if the path does not resolve.
+
+The final path segment must refer to an entry name.
+
+Example:
+
+  scene.objects.1.position</p>
+</section>
+
+</article>
+<article id="tml_path_get_bool" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_path_get_bool</span></h2>
+  <p class="brief">Retrieve a boolean value using a dot path.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_path_get_bool</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_common.html#u8">u8</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Dot-separated entry path.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#u8">u8</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output boolean value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the path does not resolve or the value is not a boolean.</p>
+</section>
+
+</article>
+<article id="tml_path_get_i64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_path_get_i64</span></h2>
+  <p class="brief">Retrieve a signed 64-bit integer value using a dot path.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_path_get_i64</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Dot-separated entry path.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output integer value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the path does not resolve or the value is not an integer.</p>
+</section>
+
+</article>
+<article id="tml_path_get_f64" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_path_get_f64</span></h2>
+  <p class="brief">Retrieve a double-precision floating point value using a dot path.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_path_get_f64</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Dot-separated entry path.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output floating point value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the path does not resolve or the value is not a float.</p>
+</section>
+
+</article>
+<article id="tml_path_get_string" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_path_get_string</span></h2>
+  <p class="brief">Retrieve a string value using a dot path.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_path_get_string</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Dot-separated entry path.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output string view.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the path does not resolve or the value is not a string.</p>
+</section>
+
+</article>
+<article id="tml_path_get_i64_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_path_get_i64_array</span></h2>
+  <p class="brief">Retrieve an i64 array using a dot path.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_path_get_i64_array</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLI64Slice">TMLI64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Dot-separated entry path.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLI64Slice">TMLI64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output array slice.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the path does not resolve or the value is not an i64 array.</p>
+</section>
+
+</article>
+<article id="tml_path_get_f64_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_path_get_f64_array</span></h2>
+  <p class="brief">Retrieve an f64 array using a dot path.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_path_get_f64_array</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLF64Slice">TMLF64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Dot-separated entry path.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLF64Slice">TMLF64Slice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output array slice.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the path does not resolve or the value is not an f64 array.</p>
+</section>
+
+</article>
+<article id="tml_path_get_string_array" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">tml_path_get_string_array</span></h2>
+  <p class="brief">Retrieve a string array using a dot path.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_TML_API</span> <span class="tok_kw">int</span> <span class="tok_id">tml_path_get_string_array</span>(
+ <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span>,
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_tml.html#TMLStringSlice">TMLStringSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
+<dd>Pointer to the parsed document.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Dot-separated entry path.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLStringSlice">TMLStringSlice</a></span> <span class="tok_pun">*</span><span class="tok_id">out_value</span></code></dt>
+<dd>Output array slice.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Non-zero on success, 0 if the path does not resolve or the value is not a string array.</p>
+</section>
+
+</article>
+<article id="X_TML_ALLOC" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TML_ALLOC</span></h2>
+  <p class="brief">Internal macro for allocating memory.
+To override how this header allocates memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_ALLOC</span><span class="tok_pun">(</span><span class="tok_id">sz</span><span class="tok_pun">)</span> <span class="tok_id">calloc</span><span class="tok_pun">(</span><span class="tok_num">1</span><span class="tok_pun">,</span> <span class="tok_id">sz</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>sz</code></dt>
+<dd>The size of memory to alloc.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="X_TML_FREE" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">X_TML_FREE</span></h2>
+  <p class="brief">Internal macro for freeing memory.
+To override how this header frees memory, define this macro with a
+different implementation before including this header.</p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_FREE</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span> <span class="tok_id">free</span><span class="tok_pun">(</span><span class="tok_id">p</span><span class="tok_pun">)</span></code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code>p</code></dt>
+<dd>The address of memory region to free.</dd>
+
+  </dl>
+</section>
+
+  
+</article>
+<article id="TML_INVALID_INDEX" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">TML_INVALID_INDEX</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">TML_INVALID_INDEX</span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw">uint32_t</span><span class="tok_pun">)</span><span class="tok_num">0xFFFFFFFFu</span><span class="tok_pun">)</span></code></pre>
+  
+  
+</article>
+<article id="TMLStats" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLStats</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLStats</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">node_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">entry_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">string_size</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">array_i64_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">array_f64_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">array_string_count</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLStats</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLParseMode" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">TMLParseMode</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span> <span class="tok_id">TMLParseMode</span><span class="tok_pun">{</span>
+  <span class="tok_id">TML_PARSE_COUNT</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_PARSE_WRITE</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLParseMode</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLScope" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLScope</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLScope</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">node</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">indent</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLScope</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLParser" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLParser</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLParser</span><span class="tok_pun">{</span>
+  <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">source</span><span class="tok_pun">;</span>
+  <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">cursor</span><span class="tok_pun">;</span>
+  <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">line_start</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">line</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">indent_unit</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLParseMode">TMLParseMode</a></span> <span class="tok_id">mode</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLStats">TMLStats</a></span> <span class="tok_id">stats</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_pun">*</span><span class="tok_id">doc</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">node_cursor</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">entry_cursor</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">string_cursor</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">array_i64_cursor</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">array_f64_cursor</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">array_string_cursor</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLScope">TMLScope</a></span> <span class="tok_id">scopes</span><span class="tok_pun">[</span><span class="tok_num">256</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">scope_count</span><span class="tok_pun">;</span>
+  <span class="tok_kw">char</span> <span class="tok_id">error</span><span class="tok_pun">[</span><span class="tok_num">256</span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">error_line</span><span class="tok_pun">;</span>
+  <span class="tok_kw"><a href="stdx_common.html#u32">u32</a></span> <span class="tok_id">error_column</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLParser</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLScalarKind" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Enum</span>
+  </div>
+  <h2><span class="symbol-name">TMLScalarKind</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span> <span class="tok_id">TMLScalarKind</span><span class="tok_pun">{</span>
+  <span class="tok_id">TML_SCALAR_BOOL</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_SCALAR_I64</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_SCALAR_F64</span><span class="tok_pun">,</span>
+  <span class="tok_id">TML_SCALAR_STRING</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLScalarKind</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+<article id="TMLScalar" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Struct</span>
+  </div>
+  <h2><span class="symbol-name">TMLScalar</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">struct</span> <span class="tok_id">TMLScalar</span><span class="tok_pun">{</span>
+  <span class="tok_kw"><a href="stdx_tml.html#TMLScalarKind">TMLScalarKind</a></span> <span class="tok_id">kind</span><span class="tok_pun">;</span>
+  <span class="tok_kw">union</span><span class="tok_pun">{</span><span class="tok_kw"><a href="stdx_common.html#u8">u8</a></span> <span class="tok_id">boolean</span><span class="tok_pun">;</span><span class="tok_kw"><a href="stdx_common.html#i64">i64</a></span> <span class="tok_id">integer</span><span class="tok_pun">;</span><span class="tok_kw"><a href="stdx_tml.html#f64">f64</a></span> <span class="tok_id">number</span><span class="tok_pun">;</span><span class="tok_kw"><a href="stdx_tml.html#TMLString">TMLString</a></span> <span class="tok_id">string</span><span class="tok_pun">;</span><span class="tok_pun">}</span><span class="tok_pun">;</span>
+<span class="tok_pun">}</span><span class="tok_id">TMLScalar</span><span class="tok_pun">;</span></code></pre>
+  
+  
+</article>
+
+    </main>
+  </div>
+</body>
+</html>

@@ -1,53 +1,296 @@
-/** 
- * STDX - Tree Markup Language (TML)
- * Part of the STDX General Purpose C Library by marciovmf
- * License: MIT
- * https://github.com/marciovmf/stdx
+/**
+ * STDX - Lightweight String Utilities 
+ * Part of the STDX General Purpose C Library by marciovmf 
+ * License: MIT 
+ * <https://github.com/marciovmf/stdx>
+ * 
+ * ## OVERVIEW
+ *
+ * TML (Tree Markup Language) is a minimal indentation-based hierarchical
+ * data format designed for:
+ *
+ * - Human readability
+ * - Deterministic parsing
+ * - Compact immutable runtime representation
+ * - Single-allocation arena-style loading
+ * - Fast traversal without dynamic allocations
+ *
+ * TML borrows some readability ideas from YAML while intentionally avoiding
+ * many of its parsing ambiguities and complexity.
+ *
+ * The parser operates in two passes:
+ *
+ * 1. Validation + memory counting
+ * 2. Final parse into a single contiguous allocation
+ *
+ * The final document is intended primarily for reading/traversal.
+ *
+ * ## How to compile
  *
  * To compile the implementation define X_IMPL_TML
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
- * `X_ARRAY_ALLOC` / `X_ARRAY_REALLOC` / `X_ARRAY_FREE` before including.
+ * `X_ARRAY_ALLOC` / `X_ARRAY_REALLOC` / `X_ARRAY_FREE`
+ * before including this header.
  *
- *  TML is a minimal, indentation-based hierarchical data format.
- *  It borrows the readability of YAML but is parsed in two phases,
- *  with a single arena allocation.
+ * ## Implementation details
  *
- *   Notes:
- *   - Nodes are stored in document order.
- *   - Direct children are linked with first_child / next_sibling because direct
- *   child nodes are not necessarily contiguous in document order.
- *   - Entries are key:value pairs. They are never anonymous.
- *   - Anonymous nodes have name.size == 0 and name.data == NULL.
- *   - Strings are stored as views but are also NUL-terminated in string_data.
- * 
- *  Syntax overview:
- *  - Indentation defines hierarchy. The first indented line sets the unit (2 or 4 spaces).
- *  - Tabs are invalid.
- *  - Lines ending with ':' define a new section (node).
- *  - Lists are defined with '-' as anonymous entries:
- *  - Triple quotes (""") define multi-line strings.
- *      The first newline after """ and the last before """ are ignored.
- *  - Comma-separated lists are parsed once into typed arrays (i64/f64/str).
- *  - Comments start with '#'.
- * 
- *  The TML parser performs:
- *  - Single memory allocation (arena-style).
- *  - Linear-time parsing with no dynamic allocations.
- *  - Typed key/value decoding (bool, int, float, string, array).
- * 
+ * - Nodes are stored sequentially in document order.
+ * - Entries (key:value pairs) are stored sequentially.
+ * - Strings are stored in a contiguous string buffer.
+ * - Arrays are stored in contiguous typed buffers.
+ * - The loaded document is immutable after parsing.
+ *
+ * Direct children are linked using:
+ *
+ *   first_child + next_sibling
+ *
+ * because child nodes are not necessarily contiguous in memory due to
+ * depth-first document ordering.
+ *
+ * ## Syntax
+ *
+ * ### COMMENTS
+ *
+ * Comments start with '#':
+ *   # this is a comment
+ *
+ * Comments are ignored until the end of the line.
+ *
+ * ### Indentation
+ *
+ * Indentation defines hierarchy.
+ * The first indented line defines the indentation unit. Valid values are 2 or 4
+ * spaces.
+ *
+ * Tabs are invalid for indentation.
+ *
+ * ### Nodes
+ *
+ * Nodes are declared using:
+ *
+ * ```
+ *   identifier:
+ * ```
+ *
  * Example:
  *
- * level:
- * name: "Caverns"
- * seed: 12345
- * enabled: true
- * objects:
- * - position: 1.0, 2.0, 0.0
- * scale: 1.0, 1.0, 1.0
- * - position: 7.0, 0.0, 0.0
- * scale: 1.0, 1.0, 1.0
+ * ```
+ *   player:
+ *   transform:
+ * ```
+ *
+ * Valid identifiers follow standard C variable naming rules:
+ *
+ * ```
+ *   valid_name:
+ *   _another_name:
+ *
+ * ```
+ * Invalid:
+ *
+ * ```
+ *   0_invalid: # identifier can't start with number
+ *
+ * ```
+ * Nodes are hierarchical containers.
+ * Nodes are NOT values.
+ *
+ * ### Entries (KEY/VALUE pairs)
+ *
+ * Entries use:
+ *
+ * ```
+ *   key: value
+ * ```
+ *
+ * Example:
+ *
+ * ```
+ *   enabled: true
+ *   health: 100
+ *   speed: 3.5
+ * ```
+ *
+ * Entries are never anonymous.
+ *
+ * 
+ * ### Anonymous Nodes
+ *
+ * Anonymous child nodes are declared with '-':
+ * ```
+ *   objects:
+ *     - name: "tree"
+ *       enabled: true
+ * ```
+ *
+ * Anonymous nodes still have stable child indices inside their parent scope.
+ * The first key:value pair must appear on the same line as '-'.
+ *
+ * 
+ * ### Strings
+ *
+ * Strings use double quotes: `name: "Player"`
+ * Strings support escape sequences: \n \r \t \" \\
+ *
+ * Example:
+ *
+ * ```
+ *   text: "Hello\nWorld"
+ * ```
+ *
+ * Strings may span multiple lines.
+ * A string only ends at the matching closing quote.
+ *
+ * Example:
+ *
+ * ```
+ *   text: "This is a
+ * multiline string."
+ * ```
+ *
+ * Indentation inside multiline strings is preserved exactly.
+ * Comments inside strings are treated as literal text.
+ * Internally strings are stored as views (ptr + size) but are also
+ * NUL-terminated for easy interoperability with C APIs.
+ *
+ * 
+ * ### Arrays
+ *
+ * Arrays are homogeneous lists of values declared using
+ * comma-separated values:
+ *
+ * ```
+ *   values: 1, 2, 3
+ * ```
+ *
+ * The type of the array is determined by the type of the first element.
+ * Supported array types are i64, f64 and  string
+ *
+ * Valid:
+ *
+ * ```
+ *   values: 1, 2, 3
+ *   points: 1.0, 2.0, 3.0
+ *   names: "a", "b", "c"
+ * ```
+ *
+ * Invalid:
+ *
+ * ```
+ *   values: 1, 2.0, 3 # arrays do not support mixed types!
+ * ```
+ *
+ * Array elements may span multiple lines.
+ * If a line ends with ',' the next line is considered part of the same array.
+ * Indentation is ignored while continuing multiline arrays.
+ * Example:
+ *
+ * ```
+ *   vertices:
+ *     1.0, 2.0, 3.0,
+ *     4.0, 5.0, 6.0,
+ *     7.0, 8.0, 9.0
+ * ```
+ *
+ * 
+ * ### Dot-paths
+ *
+ * Every node or entry can be uniquely addressed using a dot path.
+ * Example: `scene.objects.1.position`
+ *
+ * Path segments may refer to: named child nodes,
+ *  child node indices or entry names
+ *
+ * Child indices are stable and include BOTH named and anonymous nodes.
+ *
+ * Example:
+ *
+ * ```
+ *   root:
+ *     foo:
+ *     bar:
+ *     - enabled: true
+ * ```
+ *
+ * Child indices:
+ *
+ *   foo -> 0
+ *   bar -> 1
+ *   anonymous node -> 2
+ *
+ * 
+ * ## Basic Usage
+ *
+ * Parsing a document:
+ *
+ * ```
+ *   TMLParseResult result;
+ *
+ *   result = tml_parse(source);
+ *
+ *   if (!result.ok)
+ *   {
+ *     printf("Parse error at %u:%u : %s\n",
+ *       result.line,
+ *       result.column,
+ *       result.error);
+ *   }
+ *
+ * ```
+ * Accessing nodes:
+ *
+ * ```
+ *   TMLNode const* root;
+ *   root = tml_root_node_at(result.document, 0);
+ * ```
+ *
+ * Accessing entries:
+ *
+ * ```
+ *   i64 health;
+ *
+ *   if (tml_node_get_i64(result.document, root, "health", &health))
+ *   {
+ *     printf("%lld\n", (long long)health);
+ *   }
+ *
+ * Accessing paths:
+ *
+ *   f64 speed;
+ *
+ *   if (tml_path_get_f64(
+ *     result.document,
+ *     "player.movement.speed",
+ *     &speed))
+ *   {
+ *     ...
+ *   }
+ * ```
+ *
+ * Accessing arrays:
+ *
+ * ```
+ *   TMLF64Slice vertices;
+ *
+ *   if (tml_path_get_f64_array(
+ *     result.document,
+ *     "mesh.vertices",
+ *     &vertices))
+ *   {
+ *     for (u32 i = 0; i < vertices.count; ++i)
+ *     {
+ *       printf("%f\n", vertices.data[i]);
+ *     }
+ *   }
+ * ```
+ *
+ * Releasing memory:
+ *
+ * ```
+ *   tml_document_free(result.document);
+ * ```
  */
 
 #ifndef STDX_TML_H
@@ -118,7 +361,6 @@ extern "C" {
     u32 count;
   } TMLStringSlice;
   
-
   typedef struct TMLEntry
   {
     TMLString name;
@@ -186,44 +428,321 @@ extern "C" {
     TMLDocument* document;
   } TMLParseResult;
 
+  /**
+   * @brief Release all memory associated with a parsed TML document.
+   * @param doc Pointer to the document returned by tml_parse().
+   *
+   * The document and all associated internal memory become invalid after this call.
+   */
   X_TML_API void tml_document_free(TMLDocument* doc);
+
+  /**
+   * @brief Parse a TML document from a UTF-8 source string.
+   * @param source Null-terminated source text.
+   * @return Parse result structure.
+   *
+   * On success:
+   * - result.ok is non-zero
+   * - result.document contains the parsed immutable document
+   *
+   * On failure:
+   * - result.ok is 0
+   * - result.error contains a human-readable error message
+   * - result.line and result.column identify the error location
+   *
+   * The returned document must be released with:
+   *
+   *   tml_document_free()
+   */
   X_TML_API TMLParseResult tml_parse(char const* source);
+
+  /**
+   * @brief Retrieve a node by global node index.
+   * @param doc Pointer to the parsed document.
+   * @param index Zero-based global node index.
+   * @return Pointer to the node, or NULL if the index is invalid.
+   *
+   * Nodes are stored sequentially in document order.
+   */
   X_TML_API TMLNode const* tml_node_at(TMLDocument const* doc, u32 index);
+
+  /**
+   * @brief Retrieve an entry by global entry index.
+   * @param doc Pointer to the parsed document.
+   * @param index Zero-based global entry index.
+   * @return Pointer to the entry, or NULL if the index is invalid.
+   *
+   * Entries are stored sequentially in document order.
+   */
   X_TML_API TMLEntry const* tml_entry_at(TMLDocument const* doc, u32 index);
+
+  /**
+   * @brief Retrieve a root node by index.
+   * @param doc Pointer to the parsed document.
+   * @param index Zero-based root node index.
+   * @return Pointer to the root node, or NULL if the index is invalid.
+   */
   X_TML_API TMLNode const* tml_root_node_at(TMLDocument const* doc, u32 index);
+
+  /**
+   * @brief Retrieve a direct child node by index.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param index Zero-based child node index.
+   * @return Pointer to the child node, or NULL if the index is invalid.
+   *
+   * Child indices are stable and include both named and anonymous nodes.
+   */
   X_TML_API TMLNode const* tml_node_child_at(TMLDocument const* doc, TMLNode const* node, u32 index);
+
+  /**
+   * @brief Retrieve a direct entry from a node by index.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param index Zero-based entry index.
+   * @return Pointer to the entry, or NULL if the index is invalid.
+   */
   X_TML_API TMLEntry const* tml_node_entry_at(TMLDocument const* doc, TMLNode const* node, u32 index);
+
+  /**
+   * @brief Find a direct child node by name.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param name Child node name.
+   * @return Pointer to the matching child node, or NULL if no child matches.
+   */
   X_TML_API TMLNode const* tml_node_find_child(TMLDocument const* doc, TMLNode const* node, char const* name);
+
+  /**
+   * @brief Find a direct entry by name.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param name Entry name.
+   * @return Pointer to the matching entry, or NULL if no entry matches.
+   */
   X_TML_API TMLEntry const* tml_node_find_entry(TMLDocument const* doc, TMLNode const* node, char const* name);
 
-
+  /**
+   * @brief Retrieve a boolean value from an entry.
+   * @param entry Pointer to the entry.
+   * @param out_value Output boolean value.
+   * @return Non-zero on success, 0 if the entry is NULL or not a boolean.
+   */
   X_TML_API int tml_entry_get_bool(TMLEntry const* entry, u8* out_value);
+
+  /**
+   * @brief Retrieve a signed 64-bit integer value from an entry.
+   * @param entry Pointer to the entry.
+   * @param out_value Output integer value.
+   * @return Non-zero on success, 0 if the entry is NULL or not an integer.
+   */
   X_TML_API int tml_entry_get_i64(TMLEntry const* entry, i64* out_value);
+
+  /**
+   * @brief Retrieve a double-precision floating point value from an entry.
+   * @param entry Pointer to the entry.
+   * @param out_value Output floating point value.
+   * @return Non-zero on success, 0 if the entry is NULL or not a float.
+   */
   X_TML_API int tml_entry_get_f64(TMLEntry const* entry, f64* out_value);
+
+  /**
+   * @brief Retrieve a string value from an entry.
+   * @param entry Pointer to the entry.
+   * @param out_value Output string view.
+   * @return Non-zero on success, 0 if the entry is NULL or not a string.
+   */
   X_TML_API int tml_entry_get_string(TMLEntry const* entry, TMLString* out_value);
+
+  /**
+   * @brief Retrieve an i64 array slice from an entry.
+   * @param doc Pointer to the parsed document.
+   * @param entry Pointer to the entry.
+   * @param out_value Output array slice.
+   * @return Non-zero on success, 0 if the entry is NULL or not an i64 array.
+   */
   X_TML_API int tml_entry_get_i64_array(TMLDocument const* doc, TMLEntry const* entry, TMLI64Slice* out_value);
+
+  /**
+   * @brief Retrieve an f64 array slice from an entry.
+   * @param doc Pointer to the parsed document.
+   * @param entry Pointer to the entry.
+   * @param out_value Output array slice.
+   * @return Non-zero on success, 0 if the entry is NULL or not an f64 array.
+   */
   X_TML_API int tml_entry_get_f64_array(TMLDocument const* doc, TMLEntry const* entry, TMLF64Slice* out_value);
+
+  /**
+   * @brief Retrieve a string array slice from an entry.
+   * @param doc Pointer to the parsed document.
+   * @param entry Pointer to the entry.
+   * @param out_value Output array slice.
+   * @return Non-zero on success, 0 if the entry is NULL or not a string array.
+   */
   X_TML_API int tml_entry_get_string_array(TMLDocument const* doc, TMLEntry const* entry, TMLStringSlice* out_value);
 
+  /**
+   * @brief Retrieve a boolean entry value from a node by name.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param name Name of the entry.
+   * @param out_value Output boolean value.
+   * @return Non-zero on success, 0 if the entry does not exist or is not a boolean.
+   */
   X_TML_API int tml_node_get_bool(TMLDocument const* doc, TMLNode const* node, char const* name, u8* out_value);
+
+  /**
+   * @brief Retrieve a signed 64-bit integer entry value from a node by name.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param name Name of the entry.
+   * @param out_value Output integer value.
+   * @return Non-zero on success, 0 if the entry does not exist or is not an integer.
+   */
   X_TML_API int tml_node_get_i64(TMLDocument const* doc, TMLNode const* node, char const* name, i64* out_value);
+
+  /**
+   * @brief Retrieve a double-precision floating point entry value from a node by name.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param name Name of the entry.
+   * @param out_value Output floating point value.
+   * @return Non-zero on success, 0 if the entry does not exist or is not a float.
+   */
   X_TML_API int tml_node_get_f64(TMLDocument const* doc, TMLNode const* node, char const* name, f64* out_value);
+
+  /**
+   * @brief Retrieve a string entry value from a node by name.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param name Name of the entry.
+   * @param out_value Output string view.
+   * @return Non-zero on success, 0 if the entry does not exist or is not a string.
+   */
   X_TML_API int tml_node_get_string(TMLDocument const* doc, TMLNode const* node, char const* name, TMLString* out_value);
+
+  /**
+   * @brief Retrieve an i64 array entry from a node by name.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param name Name of the entry.
+   * @param out_value Output array slice.
+   * @return Non-zero on success, 0 if the entry does not exist or is not an i64 array.
+   */
   X_TML_API int tml_node_get_i64_array(TMLDocument const* doc, TMLNode const* node, char const* name, TMLI64Slice* out_value);
+
+  /**
+   * @brief Retrieve an f64 array entry from a node by name.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param name Name of the entry.
+   * @param out_value Output array slice.
+   * @return Non-zero on success, 0 if the entry does not exist or is not an f64 array.
+   */
   X_TML_API int tml_node_get_f64_array(TMLDocument const* doc, TMLNode const* node, char const* name, TMLF64Slice* out_value);
+
+  /**
+   * @brief Retrieve a string array entry from a node by name.
+   * @param doc Pointer to the parsed document.
+   * @param node Pointer to the parent node.
+   * @param name Name of the entry.
+   * @param out_value Output array slice.
+   * @return Non-zero on success, 0 if the entry does not exist or is not a string array.
+   */
   X_TML_API int tml_node_get_string_array(TMLDocument const* doc, TMLNode const* node, char const* name, TMLStringSlice* out_value);
 
+  /**
+   * @brief Find a node using a dot path.
+   * @param doc Pointer to the parsed document.
+   * @param path Dot-separated node path.
+   * @return Pointer to the matching node, or NULL if the path does not resolve.
+   *
+   * Path segments may refer to:
+   * - named child nodes
+   * - child node indices
+   *
+   * Example:
+   *
+   *   scene.objects.1
+   */
   X_TML_API TMLNode const* tml_path_find_node(TMLDocument const* doc, char const* path);
+
+  /**
+   * @brief Find an entry using a dot path.
+   * @param doc Pointer to the parsed document.
+   * @param path Dot-separated entry path.
+   * @return Pointer to the matching entry, or NULL if the path does not resolve.
+   *
+   * The final path segment must refer to an entry name.
+   *
+   * Example:
+   *
+   *   scene.objects.1.position
+   */
   X_TML_API TMLEntry const* tml_path_find_entry(TMLDocument const* doc, char const* path);
+
+  /**
+   * @brief Retrieve a boolean value using a dot path.
+   * @param doc Pointer to the parsed document.
+   * @param path Dot-separated entry path.
+   * @param out_value Output boolean value.
+   * @return Non-zero on success, 0 if the path does not resolve or the value is not a boolean.
+   */
   X_TML_API int tml_path_get_bool(TMLDocument const* doc, char const* path, u8* out_value);
+
+  /**
+   * @brief Retrieve a signed 64-bit integer value using a dot path.
+   * @param doc Pointer to the parsed document.
+   * @param path Dot-separated entry path.
+   * @param out_value Output integer value.
+   * @return Non-zero on success, 0 if the path does not resolve or the value is not an integer.
+   */
   X_TML_API int tml_path_get_i64(TMLDocument const* doc, char const* path, i64* out_value);
+
+  /**
+   * @brief Retrieve a double-precision floating point value using a dot path.
+   * @param doc Pointer to the parsed document.
+   * @param path Dot-separated entry path.
+   * @param out_value Output floating point value.
+   * @return Non-zero on success, 0 if the path does not resolve or the value is not a float.
+   */
   X_TML_API int tml_path_get_f64(TMLDocument const* doc, char const* path, f64* out_value);
+
+  /**
+   * @brief Retrieve a string value using a dot path.
+   * @param doc Pointer to the parsed document.
+   * @param path Dot-separated entry path.
+   * @param out_value Output string view.
+   * @return Non-zero on success, 0 if the path does not resolve or the value is not a string.
+   */
   X_TML_API int tml_path_get_string(TMLDocument const* doc, char const* path, TMLString* out_value);
+
+  /**
+   * @brief Retrieve an i64 array using a dot path.
+   * @param doc Pointer to the parsed document.
+   * @param path Dot-separated entry path.
+   * @param out_value Output array slice.
+   * @return Non-zero on success, 0 if the path does not resolve or the value is not an i64 array.
+   */
   X_TML_API int tml_path_get_i64_array(TMLDocument const* doc, char const* path, TMLI64Slice* out_value);
+
+  /**
+   * @brief Retrieve an f64 array using a dot path.
+   * @param doc Pointer to the parsed document.
+   * @param path Dot-separated entry path.
+   * @param out_value Output array slice.
+   * @return Non-zero on success, 0 if the path does not resolve or the value is not an f64 array.
+   */
   X_TML_API int tml_path_get_f64_array(TMLDocument const* doc, char const* path, TMLF64Slice* out_value);
+
+  /**
+   * @brief Retrieve a string array using a dot path.
+   * @param doc Pointer to the parsed document.
+   * @param path Dot-separated entry path.
+   * @param out_value Output array slice.
+   * @return Non-zero on success, 0 if the path does not resolve or the value is not a string array.
+   */
   X_TML_API int tml_path_get_string_array(TMLDocument const* doc, char const* path, TMLStringSlice* out_value);
-
-
 
 #ifdef __cplusplus
 }
