@@ -323,6 +323,352 @@ int test_child_indices_are_stable(void)
   return 0;
 }
 
+int test_entry_get_scalar_api(void)
+{
+  char const* source =
+    "config:\n"
+    "  enabled: true\n"
+    "  count: 42\n"
+    "  ratio: 0.5\n"
+    "  name: \"demo\"\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  TMLNode const* node = tml_root_node_at(result.document, 0);
+  ASSERT_TRUE(node != NULL);
+
+  TMLEntry const* enabled_entry = tml_node_find_entry(result.document, node, "enabled");
+  TMLEntry const* count_entry = tml_node_find_entry(result.document, node, "count");
+  TMLEntry const* ratio_entry = tml_node_find_entry(result.document, node, "ratio");
+  TMLEntry const* name_entry = tml_node_find_entry(result.document, node, "name");
+
+  u8 enabled = 0;
+  i64 count = 0;
+  f64 ratio = 0.0;
+  TMLString name = {0};
+
+  ASSERT_TRUE(tml_entry_get_bool(enabled_entry, &enabled));
+  ASSERT_TRUE(tml_entry_get_i64(count_entry, &count));
+  ASSERT_TRUE(tml_entry_get_f64(ratio_entry, &ratio));
+  ASSERT_TRUE(tml_entry_get_string(name_entry, &name));
+
+  ASSERT_TRUE(enabled == 1);
+  ASSERT_TRUE(count == 42);
+  ASSERT_TRUE(ratio == 0.5);
+  ASSERT_TRUE(name.size == 4);
+  ASSERT_TRUE(memcmp(name.data, "demo", 4) == 0);
+  ASSERT_TRUE(name.data[4] == '\0');
+
+  ASSERT_TRUE(!tml_entry_get_i64(enabled_entry, &count));
+  ASSERT_TRUE(!tml_entry_get_bool(count_entry, &enabled));
+
+  tml_document_free(result.document);
+
+  return 0;
+}
+
+int test_node_get_scalar_api(void)
+{
+  char const* source =
+    "player:\n"
+    "  alive: true\n"
+    "  hp: 100\n"
+    "  speed: 3.5\n"
+    "  title: \"captain\"\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  TMLNode const* player = tml_root_node_at(result.document, 0);
+  ASSERT_TRUE(player != NULL);
+
+  u8 alive = 0;
+  i64 hp = 0;
+  f64 speed = 0.0;
+  TMLString title = {0};
+
+  ASSERT_TRUE(tml_node_get_bool(result.document, player, "alive", &alive));
+  ASSERT_TRUE(tml_node_get_i64(result.document, player, "hp", &hp));
+  ASSERT_TRUE(tml_node_get_f64(result.document, player, "speed", &speed));
+  ASSERT_TRUE(tml_node_get_string(result.document, player, "title", &title));
+
+  ASSERT_TRUE(alive == 1);
+  ASSERT_TRUE(hp == 100);
+  ASSERT_TRUE(speed == 3.5);
+  ASSERT_TRUE(title.size == 7);
+  ASSERT_TRUE(memcmp(title.data, "captain", 7) == 0);
+
+  ASSERT_TRUE(!tml_node_get_i64(result.document, player, "missing", &hp));
+  ASSERT_TRUE(!tml_node_get_bool(result.document, player, "hp", &alive));
+
+  tml_document_free(result.document);
+
+  return 0;
+}
+
+int test_entry_get_array_api(void)
+{
+  char const* source =
+    "data:\n"
+    "  integers: 1, 2, 3\n"
+    "  floats: 1.0, 2.0, 3.5\n"
+    "  strings: \"a\", \"b\", \"c\"\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  TMLNode const* data = tml_root_node_at(result.document, 0);
+  ASSERT_TRUE(data != NULL);
+
+  TMLEntry const* integers_entry = tml_node_find_entry(result.document, data, "integers");
+  TMLEntry const* floats_entry = tml_node_find_entry(result.document, data, "floats");
+  TMLEntry const* strings_entry = tml_node_find_entry(result.document, data, "strings");
+
+  TMLI64Slice integers = {0};
+  TMLF64Slice floats = {0};
+  TMLStringSlice strings = {0};
+
+  ASSERT_TRUE(tml_entry_get_i64_array(result.document, integers_entry, &integers));
+  ASSERT_TRUE(tml_entry_get_f64_array(result.document, floats_entry, &floats));
+  ASSERT_TRUE(tml_entry_get_string_array(result.document, strings_entry, &strings));
+
+  ASSERT_TRUE(integers.count == 3);
+  ASSERT_TRUE(integers.data[0] == 1);
+  ASSERT_TRUE(integers.data[1] == 2);
+  ASSERT_TRUE(integers.data[2] == 3);
+
+  ASSERT_TRUE(floats.count == 3);
+  ASSERT_TRUE(floats.data[0] == 1.0);
+  ASSERT_TRUE(floats.data[1] == 2.0);
+  ASSERT_TRUE(floats.data[2] == 3.5);
+
+  ASSERT_TRUE(strings.count == 3);
+  ASSERT_TRUE(strings.data[0].size == 1);
+  ASSERT_TRUE(strings.data[1].size == 1);
+  ASSERT_TRUE(strings.data[2].size == 1);
+  ASSERT_TRUE(memcmp(strings.data[0].data, "a", 1) == 0);
+  ASSERT_TRUE(memcmp(strings.data[1].data, "b", 1) == 0);
+  ASSERT_TRUE(memcmp(strings.data[2].data, "c", 1) == 0);
+
+  ASSERT_TRUE(!tml_entry_get_f64_array(result.document, integers_entry, &floats));
+
+  tml_document_free(result.document);
+
+  return 0;
+}
+
+int test_node_get_array_api(void)
+{
+  char const* source =
+    "mesh:\n"
+    "  indices: 0, 1, 2, 2, 3, 0\n"
+    "  vertices: 0.0, 1.0, 2.0,\n"
+    "    3.0, 4.0, 5.0\n"
+    "  names: \"p0\", \"p1\"\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  TMLNode const* mesh = tml_root_node_at(result.document, 0);
+  ASSERT_TRUE(mesh != NULL);
+
+  TMLI64Slice indices = {0};
+  TMLF64Slice vertices = {0};
+  TMLStringSlice names = {0};
+
+  ASSERT_TRUE(tml_node_get_i64_array(result.document, mesh, "indices", &indices));
+  ASSERT_TRUE(tml_node_get_f64_array(result.document, mesh, "vertices", &vertices));
+  ASSERT_TRUE(tml_node_get_string_array(result.document, mesh, "names", &names));
+
+  ASSERT_TRUE(indices.count == 6);
+  ASSERT_TRUE(indices.data[0] == 0);
+  ASSERT_TRUE(indices.data[5] == 0);
+
+  ASSERT_TRUE(vertices.count == 6);
+  ASSERT_TRUE(vertices.data[0] == 0.0);
+  ASSERT_TRUE(vertices.data[5] == 5.0);
+
+  ASSERT_TRUE(names.count == 2);
+  ASSERT_TRUE(names.data[0].size == 2);
+  ASSERT_TRUE(names.data[1].size == 2);
+  ASSERT_TRUE(memcmp(names.data[0].data, "p0", 2) == 0);
+  ASSERT_TRUE(memcmp(names.data[1].data, "p1", 2) == 0);
+
+  ASSERT_TRUE(!tml_node_get_i64_array(result.document, mesh, "vertices", &indices));
+
+  tml_document_free(result.document);
+
+  return 0;
+}
+
+int test_path_find_node_by_name_and_index(void)
+{
+  char const* source =
+    "scene:\n"
+    "  objects:\n"
+    "    - name: \"first\"\n"
+    "    - name: \"second\"\n"
+    "  camera:\n"
+    "    fov: 70.0\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  TMLNode const* scene_by_name = tml_path_find_node(result.document, "scene");
+  TMLNode const* scene_by_index = tml_path_find_node(result.document, "0");
+  TMLNode const* objects_by_name = tml_path_find_node(result.document, "scene.objects");
+  TMLNode const* objects_by_index = tml_path_find_node(result.document, "0.0");
+  TMLNode const* object1_by_index = tml_path_find_node(result.document, "scene.objects.1");
+  TMLNode const* camera_by_name = tml_path_find_node(result.document, "scene.camera");
+  TMLNode const* camera_by_index = tml_path_find_node(result.document, "scene.1");
+
+  ASSERT_TRUE(scene_by_name != NULL);
+  ASSERT_TRUE(scene_by_index != NULL);
+  ASSERT_TRUE(scene_by_name == scene_by_index);
+
+  ASSERT_TRUE(objects_by_name != NULL);
+  ASSERT_TRUE(objects_by_index != NULL);
+  ASSERT_TRUE(objects_by_name == objects_by_index);
+
+  ASSERT_TRUE(object1_by_index != NULL);
+  ASSERT_TRUE(object1_by_index->name.size == 0);
+
+  ASSERT_TRUE(camera_by_name != NULL);
+  ASSERT_TRUE(camera_by_index != NULL);
+  ASSERT_TRUE(camera_by_name == camera_by_index);
+
+  ASSERT_TRUE(tml_path_find_node(result.document, "scene.missing") == NULL);
+  ASSERT_TRUE(tml_path_find_node(result.document, "scene.objects.3") == NULL);
+
+  tml_document_free(result.document);
+
+  return 0;
+}
+
+int test_path_find_entry_by_name_and_index(void)
+{
+  char const* source =
+    "scene:\n"
+    "  meta:\n"
+    "    type: \"scene\"\n"
+    "    magic: 0xCAFEBABE\n"
+    "    visible: true\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  TMLEntry const* type_by_name = tml_path_find_entry(result.document, "scene.meta.type");
+  TMLEntry const* type_by_index = tml_path_find_entry(result.document, "scene.meta.0");
+  TMLEntry const* magic_by_name = tml_path_find_entry(result.document, "scene.meta.magic");
+  TMLEntry const* magic_by_index = tml_path_find_entry(result.document, "scene.meta.1");
+  TMLEntry const* visible_by_name = tml_path_find_entry(result.document, "scene.meta.visible");
+  TMLEntry const* visible_by_index = tml_path_find_entry(result.document, "scene.meta.2");
+
+  ASSERT_TRUE(type_by_name != NULL);
+  ASSERT_TRUE(type_by_index != NULL);
+  ASSERT_TRUE(type_by_name == type_by_index);
+
+  ASSERT_TRUE(magic_by_name != NULL);
+  ASSERT_TRUE(magic_by_index != NULL);
+  ASSERT_TRUE(magic_by_name == magic_by_index);
+
+  ASSERT_TRUE(visible_by_name != NULL);
+  ASSERT_TRUE(visible_by_index != NULL);
+  ASSERT_TRUE(visible_by_name == visible_by_index);
+
+  ASSERT_TRUE(tml_path_find_entry(result.document, "scene.meta.3") == NULL);
+  ASSERT_TRUE(tml_path_find_entry(result.document, "scene.meta.missing") == NULL);
+  ASSERT_TRUE(tml_path_find_entry(result.document, "scene.meta.magic.extra") == NULL);
+
+  tml_document_free(result.document);
+
+  return 0;
+}
+
+int test_path_get_scalar_api(void)
+{
+  char const* source =
+    "scene:\n"
+    "  meta:\n"
+    "    enabled: true\n"
+    "    magic: 0xCAFEBABE\n"
+    "    ratio: 1.25\n"
+    "    title: \"Island\"\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  u8 enabled = 0;
+  i64 magic = 0;
+  f64 ratio = 0.0;
+  TMLString title = {0};
+
+  ASSERT_TRUE(tml_path_get_bool(result.document, "scene.meta.enabled", &enabled));
+  ASSERT_TRUE(tml_path_get_i64(result.document, "scene.meta.magic", &magic));
+  ASSERT_TRUE(tml_path_get_f64(result.document, "scene.meta.ratio", &ratio));
+  ASSERT_TRUE(tml_path_get_string(result.document, "scene.meta.title", &title));
+
+  ASSERT_TRUE(enabled == 1);
+  ASSERT_TRUE(magic == 0xCAFEBABE);
+  ASSERT_TRUE(ratio == 1.25);
+  ASSERT_TRUE(title.size == 6);
+  ASSERT_TRUE(memcmp(title.data, "Island", 6) == 0);
+
+  ASSERT_TRUE(tml_path_get_i64(result.document, "0.0.1", &magic));
+  ASSERT_TRUE(magic == 0xCAFEBABE);
+
+  ASSERT_TRUE(!tml_path_get_i64(result.document, "scene.meta.title", &magic));
+  ASSERT_TRUE(!tml_path_get_bool(result.document, "scene.meta.missing", &enabled));
+
+  tml_document_free(result.document);
+
+  return 0;
+}
+
+int test_path_get_array_api(void)
+{
+  char const* source =
+    "scene:\n"
+    "  mesh:\n"
+    "    indices: 0, 1, 2\n"
+    "    vertices: 1.0, 2.0, 3.0\n"
+    "    names: \"a\", \"b\"\n";
+
+  TMLParseResult result = tml_parse(source);
+  ASSERT_TRUE(result.ok);
+
+  TMLI64Slice indices = {0};
+  TMLF64Slice vertices = {0};
+  TMLStringSlice names = {0};
+
+  ASSERT_TRUE(tml_path_get_i64_array(result.document, "scene.mesh.indices", &indices));
+  ASSERT_TRUE(tml_path_get_f64_array(result.document, "scene.mesh.vertices", &vertices));
+  ASSERT_TRUE(tml_path_get_string_array(result.document, "scene.mesh.names", &names));
+
+  ASSERT_TRUE(indices.count == 3);
+  ASSERT_TRUE(indices.data[0] == 0);
+  ASSERT_TRUE(indices.data[1] == 1);
+  ASSERT_TRUE(indices.data[2] == 2);
+
+  ASSERT_TRUE(vertices.count == 3);
+  ASSERT_TRUE(vertices.data[0] == 1.0);
+  ASSERT_TRUE(vertices.data[1] == 2.0);
+  ASSERT_TRUE(vertices.data[2] == 3.0);
+
+  ASSERT_TRUE(names.count == 2);
+  ASSERT_TRUE(names.data[0].size == 1);
+  ASSERT_TRUE(names.data[1].size == 1);
+  ASSERT_TRUE(memcmp(names.data[0].data, "a", 1) == 0);
+  ASSERT_TRUE(memcmp(names.data[1].data, "b", 1) == 0);
+
+  ASSERT_TRUE(!tml_path_get_f64_array(result.document, "scene.mesh.indices", &vertices));
+
+  tml_document_free(result.document);
+
+  return 0;
+}
+
 int main()
 {
   STDXTestCase tests[] =
@@ -342,6 +688,14 @@ int main()
     X_TEST(test_reject_mixed_array_types),
     X_TEST(test_reject_top_level_entry),
     X_TEST(test_child_indices_are_stable),
+    X_TEST(test_entry_get_scalar_api),
+    X_TEST(test_node_get_scalar_api),
+    X_TEST(test_entry_get_array_api),
+    X_TEST(test_node_get_array_api),
+    X_TEST(test_path_find_node_by_name_and_index),
+    X_TEST(test_path_find_entry_by_name_and_index),
+    X_TEST(test_path_get_scalar_api),
+    X_TEST(test_path_get_array_api),
   };
 
   return x_tests_run(tests, sizeof(tests)/sizeof(tests[0]), NULL);

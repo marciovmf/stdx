@@ -924,6 +924,56 @@ extern "C" {
     return tml_set_error(p, "expected value");
   }
 
+  static int tml_parse_scalar_no_emit(TMLParser* p, TMLScalar* out)
+  {
+    TMLString id;
+    u32 string_size = 0;
+
+    tml_skip_spaces(p);
+
+    if (*p->cursor == '"')
+    {
+      out->kind = TML_SCALAR_STRING;
+
+      if (!tml_parse_string_to_buffer(p, NULL, &string_size))
+      {
+        return 0;
+      }
+
+      out->string.data = NULL;
+      out->string.size = string_size;
+      return 1;
+    }
+
+    if (is_identifier_start(*p->cursor))
+    {
+      id = tml_read_identifier_view(p);
+
+      if (tml_string_equals_cstr(id, "true"))
+      {
+        out->kind = TML_SCALAR_BOOL;
+        out->boolean = 1;
+        return 1;
+      }
+
+      if (tml_string_equals_cstr(id, "false"))
+      {
+        out->kind = TML_SCALAR_BOOL;
+        out->boolean = 0;
+        return 1;
+      }
+
+      return tml_set_error(p, "unknown identifier value");
+    }
+
+    if (*p->cursor == '-' || *p->cursor == '+' || isdigit((unsigned char)*p->cursor))
+    {
+      return tml_parse_number(p, out);
+    }
+
+    return tml_set_error(p, "expected value");
+  }
+
   static int tml_next_is_comma_before_comment_or_eol(TMLParser* p)
   {
     char const* c = p->cursor;
@@ -1021,7 +1071,7 @@ extern "C" {
 
     for (;;)
     {
-      if (!tml_parse_scalar(p, &scalar))
+      if (!tml_parse_scalar_no_emit(p, &scalar))
       {
         return 0;
       }
@@ -1151,7 +1201,11 @@ extern "C" {
         return tml_set_error(p, "expected string array element");
       }
 
-      p->doc->array_string[array.first + index] = scalar.string;
+      if (p->mode == TML_PARSE_WRITE)
+      {
+        p->doc->array_string[array.first + index] = scalar.string;
+      }
+
       index += 1;
 
       if (!tml_consume_optional_comma(p, &has_comma))
@@ -1348,7 +1402,7 @@ extern "C" {
     u32 save_line = p->line;
 
     TMLScalar scalar;
-    if (!tml_parse_scalar(p, &scalar))
+    if (!tml_parse_scalar_no_emit(p, &scalar))
     {
       return 0;
     }
@@ -1358,6 +1412,15 @@ extern "C" {
 
     if (!is_array)
     {
+      p->cursor = value_start;
+      p->line_start = save_line_start;
+      p->line = save_line;
+
+      if (!tml_parse_scalar(p, &scalar))
+      {
+        return 0;
+      }
+
       if (kind == TML_SCALAR_BOOL)
       {
         entry->type = TML_VALUE_BOOL;
@@ -1417,6 +1480,23 @@ extern "C" {
     }
 
     entry->array = array;
+
+    if (p->mode == TML_PARSE_COUNT && kind == TML_SCALAR_STRING)
+    {
+      p->cursor = value_start;
+      p->line_start = save_line_start;
+      p->line = save_line;
+
+      if (!tml_parse_array_fill_string(p, array))
+      {
+        return 0;
+      }
+
+      if (!tml_consume_line_end(p))
+      {
+        return 0;
+      }
+    }
 
     if (p->mode == TML_PARSE_WRITE)
     {
