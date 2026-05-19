@@ -141,7 +141,7 @@
 Part of the STDX General Purpose C Library by marciovmf<br/>
 License: MIT<br/>
 <a href="https://github.com/marciovmf/stdx">https://github.com/marciovmf/stdx</a></p>
-<h2 id="overview">OVERVIEW</h2>
+<h2 id="overview">Overview</h2>
 <p>TML (Tree Markup Language) is a minimal indentation-based hierarchical
 data format designed for:</p>
 <ul><li>Human readability</li><li>Deterministic parsing</li><li>Compact immutable runtime representation</li><li>Single-allocation arena-style loading</li><li>Fast traversal without dynamic allocations</li></ul><p>TML borrows some readability ideas from YAML while intentionally avoiding
@@ -149,7 +149,7 @@ many of its parsing ambiguities and complexity.</p>
 <p>The parser operates in two passes:</p>
 <ol><li> Validation + memory counting</li><li> Final parse into a single contiguous allocation</li></ol><p>The final document is intended primarily for reading/traversal.</p>
 <h2 id="how-to-compile">How to compile</h2>
-<p>To compile the implementation define X<em>IMPL</em>TML
+<p>To compile the implementation define <code>X_IMPL_TML</code>
 in <b>one</b> source file before including this header.</p>
 <p>To customize how this module allocates memory, define
 <code>X_ARRAY_ALLOC</code> / <code>X_ARRAY_REALLOC</code> / <code>X_ARRAY_FREE</code>

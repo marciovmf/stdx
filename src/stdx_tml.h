@@ -4,7 +4,7 @@
  * License: MIT 
  * <https://github.com/marciovmf/stdx>
  * 
- * ## OVERVIEW
+ * ## Overview
  *
  * TML (Tree Markup Language) is a minimal indentation-based hierarchical
  * data format designed for:
@@ -27,7 +27,7 @@
  *
  * ## How to compile
  *
- * To compile the implementation define X_IMPL_TML
+ * To compile the implementation define `X_IMPL_TML`
  * in **one** source file before including this header.
  *
  * To customize how this module allocates memory, define
