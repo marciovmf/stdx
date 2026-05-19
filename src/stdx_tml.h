@@ -1,5 +1,5 @@
 /**
- * STDX - Lightweight String Utilities 
+ * STDX - A lightweight hierarchical data language optimized for fast parsing and tree traversal. 
  * Part of the STDX General Purpose C Library by marciovmf 
  * License: MIT 
  * <https://github.com/marciovmf/stdx>
