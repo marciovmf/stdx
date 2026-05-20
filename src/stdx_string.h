@@ -221,7 +221,40 @@ extern "C" {
 
   // -------------------------------------------------------------------------------------
   // UTF8 functions
+  // https://www.w3schools.com/charsets/ref_utf_latin.asp
   // -------------------------------------------------------------------------------------
+
+  /**
+   * @brief Encodes a Unicode codepoint as UTF-8.
+   * @param codepoint Unicode codepoint to encode.
+   * @param out Destination UTF-8 byte buffer (must hold at least 4 bytes).
+   * @param out_len Receives the number of UTF-8 bytes written.
+   * @return true if the codepoint was encoded successfully, false otherwise.
+   */
+  X_STRING_API bool x_utf8_encode(uint32_t codepoint, char out[4], uint32_t* out_len);
+
+  /**
+   * @brief Advances to the next UTF-8 codepoint boundary.
+   * @param text UTF-8 encoded string.
+   * @param offset Current byte offset into the string.
+   * @return Byte offset of the next UTF-8 codepoint boundary.
+   */
+  X_STRING_API uint32_t x_utf8_next(char const* text, uint32_t offset);
+
+  /**
+   * @brief Moves to the previous UTF-8 codepoint boundary.
+   * @param text UTF-8 encoded string.
+   * @param offset Current byte offset into the string.
+   * @return Byte offset of the previous UTF-8 codepoint boundary.
+   */
+  X_STRING_API uint32_t x_utf8_prev(char const* text, uint32_t offset);
+
+  /**
+   * @brief Returns the number of UTF-8 bytes required to encode a codepoint.
+   * @param codepoint Unicode codepoint to measure.
+   * @return Number of UTF-8 bytes required, or 0 if the codepoint is invalid.
+   */
+  X_STRING_API uint32_t x_utf8_codepoint_size(uint32_t codepoint);
 
   /**
    * @brief Returns the number of UTF-8 codepoints in a null-terminated string.
@@ -268,14 +301,14 @@ extern "C" {
    * @param out_len Output: number of codepoints consumed on success or bytes to skip on error.
    * @return Decoded codepoint on success; negative X_UTF8_ERR_* on failure.
    */
-  X_STRING_API int32_t x_utf8_decode(const char* ptr, const char* end, size_t* out_len);
+  X_STRING_API           int32_t x_utf8_decode(const char* ptr, const char* end, size_t* out_len);
 
   /**
    * @brief Returns the expected byte length for a UTF-8 starter byte.
    * @param first_byte Parameter.
    * @return 1..4 for a valid starter byte; negative error code if invalid.
    */
-  X_STRING_API int32_t x_utf8_codepoint_length(unsigned char first_byte);
+  X_STRING_API           int32_t x_utf8_codepoint_length(unsigned char first_byte);
 
   // -------------------------------------------------------------------------------------
   // Fixed size small string functions
@@ -1241,6 +1274,126 @@ X_STRING_API bool x_cstr_ends_with_ci(const char* str, const char* suffix)
 X_STRING_API void x_set_locale(const char* locale)
 {
   setlocale(LC_ALL, locale ? locale : "");
+}
+
+X_STRING_API uint32_t x_utf8_codepoint_size(uint32_t codepoint)
+{
+  if (codepoint <= 0x7fu)
+  {
+    return 1;
+  }
+
+  if (codepoint <= 0x7ffu)
+  {
+    return 2;
+  }
+
+  if (codepoint >= 0xd800u && codepoint <= 0xdfffu)
+  {
+    return 0;
+  }
+
+  if (codepoint <= 0xffffu)
+  {
+    return 3;
+  }
+
+  if (codepoint <= 0x10ffffu)
+  {
+    return 4;
+  }
+
+  return 0;
+}
+
+X_STRING_API bool x_utf8_encode(uint32_t codepoint, char out[4], uint32_t* out_len)
+{
+  uint32_t len = 0;
+
+  if (out == NULL || out_len == NULL)
+  {
+    return false;
+  }
+
+  len = x_utf8_codepoint_size(codepoint);
+
+  if (len == 0)
+  {
+    *out_len = 0;
+    return false;
+  }
+
+  if (len == 1)
+  {
+    out[0] = (char)codepoint;
+  }
+  else if (len == 2)
+  {
+    out[0] = (char)(0xc0u | (codepoint >> 6));
+    out[1] = (char)(0x80u | (codepoint & 0x3fu));
+  }
+  else if (len == 3)
+  {
+    out[0] = (char)(0xe0u | (codepoint >> 12));
+    out[1] = (char)(0x80u | ((codepoint >> 6) & 0x3fu));
+    out[2] = (char)(0x80u | (codepoint & 0x3fu));
+  }
+  else
+  {
+    out[0] = (char)(0xf0u | (codepoint >> 18));
+    out[1] = (char)(0x80u | ((codepoint >> 12) & 0x3fu));
+    out[2] = (char)(0x80u | ((codepoint >> 6) & 0x3fu));
+    out[3] = (char)(0x80u | (codepoint & 0x3fu));
+  }
+
+  *out_len = len;
+  return true;
+}
+
+X_STRING_API uint32_t x_utf8_next(char const* text, uint32_t offset)
+{
+  uint32_t len = 0;
+  uint32_t i = offset;
+
+  if (text == NULL)
+  {
+    return 0;
+  }
+
+  len = (uint32_t)strlen(text);
+
+  if (offset >= len)
+  {
+    return len;
+  }
+
+  i += 1;
+
+  while (i < len && (((unsigned char)text[i] & 0xc0u) == 0x80u))
+  {
+    i += 1;
+  }
+
+  return i;
+}
+
+X_STRING_API uint32_t x_utf8_prev(char const* text, uint32_t offset)
+{
+  uint32_t i = offset;
+
+  if (text == NULL || offset == 0)
+  {
+    return 0;
+  }
+
+  i -= 1;
+
+  while (i > 0 && (((unsigned char)text[i] & 0xc0u) == 0x80u))
+  {
+    i -= 1;
+  }
+
+  return i;
 }
 
 X_STRING_API size_t x_utf8_strlen(const char* utf8)
