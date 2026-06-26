@@ -35,7 +35,7 @@
 
 #define X_STRING_VERSION_MAJOR 1
 #define X_STRING_VERSION_MINOR 0
-#define X_STRING_VERSION_PATCH 0
+#define X_STRING_VERSION_PATCH 2
 #define X_STRING_VERSION (X_STRING_VERSION_MAJOR * 10000 + X_STRING_VERSION_MINOR * 100 + X_STRING_VERSION_PATCH)
 
 #ifndef X_SMALLSTR_MAX_LENGTH
@@ -298,7 +298,7 @@ extern "C" {
    * @brief Decodes a single UTF-8 codepoint from the specified byte span.
    * @param ptr Current read pointer within the byte span.
    * @param end One-past-the-end pointer for the byte span.
-   * @param out_len Output: number of codepoints consumed on success or bytes to skip on error.
+   * @param out_len Output: number of bytes consumed on success or bytes to skip on error.
    * @return Decoded codepoint on success; negative X_UTF8_ERR_* on failure.
    */
   X_STRING_API           int32_t x_utf8_decode(const char* ptr, const char* end, size_t* out_len);
@@ -1019,6 +1019,9 @@ extern "C" {
 #ifdef _WIN32
 #define strncasecmp _strnicmp
 #define strnicmp _strnicmp
+#else
+#include <strings.h>  /* strncasecmp */
+#define strnicmp strncasecmp
 #endif
 
 static bool s_is_unicode_whitespace(uint32_t cp)
@@ -1029,14 +1032,20 @@ static bool s_is_unicode_whitespace(uint32_t cp)
       cp == 0x2028 || cp == 0x2029 || cp == 0x202F || cp == 0x205F || cp == 0x3000);
 }
 
+static bool s_utf8_is_continuation_byte(unsigned char byte)
+{
+  return (byte & 0xC0u) == 0x80u;
+}
+
 static int32_t utf8_decode(const char** ptr, const char* end)
 {
-  const char* s = *ptr;
-
-  if (s == NULL || end == NULL)
+  if (ptr == NULL || *ptr == NULL || end == NULL)
   {
     return X_UTF8_ERR_INVALID;
   }
+
+  const char* s = *ptr;
+
   if (s >= end)
   {
     return X_UTF8_ERR_EOF;
@@ -1051,90 +1060,95 @@ static int32_t utf8_decode(const char** ptr, const char* end)
     cp = b0;
     need = 1;
   }
-  else if ((b0 & 0xE0u) == 0xC0u)
+  else if (b0 >= 0xC2u && b0 <= 0xDFu)
   {
     cp = (b0 & 0x1Fu);
     need = 2;
   }
-  else if ((b0 & 0xF0u) == 0xE0u)
+  else if (b0 >= 0xE0u && b0 <= 0xEFu)
   {
     cp = (b0 & 0x0Fu);
     need = 3;
   }
-  else if ((b0 & 0xF8u) == 0xF0u)
+  else if (b0 >= 0xF0u && b0 <= 0xF4u)
   {
     cp = (b0 & 0x07u);
     need = 4;
   }
   else
   {
-    /* Invalid starter: skip 1 */
+    /* Invalid starter: skip 1 byte to make forward progress. */
     *ptr = s + 1;
     return X_UTF8_ERR_INVALID;
   }
 
-  /* Not enough bytes available for the full sequence */
   {
     size_t avail = (size_t)(end - s);
     if (avail < need)
     {
-      /* Truncated near end: skip what's left to make forward progress */
+      /* Truncated sequence: skip what remains. */
       *ptr = s + avail;
       return X_UTF8_ERR_INVALID;
     }
   }
 
-  /* Validate continuation bytes and assemble */
   for (size_t i = 1; i < need; ++i)
   {
     const unsigned char bi = (unsigned char)s[i];
-    if ((bi & 0xC0u) != 0x80u)
+    if (!s_utf8_is_continuation_byte(bi))
     {
-      /* Bad continuation: skip only the starter so the next byte can be re-interpreted */
+      /* Bad continuation: skip only the starter so the next byte can be re-read. */
       *ptr = s + 1;
       return X_UTF8_ERR_INVALID;
     }
     cp = (cp << 6) | (uint32_t)(bi & 0x3Fu);
   }
 
-  /* Mask to final code point (header bits already folded in by shifts above) */
   if (need == 2) cp &= 0x07FFu;
   if (need == 3) cp &= 0xFFFFu;
   if (need == 4) cp &= 0x1FFFFFu;
 
-  /* Overlong checks (must be at least the minimum encodable value for its length) */
-  if ((need == 2 && cp < 0x80u) || (need == 3 && cp < 0x800u) || (need == 4 && cp < 0x10000u))
+  if ((need == 2 && cp < 0x80u) ||
+      (need == 3 && cp < 0x800u) ||
+      (need == 4 && cp < 0x10000u))
   {
-    *ptr = s + need; /* drop the entire malformed sequence */
+    *ptr = s + need;
     return X_UTF8_ERR_OVERLONG;
   }
 
-  /* Disallow UTF-16 surrogates and out-of-range values */
   if ((cp >= 0xD800u && cp <= 0xDFFFu) || cp > 0x10FFFFu)
   {
     *ptr = s + need;
     return X_UTF8_ERR_RANGE;
   }
 
-  /* Success */
   *ptr = s + need;
   return (int32_t)cp;
 }
 
 static size_t utf8_advance(const char* s, size_t len, size_t chars)
 {
-  size_t i = 0, count = 0;
-  while (i < len && count < chars)
+  if (s == NULL)
   {
-    char c = (char)s[i];
-    if ((c & 0x80) == 0x00) i += 1;
-    else if ((c & 0xE0) == 0xC0) i += 2;
-    else if ((c & 0xF0) == 0xE0) i += 3;
-    else if ((c & 0xF8) == 0xF0) i += 4;
-    else break;
+    return 0;
+  }
+
+  const char* start = s;
+  const char* p = s;
+  const char* end = s + len;
+  size_t count = 0;
+
+  while (p < end && count < chars)
+  {
+    int32_t cp = utf8_decode(&p, end);
+    if (cp < 0)
+    {
+      break;
+    }
     count++;
   }
-  return i;
+
+  return (size_t)(p - start);
 }
 
 X_STRING_API char* x_cstr_str(const char *haystack, const char *needle)
@@ -1242,8 +1256,19 @@ X_STRING_API size_t x_cstr_to_wcstr(const char* src, wchar_t* dest, size_t max)
 
 X_STRING_API size_t x_wcstr_to_utf8(const wchar_t* wide, char* utf8, size_t max)
 {
+  if (!wide || !utf8 || max == 0) return 0;
+
   mbstate_t ps = {0};
-  return wcsrtombs(utf8, (const wchar_t**)&wide, max, &ps);
+  const wchar_t* src = wide;
+  size_t len = wcsrtombs(utf8, &src, max - 1, &ps);
+  if (len == (size_t)-1)
+  {
+    utf8[0] = '\0';
+    return 0;
+  }
+
+  utf8[len] = '\0';
+  return len;
 }
 
 X_STRING_API size_t x_wcstr_to_cstr(const wchar_t* src, char* dest, size_t max)
@@ -1352,63 +1377,82 @@ X_STRING_API bool x_utf8_encode(uint32_t codepoint, char out[4], uint32_t* out_l
 
 X_STRING_API uint32_t x_utf8_next(char const* text, uint32_t offset)
 {
-  uint32_t len = 0;
-  uint32_t i = offset;
-
   if (text == NULL)
   {
     return 0;
   }
 
-  len = (uint32_t)strlen(text);
-
+  uint32_t len = (uint32_t)strlen(text);
   if (offset >= len)
   {
     return len;
   }
 
-  i += 1;
+  const char* start = text + offset;
+  const char* p = start;
+  const char* end = text + len;
+  int32_t cp = utf8_decode(&p, end);
 
-  while (i < len && (((unsigned char)text[i] & 0xc0u) == 0x80u))
+  if (cp < 0 && p <= start)
   {
-    i += 1;
+    return offset + 1u;
   }
 
-  return i;
+  return (uint32_t)(p - text);
 }
 
 X_STRING_API uint32_t x_utf8_prev(char const* text, uint32_t offset)
 {
-  uint32_t i = offset;
-
   if (text == NULL || offset == 0)
   {
     return 0;
   }
 
-  i -= 1;
-
-  while (i > 0 && (((unsigned char)text[i] & 0xc0u) == 0x80u))
+  uint32_t len = (uint32_t)strlen(text);
+  if (offset > len)
   {
-    i -= 1;
+    offset = len;
   }
 
-  return i;
+  uint32_t i = offset - 1u;
+  while (i > 0 && s_utf8_is_continuation_byte((unsigned char)text[i]))
+  {
+    i -= 1u;
+  }
+
+  const char* p = text + i;
+  const char* end = text + len;
+  int32_t cp = utf8_decode(&p, end);
+
+  if (cp >= 0 && p >= text + offset)
+  {
+    return i;
+  }
+
+  return offset - 1u;
 }
 
 X_STRING_API size_t x_utf8_strlen(const char* utf8)
 {
-  size_t count = 0;
-  while (*utf8)
+  if (utf8 == NULL)
   {
-    char c = (char)*utf8;
-    if ((c & 0x80) == 0x00) utf8 += 1;
-    else if ((c & 0xE0) == 0xC0) utf8 += 2;
-    else if ((c & 0xF0) == 0xE0) utf8 += 3;
-    else if ((c & 0xF8) == 0xF0) utf8 += 4;
-    else break;
+    return 0;
+  }
+
+  size_t count = 0;
+  const char* p = utf8;
+  const char* end = utf8 + strlen(utf8);
+
+  while (p < end)
+  {
+    int32_t cp = utf8_decode(&p, end);
+    if (cp < 0)
+    {
+      break;
+    }
     count++;
   }
+
   return count;
 }
 
@@ -1420,73 +1464,117 @@ X_STRING_API int32_t  x_utf8_strcmp(const char* a, const char* b)
 
 X_STRING_API char* x_utf8_tolower(char* dest, const char* src)
 {
+  if (dest == NULL || src == NULL)
+  {
+    return dest;
+  }
+
   wchar_t wbuf[512];
-  x_utf8_to_wcstr(src, wbuf, 512);
+  size_t len = x_utf8_to_wcstr(src, wbuf, 512);
+  if (len == 0 && src[0] != '\0')
+  {
+    dest[0] = '\0';
+    return dest;
+  }
+
   for (size_t i = 0; wbuf[i]; ++i)
+  {
     wbuf[i] = towlower(wbuf[i]);
+  }
+
   x_wcstr_to_utf8(wbuf, dest, 512);
   return dest;
 }
 
 X_STRING_API char* x_utf8_toupper(char* dest, const char* src)
 {
+  if (dest == NULL || src == NULL)
+  {
+    return dest;
+  }
+
   wchar_t wbuf[512];
-  x_utf8_to_wcstr(src, wbuf, 512);
+  size_t len = x_utf8_to_wcstr(src, wbuf, 512);
+  if (len == 0 && src[0] != '\0')
+  {
+    dest[0] = '\0';
+    return dest;
+  }
+
   for (size_t i = 0; wbuf[i]; ++i)
+  {
     wbuf[i] = towupper(wbuf[i]);
+  }
+
   x_wcstr_to_utf8(wbuf, dest, 512);
   return dest;
 }
 
 X_STRING_API int32_t x_utf8_codepoint_length(unsigned char first_byte)
 {
-  if (first_byte < 0x80)                return 1;
-  else if ((first_byte & 0xE0) == 0xC0) return 2;
-  else if ((first_byte & 0xF0) == 0xE0) return 3;
-  else if ((first_byte & 0xF8) == 0xF0) return 4;
-  else return X_UTF8_ERR_INVALID;
+  if (first_byte < 0x80u) return 1;
+  if (first_byte >= 0xC2u && first_byte <= 0xDFu) return 2;
+  if (first_byte >= 0xE0u && first_byte <= 0xEFu) return 3;
+  if (first_byte >= 0xF0u && first_byte <= 0xF4u) return 4;
+  return X_UTF8_ERR_INVALID;
 }
 
 X_STRING_API size_t x_utf8_to_wcstr(const char* utf8, wchar_t* wide, size_t max)
 {
+  if (!utf8 || !wide || max == 0) return 0;
+
   mbstate_t ps = {0};
-  return mbsrtowcs(wide, &utf8, max, &ps);
+  const char* src = utf8;
+  size_t len = mbsrtowcs(wide, &src, max - 1, &ps);
+  if (len == (size_t)-1)
+  {
+    wide[0] = L'\0';
+    return 0;
+  }
+
+  wide[len] = L'\0';
+  return len;
 }
 
 X_STRING_API int32_t x_utf8_decode(const char* ptr, const char* end, size_t* out_len)
 {
+  if (out_len != NULL)
+  {
+    *out_len = 0;
+  }
+
+  if (ptr == NULL || end == NULL)
+  {
+    return X_UTF8_ERR_INVALID;
+  }
+
   const char* p = ptr;
   const int32_t r = utf8_decode(&p, end);
 
   if (out_len != NULL)
   {
-    if (r >= 0)
-    {
-      // report codepoints consumed (always 1) 
-      *out_len = 1;
-    }
-    else
-    {
-      // Error: report how many bytes we skipped so callers can advance
-      *out_len = (size_t)(p - ptr);
-    }
+    *out_len = (size_t)(p - ptr);
   }
+
   return r;
 }
 
 X_STRING_API bool x_utf8_is_single_char(const char* s)
 {
+  if (s == NULL || s[0] == '\0')
+  {
+    return false;
+  }
+
   const char* end = s + strlen(s);
   const char* p = s;
-  uint32_t cp = utf8_decode(&p, end);
-  return *p == '\0' && cp != 0;
+  int32_t cp = utf8_decode(&p, end);
+  return cp >= 0 && p == end;
 }
 
 X_STRING_API size_t x_wide_to_utf8(const wchar_t* wide, char* utf8, size_t max)
 {
-  mbstate_t ps =
-  {0};
-  return wcsrtombs(utf8, (const wchar_t**)&wide, max, &ps);
+  return x_wcstr_to_utf8(wide, utf8, max);
 }
 
 X_STRING_API uint32_t x_cstr_hash(const char* str)
@@ -1728,8 +1816,8 @@ X_STRING_API void x_smallstr_utf8_trim_left(XSmallstr* s)
   while (start < end)
   {
     const char* prev = start;
-    uint32_t cp = utf8_decode(&start, end);
-    if (!s_is_unicode_whitespace(cp))
+    int32_t cp = utf8_decode(&start, end);
+    if (cp < 0 || !s_is_unicode_whitespace((uint32_t)cp))
     {
       memmove(s->buf, prev, end - prev);
       s->length = end - prev;
@@ -1751,8 +1839,8 @@ X_STRING_API void x_smallstr_utf8_trim_right(XSmallstr* s)
     const char* prev = p;
     do { --p; } while (p > start && ((*p & 0xC0) == 0x80));
     const char* decode_from = p;
-    uint32_t cp = utf8_decode(&decode_from, end);
-    if (!s_is_unicode_whitespace(cp))
+    int32_t cp = utf8_decode(&decode_from, end);
+    if (cp < 0 || !s_is_unicode_whitespace((uint32_t)cp))
     {
       size_t new_len = prev - s->buf;
       s->length = new_len;
@@ -2171,8 +2259,8 @@ X_STRING_API XSlice x_slice_utf8_trim_left(XSlice sv)
   while (start < end)
   {
     const char* prev = start;
-    uint32_t cp = utf8_decode(&start, end);
-    if (!s_is_unicode_whitespace(cp))
+    int32_t cp = utf8_decode(&start, end);
+    if (cp < 0 || !s_is_unicode_whitespace((uint32_t)cp))
     {
       return (XSlice){ prev, (size_t)(end - prev) };
     }
@@ -2191,8 +2279,8 @@ X_STRING_API XSlice x_slice_utf8_trim_right(XSlice sv)
     // Step back 1 byte to guess start of char
     do { --p; } while (p > start && ((*p & 0xC0) == 0x80));
     const char* decode_from = p;
-    uint32_t cp = utf8_decode(&decode_from, end);
-    if (!s_is_unicode_whitespace(cp))
+    int32_t cp = utf8_decode(&decode_from, end);
+    if (cp < 0 || !s_is_unicode_whitespace((uint32_t)cp))
     {
       return x_slice_init(sv.ptr, (size_t)(prev - sv.ptr));
     }
@@ -2213,8 +2301,8 @@ X_STRING_API int32_t x_slice_utf8_find(XSlice sv, uint32_t codepoint)
   while (ptr < end)
   {
     const char* start = ptr;
-    uint32_t cp = utf8_decode(&ptr, end);
-    if (cp == codepoint)
+    int32_t cp = utf8_decode(&ptr, end);
+    if (cp >= 0 && (uint32_t)cp == codepoint)
       return (int)(start - sv.ptr);
   }
   return -1;
@@ -2229,8 +2317,8 @@ X_STRING_API int32_t x_slice_utf8_rfind(XSlice sv, uint32_t codepoint)
   while (ptr < end)
   {
     const char* current = ptr;
-    uint32_t cp = utf8_decode(&ptr, end);
-    if (cp == codepoint)
+    int32_t cp = utf8_decode(&ptr, end);
+    if (cp >= 0 && (uint32_t)cp == codepoint)
       last_match = current;
   }
 
@@ -2246,7 +2334,7 @@ X_STRING_API bool x_slice_utf8_split_at(XSlice sv, uint32_t delim, XSlice* left,
     const char* codepoint_start = ptr;
     int32_t cp = utf8_decode(&ptr, end);
 
-    if (cp == (int32_t)delim) {
+    if (cp >= 0 && (uint32_t)cp == delim) {
       size_t left_len = codepoint_start - sv.ptr;
       size_t right_len = end - ptr;
       *left  = x_slice_init(sv.ptr, left_len);
