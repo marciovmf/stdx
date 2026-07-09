@@ -585,6 +585,14 @@ extern "C" {
 #define     x_slice_init(cstr, len) ((XSlice){ .ptr = (cstr), .length = (len) })
 #define     x_slice(cstr)           (x_slice_init( (cstr), strlen(cstr) ))
 
+
+  /**
+   * @brief Computes a 32-bit FNV hash for a XSlice
+   * @param slice Input Slice
+   * @return 32 bit FNV hash
+   */
+  X_STRING_API uint32_t x_slice_hash(XSlice slice);
+  
   /**
    * @brief Compares two string views for equality.
    * @param a First input view or string.
@@ -1587,6 +1595,20 @@ X_STRING_API uint32_t x_cstr_hash(const char* str)
   }
   return hash;
 }
+
+X_STRING_API uint32_t x_slice_hash(XSlice slice)
+{
+  uint32_t hash = 2166136261u; // FNV offset basis
+  const char* str = slice.ptr;
+  const char* end = slice.ptr + slice.length;
+  while (str < end)
+  {
+    hash ^= (unsigned int) *str++;
+    hash *= 16777619u; // FNV prime
+  }
+  return hash;
+}
+
 
 X_STRING_API int32_t   x_smallstr_init(XSmallstr* s, const char* str)
 {
