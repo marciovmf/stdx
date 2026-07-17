@@ -40,6 +40,7 @@
 <li><a href="#x_slice_find_white_space">x_slice_find_white_space</a></li>
 <li><a href="#x_slice_from_cstr">x_slice_from_cstr</a></li>
 <li><a href="#x_slice_from_smallstr">x_slice_from_smallstr</a></li>
+<li><a href="#x_slice_hash">x_slice_hash</a></li>
 <li><a href="#x_slice_next_token">x_slice_next_token</a></li>
 <li><a href="#x_slice_next_token_white_space">x_slice_next_token_white_space</a></li>
 <li><a href="#x_slice_rfind">x_slice_rfind</a></li>
@@ -96,8 +97,12 @@
 <li><a href="#x_smallstr_utf8_trim_right">x_smallstr_utf8_trim_right</a></li>
 <li><a href="#x_smallstr_vappendf">x_smallstr_vappendf</a></li>
 <li><a href="#x_utf8_codepoint_length">x_utf8_codepoint_length</a></li>
+<li><a href="#x_utf8_codepoint_size">x_utf8_codepoint_size</a></li>
 <li><a href="#x_utf8_decode">x_utf8_decode</a></li>
+<li><a href="#x_utf8_encode">x_utf8_encode</a></li>
 <li><a href="#x_utf8_is_single_char">x_utf8_is_single_char</a></li>
+<li><a href="#x_utf8_next">x_utf8_next</a></li>
+<li><a href="#x_utf8_prev">x_utf8_prev</a></li>
 <li><a href="#x_utf8_strcmp">x_utf8_strcmp</a></li>
 <li><a href="#x_utf8_strlen">x_utf8_strlen</a></li>
 <li><a href="#x_utf8_to_wcstr">x_utf8_to_wcstr</a></li>
@@ -146,6 +151,7 @@
 <li><a href="#X_STRING_VERSION_PATCH">X_STRING_VERSION_PATCH</a></li>
 <li><a href="#X_STRVIEW">X_STRVIEW</a></li>
 <li><a href="#strncasecmp">strncasecmp</a></li>
+<li><a href="#strnicmp">strnicmp</a></li>
 <li><a href="#strnicmp">strnicmp</a></li>
 <li><a href="#x_slice">x_slice</a></li>
 <li><a href="#x_slice_empty">x_slice_empty</a></li>
@@ -257,7 +263,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">X_STRING_VERSION_PATCH</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRING_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_STRING_VERSION_PATCH</span> <span class="tok_num">2</span></code></pre>
   
   
 </article>
@@ -783,6 +789,112 @@ in <b>one</b> source file before including this header.</p>
 </section>
 
 </article>
+<article id="x_utf8_encode" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_encode</span></h2>
+  <p class="brief">Encodes a Unicode codepoint as UTF-8.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_utf8_encode</span>(
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span>,
+ <span class="tok_kw">char</span> <span class="tok_id">out</span><span class="tok_pun">[</span><span class="tok_num">4</span><span class="tok_pun">]</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span></code></dt>
+<dd>Unicode codepoint to encode.</dd>
+<dt><code><span class="tok_kw">char</span> <span class="tok_id">out</span><span class="tok_pun">[</span><span class="tok_num">4</span><span class="tok_pun">]</span></code></dt>
+<dd>Destination UTF-8 byte buffer (must hold at least 4 bytes).</dd>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span></code></dt>
+<dd>Receives the number of UTF-8 bytes written.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>true if the codepoint was encoded successfully, false otherwise.</p>
+</section>
+
+</article>
+<article id="x_utf8_next" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_next</span></h2>
+  <p class="brief">Advances to the next UTF-8 codepoint boundary.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_utf8_next</span>(
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">text</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">offset</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">text</span></code></dt>
+<dd>UTF-8 encoded string.</dd>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_id">offset</span></code></dt>
+<dd>Current byte offset into the string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Byte offset of the next UTF-8 codepoint boundary.</p>
+</section>
+
+</article>
+<article id="x_utf8_prev" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_prev</span></h2>
+  <p class="brief">Moves to the previous UTF-8 codepoint boundary.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_utf8_prev</span>(
+ <span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">text</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">offset</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">char</span> <span class="tok_kw">const</span> <span class="tok_pun">*</span><span class="tok_id">text</span></code></dt>
+<dd>UTF-8 encoded string.</dd>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_id">offset</span></code></dt>
+<dd>Current byte offset into the string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Byte offset of the previous UTF-8 codepoint boundary.</p>
+</section>
+
+</article>
+<article id="x_utf8_codepoint_size" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_utf8_codepoint_size</span></h2>
+  <p class="brief">Returns the number of UTF-8 bytes required to encode a codepoint.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_utf8_codepoint_size</span>(<span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span>);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">uint32_t</span> <span class="tok_id">codepoint</span></code></dt>
+<dd>Unicode codepoint to measure.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Number of UTF-8 bytes required, or 0 if the codepoint is invalid.</p>
+</section>
+
+</article>
 <article id="x_utf8_strlen" class="symbol">
   <div class="meta">
     <span class="symbol-kind">Function</span>
@@ -927,7 +1039,7 @@ in <b>one</b> source file before including this header.</p>
 <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">end</span></code></dt>
 <dd>One-past-the-end pointer for the byte span.</dd>
 <dt><code><span class="tok_kw">size_t</span> <span class="tok_pun">*</span><span class="tok_id">out_len</span></code></dt>
-<dd>Output: number of codepoints consumed on success or bytes to skip on error.</dd>
+<dd>Output: number of bytes consumed on success or bytes to skip on error.</dd>
 
   </dl>
 </section>
@@ -1844,6 +1956,28 @@ in <b>one</b> source file before including this header.</p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">x_slice</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span> <span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_string.html#x_slice_init">x_slice_init</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span><span class="tok_pun">,</span> <span class="tok_id">strlen</span><span class="tok_pun">(</span><span class="tok_id">cstr</span><span class="tok_pun">)</span><span class="tok_pun">)</span><span class="tok_pun">)</span></code></pre>
   
   
+</article>
+<article id="x_slice_hash" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_slice_hash</span></h2>
+  <p class="brief">Computes a 32-bit FNV hash for a XSlice</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_STRING_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_slice_hash</span>(<span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">slice</span>);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_string.html#XSlice">XSlice</a></span> <span class="tok_id">slice</span></code></dt>
+<dd>Input Slice</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>32 bit FNV hash</p>
+</section>
+
 </article>
 <article id="x_slice_eq" class="symbol">
   <div class="meta">
@@ -3228,6 +3362,16 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">strnicmp</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">strnicmp</span> <span class="tok_id">_strnicmp</span></code></pre>
+  
+  
+</article>
+<article id="strnicmp" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Macro</span>
+  </div>
+  <h2><span class="symbol-name">strnicmp</span></h2>
+  <p class="brief"></p>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">strnicmp</span> <span class="tok_kw"><a href="stdx_string.html#strncasecmp">strncasecmp</a></span></code></pre>
   
   
 </article>

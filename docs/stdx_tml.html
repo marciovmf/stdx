@@ -546,7 +546,7 @@ Accessing paths:
   <dl>
     <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
 <dd>Pointer to the document returned by tml_parse().
-
+ 
 The document and all associated internal memory become invalid after this call.</dd>
 
   </dl>
@@ -573,18 +573,18 @@ The document and all associated internal memory become invalid after this call.<
   <section class="returns">
   <h3>Returns</h3>
   <p>Parse result structure.
-
+ 
 On success:
 - result.ok is non-zero
 - result.document contains the parsed immutable document
-
+ 
 On failure:
 - result.ok is 0
 - result.error contains a human-readable error message
 - result.line and result.column identify the error location
-
+ 
 The returned document must be released with:
-
+ 
   tml_document_free()</p>
 </section>
 
@@ -613,7 +613,7 @@ The returned document must be released with:
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the node, or NULL if the index is invalid.
-
+ 
 Nodes are stored sequentially in document order.</p>
 </section>
 
@@ -642,7 +642,7 @@ Nodes are stored sequentially in document order.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the entry, or NULL if the index is invalid.
-
+ 
 Entries are stored sequentially in document order.</p>
 </section>
 
@@ -701,7 +701,7 @@ Entries are stored sequentially in document order.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the child node, or NULL if the index is invalid.
-
+ 
 Child indices are stable and include both named and anonymous nodes.</p>
 </section>
 
@@ -1249,13 +1249,13 @@ Child indices are stable and include both named and anonymous nodes.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the matching node, or NULL if the path does not resolve.
-
+ 
 Path segments may refer to:
 - named child nodes
 - child node indices
-
+ 
 Example:
-
+ 
   scene.objects.1</p>
 </section>
 
@@ -1284,11 +1284,11 @@ Example:
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the matching entry, or NULL if the path does not resolve.
-
+ 
 The final path segment must refer to an entry name.
-
+ 
 Example:
-
+ 
   scene.objects.1.position</p>
 </section>
 
