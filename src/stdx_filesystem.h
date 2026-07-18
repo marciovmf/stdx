@@ -48,11 +48,11 @@
 
 #define X_FILESYSTEM_VERSION_MAJOR 1
 #define X_FILESYSTEM_VERSION_MINOR 1
-#define X_FILESYSTEM_VERSION_PATCH 0
+#define X_FILESYSTEM_VERSION_PATCH 2
 #define X_FILESYSTEM_VERSION (X_FILESYSTEM_VERSION_MAJOR * 10000 + X_FILESYSTEM_VERSION_MINOR * 100 + X_FILESYSTEM_VERSION_PATCH)
 
-#ifndef X_FS_PAHT_MAX_LENGTH
-# define X_FS_PAHT_MAX_LENGTH 512
+#ifndef X_FS_PATH_MAX_LENGTH
+# define X_FS_PATH_MAX_LENGTH 512
 #endif
 
 #ifdef _WIN32
@@ -74,7 +74,7 @@ extern "C" {
 
   struct XFSDireEntry_t
   {
-    char name[X_FS_PAHT_MAX_LENGTH]; 
+    char name[X_FS_PATH_MAX_LENGTH]; 
     size_t size;
     time_t last_modified;
     int32_t is_directory;
@@ -716,7 +716,7 @@ extern "C" {
     DIR* dir;
     struct dirent* entry;
     struct stat fileStat;
-    char base_path[X_FS_PAHT_MAX_LENGTH];
+    char base_path[X_FS_PATH_MAX_LENGTH];
 #endif
   }; 
 
@@ -829,7 +829,7 @@ extern "C" {
     while ((segment = va_arg(args, const char*)) != NULL)
     {
       size_t length = x_fs_path_join_one(out, segment);
-      if (length >= X_FS_PAHT_MAX_LENGTH)
+      if (length >= X_FS_PATH_MAX_LENGTH)
         return false;
     }
 
@@ -843,10 +843,10 @@ extern "C" {
       return 0;
     path->length = 0;
 #ifdef _WIN32
-    DWORD size = GetCurrentDirectory(X_FS_PAHT_MAX_LENGTH, path->buf);
+    DWORD size = GetCurrentDirectory(X_FS_PATH_MAX_LENGTH, path->buf);
     path->length = size;
 #else
-    char* result = getcwd(path->buf, X_FS_PAHT_MAX_LENGTH);
+    char* result = getcwd(path->buf, X_FS_PATH_MAX_LENGTH);
     path->length = strlen(path->buf);
 #endif
     return path->length;
@@ -864,14 +864,14 @@ extern "C" {
   X_FILESYSTEM_API size_t x_fs_path_from_executable(XFSPath* out)
   {
 #ifdef _WIN32
-    DWORD len = GetModuleFileNameA(NULL, out->buf, X_FS_PAHT_MAX_LENGTH);
-    if (len == 0 || len >= X_FS_PAHT_MAX_LENGTH) return 0;
+    DWORD len = GetModuleFileNameA(NULL, out->buf, X_FS_PATH_MAX_LENGTH);
+    if (len == 0 || len >= X_FS_PATH_MAX_LENGTH) return 0;
 #elif defined(__APPLE__)
-    uint32_t size = X_FS_PAHT_MAX_LENGTH;
+    uint32_t size = X_FS_PATH_MAX_LENGTH;
     if (_NSGetExecutablePath(out->buf, &size) != 0) return 0;
     size_t len = strlen(out->buf);
 #else
-    ssize_t len = readlink("/proc/self/exe", out->buf, X_FS_PAHT_MAX_LENGTH - 1);
+    ssize_t len = readlink("/proc/self/exe", out->buf, X_FS_PATH_MAX_LENGTH - 1);
     if (len == -1) return 0;
     out->buf[len] = 0;
 #endif
@@ -936,12 +936,12 @@ extern "C" {
   X_FILESYSTEM_API bool x_fs_directory_create_recursive(const char* path)
   {
     size_t length = strlen(path);
-    if (length >= X_FS_PAHT_MAX_LENGTH)
+    if (length >= X_FS_PATH_MAX_LENGTH)
     {
       return false;
     }
 
-    char temp_path[X_FS_PAHT_MAX_LENGTH];
+    char temp_path[X_FS_PATH_MAX_LENGTH];
     strncpy(temp_path, path, length);
     temp_path[length] = 0;
 
@@ -1384,8 +1384,8 @@ extern "C" {
   {
 #ifdef _WIN32
     // On Windows, use GetTempPath to retrieve the temporary folder path
-    DWORD path_len = GetTempPathA((DWORD) X_FS_PAHT_MAX_LENGTH, out->buf);
-    if (path_len == 0 || path_len > X_FS_PAHT_MAX_LENGTH)
+    DWORD path_len = GetTempPathA((DWORD) X_FS_PATH_MAX_LENGTH, out->buf);
+    if (path_len == 0 || path_len > X_FS_PATH_MAX_LENGTH)
     {
       return 0;
     }
@@ -1398,7 +1398,7 @@ extern "C" {
     if (!tmp_dir) tmp_dir = "/tmp"; // Default to /tmp if no environment variable is set
 
     // Copy the temporary folder path to buffer
-    if (strlen(tmp_dir) >= X_FS_PAHT_MAX_LENGTH)
+    if (strlen(tmp_dir) >= X_FS_PATH_MAX_LENGTH)
     {
       return 0;
     }

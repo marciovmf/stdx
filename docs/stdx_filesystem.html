@@ -115,7 +115,7 @@
 <li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
 <li><a href="#X_FS_ALT_PATH_SEPARATOR">X_FS_ALT_PATH_SEPARATOR</a></li>
 <li><a href="#X_FS_MAX_PATH">X_FS_MAX_PATH</a></li>
-<li><a href="#X_FS_PAHT_MAX_LENGTH">X_FS_PAHT_MAX_LENGTH</a></li>
+<li><a href="#X_FS_PATH_MAX_LENGTH">X_FS_PATH_MAX_LENGTH</a></li>
 <li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
 <li><a href="#X_FS_PATH_SEPARATOR">X_FS_PATH_SEPARATOR</a></li>
 <li><a href="#x_fs_path">x_fs_path</a></li>
@@ -228,7 +228,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">X_FILESYSTEM_VERSION_PATCH</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FILESYSTEM_VERSION_PATCH</span> <span class="tok_num">0</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FILESYSTEM_VERSION_PATCH</span> <span class="tok_num">2</span></code></pre>
   
   
 </article>
@@ -242,13 +242,13 @@ in <b>one</b> source file before including this header.</p>
   
   
 </article>
-<article id="X_FS_PAHT_MAX_LENGTH" class="symbol">
+<article id="X_FS_PATH_MAX_LENGTH" class="symbol">
   <div class="meta">
     <span class="symbol-kind">Macro</span>
   </div>
-  <h2><span class="symbol-name">X_FS_PAHT_MAX_LENGTH</span></h2>
+  <h2><span class="symbol-name">X_FS_PATH_MAX_LENGTH</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FS_PAHT_MAX_LENGTH</span> <span class="tok_num">512</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FS_PATH_MAX_LENGTH</span> <span class="tok_num">512</span></code></pre>
   
   
 </article>
@@ -339,7 +339,7 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">XFSDireEntry_t</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">struct</span> <span class="tok_id">XFSDireEntry_t</span><span class="tok_pun">{</span>
-  <span class="tok_kw">char</span> <span class="tok_id">name</span><span class="tok_pun">[</span><span class="tok_kw"><a href="stdx_filesystem.html#X_FS_PAHT_MAX_LENGTH">X_FS_PAHT_MAX_LENGTH</a></span><span class="tok_pun">]</span><span class="tok_pun">;</span>
+  <span class="tok_kw">char</span> <span class="tok_id">name</span><span class="tok_pun">[</span><span class="tok_kw"><a href="stdx_filesystem.html#X_FS_PATH_MAX_LENGTH">X_FS_PATH_MAX_LENGTH</a></span><span class="tok_pun">]</span><span class="tok_pun">;</span>
   <span class="tok_kw">size_t</span> <span class="tok_id">size</span><span class="tok_pun">;</span>
   <span class="tok_id">time_t</span> <span class="tok_id">last_modified</span><span class="tok_pun">;</span>
   <span class="tok_kw">int32_t</span> <span class="tok_id">is_directory</span><span class="tok_pun">;</span>
