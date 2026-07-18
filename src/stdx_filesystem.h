@@ -47,7 +47,7 @@
 #endif
 
 #define X_FILESYSTEM_VERSION_MAJOR 1
-#define X_FILESYSTEM_VERSION_MINOR 0
+#define X_FILESYSTEM_VERSION_MINOR 1
 #define X_FILESYSTEM_VERSION_PATCH 0
 #define X_FILESYSTEM_VERSION (X_FILESYSTEM_VERSION_MAJOR * 10000 + X_FILESYSTEM_VERSION_MINOR * 100 + X_FILESYSTEM_VERSION_PATCH)
 
@@ -367,6 +367,15 @@ extern "C" {
    * @return True if it is a file, false otherwise.
    */
   X_FILESYSTEM_API bool x_fs_path_is_file_cstr(const char* path);
+
+  /**
+   * @brief Find an executable in the directories listed by PATH.
+   * @param name Executable name to find. On Windows, PATHEXT is searched when
+   *             the name does not already resolve to a file.
+   * @param out_path Output path receiving the executable path.
+   * @return True when an executable was found, false otherwise.
+   */
+  X_FILESYSTEM_API bool x_fs_executable_find(const char* name, XFSPath* out_path);
 
   /**
    * @brief Check whether a path is relative.
@@ -979,6 +988,127 @@ extern "C" {
     struct stat s;
     return stat(path, &s) == 0 && S_ISREG(s.st_mode);
 #endif
+  }
+
+  static bool s_x_fs_executable_candidate(
+      XSlice directory, const char* name, XSlice extension,
+      XFSPath* out_path)
+  {
+    XFSPath candidate;
+
+    if (directory.length > X_SMALLSTR_MAX_LENGTH)
+      return false;
+
+    if (directory.length == 0)
+    {
+      if (!x_fs_path(&candidate, ".", name))
+        return false;
+    }
+    else
+    {
+      if (!x_fs_path_set_slice(&candidate, directory))
+        return false;
+
+      if (!x_fs_path_join_one(&candidate, name))
+        return false;
+    }
+
+    if (candidate.length + extension.length > X_SMALLSTR_MAX_LENGTH)
+    {
+      return false;
+    }
+
+    x_smallstr_append_slice(&candidate, extension);
+
+    x_fs_path_normalize(&candidate);
+
+    if (!x_fs_path_is_file(&candidate))
+      return false;
+
+#ifndef _WIN32
+    if (access(candidate.buf, X_OK) != 0)
+      return false;
+#endif
+
+    *out_path = candidate;
+    return true;
+  }
+
+  X_FILESYSTEM_API bool x_fs_executable_find(
+      const char* name, XFSPath* out_path)
+  {
+    if (!out_path)
+      return false;
+
+    out_path->buf[0] = 0;
+    out_path->length = 0;
+
+    if (!name || !name[0])
+      return false;
+
+    const char* path = getenv("PATH");
+    if (!path)
+      return false;
+
+#ifdef _WIN32
+    const char path_separator = ';';
+#else
+    const char path_separator = ':';
+#endif
+
+    const char* directory_begin = path;
+
+    do
+    {
+      const char* directory_end = strchr(directory_begin, path_separator);
+      size_t directory_length = directory_end
+          ? (size_t)(directory_end - directory_begin)
+          : strlen(directory_begin);
+
+      if (directory_length >= 2 && directory_begin[0] == '"' &&
+          directory_begin[directory_length - 1] == '"')
+      {
+        directory_begin++;
+        directory_length -= 2;
+      }
+
+      XSlice directory = x_slice_init(directory_begin, directory_length);
+      XSlice no_extension = {0};
+
+      if (s_x_fs_executable_candidate(
+              directory, name, no_extension, out_path))
+      {
+        return true;
+      }
+
+#ifdef _WIN32
+      const char* path_ext = getenv("PATHEXT");
+      if (!path_ext || !path_ext[0])
+        path_ext = ".COM;.EXE;.BAT;.CMD";
+
+      const char* extension_begin = path_ext;
+      do
+      {
+        const char* extension_end = strchr(extension_begin, ';');
+        size_t extension_length = extension_end
+            ? (size_t)(extension_end - extension_begin)
+            : strlen(extension_begin);
+
+        XSlice extension = x_slice_init(extension_begin, extension_length);
+        if (s_x_fs_executable_candidate(
+                directory, name, extension, out_path))
+        {
+          return true;
+        }
+
+        extension_begin = extension_end ? extension_end + 1 : NULL;
+      } while (extension_begin);
+#endif
+
+      directory_begin = directory_end ? directory_end + 1 : NULL;
+    } while (directory_begin);
+
+    return false;
   }
 
   X_FILESYSTEM_API bool x_fs_path_is_directory_cstr(const char* path)
