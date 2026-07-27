@@ -163,7 +163,13 @@
  *
  * ```
  *   values: 1, 2, 3
+ *   explicit_values: [1, 2, 3]
+ *   one_value: [1]
  * ```
+ *
+ * Square brackets are optional, but they are required to distinguish a
+ * one-element array from a scalar value. Empty arrays are not supported
+ * because the element type is inferred from the first value.
  *
  * The type of the array is determined by the type of the first element.
  * Supported array types are i64, f64 and  string
@@ -1582,7 +1588,25 @@ extern "C" {
     return tml_set_error(p, "expected end of array line");
   }
 
-  static int tml_parse_array_count_only(TMLParser* p, TMLScalarKind first_kind, u32* out_count)
+  static int tml_consume_array_end(TMLParser* p, int bracketed)
+  {
+    if (!bracketed)
+    {
+      return 1;
+    }
+
+    tml_skip_spaces(p);
+    if (*p->cursor != ']')
+    {
+      return tml_set_error(p, "expected ']'");
+    }
+
+    p->cursor += 1;
+    return 1;
+  }
+
+  static int tml_parse_array_count_only(
+    TMLParser* p, TMLScalarKind first_kind, int bracketed, u32* out_count)
   {
     TMLScalar scalar;
     int has_comma;
@@ -1619,10 +1643,11 @@ extern "C" {
     }
 
     *out_count = count;
-    return 1;
+    return tml_consume_array_end(p, bracketed);
   }
 
-  static int tml_parse_array_fill_i64(TMLParser* p, TMLArray array)
+  static int tml_parse_array_fill_i64(
+    TMLParser* p, TMLArray array, int bracketed)
   {
     TMLScalar scalar;
     int has_comma;
@@ -1659,10 +1684,11 @@ extern "C" {
       }
     }
 
-    return 1;
+    return tml_consume_array_end(p, bracketed);
   }
 
-  static int tml_parse_array_fill_f64(TMLParser* p, TMLArray array)
+  static int tml_parse_array_fill_f64(
+    TMLParser* p, TMLArray array, int bracketed)
   {
     TMLScalar scalar;
     int has_comma;
@@ -1699,10 +1725,11 @@ extern "C" {
       }
     }
 
-    return 1;
+    return tml_consume_array_end(p, bracketed);
   }
 
-  static int tml_parse_array_fill_string(TMLParser* p, TMLArray array)
+  static int tml_parse_array_fill_string(
+    TMLParser* p, TMLArray array, int bracketed)
   {
     TMLScalar scalar;
     int has_comma;
@@ -1743,7 +1770,7 @@ extern "C" {
       }
     }
 
-    return 1;
+    return tml_consume_array_end(p, bracketed);
   }
 
   static int tml_validate_unique_name(TMLParser* p, u32 parent, TMLString name)
@@ -1915,6 +1942,20 @@ extern "C" {
   {
     u32 count = 0;
     TMLArray array = {0};
+    int bracketed;
+
+    tml_skip_spaces(p);
+    bracketed = *p->cursor == '[';
+    if (bracketed)
+    {
+      p->cursor += 1;
+      tml_skip_spaces(p);
+
+      if (*p->cursor == ']')
+      {
+        return tml_set_error(p, "empty arrays are not supported");
+      }
+    }
 
     char const* value_start = p->cursor;
     char const* save_line_start = p->line_start;
@@ -1927,7 +1968,8 @@ extern "C" {
     }
 
     TMLScalarKind kind = scalar.kind;
-    int is_array = tml_next_is_comma_before_comment_or_eol(p);
+    int is_array =
+      bracketed || tml_next_is_comma_before_comment_or_eol(p);
 
     if (!is_array)
     {
@@ -1968,7 +2010,7 @@ extern "C" {
     p->line_start = save_line_start;
     p->line = save_line;
 
-    if (!tml_parse_array_count_only(p, kind, &count))
+    if (!tml_parse_array_count_only(p, kind, bracketed, &count))
     {
       return 0;
     }
@@ -2006,7 +2048,7 @@ extern "C" {
       p->line_start = save_line_start;
       p->line = save_line;
 
-      if (!tml_parse_array_fill_string(p, array))
+      if (!tml_parse_array_fill_string(p, array, bracketed))
       {
         return 0;
       }
@@ -2025,21 +2067,21 @@ extern "C" {
 
       if (kind == TML_SCALAR_I64)
       {
-        if (!tml_parse_array_fill_i64(p, array))
+        if (!tml_parse_array_fill_i64(p, array, bracketed))
         {
           return 0;
         }
       }
       else if (kind == TML_SCALAR_F64)
       {
-        if (!tml_parse_array_fill_f64(p, array))
+        if (!tml_parse_array_fill_f64(p, array, bracketed))
         {
           return 0;
         }
       }
       else
       {
-        if (!tml_parse_array_fill_string(p, array))
+        if (!tml_parse_array_fill_string(p, array, bracketed))
         {
           return 0;
         }
