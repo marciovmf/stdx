@@ -25,8 +25,8 @@
 #include <stdint.h>
 
 
-#define X_IO_VERSION_MAJOR 1
-#define X_IO_VERSION_MINOR 0
+#define X_IO_VERSION_MAJOR 2
+#define X_IO_VERSION_MINOR 2
 #define X_IO_VERSION_PATCH 0
 #define X_IO_VERSION (X_IO_VERSION_MAJOR * 10000 + X_IO_VERSION_MINOR * 100 + X_IO_VERSION_PATCH)
 
@@ -146,7 +146,7 @@ extern "C" {
 
   X_IO_API bool x_io_write_text(const char *filename, const char *text) 
   {
-    XFile *f = x_io_open(filename, "wb");
+    XFile *f = x_io_open(filename, "wb+");
     if (!f) return false;
     size_t len = strlen(text);
     size_t written = x_io_write(f, text, len);
