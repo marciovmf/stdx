@@ -368,7 +368,7 @@ int test_x_slice_utf8_find_cp()
 
   uint32_t cp = x_utf8_decode(ptr, end, &len);
   ASSERT_TRUE(cp == 0x1F30D);
-  ASSERT_TRUE(len == x_utf8_strlen(data));
+  ASSERT_TRUE(len == x_utf8_codepoint_length(*ptr));
 
   XSlice sv = x_slice("a🌍b🌍c");
   ASSERT_TRUE(x_utf8_strlen(sv.ptr) == 5);            // 5 UTf-8 characters

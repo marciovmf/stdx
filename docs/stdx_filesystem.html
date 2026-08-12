@@ -26,8 +26,10 @@
 <li><a href="#x_fs_directory_create">x_fs_directory_create</a></li>
 <li><a href="#x_fs_directory_create_recursive">x_fs_directory_create_recursive</a></li>
 <li><a href="#x_fs_directory_delete">x_fs_directory_delete</a></li>
+<li><a href="#x_fs_executable_find">x_fs_executable_find</a></li>
 <li><a href="#x_fs_file_copy">x_fs_file_copy</a></li>
 <li><a href="#x_fs_file_creation_time">x_fs_file_creation_time</a></li>
+<li><a href="#x_fs_file_delete">x_fs_file_delete</a></li>
 <li><a href="#x_fs_file_modification_time">x_fs_file_modification_time</a></li>
 <li><a href="#x_fs_file_permissions">x_fs_file_permissions</a></li>
 <li><a href="#x_fs_file_rename">x_fs_file_rename</a></li>
@@ -218,7 +220,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">X_FILESYSTEM_VERSION_MINOR</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FILESYSTEM_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FILESYSTEM_VERSION_MINOR</span> <span class="tok_num">1</span></code></pre>
   
   
 </article>
@@ -354,12 +356,12 @@ in <b>one</b> source file before including this header.</p>
   <h2><span class="symbol-name">XFSWatchEventType</span></h2>
   <p class="brief"></p>
   <pre class="symbol-decl"><code><span class="tok_kw">typedef</span> <span class="tok_kw">enum</span><span class="tok_pun">{</span>
-  <span class="tok_id">x_fs_watch_CREATED</span><span class="tok_pun">,</span>
-  <span class="tok_id">x_fs_watch_DELETED</span><span class="tok_pun">,</span>
-  <span class="tok_id">x_fs_watch_MODIFIED</span><span class="tok_pun">,</span>
-  <span class="tok_id">x_fs_watch_RENAMED_FROM</span><span class="tok_pun">,</span>
-  <span class="tok_id">x_fs_watch_RENAMED_TO</span><span class="tok_pun">,</span>
-  <span class="tok_id">x_fs_watch_UNKNOWN</span>
+  <span class="tok_id">X_FS_WATCH_CREATED</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_FS_WATCH_DELETED</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_FS_WATCH_MODIFIED</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_FS_WATCH_RENAMED_FROM</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_FS_WATCH_RENAMED_TO</span><span class="tok_pun">,</span>
+  <span class="tok_id">X_FS_WATCH_UNKNOWN</span>
 <span class="tok_pun">}</span><span class="tok_id">XFSWatchEventType</span><span class="tok_pun">;</span></code></pre>
   
   
@@ -522,6 +524,28 @@ in <b>one</b> source file before including this header.</p>
   <dl>
     <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">directory</span></code></dt>
 <dd>Directory path to delete.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_fs_file_delete" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_fs_file_delete</span></h2>
+  <p class="brief">Deletes file.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_file_delete</span>(<span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span>);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">file</span></code></dt>
+<dd>File path to delete.</dd>
 
   </dl>
 </section>
@@ -1268,6 +1292,34 @@ in <b>one</b> source file before including this header.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>True if it is a file, false otherwise.</p>
+</section>
+
+</article>
+<article id="x_fs_executable_find" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_fs_executable_find</span></h2>
+  <p class="brief">Find an executable in the directories listed by PATH.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_fs_executable_find</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">name</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">name</span></code></dt>
+<dd>Executable name to find. On Windows, PATHEXT is searched when
+            the name does not already resolve to a file.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out_path</span></code></dt>
+<dd>Output path receiving the executable path.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True when an executable was found, false otherwise.</p>
 </section>
 
 </article>

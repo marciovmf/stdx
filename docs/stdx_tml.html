@@ -226,7 +226,12 @@ NUL-terminated for easy interoperability with C APIs.</p>
 <p>Arrays are homogeneous lists of values declared using
 comma-separated values:</p>
 <pre><code>  values: 1, 2, 3
+  explicit_values: [1, 2, 3]
+  one_value: [1]
 </code></pre>
+<p>Square brackets are optional, but they are required to distinguish a
+one-element array from a scalar value. Empty arrays are not supported
+because the element type is inferred from the first value.</p>
 <p>The type of the array is determined by the type of the first element.
 Supported array types are i64, f64 and  string</p>
 <p>Valid:</p>
@@ -327,7 +332,7 @@ Accessing paths:
   </div>
   <h2><span class="symbol-name">X_TML_VERSION_MAJOR</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_VERSION_MAJOR</span> <span class="tok_num">2</span></code></pre>
   
   
 </article>
@@ -337,7 +342,7 @@ Accessing paths:
   </div>
   <h2><span class="symbol-name">X_TML_VERSION_MINOR</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_TML_VERSION_MINOR</span> <span class="tok_num">1</span></code></pre>
   
   
 </article>
@@ -546,7 +551,7 @@ Accessing paths:
   <dl>
     <dt><code><span class="tok_kw"><a href="stdx_tml.html#TMLDocument">TMLDocument</a></span> <span class="tok_pun">*</span><span class="tok_id">doc</span></code></dt>
 <dd>Pointer to the document returned by tml_parse().
- 
+
 The document and all associated internal memory become invalid after this call.</dd>
 
   </dl>
@@ -573,18 +578,18 @@ The document and all associated internal memory become invalid after this call.<
   <section class="returns">
   <h3>Returns</h3>
   <p>Parse result structure.
- 
+
 On success:
 - result.ok is non-zero
 - result.document contains the parsed immutable document
- 
+
 On failure:
 - result.ok is 0
 - result.error contains a human-readable error message
 - result.line and result.column identify the error location
- 
+
 The returned document must be released with:
- 
+
   tml_document_free()</p>
 </section>
 
@@ -613,7 +618,7 @@ The returned document must be released with:
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the node, or NULL if the index is invalid.
- 
+
 Nodes are stored sequentially in document order.</p>
 </section>
 
@@ -642,7 +647,7 @@ Nodes are stored sequentially in document order.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the entry, or NULL if the index is invalid.
- 
+
 Entries are stored sequentially in document order.</p>
 </section>
 
@@ -701,7 +706,7 @@ Entries are stored sequentially in document order.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the child node, or NULL if the index is invalid.
- 
+
 Child indices are stable and include both named and anonymous nodes.</p>
 </section>
 
@@ -1249,13 +1254,13 @@ Child indices are stable and include both named and anonymous nodes.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the matching node, or NULL if the path does not resolve.
- 
+
 Path segments may refer to:
 - named child nodes
 - child node indices
- 
+
 Example:
- 
+
   scene.objects.1</p>
 </section>
 
@@ -1284,11 +1289,11 @@ Example:
   <section class="returns">
   <h3>Returns</h3>
   <p>Pointer to the matching entry, or NULL if the path does not resolve.
- 
+
 The final path segment must refer to an entry name.
- 
+
 Example:
- 
+
   scene.objects.1.position</p>
 </section>
 

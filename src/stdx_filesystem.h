@@ -48,7 +48,7 @@
 
 #define X_FILESYSTEM_VERSION_MAJOR 1
 #define X_FILESYSTEM_VERSION_MINOR 1
-#define X_FILESYSTEM_VERSION_PATCH 2
+#define X_FILESYSTEM_VERSION_PATCH 3
 #define X_FILESYSTEM_VERSION (X_FILESYSTEM_VERSION_MAJOR * 10000 + X_FILESYSTEM_VERSION_MINOR * 100 + X_FILESYSTEM_VERSION_PATCH)
 
 #ifndef X_FS_PATH_MAX_LENGTH
@@ -82,12 +82,12 @@ extern "C" {
 
   typedef enum
   {
-    x_fs_watch_CREATED,
-    x_fs_watch_DELETED,
-    x_fs_watch_MODIFIED,
-    x_fs_watch_RENAMED_FROM,
-    x_fs_watch_RENAMED_TO,
-    x_fs_watch_UNKNOWN
+    X_FS_WATCH_CREATED,
+    X_FS_WATCH_DELETED,
+    X_FS_WATCH_MODIFIED,
+    X_FS_WATCH_RENAMED_FROM,
+    X_FS_WATCH_RENAMED_TO,
+    X_FS_WATCH_UNKNOWN
   } XFSWatchEventType;
 
   typedef struct
@@ -150,6 +150,14 @@ extern "C" {
    */
   X_FILESYSTEM_API bool x_fs_directory_delete(const char* directory);
 
+
+  /**
+   * @brief Deletes file.
+   * @param file File path to delete.
+   * @return True on success, false on failure.
+   */
+  X_FILESYSTEM_API bool x_fs_file_delete(const char* file);
+  
   /**
    * @brief Copy a file to a new path.
    * @param file Source file path.
@@ -974,6 +982,15 @@ extern "C" {
 #endif
   }
 
+  X_FILESYSTEM_API bool x_fs_file_delete(const char* file)
+  {
+#ifdef _WIN32
+    return DeleteFile(file);
+#else
+    return remove(directory) == 0;
+#endif
+  }
+  
   X_FILESYSTEM_API bool x_fs_path_is_file(const XFSPath* path)
   {
     return x_fs_path_is_file_cstr(x_fs_path_cstr(path));
@@ -1280,7 +1297,7 @@ extern "C" {
     }
 
 #else
-#error "x_fs_watch_open: Unsupported platform"
+#error "X_FS_WATCH_open: Unsupported platform"
 #endif
 
     return fw;
@@ -1328,14 +1345,14 @@ extern "C" {
           fni->FileNameLength / 2, filename, sizeof(filename) - 1, NULL, NULL);
       filename[len] = 0;
 
-      XFSWatchEvent ev = { x_fs_watch_UNKNOWN, filename };
+      XFSWatchEvent ev = { X_FS_WATCH_UNKNOWN, filename };
 
       switch (fni->Action) {
-        case FILE_ACTION_ADDED: ev.action = x_fs_watch_CREATED; break;
-        case FILE_ACTION_REMOVED: ev.action = x_fs_watch_DELETED; break;
-        case FILE_ACTION_MODIFIED: ev.action = x_fs_watch_MODIFIED; break;
-        case FILE_ACTION_RENAMED_OLD_NAME: ev.action = x_fs_watch_RENAMED_FROM; break;
-        case FILE_ACTION_RENAMED_NEW_NAME: ev.action = x_fs_watch_RENAMED_TO; break;
+        case FILE_ACTION_ADDED: ev.action = X_FS_WATCH_CREATED; break;
+        case FILE_ACTION_REMOVED: ev.action = X_FS_WATCH_DELETED; break;
+        case FILE_ACTION_MODIFIED: ev.action = X_FS_WATCH_MODIFIED; break;
+        case FILE_ACTION_RENAMED_OLD_NAME: ev.action = X_FS_WATCH_RENAMED_FROM; break;
+        case FILE_ACTION_RENAMED_NEW_NAME: ev.action = X_FS_WATCH_RENAMED_TO; break;
       }
 
       out_events[count++] = ev;
@@ -1360,12 +1377,12 @@ extern "C" {
       struct inotify_event* e = (struct inotify_event*)&fw->buffer[fw->offset];
 
       if (e->len > 0) {
-        XFSWatchEvent ev = { x_fs_watch_UNKNOWN, e->name };
-        if (e->mask & IN_CREATE)     ev.action = x_fs_watch_CREATED;
-        if (e->mask & IN_DELETE)     ev.action = x_fs_watch_DELETED;
-        if (e->mask & IN_MODIFY)     ev.action = x_fs_watch_MODIFIED;
-        if (e->mask & IN_MOVED_FROM) ev.action = x_fs_watch_RENAMED_FROM;
-        if (e->mask & IN_MOVED_TO)   ev.action = x_fs_watch_RENAMED_TO;
+        XFSWatchEvent ev = { X_FS_WATCH_UNKNOWN, e->name };
+        if (e->mask & IN_CREATE)     ev.action = X_FS_WATCH_CREATED;
+        if (e->mask & IN_DELETE)     ev.action = X_FS_WATCH_DELETED;
+        if (e->mask & IN_MODIFY)     ev.action = X_FS_WATCH_MODIFIED;
+        if (e->mask & IN_MOVED_FROM) ev.action = X_FS_WATCH_RENAMED_FROM;
+        if (e->mask & IN_MOVED_TO)   ev.action = X_FS_WATCH_RENAMED_TO;
 
         out_events[count++] = ev;
       }
@@ -1374,7 +1391,7 @@ extern "C" {
     }
 
 #else
-#error "x_fs_watch_poll: Unsupported platform"
+#error "X_FS_WATCH_poll: Unsupported platform"
 #endif
 
     return count;
