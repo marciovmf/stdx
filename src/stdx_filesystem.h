@@ -47,7 +47,7 @@
 #endif
 
 #define X_FILESYSTEM_VERSION_MAJOR 1
-#define X_FILESYSTEM_VERSION_MINOR 2
+#define X_FILESYSTEM_VERSION_MINOR 3
 #define X_FILESYSTEM_VERSION_PATCH 0
 #define X_FILESYSTEM_VERSION (X_FILESYSTEM_VERSION_MAJOR * 10000 + X_FILESYSTEM_VERSION_MINOR * 100 + X_FILESYSTEM_VERSION_PATCH)
 
@@ -612,6 +612,23 @@ extern "C" {
    * @return True if it is a directory, false otherwise.
    */
   X_FILESYSTEM_API bool x_fs_is_directory(const char* path);
+
+  
+  /**
+   * @brief Copies a XFSPath into another XFSPath
+   * @param path Path to copy.
+   * @param out Where to copy path into.
+   * @return size_t size of the copy;
+   */
+  X_FILESYSTEM_API size_t x_fs_path_copy(const XFSPath *path, XFSPath *out);
+  
+  /**
+   * @brief Coputes the parent of path and write it into out.
+   * @param path Path to check compute parent from.
+   * @param out Path to write parent into.
+   * @return void
+   */
+  X_FILESYSTEM_API void x_fs_directory_parent(const XFSPath *path, XFSPath* out);
 
   /**
    * @brief Check whether a path is a symbolic link.
@@ -1588,7 +1605,11 @@ extern "C" {
 
   X_FILESYSTEM_API static inline int32_t is_path_separator(char c)
   {
+    #ifdef _WIN32
     return (c == X_FS_ALT_PATH_SEPARATOR || c == X_FS_PATH_SEPARATOR);
+    #else
+    return (c == X_FS_PATH_SEPARATOR);
+    #endif
   }
 
   X_FILESYSTEM_API static inline int32_t pathchar_eq(char a, char b)
@@ -2276,6 +2297,39 @@ extern "C" {
 #endif
   }
 
+  X_FILESYSTEM_API size_t x_fs_path_copy(const XFSPath *path, XFSPath *out)
+  {
+    strncpy(out->buf, path->buf, path->length);
+    out->length = path->length;
+    return out->length;
+  }
+  
+  X_FILESYSTEM_API void x_fs_directory_parent(const XFSPath *path, XFSPath *out)
+  {
+    if (path->length == 0)
+      return;
+
+    if (path->length == 1 && is_path_separator(path->buf[0]))
+      return;
+
+    const char* start = path->buf;
+    const char* end = &path->buf[path->length - 1];
+
+    if (is_path_separator(*end))
+    {
+      end--;
+    }
+
+    while(end > start && !is_path_separator(*end))
+    {
+      end--;
+    }
+
+    size_t len = end - start;
+    strncpy(out->buf, path->buf, len);
+    out->length = len;
+  }
+  
   X_FILESYSTEM_API bool x_fs_is_symlink(const char* path)
   {
 #ifdef _WIN32
