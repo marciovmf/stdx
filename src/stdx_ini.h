@@ -30,8 +30,8 @@
 #define X_INI_API
 #endif
 
-#define X_INI_VERSION_MAJOR 1
-#define X_INI_VERSION_MINOR 1
+#define X_INI_VERSION_MAJOR 2
+#define X_INI_VERSION_MINOR 0
 #define X_INI_VERSION_PATCH 0
 #define X_INI_VERSION (X_INI_VERSION_MAJOR*10000 + X_INI_VERSION_MINOR*100 + X_INI_VERSION_PATCH)
 
@@ -164,6 +164,16 @@ X_INI_API const char* x_ini_get(const XIni *ini, const char *section, const char
 X_INI_API int32_t x_ini_get_i32(const XIni *ini, const char *section, const char *key, int32_t def_value);
 
 /**
+* @brief Retrieve an unsigne 32-bit integer value from the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param def_value Default value returned if the key is not found or cannot be parsed.
+* @return Parsed integer value, or def_value on failure.
+*/
+ X_INI_API uint32_t x_ini_get_u32(const XIni *ini, const char *section, const char *key, uint32_t def_value);
+
+/**
 * @brief Retrieve a 32-bit floating-point value from the INI data.
 * @param ini Parsed INI data.
 * @param section Section name.
@@ -182,6 +192,75 @@ X_INI_API float x_ini_get_f32(const XIni *ini, const char *section, const char *
 * @return Parsed boolean value, or def_value on failure.
 */
 X_INI_API bool x_ini_get_bool(const XIni *ini, const char *section, const char *key, bool def_value);
+
+/**
+* @brief Set a string value in the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param value Value string.
+* @return True on success, false on failure.
+*/
+X_INI_API bool x_ini_set(XIni *ini, const char *section, const char *key, const char *value);
+
+/**
+* @brief Set a 32-bit integer value in the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param value Integer value.
+* @return True on success, false on failure.
+*/
+X_INI_API bool x_ini_set_i32(XIni *ini, const char *section, const char *key, int32_t value);
+
+/**
+* @brief Set an unsigned 32-bit integer value in the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param value Integer value.
+* @return True on success, false on failure.
+*/
+X_INI_API bool x_ini_set_u32(XIni *ini, const char *section, const char *key, uint32_t value);
+
+/**
+* @brief Set an unsigned 32-bit integer value in hexadecimal form in the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param value Integer value.
+* @return True on success, false on failure.
+*/
+X_INI_API bool x_ini_set_u32_hex(XIni *ini, const char *section, const char *key, uint32_t value);
+
+/**
+* @brief Set a 32-bit floating-point value in the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param value Floating-point value.
+* @return True on success, false on failure.
+*/
+X_INI_API bool x_ini_set_f32(XIni *ini, const char *section, const char *key, float value);
+
+/**
+* @brief Set a boolean value in the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @param value Boolean value.
+* @return True on success, false on failure.
+*/
+X_INI_API bool x_ini_set_bool(XIni *ini, const char *section, const char *key, bool value);
+
+/**
+* @brief Write INI data to a file.
+* @param path Path to the INI file.
+* @param ini INI data to write.
+* @param err Optional output error information (may be NULL).
+* @return True on success, false on failure.
+*/
+X_INI_API bool x_ini_write_file(const char *path, const XIni *ini, XIniError *err);
 
 /**
 * @brief Get the number of sections in the INI data.
@@ -319,17 +398,60 @@ static bool s_x_pool_init(XIni *ini, size_t cap)
   return true;
 }
 
+static bool s_x_pool_reserve(XIni *ini, size_t additional)
+{
+  if (ini->pool_size + additional <= ini->pool_cap) return true;
+
+  size_t ncap = ini->pool_cap ? ini->pool_cap * 2 : 1024;
+  while (ini->pool_size + additional > ncap) ncap *= 2;
+
+  char *old_pool = ini->pool;
+  char *np = (char *)X_INI_ALLOC(ncap);
+  if (!np) return false;
+
+  memcpy(np, old_pool, ini->pool_size);
+
+  for (int i = 0; i < ini->sections_count; ++i)
+  {
+    if (ini->sections[i].name)
+    {
+      ini->sections[i].name = np + (ini->sections[i].name - old_pool);
+    }
+  }
+
+  for (int i = 0; i < ini->entries_count; ++i)
+  {
+    if (ini->entries[i].key)
+    {
+      ini->entries[i].key = np + (ini->entries[i].key - old_pool);
+    }
+    if (ini->entries[i].value)
+    {
+      ini->entries[i].value = np + (ini->entries[i].value - old_pool);
+    }
+  }
+
+  X_INI_FREE(old_pool);
+  ini->pool = np;
+  ini->pool_cap = ncap;
+  return true;
+}
+
 static const char *s_x_pool_add(XIni *ini, const char *src, size_t len)
 {
-  if (ini->pool_size + len + 1 > ini->pool_cap)
+  size_t src_offset = 0;
+  bool src_in_pool = false;
+  uintptr_t src_addr = (uintptr_t)src;
+  uintptr_t pool_addr = (uintptr_t)ini->pool;
+  if (src_addr >= pool_addr && src_addr < pool_addr + ini->pool_size)
   {
-    size_t ncap = ini->pool_cap ? ini->pool_cap * 2 : 1024;
-    while (ini->pool_size + len + 1 > ncap) ncap *= 2;
-    char *np = (char *)X_INI_REALLOC(ini->pool, ncap);
-    if (!np) return NULL;
-    ini->pool = np;
-    ini->pool_cap = ncap;
+    src_offset = (size_t)(src_addr - pool_addr);
+    src_in_pool = true;
   }
+
+  if (!s_x_pool_reserve(ini, len + 1)) return NULL;
+  if (src_in_pool) src = ini->pool + src_offset;
+
   char *dst = ini->pool + ini->pool_size;
   memcpy(dst, src, len);
   dst[len] = '\0';
@@ -731,6 +853,21 @@ X_INI_API int32_t x_ini_get_i32(const XIni *ini, const char *section, const char
   return (int32_t)v;
 }
 
+X_INI_API uint32_t x_ini_get_u32(const XIni *ini, const char *section, const char *key, uint32_t def_value)
+{
+  const char *s = x_ini_get(ini, section, key, NULL);
+  if (!s) return def_value;
+
+  const char *p = s;
+  while (*p && isspace((unsigned char)*p)) { ++p; }
+  if (*p == '-') return def_value;
+
+  char *end = NULL;
+  unsigned long long v = strtoull(s, &end, 0);
+  if (end == s || v > UINT32_MAX) return def_value;
+  return (uint32_t)v;
+}
+
 X_INI_API float x_ini_get_f32(const XIni *ini, const char *section, const char *key, float def_value)
 {
   const char *s = x_ini_get(ini, section, key, NULL);
@@ -763,6 +900,270 @@ X_INI_API bool x_ini_get_bool(const XIni *ini, const char *section, const char *
     return false;
   }
   return def_value;
+}
+
+X_INI_API bool x_ini_set(XIni *ini, const char *section, const char *key, const char *value)
+{
+  if (!ini || !ini->pool || !ini->sections || !ini->entries || !key || !value) return false;
+
+  const char *secname = section ? section : "";
+  int sidx = s_x_find_section(ini, secname);
+
+  if (sidx >= 0)
+  {
+    for (int i = ini->entries_count - 1; i >= 0; --i)
+    {
+      XIniEntry *e = &ini->entries[i];
+      if (e->section == sidx && strcmp(e->key, key) == 0)
+      {
+        const char *vv = s_x_pool_add_cstr(ini, value);
+        if (!vv) return false;
+        e->value = vv;
+        return true;
+      }
+    }
+
+    if (ini->entries_count == ini->entries_cap)
+    {
+      void *np = s_x_realloc_grow(ini->entries, sizeof(XIniEntry),
+                                  &ini->entries_cap);
+      if (!np) return false;
+      ini->entries = (XIniEntry *)np;
+    }
+
+    size_t key_len = strlen(key);
+    size_t value_len = strlen(value);
+    size_t key_offset = 0;
+    size_t value_offset = 0;
+    uintptr_t pool_addr = (uintptr_t)ini->pool;
+    uintptr_t key_addr = (uintptr_t)key;
+    uintptr_t value_addr = (uintptr_t)value;
+    bool key_in_pool = key_addr >= pool_addr && key_addr < pool_addr + ini->pool_size;
+    bool value_in_pool = value_addr >= pool_addr && value_addr < pool_addr + ini->pool_size;
+    if (key_in_pool) key_offset = (size_t)(key_addr - pool_addr);
+    if (value_in_pool) value_offset = (size_t)(value_addr - pool_addr);
+
+    if (!s_x_pool_reserve(ini, key_len + 1 + value_len + 1)) return false;
+    if (key_in_pool) key = ini->pool + key_offset;
+    if (value_in_pool) value = ini->pool + value_offset;
+
+    const char *kk = s_x_pool_add(ini, key, key_len);
+    if (!kk) return false;
+
+    const char *vv = s_x_pool_add(ini, value, value_len);
+    if (!vv) return false;
+
+    int idx = ini->entries_count++;
+    ini->entries[idx].section = sidx;
+    ini->entries[idx].key = kk;
+    ini->entries[idx].value = vv;
+
+    if (ini->sections[sidx].first_entry < 0)
+    {
+      ini->sections[sidx].first_entry = idx;
+    }
+
+    return true;
+  }
+
+  if (ini->sections_count == ini->sections_cap)
+  {
+    void *np = s_x_realloc_grow(ini->sections, sizeof(XIniSection),
+                                &ini->sections_cap);
+    if (!np) return false;
+    ini->sections = (XIniSection *)np;
+  }
+
+  if (ini->entries_count == ini->entries_cap)
+  {
+    void *np = s_x_realloc_grow(ini->entries, sizeof(XIniEntry),
+                                &ini->entries_cap);
+    if (!np) return false;
+    ini->entries = (XIniEntry *)np;
+  }
+
+  size_t section_len = strlen(secname);
+  size_t key_len = strlen(key);
+  size_t value_len = strlen(value);
+  size_t section_offset = 0;
+  size_t key_offset = 0;
+  size_t value_offset = 0;
+  uintptr_t pool_addr = (uintptr_t)ini->pool;
+  uintptr_t section_addr = (uintptr_t)secname;
+  uintptr_t key_addr = (uintptr_t)key;
+  uintptr_t value_addr = (uintptr_t)value;
+  bool section_in_pool = section_addr >= pool_addr && section_addr < pool_addr + ini->pool_size;
+  bool key_in_pool = key_addr >= pool_addr && key_addr < pool_addr + ini->pool_size;
+  bool value_in_pool = value_addr >= pool_addr && value_addr < pool_addr + ini->pool_size;
+  if (section_in_pool) section_offset = (size_t)(section_addr - pool_addr);
+  if (key_in_pool) key_offset = (size_t)(key_addr - pool_addr);
+  if (value_in_pool) value_offset = (size_t)(value_addr - pool_addr);
+
+  if (!s_x_pool_reserve(ini, section_len + 1 + key_len + 1 + value_len + 1)) return false;
+  if (section_in_pool) secname = ini->pool + section_offset;
+  if (key_in_pool) key = ini->pool + key_offset;
+  if (value_in_pool) value = ini->pool + value_offset;
+
+  const char *sname = s_x_pool_add(ini, secname, section_len);
+  if (!sname) return false;
+
+  const char *kk = s_x_pool_add(ini, key, key_len);
+  if (!kk) return false;
+
+  const char *vv = s_x_pool_add(ini, value, value_len);
+  if (!vv) return false;
+
+  sidx = ini->sections_count++;
+  ini->sections[sidx].name = sname;
+  ini->sections[sidx].first_entry = ini->entries_count;
+
+  int idx = ini->entries_count++;
+  ini->entries[idx].section = sidx;
+  ini->entries[idx].key = kk;
+  ini->entries[idx].value = vv;
+
+  return true;
+}
+
+X_INI_API bool x_ini_set_i32(XIni *ini, const char *section, const char *key, int32_t value)
+{
+  char buf[32];
+  int n = snprintf(buf, sizeof(buf), "%ld", (long)value);
+  if (n < 0 || (size_t)n >= sizeof(buf)) return false;
+  return x_ini_set(ini, section, key, buf);
+}
+
+X_INI_API bool x_ini_set_u32(XIni *ini, const char *section, const char *key, uint32_t value)
+{
+  char buf[32];
+  int n = snprintf(buf, sizeof(buf), "%lu", (unsigned long)value);
+  if (n < 0 || (size_t)n >= sizeof(buf)) return false;
+  return x_ini_set(ini, section, key, buf);
+}
+
+X_INI_API bool x_ini_set_u32_hex(XIni *ini, const char *section, const char *key, uint32_t value)
+{
+  char buf[16];
+  int n = snprintf(buf, sizeof(buf), "0x%08lX", (unsigned long)value);
+  if (n < 0 || (size_t)n >= sizeof(buf)) return false;
+  return x_ini_set(ini, section, key, buf);
+}
+
+X_INI_API bool x_ini_set_f32(XIni *ini, const char *section, const char *key, float value)
+{
+  char buf[32];
+  int n = snprintf(buf, sizeof(buf), "%.9g", (double)value);
+  if (n < 0 || (size_t)n >= sizeof(buf)) return false;
+  return x_ini_set(ini, section, key, buf);
+}
+
+X_INI_API bool x_ini_set_bool(XIni *ini, const char *section, const char *key, bool value)
+{
+  return x_ini_set(ini, section, key, value ? "true" : "false");
+}
+
+static bool s_x_write_value(FILE *f, const char *value)
+{
+  bool quote = false;
+  size_t len = strlen(value);
+
+  if (len > 0 && (isspace((unsigned char)value[0]) ||
+                  isspace((unsigned char)value[len - 1])))
+  {
+    quote = true;
+  }
+
+  for (const char *p = value; *p; ++p)
+  {
+    if (*p == ';' || *p == '#' || *p == '\"' || *p == '\n' || *p == '\t')
+    {
+      quote = true;
+      break;
+    }
+  }
+
+  if (!quote)
+  {
+    return fputs(value, f) >= 0;
+  }
+
+  if (fputc('\"', f) == EOF) return false;
+
+  for (const char *p = value; *p; ++p)
+  {
+    switch (*p)
+    {
+      case '\n':
+        if (fputs("\\n", f) < 0) return false;
+        break;
+      case '\t':
+        if (fputs("\\t", f) < 0) return false;
+        break;
+      case '\\':
+        if (fputs("\\\\", f) < 0) return false;
+        break;
+      case '\"':
+        if (fputs("\\\"", f) < 0) return false;
+        break;
+      default:
+        if (*p == '\r') return false;
+        if (fputc((unsigned char)*p, f) == EOF) return false;
+        break;
+    }
+  }
+
+  return fputc('\"', f) != EOF;
+}
+
+X_INI_API bool x_ini_write_file(const char *path, const XIni *ini, XIniError *err)
+{
+  if (err) { err->code = XINI_OK; err->line = 0; err->column = 0; err->message = s_x_err_msg(XINI_OK); }
+  if (!path || !ini) { s_x_set_err(err, XINI_ERR_SYNTAX, 0, 0, "null argument"); return false; }
+
+  FILE *f = fopen(path, "wb");
+  if (!f) { s_x_set_err(err, XINI_ERR_IO, 0, 0, s_x_err_msg(XINI_ERR_IO)); return false; }
+
+  bool wrote_any_section = false;
+
+  for (int s = 0; s < ini->sections_count; ++s)
+  {
+    const XIniSection *section = &ini->sections[s];
+    bool is_global = (s == ini->global_section);
+
+    if (!is_global)
+    {
+      if (wrote_any_section)
+      {
+        if (fputc('\n', f) == EOF) goto write_error;
+      }
+
+      if (fprintf(f, "[%s]\n", section->name) < 0) goto write_error;
+      wrote_any_section = true;
+    }
+
+    for (int i = 0; i < ini->entries_count; ++i)
+    {
+      const XIniEntry *e = &ini->entries[i];
+      if (e->section != s) continue;
+
+      if (fprintf(f, "%s=", e->key) < 0) goto write_error;
+      if (!s_x_write_value(f, e->value)) goto write_error;
+      if (fputc('\n', f) == EOF) goto write_error;
+    }
+  }
+
+  if (fclose(f) != 0)
+  {
+    s_x_set_err(err, XINI_ERR_IO, 0, 0, s_x_err_msg(XINI_ERR_IO));
+    return false;
+  }
+
+  return true;
+
+write_error:
+  fclose(f);
+  s_x_set_err(err, XINI_ERR_IO, 0, 0, s_x_err_msg(XINI_ERR_IO));
+  return false;
 }
 
 X_INI_API int x_ini_section_count(const XIni *ini)
