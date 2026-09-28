@@ -26,13 +26,23 @@
 <li><a href="#x_ini_get_bool">x_ini_get_bool</a></li>
 <li><a href="#x_ini_get_f32">x_ini_get_f32</a></li>
 <li><a href="#x_ini_get_i32">x_ini_get_i32</a></li>
+<li><a href="#x_ini_get_u32">x_ini_get_u32</a></li>
 <li><a href="#x_ini_key_count">x_ini_key_count</a></li>
 <li><a href="#x_ini_key_name">x_ini_key_name</a></li>
 <li><a href="#x_ini_load_file">x_ini_load_file</a></li>
 <li><a href="#x_ini_load_mem">x_ini_load_mem</a></li>
+<li><a href="#x_ini_remove">x_ini_remove</a></li>
+<li><a href="#x_ini_remove_section">x_ini_remove_section</a></li>
 <li><a href="#x_ini_section_count">x_ini_section_count</a></li>
 <li><a href="#x_ini_section_name">x_ini_section_name</a></li>
+<li><a href="#x_ini_set">x_ini_set</a></li>
+<li><a href="#x_ini_set_bool">x_ini_set_bool</a></li>
+<li><a href="#x_ini_set_f32">x_ini_set_f32</a></li>
+<li><a href="#x_ini_set_i32">x_ini_set_i32</a></li>
+<li><a href="#x_ini_set_u32">x_ini_set_u32</a></li>
+<li><a href="#x_ini_set_u32_hex">x_ini_set_u32_hex</a></li>
 <li><a href="#x_ini_value_at">x_ini_value_at</a></li>
+<li><a href="#x_ini_write_file">x_ini_write_file</a></li>
 
         </ul>
       </details>
@@ -130,7 +140,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">X_INI_VERSION_MAJOR</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_VERSION_MAJOR</span> <span class="tok_num">3</span></code></pre>
   
   
 </article>
@@ -140,7 +150,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">X_INI_VERSION_MINOR</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_VERSION_MINOR</span> <span class="tok_num">1</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_INI_VERSION_MINOR</span> <span class="tok_num">0</span></code></pre>
   
   
 </article>
@@ -448,6 +458,39 @@ in <b>one</b> source file before including this header.</p>
 </section>
 
 </article>
+<article id="x_ini_get_u32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_get_u32</span></h2>
+  <p class="brief">Retrieve an unsigne 32-bit integer value from the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">uint32_t</span> <span class="tok_id">x_ini_get_u32</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">def_value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
+<dd>Section name.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
+<dd>Key name.</dd>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_id">def_value</span></code></dt>
+<dd>Default value returned if the key is not found or cannot be parsed.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Parsed integer value, or def_value on failure.</p>
+</section>
+
+</article>
 <article id="x_ini_get_f32" class="symbol">
   <div class="meta">
     <span class="symbol-kind">Function</span>
@@ -511,6 +554,291 @@ in <b>one</b> source file before including this header.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>Parsed boolean value, or def_value on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_set" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_set</span></h2>
+  <p class="brief">Set a string value in the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_set</span>(
+ <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
+<dd>Section name.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
+<dd>Key name.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">value</span></code></dt>
+<dd>Value string.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_set_i32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_set_i32</span></h2>
+  <p class="brief">Set a 32-bit integer value in the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_set_i32</span>(
+ <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span>,
+ <span class="tok_kw">int32_t</span> <span class="tok_id">value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
+<dd>Section name.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
+<dd>Key name.</dd>
+<dt><code><span class="tok_kw">int32_t</span> <span class="tok_id">value</span></code></dt>
+<dd>Integer value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_set_u32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_set_u32</span></h2>
+  <p class="brief">Set an unsigned 32-bit integer value in the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_set_u32</span>(
+ <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
+<dd>Section name.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
+<dd>Key name.</dd>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_id">value</span></code></dt>
+<dd>Integer value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_set_u32_hex" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_set_u32_hex</span></h2>
+  <p class="brief">Set an unsigned 32-bit integer value in hexadecimal form in the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_set_u32_hex</span>(
+ <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span>,
+ <span class="tok_kw">uint32_t</span> <span class="tok_id">value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
+<dd>Section name.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
+<dd>Key name.</dd>
+<dt><code><span class="tok_kw">uint32_t</span> <span class="tok_id">value</span></code></dt>
+<dd>Integer value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_set_f32" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_set_f32</span></h2>
+  <p class="brief">Set a 32-bit floating-point value in the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_set_f32</span>(
+ <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span>,
+ <span class="tok_kw">float</span> <span class="tok_id">value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
+<dd>Section name.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
+<dd>Key name.</dd>
+<dt><code><span class="tok_kw">float</span> <span class="tok_id">value</span></code></dt>
+<dd>Floating-point value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_set_bool" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_set_bool</span></h2>
+  <p class="brief">Set a boolean value in the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_set_bool</span>(
+ <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span>,
+ <span class="tok_kw">bool</span> <span class="tok_id">value</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
+<dd>Section name.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
+<dd>Key name.</dd>
+<dt><code><span class="tok_kw">bool</span> <span class="tok_id">value</span></code></dt>
+<dd>Boolean value.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
+</section>
+
+</article>
+<article id="x_ini_remove" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_remove</span></h2>
+  <p class="brief">Remove a key from the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_remove</span>(
+ <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
+<dd>Section name.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">key</span></code></dt>
+<dd>Key name.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if the key was removed, false if it was not found or arguments are invalid.</p>
+</section>
+
+</article>
+<article id="x_ini_remove_section" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_remove_section</span></h2>
+  <p class="brief">Remove a section and all of its keys from the INI data.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_remove_section</span>(
+ <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>Parsed INI data.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">section</span></code></dt>
+<dd>Section name.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True if the section was removed, false if it was not found or arguments are invalid.</p>
+</section>
+
+</article>
+<article id="x_ini_write_file" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_ini_write_file</span></h2>
+  <p class="brief">Write INI data to a file.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_INI_API</span> <span class="tok_kw">bool</span> <span class="tok_id">x_ini_write_file</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span>,
+ <span class="tok_kw"><a href="stdx_ini.html#XIniError">XIniError</a></span> <span class="tok_pun">*</span><span class="tok_id">err</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw">char</span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Path to the INI file.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_ini.html#XIni">XIni</a></span> <span class="tok_pun">*</span><span class="tok_id">ini</span></code></dt>
+<dd>INI data to write.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_ini.html#XIniError">XIniError</a></span> <span class="tok_pun">*</span><span class="tok_id">err</span></code></dt>
+<dd>Optional output error information (may be NULL).</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>True on success, false on failure.</p>
 </section>
 
 </article>

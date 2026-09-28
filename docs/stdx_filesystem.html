@@ -28,6 +28,7 @@
 <li><a href="#x_fs_directory_create_recursive">x_fs_directory_create_recursive</a></li>
 <li><a href="#x_fs_directory_delete">x_fs_directory_delete</a></li>
 <li><a href="#x_fs_directory_delete_recursive">x_fs_directory_delete_recursive</a></li>
+<li><a href="#x_fs_directory_parent">x_fs_directory_parent</a></li>
 <li><a href="#x_fs_directory_rename">x_fs_directory_rename</a></li>
 <li><a href="#x_fs_executable_find">x_fs_executable_find</a></li>
 <li><a href="#x_fs_file_copy">x_fs_file_copy</a></li>
@@ -58,6 +59,7 @@
 <li><a href="#x_fs_path_common_prefix">x_fs_path_common_prefix</a></li>
 <li><a href="#x_fs_path_compare">x_fs_path_compare</a></li>
 <li><a href="#x_fs_path_compare_cstr">x_fs_path_compare_cstr</a></li>
+<li><a href="#x_fs_path_copy">x_fs_path_copy</a></li>
 <li><a href="#x_fs_path_cstr">x_fs_path_cstr</a></li>
 <li><a href="#x_fs_path_dirname">x_fs_path_dirname</a></li>
 <li><a href="#x_fs_path_dirname_as_slice">x_fs_path_dirname_as_slice</a></li>
@@ -223,7 +225,7 @@ in <b>one</b> source file before including this header.</p>
   </div>
   <h2><span class="symbol-name">X_FILESYSTEM_VERSION_MINOR</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FILESYSTEM_VERSION_MINOR</span> <span class="tok_num">2</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_FILESYSTEM_VERSION_MINOR</span> <span class="tok_num">3</span></code></pre>
   
   
 </article>
@@ -2047,6 +2049,60 @@ in <b>one</b> source file before including this header.</p>
   <section class="returns">
   <h3>Returns</h3>
   <p>True if it is a directory, false otherwise.</p>
+</section>
+
+</article>
+<article id="x_fs_path_copy" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_fs_path_copy</span></h2>
+  <p class="brief">Copies a XFSPath into another XFSPath</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">size_t</span> <span class="tok_id">x_fs_path_copy</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Path to copy.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
+<dd>Where to copy path into.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>size_t size of the copy;</p>
+</section>
+
+</article>
+<article id="x_fs_directory_parent" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_fs_directory_parent</span></h2>
+  <p class="brief">Coputes the parent of path and write it into out.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_FILESYSTEM_API</span> <span class="tok_kw">void</span> <span class="tok_id">x_fs_directory_parent</span>(
+ <span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span>,
+ <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw">const</span> <span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">path</span></code></dt>
+<dd>Path to check compute parent from.</dd>
+<dt><code><span class="tok_kw"><a href="stdx_filesystem.html#XFSPath">XFSPath</a></span> <span class="tok_pun">*</span><span class="tok_id">out</span></code></dt>
+<dd>Path to write parent into.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>void</p>
 </section>
 
 </article>
