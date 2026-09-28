@@ -171,6 +171,71 @@ int test_ini_iteration_helpers()
   return 0;
 }
 
+int test_ini_remove()
+{
+  const char *txt =
+    "root = keep\n"
+    "[one]\n"
+    "a = 1\n"
+    "dup = first\n"
+    "dup = second\n"
+    "b = 2\n";
+
+  XIni ini;
+  XIniError iniError;
+  ASSERT_TRUE(x_ini_load_mem(txt, strlen(txt), &ini, &iniError));
+
+  ASSERT_TRUE(x_ini_remove(&ini, "one", "dup"));
+  ASSERT_TRUE(x_ini_get(&ini, "one", "dup", NULL) == NULL);
+  ASSERT_TRUE(x_ini_key_count(&ini, 1) == 2);
+  ASSERT_TRUE(s_eq(x_ini_key_name(&ini, 1, 0), "a"));
+  ASSERT_TRUE(s_eq(x_ini_key_name(&ini, 1, 1), "b"));
+  ASSERT_FALSE(x_ini_remove(&ini, "one", "missing"));
+  ASSERT_FALSE(x_ini_remove(&ini, "missing", "a"));
+
+  ASSERT_TRUE(x_ini_remove(&ini, NULL, "root"));
+  ASSERT_TRUE(x_ini_get(&ini, "", "root", NULL) == NULL);
+
+  x_ini_free(&ini);
+  return 0;
+}
+
+int test_ini_remove_section()
+{
+  const char *txt =
+    "root = keep\n"
+    "[one]\n"
+    "a = 1\n"
+    "[two]\n"
+    "b = 2\n"
+    "[three]\n"
+    "c = 3\n";
+
+  XIni ini;
+  XIniError iniError;
+  ASSERT_TRUE(x_ini_load_mem(txt, strlen(txt), &ini, &iniError));
+
+  ASSERT_TRUE(x_ini_remove_section(&ini, "two"));
+  ASSERT_TRUE(x_ini_section_count(&ini) == 3);
+  ASSERT_TRUE(s_eq(x_ini_section_name(&ini, 0), ""));
+  ASSERT_TRUE(s_eq(x_ini_section_name(&ini, 1), "one"));
+  ASSERT_TRUE(s_eq(x_ini_section_name(&ini, 2), "three"));
+  ASSERT_TRUE(s_eq(x_ini_get(&ini, "", "root", NULL), "keep"));
+  ASSERT_TRUE(s_eq(x_ini_get(&ini, "one", "a", NULL), "1"));
+  ASSERT_TRUE(x_ini_get(&ini, "two", "b", NULL) == NULL);
+  ASSERT_TRUE(s_eq(x_ini_get(&ini, "three", "c", NULL), "3"));
+  ASSERT_TRUE(x_ini_key_count(&ini, 2) == 1);
+  ASSERT_TRUE(s_eq(x_ini_key_name(&ini, 2, 0), "c"));
+  ASSERT_FALSE(x_ini_remove_section(&ini, "two"));
+  ASSERT_FALSE(x_ini_remove_section(&ini, ""));
+
+  ASSERT_TRUE(x_ini_set(&ini, "three", "d", "4"));
+  ASSERT_TRUE(s_eq(x_ini_get(&ini, "three", "d", NULL), "4"));
+
+  x_ini_free(&ini);
+  return 0;
+}
+
 int test_ini_malformed_1()
 {
   char *txt =
@@ -252,6 +317,8 @@ int main(void)
     X_TEST(test_ini_inline_comments_and_whitespace),
     X_TEST(test_ini_bool_variants),
     X_TEST(test_ini_iteration_helpers),
+    X_TEST(test_ini_remove),
+    X_TEST(test_ini_remove_section),
     X_TEST(test_ini_malformed_1),
     X_TEST(test_ini_malformed_2),
     X_TEST(test_ini_malformed_3),

@@ -30,7 +30,7 @@
 #define X_INI_API
 #endif
 
-#define X_INI_VERSION_MAJOR 2
+#define X_INI_VERSION_MAJOR 3
 #define X_INI_VERSION_MINOR 0
 #define X_INI_VERSION_PATCH 0
 #define X_INI_VERSION (X_INI_VERSION_MAJOR*10000 + X_INI_VERSION_MINOR*100 + X_INI_VERSION_PATCH)
@@ -252,6 +252,23 @@ X_INI_API bool x_ini_set_f32(XIni *ini, const char *section, const char *key, fl
 * @return True on success, false on failure.
 */
 X_INI_API bool x_ini_set_bool(XIni *ini, const char *section, const char *key, bool value);
+
+/**
+* @brief Remove a key from the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @param key Key name.
+* @return True if the key was removed, false if it was not found or arguments are invalid.
+*/
+X_INI_API bool x_ini_remove(XIni *ini, const char *section, const char *key);
+
+/**
+* @brief Remove a section and all of its keys from the INI data.
+* @param ini Parsed INI data.
+* @param section Section name.
+* @return True if the section was removed, false if it was not found or arguments are invalid.
+*/
+X_INI_API bool x_ini_remove_section(XIni *ini, const char *section);
 
 /**
 * @brief Write INI data to a file.
@@ -1060,6 +1077,86 @@ X_INI_API bool x_ini_set_f32(XIni *ini, const char *section, const char *key, fl
 X_INI_API bool x_ini_set_bool(XIni *ini, const char *section, const char *key, bool value)
 {
   return x_ini_set(ini, section, key, value ? "true" : "false");
+}
+
+X_INI_API bool x_ini_remove(XIni *ini, const char *section, const char *key)
+{
+  if (!ini || !ini->sections || !ini->entries || !key) return false;
+
+  const char *secname = section ? section : "";
+  int sidx = s_x_find_section(ini, secname);
+  if (sidx < 0) return false;
+
+  bool removed = false;
+  int dst = 0;
+  for (int src = 0; src < ini->entries_count; ++src)
+  {
+    XIniEntry *e = &ini->entries[src];
+    if (e->section == sidx && strcmp(e->key, key) == 0)
+    {
+      removed = true;
+      continue;
+    }
+
+    if (dst != src) ini->entries[dst] = ini->entries[src];
+    ++dst;
+  }
+
+  if (!removed) return false;
+  ini->entries_count = dst;
+
+  ini->sections[sidx].first_entry = -1;
+  for (int i = 0; i < ini->entries_count; ++i)
+  {
+    if (ini->entries[i].section == sidx)
+    {
+      ini->sections[sidx].first_entry = i;
+      break;
+    }
+  }
+
+  return true;
+}
+
+X_INI_API bool x_ini_remove_section(XIni *ini, const char *section)
+{
+  if (!ini || !ini->sections || !ini->entries) return false;
+
+  const char *secname = section ? section : "";
+  int sidx = s_x_find_section(ini, secname);
+  if (sidx < 0 || sidx == ini->global_section) return false;
+
+  int dst = 0;
+  for (int src = 0; src < ini->entries_count; ++src)
+  {
+    XIniEntry e = ini->entries[src];
+    if (e.section == sidx) continue;
+    if (e.section > sidx) --e.section;
+    ini->entries[dst++] = e;
+  }
+  ini->entries_count = dst;
+
+  for (int i = sidx; i < ini->sections_count - 1; ++i)
+  {
+    ini->sections[i] = ini->sections[i + 1];
+  }
+  --ini->sections_count;
+  if (ini->global_section > sidx) --ini->global_section;
+
+  for (int s = 0; s < ini->sections_count; ++s)
+  {
+    ini->sections[s].first_entry = -1;
+  }
+  for (int i = 0; i < ini->entries_count; ++i)
+  {
+    int entry_section = ini->entries[i].section;
+    if (ini->sections[entry_section].first_entry < 0)
+    {
+      ini->sections[entry_section].first_entry = i;
+    }
+  }
+
+  return true;
 }
 
 static bool s_x_write_value(FILE *f, const char *value)
