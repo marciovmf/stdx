@@ -96,7 +96,7 @@
 extern "C" {
 #endif
 
-#define X_ARRAY_VERSION_MAJOR 1
+#define X_ARRAY_VERSION_MAJOR 2
 #define X_ARRAY_VERSION_MINOR 0
 #define X_ARRAY_VERSION_PATCH 0
 
@@ -143,6 +143,16 @@ extern "C" {
    * @return Error code indicating success or failure.
    */
   X_ARRAY_API XArrayError x_array_add(XArray* arr, void* data);
+
+  /**
+   * @brief Append a contiguous range of elements to the end of the array.
+   * @param arr Pointer to the array.
+   * @param data Pointer to the first element in the range.
+   * @param count Number of elements to append.
+   * @return Error code indicating success or failure.
+   */
+  X_ARRAY_API XArrayError x_array_add_range(
+      XArray* arr, const void* data, size_t count);
 
   /**
    * @brief Insert an element at the specified index.
@@ -251,6 +261,10 @@ extern "C" {
   { \
     T value_copy = value; \
     return x_array_add((XArray*)arr, &value_copy); \
+  } \
+  static inline XArrayError x_array_##suffix##_add_range(XArray_##suffix* arr, const T* values, size_t count) \
+  { \
+    return x_array_add_range((XArray*)arr, (const void*)values, count); \
   } \
   static inline XArrayError x_array_##suffix##_insert_ptr(XArray_##suffix* arr, const T* value_ptr, unsigned int index) \
   { \
@@ -429,6 +443,64 @@ extern "C" {
     }
 
     arr->size++;
+    return XARRAY_OK;
+  }
+
+  XArrayError x_array_add_range(XArray* arr, const void* data, size_t count)
+  {
+    void* new_array;
+    size_t required_capacity;
+    size_t new_capacity;
+
+    X_ASSERT(arr != NULL);
+
+    if (count == 0)
+    {
+      return XARRAY_OK;
+    }
+
+    if (count > SIZE_MAX - arr->size)
+    {
+      return XARRAY_MEMORY_ALLOCATION_FAILED;
+    }
+
+    required_capacity = arr->size + count;
+    if (required_capacity > arr->capacity)
+    {
+      new_capacity = arr->capacity == 0 ? 1 : arr->capacity;
+      while (new_capacity < required_capacity)
+      {
+        if (new_capacity > SIZE_MAX / 2)
+        {
+          new_capacity = required_capacity;
+          break;
+        }
+        new_capacity *= 2;
+      }
+
+      if (arr->elementSize != 0 &&
+          new_capacity > SIZE_MAX / arr->elementSize)
+      {
+        return XARRAY_MEMORY_ALLOCATION_FAILED;
+      }
+
+      new_array = X_ARRAY_REALLOC(arr->array, new_capacity * arr->elementSize);
+      if (new_array == NULL)
+      {
+        return XARRAY_MEMORY_ALLOCATION_FAILED;
+      }
+
+      arr->array = new_array;
+      arr->capacity = new_capacity;
+    }
+
+    if (data != NULL)
+    {
+      memcpy((uint8_t*)arr->array + (arr->size * arr->elementSize),
+          data, count * arr->elementSize);
+    }
+
+    arr->size += count;
     return XARRAY_OK;
   }
 
