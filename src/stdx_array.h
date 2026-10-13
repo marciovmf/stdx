@@ -102,6 +102,9 @@ extern "C" {
 
 #define X_ARRAY_VERSION (X_ARRAY_VERSION_MAJOR * 10000 + X_ARRAY_VERSION_MINOR * 100 + X_ARRAY_VERSION_PATCH)
 
+  /**
+   * @group array.lifecycle
+   */
   typedef enum
   {
     XARRAY_OK                         = 0,  /* Success */
@@ -111,6 +114,9 @@ extern "C" {
     XARRAY_EMPTY                      = 4   /* Array is empty */
   } XArrayError;
 
+  /**
+   * @group array.lifecycle
+   */
   typedef struct XArray_t XArray;
 
   /**
@@ -118,6 +124,7 @@ extern "C" {
    * @param elementSize Size in bytes of a single element stored in the array.
    * @param capacity Initial number of elements the array can hold.
    * @return Pointer to the newly created array, or NULL on failure.
+   * @group array.lifecycle
    */
   X_ARRAY_API XArray* x_array_create(size_t elementSize, size_t capacity);
 
@@ -126,6 +133,7 @@ extern "C" {
    * @param arr Pointer to the array.
    * @param index Zero-based index of the element.
    * @return Pointer to the element at the given index.
+   * @group array.access
    */
   X_ARRAY_API void* x_array_get(XArray* arr, unsigned int index);
 
@@ -133,6 +141,7 @@ extern "C" {
    * @brief Get a pointer to the underlying data buffer.
    * @param arr Pointer to the array.
    * @return Pointer to the internal contiguous data storage.
+   * @group array.access
    */
   X_ARRAY_API void* x_array_data(XArray* arr);
 
@@ -141,6 +150,7 @@ extern "C" {
    * @param arr Pointer to the array.
    * @param data Pointer to the element data to copy into the array.
    * @return Error code indicating success or failure.
+   * @group array.modification
    */
   X_ARRAY_API XArrayError x_array_add(XArray* arr, void* data);
 
@@ -150,6 +160,7 @@ extern "C" {
    * @param data Pointer to the first element in the range.
    * @param count Number of elements to append.
    * @return Error code indicating success or failure.
+   * @group array.modification
    */
   X_ARRAY_API XArrayError x_array_add_range(
       XArray* arr, const void* data, size_t count);
@@ -160,6 +171,7 @@ extern "C" {
    * @param data Pointer to the element data to copy into the array.
    * @param index Index at which the element will be inserted.
    * @return Error code indicating success or failure.
+   * @group array.modification
    */
   X_ARRAY_API XArrayError x_array_insert(XArray* arr, void* data, unsigned int index);
 
@@ -169,6 +181,7 @@ extern "C" {
    * @param start Index of the first element to delete.
    * @param end Index of the last element to delete (inclusive).
    * @return Error code indicating success or failure.
+   * @group array.modification
    */
   X_ARRAY_API XArrayError x_array_delete_range(XArray* arr, unsigned int start, unsigned int end);
 
@@ -176,6 +189,7 @@ extern "C" {
    * @brief Remove all elements from the array without freeing its storage.
    * @param arr Pointer to the array.
    * @return Nothing.
+   * @group array.modification
    */
   X_ARRAY_API void x_array_clear(XArray* arr);
 
@@ -184,6 +198,7 @@ extern "C" {
    * @param arr Pointer to the array.
    * @param index Index of the element to remove.
    * @return Nothing.
+   * @group array.modification
    */
   X_ARRAY_API void x_array_delete_at(XArray* arr, unsigned int index);
 
@@ -191,6 +206,7 @@ extern "C" {
    * @brief Destroy the array and free all associated memory.
    * @param arr Pointer to the array.
    * @return Nothing.
+   * @group array.lifecycle
    */
   X_ARRAY_API void x_array_destroy(XArray* arr);
 
@@ -198,6 +214,7 @@ extern "C" {
    * @brief Get the number of elements currently stored in the array.
    * @param arr Pointer to the array.
    * @return Number of elements in the array.
+   * @group array.access
    */
   X_ARRAY_API uint32_t x_array_count(XArray* arr);
 
@@ -205,6 +222,7 @@ extern "C" {
    * @brief Get the current capacity of the array.
    * @param arr Pointer to the array.
    * @return Maximum number of elements the array can hold without resizing.
+   * @group array.access
    */
   X_ARRAY_API uint32_t x_array_capacity(XArray* arr);
 
@@ -213,6 +231,7 @@ extern "C" {
    * @param array Pointer to the array.
    * @param value Pointer to the element data to copy into the array.
    * @return Nothing.
+   * @group array.modification
    */
   X_ARRAY_API void x_array_push(XArray* array, void* value);
 
@@ -220,6 +239,7 @@ extern "C" {
    * @brief Remove the last element from the array.
    * @param array Pointer to the array.
    * @return Nothing.
+   * @group array.modification
    */
   X_ARRAY_API void x_array_pop(XArray* array);
 
@@ -227,6 +247,7 @@ extern "C" {
    * @brief Get a pointer to the last element in the array.
    * @param array Pointer to the array.
    * @return Pointer to the last element.
+   * @group array.access
    */
   X_ARRAY_API void* x_array_back(XArray* array);
 
@@ -234,15 +255,22 @@ extern "C" {
    * @brief Check whether the array is empty.
    * @param array Pointer to the array.
    * @return True if the array contains no elements, false otherwise.
+   * @group array.access
    */
   X_ARRAY_API bool x_array_is_empty(XArray* array);
 
 
   /* Declare a typed array alias and typed inline wrappers. */
+/**
+ * @group array.typed
+ */
 #define X_ARRAY_TYPE(T) \
   X_ARRAY_TYPE_NAMED(T, T)
 
   /* Use this form for multi-token types such as unsigned int or struct Foo. */
+/**
+ * @group array.typed
+ */
 #define X_ARRAY_TYPE_NAMED(T, suffix) \
   typedef XArray XArray_##suffix; \
   static inline XArray_##suffix* x_array_##suffix##_create(size_t capacity) \

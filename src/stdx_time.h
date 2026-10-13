@@ -55,6 +55,7 @@ extern "C" {
    * @brief Get the elapsed time since a timer was started.
    * @param t Pointer to an initialized timer.
    * @return Elapsed time as an XTime value.
+   * @group time.timers
    */
   XTime x_timer_elapsed(const XTimer* t);
 
@@ -62,6 +63,7 @@ extern "C" {
    * @brief Convert a time value to milliseconds.
    * @param t Time value to convert.
    * @return Time in milliseconds.
+   * @group time.conversion
    */
   double x_time_milliseconds(XTime t);
 
@@ -69,6 +71,7 @@ extern "C" {
    * @brief Convert a time value to microseconds.
    * @param t Time value to convert.
    * @return Time in microseconds.
+   * @group time.conversion
    */
   double x_time_microseconds(XTime t);
 
@@ -76,6 +79,7 @@ extern "C" {
    * @brief Convert a time value to nanoseconds.
    * @param t Time value to convert.
    * @return Time in nanoseconds.
+   * @group time.conversion
    */
   double x_time_nanoseconds(XTime t);
 
@@ -84,6 +88,7 @@ extern "C" {
    * @param end End time.
    * @param start Start time.
    * @return Difference between end and start.
+   * @group time.arithmetic
    */
   XTime x_time_diff(XTime end, XTime start);
 
@@ -92,6 +97,7 @@ extern "C" {
    * @param a First time value.
    * @param b Second time value.
    * @return Sum of a and b.
+   * @group time.arithmetic
    */
   XTime x_time_add(XTime a, XTime b);
 
@@ -100,6 +106,7 @@ extern "C" {
    * @param a Minuend time value.
    * @param b Subtrahend time value.
    * @return Result of a minus b.
+   * @group time.arithmetic
    */
   XTime x_time_sub(XTime a, XTime b);
 
@@ -108,6 +115,7 @@ extern "C" {
    * @param a First time value.
    * @param b Second time value.
    * @return Non-zero if equal, zero otherwise.
+   * @group time.comparison
    */
   int32_t x_time_equals(XTime a, XTime b);
 
@@ -116,6 +124,7 @@ extern "C" {
    * @param a First time value.
    * @param b Second time value.
    * @return Non-zero if a < b, zero otherwise.
+   * @group time.comparison
    */
   int32_t x_time_less_than(XTime a, XTime b);
 
@@ -124,18 +133,21 @@ extern "C" {
    * @param a First time value.
    * @param b Second time value.
    * @return Non-zero if a > b, zero otherwise.
+   * @group time.comparison
    */
   int32_t x_time_greater_than(XTime a, XTime b);
 
   /**
    * @brief Sleep the current thread for the specified duration.
    * @param t Duration to sleep.
+   * @group time.clock
    */
   void x_time_sleep(XTime t);
 
   /**
    * @brief Get the current wall-clock time.
    * @return Current time since the Unix epoch.
+   * @group time.clock
    */
   XTime x_time_now(void);
 

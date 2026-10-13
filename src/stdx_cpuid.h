@@ -57,6 +57,9 @@ extern "C" {
     CPU_FEATURE_CRC32   = 1 << 18,
   } CPUFeature;
 
+  /**
+   * @group cpuid
+   */
   typedef struct
   {
     int logical_cpus;
@@ -76,6 +79,7 @@ extern "C" {
    * The caller owns the returned structure and no dynamic memory is involved.
    * @return Structure containing CPU topology, cache sizes,
    * brand string, and supported feature flags.
+   * @group cpuid
    */
   X_CPUID_API XCPUInfo x_cpu_info(void);
 

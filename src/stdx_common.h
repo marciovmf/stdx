@@ -78,7 +78,13 @@ extern "C" {
   // ----------------------------------------------------------------------------
 
 #if defined(X_PLAT_COMPILER_GCC) || defined(X_PLAT_COMPILER_CLANG)
+/**
+ * @group common.optimization
+ */
 #define X_LIKELY(x)   __builtin_expect(!!(x), 1)
+/**
+ * @group common.optimization
+ */
 #define X_UNLIKELY(x) __builtin_expect(!!(x), 0)
 #else
 #define X_LIKELY(x)   (x)
@@ -163,11 +169,26 @@ extern "C" {
   // -----------------------------------------------------------------------------
   // Bit manipulation macros
   // -----------------------------------------------------------------------------
+/**
+ * @group common.bits
+ */
 
 #define X_BIT_SET(var, bit)    ((var) |=  (1U << (bit)))
+/**
+ * @group common.bits
+ */
 #define X_BIT_CLEAR(var, bit)  ((var) &= ~(1U << (bit)))
+/**
+ * @group common.bits
+ */
 #define X_BIT_TOGGLE(var, bit) ((var) ^=  (1U << (bit)))
+/**
+ * @group common.bits
+ */
 #define X_BIT_CHECK(var, bit)  (((var) &  (1U << (bit))) != 0)
+/**
+ * @group common.utilities
+ */
 #define X_UNUSED(x) (void)(x) // mark a function argument as unused
 
 
@@ -177,8 +198,14 @@ extern "C" {
   //  - Requires C99 or later (for compound literals).
   //  - The pointer must not be stored or used after the function call.
   // -----------------------------------------------------------------------------
+/**
+ * @group common.utilities
+ */
 
 #define X_VALUE_PTR(type, val) ((const void*)&(type){ (val) })
+/**
+ * @group common.utilities
+ */
 #define X_VALUE_TYPE_PTR(type, val) ((const type*)&(type){ (val) })
 
 
@@ -187,19 +214,43 @@ extern "C" {
   // Used for functions that return a pointers but may fail.
   // -----------------------------------------------------------------------------
   
+  /**
+   * @group common.results
+   */
   typedef struct XPtr_t XPtr;
   struct XPtr_t
   {
     int error;
     void *ptr;
   };
+/**
+ * @group common.results
+ */
 
 #define X_PTR_OK(p)      ((XPtr){ .error = 0, .ptr = (p) })
+/**
+ * @group common.results
+ */
 #define X_PTR_ERR(e)     ((XPtr){ .error = (e), .ptr = 0 })
+/**
+ * @group common.results
+ */
 #define X_PTR_IS_ERR(r)  ((r).error != 0)
+/**
+ * @group common.results
+ */
 #define X_PTR_IS_OK(r)   ((r).error == 0)
+/**
+ * @group common.results
+ */
 #define X_PTR_GET_PTR(r) ((r).is_error ? NULL : (r).ptr)
+/**
+ * @group common.results
+ */
 #define X_PTR_GET_ERR(r) ((r).error)
+/**
+ * @group common.results
+ */
 #define X_PTR_CAST(r, T) ((r).is_error ? NULL : (T)(r).ptr)
 
 
@@ -240,6 +291,9 @@ extern "C" {
   typedef struct XPoint_t { i32 x, y; } XPoint;
 
 #ifndef X_ARRAY_COUNT
+/**
+ * @group common.arrays
+ */
 #define X_ARRAY_COUNT(a) (sizeof(a)/sizeof((a)[0]))
 #endif
 
@@ -252,6 +306,9 @@ extern "C" {
 
 #ifdef DEBUG
 #include <stdlib.h>
+/**
+ * @group common.assertions
+ */
 #define X_ASSERT(expr) \
   do { \
     if (!(expr)) { \

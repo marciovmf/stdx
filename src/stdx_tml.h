@@ -326,12 +326,18 @@ extern "C" {
   typedef int64_t  i64;
   typedef double   f64;
 
+  /**
+   * @group tml.entries.values
+   */
   typedef struct TMLString
   {
     char const* data;
     u32 size;
   } TMLString;
 
+  /**
+   * @group tml.entries.values
+   */
   typedef enum TMLValueType
   {
     TML_VALUE_BOOL,
@@ -343,30 +349,45 @@ extern "C" {
     TML_VALUE_ARRAY_STRING
   } TMLValueType;
 
+  /**
+   * @group tml.entries.values
+   */
   typedef struct TMLArray
   {
     u32 first;
     u32 count;
   } TMLArray;
 
+  /**
+   * @group tml.entries.values
+   */
   typedef struct TMLI64Slice
   {
     i64 const* data;
     u32 count;
   } TMLI64Slice;
 
+  /**
+   * @group tml.entries.values
+   */
   typedef struct TMLF64Slice
   {
     f64 const* data;
     u32 count;
   } TMLF64Slice;
 
+  /**
+   * @group tml.entries.values
+   */
   typedef struct TMLStringSlice
   {
     TMLString const* data;
     u32 count;
   } TMLStringSlice;
   
+  /**
+   * @group tml.entries.navigation
+   */
   typedef struct TMLEntry
   {
     TMLString name;
@@ -384,6 +405,9 @@ extern "C" {
     };
   } TMLEntry;
 
+  /**
+   * @group tml.nodes.navigation
+   */
   typedef struct TMLNode
   {
     TMLString name;
@@ -400,6 +424,9 @@ extern "C" {
     u32 entry_count;
   } TMLNode;
 
+  /**
+   * @group tml.document
+   */
   typedef struct TMLDocument
   {
     void* memory;
@@ -425,6 +452,9 @@ extern "C" {
     u32 root_node_count;
   } TMLDocument;
 
+  /**
+   * @group tml.parsing
+   */
   typedef struct TMLParseResult
   {
     int ok;
@@ -439,6 +469,7 @@ extern "C" {
    * @param doc Pointer to the document returned by tml_parse().
    *
    * The document and all associated internal memory become invalid after this call.
+   * @group tml.document
    */
   X_TML_API void tml_document_free(TMLDocument* doc);
 
@@ -459,6 +490,7 @@ extern "C" {
    * The returned document must be released with:
    *
    *   tml_document_free()
+   * @group tml.parsing
    */
   X_TML_API TMLParseResult tml_parse(char const* source);
 
@@ -469,6 +501,7 @@ extern "C" {
    * @return Pointer to the node, or NULL if the index is invalid.
    *
    * Nodes are stored sequentially in document order.
+   * @group tml.nodes.navigation
    */
   X_TML_API TMLNode const* tml_node_at(TMLDocument const* doc, u32 index);
 
@@ -479,6 +512,7 @@ extern "C" {
    * @return Pointer to the entry, or NULL if the index is invalid.
    *
    * Entries are stored sequentially in document order.
+   * @group tml.entries.navigation
    */
   X_TML_API TMLEntry const* tml_entry_at(TMLDocument const* doc, u32 index);
 
@@ -487,6 +521,7 @@ extern "C" {
    * @param doc Pointer to the parsed document.
    * @param index Zero-based root node index.
    * @return Pointer to the root node, or NULL if the index is invalid.
+   * @group tml.nodes.navigation
    */
   X_TML_API TMLNode const* tml_root_node_at(TMLDocument const* doc, u32 index);
 
@@ -498,6 +533,7 @@ extern "C" {
    * @return Pointer to the child node, or NULL if the index is invalid.
    *
    * Child indices are stable and include both named and anonymous nodes.
+   * @group tml.nodes.navigation
    */
   X_TML_API TMLNode const* tml_node_child_at(TMLDocument const* doc, TMLNode const* node, u32 index);
 
@@ -507,6 +543,7 @@ extern "C" {
    * @param node Pointer to the parent node.
    * @param index Zero-based entry index.
    * @return Pointer to the entry, or NULL if the index is invalid.
+   * @group tml.nodes.navigation
    */
   X_TML_API TMLEntry const* tml_node_entry_at(TMLDocument const* doc, TMLNode const* node, u32 index);
 
@@ -516,6 +553,7 @@ extern "C" {
    * @param node Pointer to the parent node.
    * @param name Child node name.
    * @return Pointer to the matching child node, or NULL if no child matches.
+   * @group tml.nodes.navigation
    */
   X_TML_API TMLNode const* tml_node_find_child(TMLDocument const* doc, TMLNode const* node, char const* name);
 
@@ -525,6 +563,7 @@ extern "C" {
    * @param node Pointer to the parent node.
    * @param name Entry name.
    * @return Pointer to the matching entry, or NULL if no entry matches.
+   * @group tml.nodes.navigation
    */
   X_TML_API TMLEntry const* tml_node_find_entry(TMLDocument const* doc, TMLNode const* node, char const* name);
 
@@ -533,6 +572,7 @@ extern "C" {
    * @param entry Pointer to the entry.
    * @param out_value Output boolean value.
    * @return Non-zero on success, 0 if the entry is NULL or not a boolean.
+   * @group tml.entries.values
    */
   X_TML_API int tml_entry_get_bool(TMLEntry const* entry, u8* out_value);
 
@@ -541,6 +581,7 @@ extern "C" {
    * @param entry Pointer to the entry.
    * @param out_value Output integer value.
    * @return Non-zero on success, 0 if the entry is NULL or not an integer.
+   * @group tml.entries.values
    */
   X_TML_API int tml_entry_get_i64(TMLEntry const* entry, i64* out_value);
 
@@ -549,6 +590,7 @@ extern "C" {
    * @param entry Pointer to the entry.
    * @param out_value Output floating point value.
    * @return Non-zero on success, 0 if the entry is NULL or not a float.
+   * @group tml.entries.values
    */
   X_TML_API int tml_entry_get_f64(TMLEntry const* entry, f64* out_value);
 
@@ -557,6 +599,7 @@ extern "C" {
    * @param entry Pointer to the entry.
    * @param out_value Output string view.
    * @return Non-zero on success, 0 if the entry is NULL or not a string.
+   * @group tml.entries.values
    */
   X_TML_API int tml_entry_get_string(TMLEntry const* entry, TMLString* out_value);
 
@@ -566,6 +609,7 @@ extern "C" {
    * @param entry Pointer to the entry.
    * @param out_value Output array slice.
    * @return Non-zero on success, 0 if the entry is NULL or not an i64 array.
+   * @group tml.entries.values
    */
   X_TML_API int tml_entry_get_i64_array(TMLDocument const* doc, TMLEntry const* entry, TMLI64Slice* out_value);
 
@@ -575,6 +619,7 @@ extern "C" {
    * @param entry Pointer to the entry.
    * @param out_value Output array slice.
    * @return Non-zero on success, 0 if the entry is NULL or not an f64 array.
+   * @group tml.entries.values
    */
   X_TML_API int tml_entry_get_f64_array(TMLDocument const* doc, TMLEntry const* entry, TMLF64Slice* out_value);
 
@@ -584,6 +629,7 @@ extern "C" {
    * @param entry Pointer to the entry.
    * @param out_value Output array slice.
    * @return Non-zero on success, 0 if the entry is NULL or not a string array.
+   * @group tml.entries.values
    */
   X_TML_API int tml_entry_get_string_array(TMLDocument const* doc, TMLEntry const* entry, TMLStringSlice* out_value);
 
@@ -594,6 +640,7 @@ extern "C" {
    * @param name Name of the entry.
    * @param out_value Output boolean value.
    * @return Non-zero on success, 0 if the entry does not exist or is not a boolean.
+   * @group tml.nodes.values
    */
   X_TML_API int tml_node_get_bool(TMLDocument const* doc, TMLNode const* node, char const* name, u8* out_value);
 
@@ -604,6 +651,7 @@ extern "C" {
    * @param name Name of the entry.
    * @param out_value Output integer value.
    * @return Non-zero on success, 0 if the entry does not exist or is not an integer.
+   * @group tml.nodes.values
    */
   X_TML_API int tml_node_get_i64(TMLDocument const* doc, TMLNode const* node, char const* name, i64* out_value);
 
@@ -614,6 +662,7 @@ extern "C" {
    * @param name Name of the entry.
    * @param out_value Output floating point value.
    * @return Non-zero on success, 0 if the entry does not exist or is not a float.
+   * @group tml.nodes.values
    */
   X_TML_API int tml_node_get_f64(TMLDocument const* doc, TMLNode const* node, char const* name, f64* out_value);
 
@@ -624,6 +673,7 @@ extern "C" {
    * @param name Name of the entry.
    * @param out_value Output string view.
    * @return Non-zero on success, 0 if the entry does not exist or is not a string.
+   * @group tml.nodes.values
    */
   X_TML_API int tml_node_get_string(TMLDocument const* doc, TMLNode const* node, char const* name, TMLString* out_value);
 
@@ -634,6 +684,7 @@ extern "C" {
    * @param name Name of the entry.
    * @param out_value Output array slice.
    * @return Non-zero on success, 0 if the entry does not exist or is not an i64 array.
+   * @group tml.nodes.values
    */
   X_TML_API int tml_node_get_i64_array(TMLDocument const* doc, TMLNode const* node, char const* name, TMLI64Slice* out_value);
 
@@ -644,6 +695,7 @@ extern "C" {
    * @param name Name of the entry.
    * @param out_value Output array slice.
    * @return Non-zero on success, 0 if the entry does not exist or is not an f64 array.
+   * @group tml.nodes.values
    */
   X_TML_API int tml_node_get_f64_array(TMLDocument const* doc, TMLNode const* node, char const* name, TMLF64Slice* out_value);
 
@@ -654,6 +706,7 @@ extern "C" {
    * @param name Name of the entry.
    * @param out_value Output array slice.
    * @return Non-zero on success, 0 if the entry does not exist or is not a string array.
+   * @group tml.nodes.values
    */
   X_TML_API int tml_node_get_string_array(TMLDocument const* doc, TMLNode const* node, char const* name, TMLStringSlice* out_value);
 
@@ -670,6 +723,7 @@ extern "C" {
    * Example:
    *
    *   scene.objects.1
+   * @group tml.paths
    */
   X_TML_API TMLNode const* tml_path_find_node(TMLDocument const* doc, char const* path);
 
@@ -684,6 +738,7 @@ extern "C" {
    * Example:
    *
    *   scene.objects.1.position
+   * @group tml.paths
    */
   X_TML_API TMLEntry const* tml_path_find_entry(TMLDocument const* doc, char const* path);
 
@@ -693,6 +748,7 @@ extern "C" {
    * @param path Dot-separated entry path.
    * @param out_value Output boolean value.
    * @return Non-zero on success, 0 if the path does not resolve or the value is not a boolean.
+   * @group tml.paths
    */
   X_TML_API int tml_path_get_bool(TMLDocument const* doc, char const* path, u8* out_value);
 
@@ -702,6 +758,7 @@ extern "C" {
    * @param path Dot-separated entry path.
    * @param out_value Output integer value.
    * @return Non-zero on success, 0 if the path does not resolve or the value is not an integer.
+   * @group tml.paths
    */
   X_TML_API int tml_path_get_i64(TMLDocument const* doc, char const* path, i64* out_value);
 
@@ -711,6 +768,7 @@ extern "C" {
    * @param path Dot-separated entry path.
    * @param out_value Output floating point value.
    * @return Non-zero on success, 0 if the path does not resolve or the value is not a float.
+   * @group tml.paths
    */
   X_TML_API int tml_path_get_f64(TMLDocument const* doc, char const* path, f64* out_value);
 
@@ -720,6 +778,7 @@ extern "C" {
    * @param path Dot-separated entry path.
    * @param out_value Output string view.
    * @return Non-zero on success, 0 if the path does not resolve or the value is not a string.
+   * @group tml.paths
    */
   X_TML_API int tml_path_get_string(TMLDocument const* doc, char const* path, TMLString* out_value);
 
@@ -729,6 +788,7 @@ extern "C" {
    * @param path Dot-separated entry path.
    * @param out_value Output array slice.
    * @return Non-zero on success, 0 if the path does not resolve or the value is not an i64 array.
+   * @group tml.paths
    */
   X_TML_API int tml_path_get_i64_array(TMLDocument const* doc, char const* path, TMLI64Slice* out_value);
 
@@ -738,6 +798,7 @@ extern "C" {
    * @param path Dot-separated entry path.
    * @param out_value Output array slice.
    * @return Non-zero on success, 0 if the path does not resolve or the value is not an f64 array.
+   * @group tml.paths
    */
   X_TML_API int tml_path_get_f64_array(TMLDocument const* doc, char const* path, TMLF64Slice* out_value);
 
@@ -747,6 +808,7 @@ extern "C" {
    * @param path Dot-separated entry path.
    * @param out_value Output array slice.
    * @return Non-zero on success, 0 if the path does not resolve or the value is not a string array.
+   * @group tml.paths
    */
   X_TML_API int tml_path_get_string_array(TMLDocument const* doc, char const* path, TMLStringSlice* out_value);
 

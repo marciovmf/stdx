@@ -34,6 +34,7 @@
 /**
  * Default buffer size for log messages.
  * Can be overriden before including this header
+ * @group log.configuration
  */
 #define X_LOG_BUFFER_SIZE (1024 * 4)
 #endif  // X_LOG_BUFFER_SIZE
@@ -53,6 +54,9 @@
 extern "C" {
 #endif
 
+  /**
+   * @group log.configuration
+   */
   typedef enum
   {
     XLOG_LEVEL_DEBUG = 0,
@@ -62,6 +66,9 @@ extern "C" {
     XLOG_LEVEL_FATAL,
   } XLogLevel;
 
+  /**
+   * @group log.configuration
+   */
   typedef enum
   {
     XLOG_OUTPUT_NONE       = 0,
@@ -70,6 +77,9 @@ extern "C" {
     XLOG_OUTPUT_BOTH       = XLOG_OUTPUT_CONSOLE | XLOG_OUTPUT_FILE,
   } XLogOutputFlags;
 
+  /**
+   * @group log.configuration
+   */
   typedef enum
   {
     XLOG_PLAIN      = 0,
@@ -86,9 +96,13 @@ extern "C" {
    * @param user Opaque observer data.
    * @note The observer must not log recursively. Register/remove observers
    *       only while no other thread is executing a log operation.
+   * @group log.listeners
    */
   typedef void (*XLogListener)(XLogLevel level, const char* message, void* user);
 
+  /**
+   * @group log.configuration
+   */
   typedef struct
   {
     FILE* console;           /* Console output stream (stdout/stderr). Defaults to stdout. */
@@ -103,6 +117,9 @@ extern "C" {
 #endif
   } XLogger;
 
+  /**
+   * @group log.configuration
+   */
   typedef enum
   {
     XLOG_COLOR_DEFAULT,
@@ -130,11 +147,13 @@ extern "C" {
    * @param outputs Bitmask specifying enabled log outputs (console, file, etc.).
    * @param level Minimum log level to emit.
    * @param filename Optional file path for file output, or NULL if unused.
+   * @group log.configuration
    */
   void x_log_init(XLogger* logger, XLogOutputFlags outputs, XLogLevel level, const char* filename);
 
   /**
    * @brief Shutdown the logging system and release resources.
+   * @group log.configuration
    */
   void x_log_close(XLogger* logger);
 
@@ -143,11 +162,13 @@ extern "C" {
    *
    * This does not affect file logging configured via x_log_init() (XLOG_OUTPUT_FILE).
    * Passing NULL resets to stdout.
+   * @group log.configuration
    */
   void x_log_set_console(XLogger* logger, FILE* out);
 
   /**
    * @brief Get the current console output stream (never NULL; defaults to stdout).
+   * @group log.configuration
    */
   FILE* x_log_get_console(const XLogger* logger);
 
@@ -157,6 +178,7 @@ extern "C" {
    * @param listener Observer callback, or NULL to remove it.
    * @param user Observer context, ignored when listener is NULL.
    * @note Registration and removal require no concurrent logging operations.
+   * @group log.listeners
    */
   void x_log_listener_set(XLogger* logger, XLogListener listener, void* user);
 
@@ -171,6 +193,7 @@ extern "C" {
    * @param line Source line number.
    * @param func Source function name.
    * @param fmt printf-style format string.
+   * @group log.messages
    */
   void x_log_message(
       XLogger* logger,
@@ -191,6 +214,7 @@ extern "C" {
    * If console output is enabled (XLOG_OUTPUT_CONSOLE), the message is written to `out` when non-NULL.
    * If `out` is NULL, the logger's default console stream is used.
    * File output configured via x_log_init() is still honored when XLOG_OUTPUT_FILE is enabled.
+   * @group log.messages
    */
   void x_log_message_to(
       XLogger* logger,
@@ -211,6 +235,7 @@ extern "C" {
    * @param logger Logger context.
    * @param level Log severity level.
    * @param fmt printf-style format string.
+   * @group log.messages
    */
   void x_log_print(XLogger* logger, XLogLevel level, const char* fmt, ...);
 
@@ -228,31 +253,36 @@ extern "C" {
  * @brief Emit a raw log message with explicit formatting and components.
  *
  * Automatically injects source file, line, and function information.
- */
+  * @group log.messages
+*/
 #define x_log_raw(logger, out, level, fg, bg, components, fmt, ...) \
   x_log_message_to((logger), (out), (level), (fg), (bg), (components), __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
 /**
  * @brief Emit a debug-level log message.
- */
+  * @group log.messages
+*/
 #define x_log_debug(logger, fmt, ...) \
   x_log_message((logger), XLOG_LEVEL_DEBUG, XLOG_COLOR_BLUE, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
 /**
  * @brief Emit an informational log message with timestamp.
- */
+  * @group log.messages
+*/
 #define x_log_info(logger, fmt, ...) \
   x_log_message((logger), XLOG_LEVEL_INFO, XLOG_COLOR_WHITE, XLOG_COLOR_BLACK, XLOG_TIMESTAMP, __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
 /**
  * @brief Emit a warning-level log message.
- */
+  * @group log.messages
+*/
 #define x_log_warning(logger, fmt, ...) \
   x_log_message((logger), XLOG_LEVEL_WARNING, XLOG_COLOR_YELLOW, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
 /**
  * @brief Emit an error-level log message.
- */
+  * @group log.messages
+*/
 #define x_log_error(logger, fmt, ...) \
   x_log_message((logger), XLOG_LEVEL_ERROR, XLOG_COLOR_RED, XLOG_COLOR_BLACK, XLOG_DEFAULT, __FILE__, __LINE__, __func__, (fmt), ##__VA_ARGS__)
 
@@ -260,7 +290,8 @@ extern "C" {
  * @brief Emit a fatal log message and trigger a break action.
  *
  * Calls X_LOG_BREAK() after logging.
- */
+  * @group log.messages
+*/
 #define x_log_fatal(logger, fmt, ...) \
   do \
   { \

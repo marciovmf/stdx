@@ -46,6 +46,7 @@ extern "C" {
 
 /**
  * @brief Ini parsing status.
+ * @group ini.document
  */
 typedef enum XIniErrorCode
 {
@@ -60,6 +61,7 @@ typedef enum XIniErrorCode
 
 /**
  * @brief Ini error information
+ * @group ini.document
  */
 typedef struct XIniError
 {
@@ -72,6 +74,7 @@ typedef struct XIniError
 
 /**
  * @brief Ini section information
+ * @group ini.document
  */
 typedef struct XIniSection
 {
@@ -81,6 +84,7 @@ typedef struct XIniSection
 
 /**
  * @brief Ini Entry
+ * @group ini.document
  */
 typedef struct XIniEntry
 {
@@ -92,6 +96,7 @@ typedef struct XIniEntry
 
 /**
  * @brief Represents a parsed INI source
+ * @group ini.document
  */
 typedef struct XIni
 {
@@ -116,6 +121,7 @@ typedef struct XIni
 * @param out_ini Output structure receiving the parsed INI data.
 * @param err Optional output error information (may be NULL).
 * @return True on success, false on failure.
+* @group ini.document
 */
 X_INI_API bool x_ini_load_file(const char *path, XIni *out_ini, XIniError *err);
 
@@ -126,6 +132,7 @@ X_INI_API bool x_ini_load_file(const char *path, XIni *out_ini, XIniError *err);
 * @param out_ini Output structure receiving the parsed INI data.
 * @param err Optional output error information (may be NULL).
 * @return True on success, false on failure.
+* @group ini.document
 */
 X_INI_API bool x_ini_load_mem(const void *data, size_t size, XIni *out_ini, XIniError *err);
 
@@ -133,6 +140,7 @@ X_INI_API bool x_ini_load_mem(const void *data, size_t size, XIni *out_ini, XIni
 * @brief Free all resources associated with an INI structure.
 * @param ini INI structure to free.
 * @return Nothing.
+* @group ini.document
 */
 X_INI_API void x_ini_free(XIni *ini);
 
@@ -140,6 +148,7 @@ X_INI_API void x_ini_free(XIni *ini);
 * @brief Get a human-readable string for an INI error code.
 * @param code Error code.
 * @return Pointer to a static, thread-safe error string.
+* @group ini.document
 */
 X_INI_API const char* x_ini_err_str(XIniErrorCode code);
 
@@ -150,6 +159,7 @@ X_INI_API const char* x_ini_err_str(XIniErrorCode code);
 * @param key Key name.
 * @param def_value Default value returned if the key is not found.
 * @return Pointer to the value string, or def_value if not found.
+* @group ini.read
 */
 X_INI_API const char* x_ini_get(const XIni *ini, const char *section, const char *key, const char *def_value);
 
@@ -160,6 +170,7 @@ X_INI_API const char* x_ini_get(const XIni *ini, const char *section, const char
 * @param key Key name.
 * @param def_value Default value returned if the key is not found or cannot be parsed.
 * @return Parsed integer value, or def_value on failure.
+* @group ini.read
 */
 X_INI_API int32_t x_ini_get_i32(const XIni *ini, const char *section, const char *key, int32_t def_value);
 
@@ -170,6 +181,7 @@ X_INI_API int32_t x_ini_get_i32(const XIni *ini, const char *section, const char
 * @param key Key name.
 * @param def_value Default value returned if the key is not found or cannot be parsed.
 * @return Parsed integer value, or def_value on failure.
+* @group ini.read
 */
  X_INI_API uint32_t x_ini_get_u32(const XIni *ini, const char *section, const char *key, uint32_t def_value);
 
@@ -180,6 +192,7 @@ X_INI_API int32_t x_ini_get_i32(const XIni *ini, const char *section, const char
 * @param key Key name.
 * @param def_value Default value returned if the key is not found or cannot be parsed.
 * @return Parsed floating-point value, or def_value on failure.
+* @group ini.read
 */
 X_INI_API float x_ini_get_f32(const XIni *ini, const char *section, const char *key, float def_value);
 
@@ -190,6 +203,7 @@ X_INI_API float x_ini_get_f32(const XIni *ini, const char *section, const char *
 * @param key Key name.
 * @param def_value Default value returned if the key is not found or cannot be parsed.
 * @return Parsed boolean value, or def_value on failure.
+* @group ini.read
 */
 X_INI_API bool x_ini_get_bool(const XIni *ini, const char *section, const char *key, bool def_value);
 
@@ -200,6 +214,7 @@ X_INI_API bool x_ini_get_bool(const XIni *ini, const char *section, const char *
 * @param key Key name.
 * @param value Value string.
 * @return True on success, false on failure.
+* @group ini.write
 */
 X_INI_API bool x_ini_set(XIni *ini, const char *section, const char *key, const char *value);
 
@@ -210,6 +225,7 @@ X_INI_API bool x_ini_set(XIni *ini, const char *section, const char *key, const 
 * @param key Key name.
 * @param value Integer value.
 * @return True on success, false on failure.
+* @group ini.write
 */
 X_INI_API bool x_ini_set_i32(XIni *ini, const char *section, const char *key, int32_t value);
 
@@ -220,6 +236,7 @@ X_INI_API bool x_ini_set_i32(XIni *ini, const char *section, const char *key, in
 * @param key Key name.
 * @param value Integer value.
 * @return True on success, false on failure.
+* @group ini.write
 */
 X_INI_API bool x_ini_set_u32(XIni *ini, const char *section, const char *key, uint32_t value);
 
@@ -230,6 +247,7 @@ X_INI_API bool x_ini_set_u32(XIni *ini, const char *section, const char *key, ui
 * @param key Key name.
 * @param value Integer value.
 * @return True on success, false on failure.
+* @group ini.write
 */
 X_INI_API bool x_ini_set_u32_hex(XIni *ini, const char *section, const char *key, uint32_t value);
 
@@ -240,6 +258,7 @@ X_INI_API bool x_ini_set_u32_hex(XIni *ini, const char *section, const char *key
 * @param key Key name.
 * @param value Floating-point value.
 * @return True on success, false on failure.
+* @group ini.write
 */
 X_INI_API bool x_ini_set_f32(XIni *ini, const char *section, const char *key, float value);
 
@@ -250,6 +269,7 @@ X_INI_API bool x_ini_set_f32(XIni *ini, const char *section, const char *key, fl
 * @param key Key name.
 * @param value Boolean value.
 * @return True on success, false on failure.
+* @group ini.write
 */
 X_INI_API bool x_ini_set_bool(XIni *ini, const char *section, const char *key, bool value);
 
@@ -259,6 +279,7 @@ X_INI_API bool x_ini_set_bool(XIni *ini, const char *section, const char *key, b
 * @param section Section name.
 * @param key Key name.
 * @return True if the key was removed, false if it was not found or arguments are invalid.
+* @group ini.write
 */
 X_INI_API bool x_ini_remove(XIni *ini, const char *section, const char *key);
 
@@ -267,6 +288,7 @@ X_INI_API bool x_ini_remove(XIni *ini, const char *section, const char *key);
 * @param ini Parsed INI data.
 * @param section Section name.
 * @return True if the section was removed, false if it was not found or arguments are invalid.
+* @group ini.write
 */
 X_INI_API bool x_ini_remove_section(XIni *ini, const char *section);
 
@@ -276,6 +298,7 @@ X_INI_API bool x_ini_remove_section(XIni *ini, const char *section);
 * @param ini INI data to write.
 * @param err Optional output error information (may be NULL).
 * @return True on success, false on failure.
+* @group ini.document
 */
 X_INI_API bool x_ini_write_file(const char *path, const XIni *ini, XIniError *err);
 
@@ -283,6 +306,7 @@ X_INI_API bool x_ini_write_file(const char *path, const XIni *ini, XIniError *er
 * @brief Get the number of sections in the INI data.
 * @param ini Parsed INI data.
 * @return Number of sections.
+* @group ini.enumeration
 */
 X_INI_API int x_ini_section_count(const XIni *ini);
 
@@ -291,6 +315,7 @@ X_INI_API int x_ini_section_count(const XIni *ini);
 * @param ini Parsed INI data.
 * @param section_index Zero-based section index.
 * @return Section name string.
+* @group ini.enumeration
 */
 X_INI_API const char* x_ini_section_name(const XIni *ini, int section_index);
 
@@ -299,6 +324,7 @@ X_INI_API const char* x_ini_section_name(const XIni *ini, int section_index);
 * @param ini Parsed INI data.
 * @param section_index Zero-based section index.
 * @return Number of keys in the section.
+* @group ini.enumeration
 */
 X_INI_API int x_ini_key_count(const XIni *ini, int section_index);
 
@@ -308,6 +334,7 @@ X_INI_API int x_ini_key_count(const XIni *ini, int section_index);
 * @param section_index Zero-based section index.
 * @param key_index Zero-based key index within the section.
 * @return Key name string.
+* @group ini.enumeration
 */
 X_INI_API const char* x_ini_key_name(const XIni *ini, int section_index, int key_index);
 
@@ -317,6 +344,7 @@ X_INI_API const char* x_ini_key_name(const XIni *ini, int section_index, int key
 * @param section_index Zero-based section index.
 * @param key_index Zero-based key index within the section.
 * @return Value string at the specified position.
+* @group ini.enumeration
 */
 X_INI_API const char* x_ini_value_at(const XIni *ini, int section_index, int key_index);
 

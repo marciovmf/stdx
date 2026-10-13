@@ -468,3 +468,42 @@ dt code {
   font-style: italic;
   font-display: swap;
 }
+
+/* Conceptual navigation and group pages */
+.sidebar .nav-extras { margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
+.group-tree, .group-list, .global-symbol-index { list-style: none; padding: 0; }
+.group-tree li, .group-list li, .global-symbol-index li { margin: 0.15rem 0; }
+.group-tree .group-children { list-style: none; padding-left: 1.15rem; margin: 0; }
+
+/* Nested groups use native disclosure controls; their names remain regular links. */
+.group-tree details.group-branch { margin: 0; }
+.group-tree details.group-branch > summary {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--fg);
+  cursor: pointer;
+}
+.group-tree details.group-branch > summary::before {
+  content: "▸";
+  flex: 0 0 1.15rem;
+  width: 1.15rem;
+  transform: none;
+  text-align: center;
+  color: var(--muted);
+}
+.group-tree details.group-branch[open] > summary::before { content: "▾"; }
+.group-tree details.group-branch > summary > a { flex: 1; min-width: 0; }
+.group-tree .group-leaf { padding-left: 1.15rem; }
+.group-tree a { display: block; padding: 0.22rem 0.45rem; border-radius: 8px; color: var(--fg); }
+.group-tree a:hover, .group-tree a:focus-visible { background: rgba(0, 103, 184, 0.10); color: var(--accent); text-decoration: none; }
+.group-list a { display: block; padding: 0.55rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); }
+.source-reference { font-size: 0.8rem; color: var(--muted); }
+.source-reference a { color: var(--muted); }

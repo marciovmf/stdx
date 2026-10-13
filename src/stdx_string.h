@@ -46,24 +46,36 @@
 extern "C" {
 #endif
 
+  /**
+   * @group strings.slice
+   */
   typedef struct 
   {
     const char* ptr;
     size_t length;
   } XSlice;
 
+  /**
+   * @group strings.slice.wchar
+   */
   typedef struct
   {
     const wchar_t* ptr;
     size_t length; // In wide characters
   } XWStrview;
 
+  /**
+   * @group strings.smallstr
+   */
   typedef struct 
   {
     char buf[X_SMALLSTR_MAX_LENGTH + 1];
     size_t length;
   } XSmallstr;
 
+  /**
+   * @group strings.smallstr.wchar
+   */
   typedef struct
   {
     wchar_t buf[X_SMALLSTR_MAX_LENGTH + 1];
@@ -71,6 +83,9 @@ extern "C" {
   } XWSmallstr;
 
   /* UTF-8 decode result codes (negative values are errors) */
+  /**
+   * @group strings.utf8
+   */
   typedef enum XUtf8Error
   {
     X_UTF8_OK           = 0,  // placeholder: not returned by x_utf8_decode
@@ -84,6 +99,7 @@ extern "C" {
    * @brief Sets the process locale used by locale-aware string operations.
    * @param locale Parameter.
    * @return No return value.
+   * @group strings.locale
    */
   X_STRING_API void      x_set_locale(const char* locale);
 
@@ -95,6 +111,7 @@ extern "C" {
    * @brief Computes a 32-bit FNV hash for a null-terminated C-string.
    * @param str Input C-string.
    * @return 32 bit FNV hash
+   * @group strings.cstr
    */
   X_STRING_API uint32_t  x_cstr_hash(const char* str);
 
@@ -103,6 +120,7 @@ extern "C" {
    * @param haystack Input string to search in.
    * @param needle Substring to search for.
    * @return pointer within haystack where needle is found
+   * @group strings.cstr
    */
   X_STRING_API char*     x_cstr_str(const char *haystack, const char *needle);
 
@@ -111,6 +129,7 @@ extern "C" {
    * @param str Input C-string.
    * @param suffix Suffix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.cstr
    */
   X_STRING_API bool      x_cstr_ends_with(const char* str, const char* suffix);
 
@@ -119,6 +138,7 @@ extern "C" {
    * @param str Input C-string.
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.cstr
    */
   X_STRING_API bool      x_cstr_starts_with(const char* str, const char* prefix);
 
@@ -127,6 +147,7 @@ extern "C" {
    * @param str Input C-string.
    * @param suffix Suffix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.cstr
    */
   X_STRING_API bool      x_cstr_ends_with_ci(const char* str, const char* suffix);
 
@@ -135,6 +156,7 @@ extern "C" {
    * @param str Input C-string.
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.cstr
    */
   X_STRING_API bool      x_cstr_starts_with_ci(const char* str, const char* prefix);
 
@@ -143,6 +165,7 @@ extern "C" {
    * @param str Input C-string.
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.cstr.wchar
    */
   X_STRING_API bool      x_wcstr_starts_with(const wchar_t* str, const wchar_t* prefix);
 
@@ -151,6 +174,7 @@ extern "C" {
    * @param str Input C-string.
    * @param suffix Suffix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.cstr.wchar
    */
   X_STRING_API bool      x_wcstr_ends_with(const wchar_t* str, const wchar_t* suffix);
 
@@ -159,6 +183,7 @@ extern "C" {
    * @param str Input C-string.
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.cstr.wchar
    */
   X_STRING_API bool      x_wcstr_starts_with_ci(const wchar_t* str, const wchar_t* prefix);
 
@@ -167,6 +192,7 @@ extern "C" {
    * @param str Input C-string.
    * @param suffix Suffix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.cstr.wchar
    */
   X_STRING_API bool      x_wcstr_ends_with_ci(const wchar_t* str, const wchar_t* suffix);
 
@@ -175,6 +201,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Function-specific integer result.
+   * @group strings.cstr.wchar
    */
   X_STRING_API int32_t   x_wcstr_cicmp(const wchar_t* a, const wchar_t* b);
 
@@ -185,6 +212,7 @@ extern "C" {
    * @param dest Destination buffer.
    * @param max Capacity of the destination buffer (in elements).
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.conversion
    */
   X_STRING_API size_t    x_cstr_to_wcstr(const char* src, wchar_t* dest, size_t max);
 
@@ -198,6 +226,7 @@ extern "C" {
    * @param utf8 Source UTF-8 string.
    * @param max Capacity of the destination buffer (in elements).
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.conversion
    */
   X_STRING_API size_t    x_wcstr_to_utf8(const wchar_t* wide, char* utf8, size_t max);
 
@@ -207,6 +236,7 @@ extern "C" {
    * @param dest Destination buffer.
    * @param max Capacity of the destination buffer (in elements).
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.conversion
    */
   X_STRING_API size_t    x_wcstr_to_cstr(const wchar_t* src, char* dest, size_t max);
 
@@ -216,6 +246,7 @@ extern "C" {
    * @param wide Destination wide-character buffer.
    * @param max Capacity of the destination buffer (in elements).
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.conversion
    */
   X_STRING_API size_t    x_utf8_to_wcstr(const char* utf8, wchar_t* wide, size_t max);
 
@@ -230,6 +261,7 @@ extern "C" {
    * @param out Destination UTF-8 byte buffer (must hold at least 4 bytes).
    * @param out_len Receives the number of UTF-8 bytes written.
    * @return true if the codepoint was encoded successfully, false otherwise.
+   * @group strings.utf8
    */
   X_STRING_API bool x_utf8_encode(uint32_t codepoint, char out[4], uint32_t* out_len);
 
@@ -238,6 +270,7 @@ extern "C" {
    * @param text UTF-8 encoded string.
    * @param offset Current byte offset into the string.
    * @return Byte offset of the next UTF-8 codepoint boundary.
+   * @group strings.utf8
    */
   X_STRING_API uint32_t x_utf8_next(char const* text, uint32_t offset);
 
@@ -246,6 +279,7 @@ extern "C" {
    * @param text UTF-8 encoded string.
    * @param offset Current byte offset into the string.
    * @return Byte offset of the previous UTF-8 codepoint boundary.
+   * @group strings.utf8
    */
   X_STRING_API uint32_t x_utf8_prev(char const* text, uint32_t offset);
 
@@ -253,6 +287,7 @@ extern "C" {
    * @brief Returns the number of UTF-8 bytes required to encode a codepoint.
    * @param codepoint Unicode codepoint to measure.
    * @return Number of UTF-8 bytes required, or 0 if the codepoint is invalid.
+   * @group strings.utf8
    */
   X_STRING_API uint32_t x_utf8_codepoint_size(uint32_t codepoint);
 
@@ -260,6 +295,7 @@ extern "C" {
    * @brief Returns the number of UTF-8 codepoints in a null-terminated string.
    * @param utf8 Source UTF-8 string.
    * @return Number of UTF-8 codepoints.
+   * @group strings.utf8
    */
   X_STRING_API size_t    x_utf8_strlen(const char* utf8);
 
@@ -268,6 +304,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Negative, zero, or positive according to lexicographic order.
+   * @group strings.utf8
    */
   X_STRING_API int32_t   x_utf8_strcmp(const char* a, const char* b);
 
@@ -276,6 +313,7 @@ extern "C" {
    * @param dest Destination buffer.
    * @param src Source buffer or string.
    * @return Function-specific result.
+   * @group strings.utf8
    */
   X_STRING_API char*     x_utf8_tolower(char* dest, const char* src);
 
@@ -284,6 +322,7 @@ extern "C" {
    * @param dest Destination buffer.
    * @param src Source buffer or string.
    * @return Function-specific result.
+   * @group strings.utf8
    */
   X_STRING_API char*     x_utf8_toupper(char* dest, const char* src);
 
@@ -291,6 +330,7 @@ extern "C" {
    * @brief Checks whether the string contains exactly one UTF-8 codepoint.
    * @param s Destination small string.
    * @return Function-specific result.
+   * @group strings.utf8
    */
   X_STRING_API bool      x_utf8_is_single_char(const char* s);
 
@@ -300,6 +340,7 @@ extern "C" {
    * @param end One-past-the-end pointer for the byte span.
    * @param out_len Output: number of bytes consumed on success or bytes to skip on error.
    * @return Decoded codepoint on success; negative X_UTF8_ERR_* on failure.
+   * @group strings.utf8
    */
   X_STRING_API           int32_t x_utf8_decode(const char* ptr, const char* end, size_t* out_len);
 
@@ -307,6 +348,7 @@ extern "C" {
    * @brief Returns the expected byte length for a UTF-8 starter byte.
    * @param first_byte Parameter.
    * @return 1..4 for a valid starter byte; negative error code if invalid.
+   * @group strings.utf8
    */
   X_STRING_API           int32_t x_utf8_codepoint_length(unsigned char first_byte);
 
@@ -319,6 +361,7 @@ extern "C" {
    * @param s Destination small string.
    * @param str Input C-string.
    * @return Function-specific integer result.
+   * @group strings.smallstr
    */
   X_STRING_API int32_t   x_smallstr_init(XSmallstr* s, const char* str);
 
@@ -328,6 +371,7 @@ extern "C" {
    * @param fmt printf-style format string.
    * @param param Variadic arguments list.
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.smallstr
    */
   X_STRING_API size_t    x_smallstr_format(XSmallstr* s, const char* fmt, ...);
 
@@ -336,6 +380,7 @@ extern "C" {
    * @param s Destination small string.
    * @param cstr Source null-terminated C-string.
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.smallstr
    */
   X_STRING_API size_t    x_smallstr_from_cstr(XSmallstr* s, const char* cstr);
 
@@ -344,6 +389,7 @@ extern "C" {
    * @param sv String view input.
    * @param out Parameter.
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.smallstr
    */
   X_STRING_API size_t    x_smallstr_from_slice(XSlice sv, XSmallstr* out);
 
@@ -351,6 +397,7 @@ extern "C" {
    * @brief Creates a non-owning view over a small string's contents.
    * @param s Destination small string.
    * @return Resulting view after the operation.
+   * @group strings.smallstr
    */
   X_STRING_API XSlice  x_smallstr_to_slice(const XSmallstr* s);
 
@@ -358,6 +405,7 @@ extern "C" {
    * @brief Returns the current byte length of the small string.
    * @param s Destination small string.
    * @return Number of elements in the string (excluding the final terminator).
+   * @group strings.smallstr
    */
   X_STRING_API size_t    x_smallstr_length(const XSmallstr* s);
 
@@ -365,6 +413,7 @@ extern "C" {
    * @brief Clears the small string to empty.
    * @param s Destination small string.
    * @return No return value.
+   * @group strings.smallstr
    */
   X_STRING_API void      x_smallstr_clear(XSmallstr* s);
 
@@ -373,6 +422,7 @@ extern "C" {
    * @param s Destination small string.
    * @param cstr Source null-terminated C-string.
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.smallstr
    */
   X_STRING_API size_t    x_smallstr_append_cstr(XSmallstr* s, const char* cstr);
 
@@ -381,6 +431,7 @@ extern "C" {
    * @param s Destination small string.
    * @param c Character value.
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.smallstr
    */
   X_STRING_API size_t    x_smallstr_append_char(XSmallstr* s, char c);
 
@@ -391,6 +442,7 @@ extern "C" {
    * @param len Number of units to copy or inspect.
    * @param out Parameter.
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.smallstr
    */
   X_STRING_API size_t    x_smallstr_substring(const XSmallstr* s, size_t start, size_t len, XSmallstr* out);
 
@@ -398,6 +450,7 @@ extern "C" {
    * @brief Trims leading ASCII whitespace in a small string.
    * @param s Destination small string.
    * @return Resulting view after the operation.
+   * @group strings.smallstr
    */
   X_STRING_API void      x_smallstr_trim_left(XSmallstr* s);
 
@@ -405,6 +458,7 @@ extern "C" {
    * @brief Trims trailing ASCII whitespace in a small string.
    * @param s Destination small string.
    * @return No return value.
+   * @group strings.smallstr
    */
   X_STRING_API void      x_smallstr_trim_right(XSmallstr* s);
 
@@ -412,6 +466,7 @@ extern "C" {
    * @brief Trims leading and trailing ASCII whitespace in a small string.
    * @param s Destination small string.
    * @return Resulting view after the operation.
+   * @group strings.smallstr
    */
   X_STRING_API void      x_smallstr_trim(XSmallstr* s);
 
@@ -420,6 +475,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Negative, zero, or positive according to lexicographic order.
+   * @group strings.smallstr
    */
   X_STRING_API int32_t   x_smallstr_cmp_ci(const XSmallstr* a, const XSmallstr* b);
 
@@ -429,6 +485,7 @@ extern "C" {
    * @param find Substring to be replaced.
    * @param replace Replacement substring.
    * @return Function-specific integer result.
+   * @group strings.smallstr
    */
   X_STRING_API int32_t   x_smallstr_replace_all(XSmallstr* s, const char* find, const char* replace);
 
@@ -436,6 +493,7 @@ extern "C" {
    * @brief Counts UTF-8 codepoints in a small string.
    * @param s Destination small string.
    * @return Number of units written or measured (excluding the final terminator, if any).
+   * @group strings.smallstr.utf8
    */
   X_STRING_API size_t    x_smallstr_utf8_len(const XSmallstr* s);
 
@@ -444,6 +502,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Negative, zero, or positive according to lexicographic order.
+   * @group strings.smallstr
    */
   X_STRING_API int32_t   x_smallstr_cmp(const XSmallstr* a, const XSmallstr* b);
 
@@ -452,6 +511,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Negative, zero, or positive according to lexicographic order.
+   * @group strings.smallstr
    */
   X_STRING_API int32_t   x_smallstr_cmp_cstr(const XSmallstr* a, const char* b);
 
@@ -459,6 +519,7 @@ extern "C" {
    * @brief Returns a pointer to the small string's null-terminated buffer.
    * @param s Destination small string.
    * @return Function-specific result.
+   * @group strings.smallstr
    */
   X_STRING_API const char* x_smallstr_cstr(const XSmallstr* s);
 
@@ -469,6 +530,7 @@ extern "C" {
    * @param len_cp Number of UTF-8 codepoints to copy or inspect.
    * @param out Parameter.
    * @return Function-specific integer result.
+   * @group strings.smallstr.utf8
    */
   X_STRING_API int32_t   x_smallstr_utf8_substring(const XSmallstr* s, size_t start_cp, size_t len_cp, XSmallstr* out);
 
@@ -476,6 +538,7 @@ extern "C" {
    * @brief Trims leading Unicode whitespace (by UTF-8 codepoints).
    * @param s Destination small string.
    * @return Resulting view after the operation.
+   * @group strings.smallstr.utf8
    */
   X_STRING_API void      x_smallstr_utf8_trim_left(XSmallstr* s);
 
@@ -483,6 +546,7 @@ extern "C" {
    * @brief Trims trailing Unicode whitespace (by UTF-8 codepoints).
    * @param s Destination small string.
    * @return No return value.
+   * @group strings.smallstr.utf8
    */
   X_STRING_API void      x_smallstr_utf8_trim_right(XSmallstr* s);
 
@@ -490,6 +554,7 @@ extern "C" {
    * @brief Trims leading and trailing Unicode whitespace (by UTF-8 codepoints).
    * @param s Destination small string.
    * @return Resulting view after the operation.
+   * @group strings.smallstr.utf8
    */
   X_STRING_API void      x_smallstr_utf8_trim(XSmallstr* s);
 
@@ -502,6 +567,7 @@ extern "C" {
    * @param s Destination small string.
    * @param src Source buffer or string.
    * @return Function-specific integer result.
+   * @group strings.smallstr.wchar
    */
   X_STRING_API int32_t   x_wsmallstr_init(XWSmallstr* s, const wchar_t* src);
 
@@ -510,6 +576,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Negative, zero, or positive according to lexicographic order.
+   * @group strings.smallstr.wchar
    */
   X_STRING_API int32_t   x_wsmallstr_cmp(const XWSmallstr* a, const XWSmallstr* b);
 
@@ -518,6 +585,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Function-specific integer result.
+   * @group strings.smallstr.wchar
    */
   X_STRING_API int32_t   x_wsmallstr_cmp_cstr(const XWSmallstr* a, const wchar_t* b);
 
@@ -526,6 +594,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Negative, zero, or positive according to lexicographic order.
+   * @group strings.smallstr.wchar
    */
   X_STRING_API int32_t   x_wsmallstr_cmp_ci(const XWSmallstr* a, const XWSmallstr* b);
 
@@ -533,6 +602,7 @@ extern "C" {
    * @brief Returns the current length (in wide characters).
    * @param s Destination small string.
    * @return Number of elements in the string (excluding the final terminator).
+   * @group strings.smallstr.wchar
    */
   X_STRING_API size_t    x_wsmallstr_length(const XWSmallstr* s);
 
@@ -540,6 +610,7 @@ extern "C" {
    * @brief Clears the wide small string to empty.
    * @param s Destination small string.
    * @return No return value.
+   * @group strings.smallstr.wchar
    */
   X_STRING_API void      x_wsmallstr_clear(XWSmallstr* s);
 
@@ -548,6 +619,7 @@ extern "C" {
    * @param s Destination small string.
    * @param tail Parameter.
    * @return Function-specific integer result.
+   * @group strings.smallstr.wchar
    */
   X_STRING_API int32_t   x_wsmallstr_append(XWSmallstr* s, const wchar_t* tail);
 
@@ -558,6 +630,7 @@ extern "C" {
    * @param len Number of units to copy or inspect.
    * @param out Parameter.
    * @return Function-specific integer result.
+   * @group strings.smallstr.wchar
    */
   X_STRING_API int32_t   x_wsmallstr_substring(const XWSmallstr* s, size_t start, size_t len, XWSmallstr* out);
 
@@ -565,6 +638,7 @@ extern "C" {
    * @brief Trims leading and trailing whitespace in a wide small string.
    * @param s Destination small string.
    * @return No return value.
+   * @group strings.smallstr.wchar
    */
   X_STRING_API void      x_wsmallstr_trim(XWSmallstr* s);
 
@@ -573,6 +647,7 @@ extern "C" {
    * @param s Destination small string.
    * @param c Character value.
    * @return Index on success, or -1 if not found.
+   * @group strings.smallstr.wchar
    */
   X_STRING_API int32_t   x_wsmallstr_find(const XWSmallstr* s, wchar_t c);
 
@@ -582,7 +657,13 @@ extern "C" {
 
 #define     x_slice_empty() ((XSlice){ .ptr = 0, .length = 0 })
 #define     x_slice_is_empty(sv) ((sv).length == 0)
+/**
+ * @group strings.slice
+ */
 #define     x_slice_init(cstr, len) ((XSlice){ .ptr = (cstr), .length = (len) })
+/**
+ * @group strings.slice
+ */
 #define     x_slice(cstr)           (x_slice_init( (cstr), strlen(cstr) ))
 
 
@@ -590,6 +671,7 @@ extern "C" {
    * @brief Computes a 32-bit FNV hash for a XSlice
    * @param slice Input Slice
    * @return 32 bit FNV hash
+   * @group strings.slice
    */
   X_STRING_API uint32_t x_slice_hash(XSlice slice);
   
@@ -598,6 +680,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return true if the condition holds; false otherwise.
+   * @group strings.slice
    */
   X_STRING_API bool      x_slice_eq(XSlice a, XSlice b);
 
@@ -606,6 +689,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Function-specific result.
+   * @group strings.slice
    */
   X_STRING_API bool      x_slice_eq_cstr(XSlice a, const char* b);
 
@@ -614,6 +698,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return true if the condition holds; false otherwise.
+   * @group strings.slice
    */
   X_STRING_API bool      x_slice_eq_ci(XSlice a, XSlice b);
 
@@ -622,6 +707,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Negative, zero, or positive according to lexicographic order.
+   * @group strings.slice
    */
   X_STRING_API int32_t   x_slice_cmp(XSlice a, XSlice b);
 
@@ -630,6 +716,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Function-specific integer result.
+   * @group strings.slice
    */
   X_STRING_API int32_t   x_slice_cmp_ci(XSlice a, XSlice b);
 
@@ -639,6 +726,7 @@ extern "C" {
    * @param start Starting offset (0-based).
    * @param len Number of units to copy or inspect.
    * @return Resulting view after the operation.
+   * @group strings.slice
    */
   X_STRING_API XSlice  x_slice_substr(XSlice sv, size_t start, size_t len);
 
@@ -646,6 +734,7 @@ extern "C" {
    * @brief Removes leading ASCII whitespace from a string view.
    * @param sv String view input.
    * @return Function-specific result.
+   * @group strings.slice
    */
   X_STRING_API XSlice  x_slice_trim_left(XSlice sv);
 
@@ -653,6 +742,7 @@ extern "C" {
    * @brief Removes trailing ASCII whitespace from a string view.
    * @param sv String view input.
    * @return Resulting view after the operation.
+   * @group strings.slice
    */
   X_STRING_API XSlice  x_slice_trim_right(XSlice sv);
 
@@ -660,6 +750,7 @@ extern "C" {
    * @brief Removes leading and trailing ASCII whitespace from a string view.
    * @param sv String view input.
    * @return Function-specific result.
+   * @group strings.slice
    */
   X_STRING_API XSlice  x_slice_trim(XSlice sv);
 
@@ -668,6 +759,7 @@ extern "C" {
    * @param sv String view input.
    * @param c Character value.
    * @return Index on success, or -1 if not found.
+   * @group strings.slice
    */
   X_STRING_API int32_t   x_slice_find(XSlice sv, char c);
 
@@ -675,6 +767,7 @@ extern "C" {
    * @brief Finds the next ASCII whitespace in a string view.
    * @param sv String view input.
    * @return Index on success, or -1 if not found.
+   * @group strings.slice
    */
   X_STRING_API int32_t   x_slice_find_white_space(XSlice sv);
 
@@ -683,6 +776,7 @@ extern "C" {
    * @param sv String view input.
    * @param c Character value.
    * @return Index on success, or -1 if not found.
+   * @group strings.slice
    */
   X_STRING_API int32_t   x_slice_rfind(XSlice sv, char c);
 
@@ -693,6 +787,7 @@ extern "C" {
    * @param left Output: left side view.
    * @param right Output: right side view.
    * @return Function-specific result.
+   * @group strings.slice
    */
   X_STRING_API bool      x_slice_split_at(XSlice sv, char delim, XSlice* left, XSlice* right);
 
@@ -702,6 +797,7 @@ extern "C" {
    * @param left Output: left side view.
    * @param right Output: right side view.
    * @return Function-specific result.
+   * @group strings.slice
    */
   X_STRING_API bool      x_slice_split_at_white_space(XSlice sv, XSlice* left, XSlice* right);
 
@@ -710,6 +806,7 @@ extern "C" {
    * @param input Parameter.
    * @param token Output: extracted token.
    * @return Function-specific result.
+   * @group strings.slice
    */
   X_STRING_API bool      x_slice_next_token_white_space(XSlice* input, XSlice* token);
 
@@ -719,6 +816,7 @@ extern "C" {
    * @param delim Delimiter character or codepoint.
    * @param token Output: extracted token.
    * @return Function-specific result.
+   * @group strings.slice
    */
   X_STRING_API bool      x_slice_next_token(XSlice* input, char delim, XSlice* token);
 
@@ -727,6 +825,7 @@ extern "C" {
    * @param sv String view input.
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.slice
    */
   X_STRING_API bool      x_slice_starts_with_cstr(XSlice sv, const char* prefix);
 
@@ -735,6 +834,7 @@ extern "C" {
    * @param sv String view input.
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.slice
    */
   X_STRING_API bool      x_slice_ends_with_cstr(XSlice sv, const char* prefix);
 
@@ -744,6 +844,7 @@ extern "C" {
    * @param char_start Parameter.
    * @param char_len Parameter.
    * @return Function-specific result.
+   * @group strings.slice.utf8
    */
   X_STRING_API XSlice  x_slice_utf8_substr(XSlice sv, size_t char_start, size_t char_len);
 
@@ -751,6 +852,7 @@ extern "C" {
    * @brief Removes leading Unicode whitespace (by UTF-8 codepoints).
    * @param sv String view input.
    * @return Resulting view after the operation.
+   * @group strings.slice.utf8
    */
   X_STRING_API XSlice  x_slice_utf8_trim_left(XSlice sv);
 
@@ -758,6 +860,7 @@ extern "C" {
    * @brief Removes trailing ASCII whitespace from a string view.
    * @param sv String view input.
    * @return Function-specific result.
+   * @group strings.slice.utf8
    */
   X_STRING_API XSlice  x_slice_utf8_trim_right(XSlice sv);
 
@@ -765,6 +868,7 @@ extern "C" {
    * @brief Removes leading and trailing Unicode whitespace (by UTF-8 codepoints).
    * @param sv String view input.
    * @return Resulting view after the operation.
+   * @group strings.slice.utf8
    */
   X_STRING_API XSlice  x_slice_utf8_trim(XSlice sv);
 
@@ -773,6 +877,7 @@ extern "C" {
    * @param sv String view input.
    * @param codepoint Unicode codepoint value.
    * @return Index on success, or -1 if not found.
+   * @group strings.slice.utf8
    */
   X_STRING_API int32_t   x_slice_utf8_find(XSlice sv, uint32_t codepoint);
 
@@ -781,6 +886,7 @@ extern "C" {
    * @param sv String view input.
    * @param codepoint Unicode codepoint value.
    * @return Index on success, or -1 if not found.
+   * @group strings.slice.utf8
    */
   X_STRING_API int32_t   x_slice_utf8_rfind(XSlice sv, uint32_t codepoint);
 
@@ -791,6 +897,7 @@ extern "C" {
    * @param left Output: left side view.
    * @param right Output: right side view.
    * @return Function-specific result.
+   * @group strings.slice.utf8
    */
   X_STRING_API bool      x_slice_utf8_split_at(XSlice sv, uint32_t delim, XSlice* left, XSlice* right);
 
@@ -800,6 +907,7 @@ extern "C" {
    * @param codepoint Unicode codepoint value.
    * @param token Output: extracted token.
    * @return Function-specific result.
+   * @group strings.slice.utf8
    */
   X_STRING_API bool      x_slice_utf8_next_token(XSlice* input, uint32_t codepoint, XSlice* token);
 
@@ -808,6 +916,7 @@ extern "C" {
    * @param sv String view input.
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.slice.utf8
    */
   X_STRING_API bool      x_slice_utf8_starts_with_cstr(XSlice sv, const char* prefix);
 
@@ -816,6 +925,7 @@ extern "C" {
    * @param sv String view input.
    * @param prefix Prefix to match.
    * @return true if the condition holds; false otherwise.
+   * @group strings.slice.utf8
    */
   X_STRING_API bool      x_slice_utf8_ends_with_cstr(XSlice sv, const char* prefix);
 
@@ -823,14 +933,21 @@ extern "C" {
   // XWStrview (string views on wchar_t)*
   // Non-owning wide string views and operations.
   // -------------------------------------------------------------------------------------
+/**
+ * @group strings.slice.wchar
+ */
 
 #define x_wslice_init(cstr, len) ((XWStrview){ .ptr = (cstr), .length = (len) })
+/**
+ * @group strings.slice.wchar
+ */
 #define x_wslice(cstr)           (x_wslice_init( (cstr), wcslen(cstr) ))
 
   /**
    * @brief Checks whether the wide string view is empty.
    * @param sv String view input.
    * @return Function-specific result.
+   * @group strings.slice.wchar
    */
   X_STRING_API bool      x_wslice_empty(XWStrview sv);
 
@@ -839,6 +956,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return true if the condition holds; false otherwise.
+   * @group strings.slice.wchar
    */
   X_STRING_API bool      x_wslice_eq(XWStrview a, XWStrview b);
 
@@ -847,6 +965,7 @@ extern "C" {
    * @param a First input view or string.
    * @param b Second input view or string.
    * @return Function-specific integer result.
+   * @group strings.slice.wchar
    */
   X_STRING_API int32_t   x_wslice_cmp(XWStrview a, XWStrview b);
 
@@ -856,12 +975,14 @@ extern "C" {
    * @param start Starting offset (0-based).
    * @param len Number of units to copy or inspect.
    * @return Resulting view after the operation.
+   * @group strings.slice.wchar
    */
   X_STRING_API XWStrview x_wslice_substr(XWStrview sv, size_t start, size_t len);
   /**
    * @brief Removes leading whitespace from a wide string view.
    * @param sv String view input.
    * @return Function-specific result.
+   * @group strings.slice.wchar
    */
   X_STRING_API XWStrview x_wslice_trim_left(XWStrview sv);
 
@@ -869,6 +990,7 @@ extern "C" {
    * @brief Removes trailing whitespace from a wide string view.
    * @param sv String view input.
    * @return Resulting view after the operation.
+   * @group strings.slice.wchar
    */
   X_STRING_API XWStrview x_wslice_trim_right(XWStrview sv);
 
@@ -876,6 +998,7 @@ extern "C" {
    * @brief Removes leading and trailing whitespace from a wide string view.
    * @param sv String view input.
    * @return Function-specific result.
+   * @group strings.slice.wchar
    */
   X_STRING_API XWStrview x_wslice_trim(XWStrview sv);
 
@@ -886,6 +1009,7 @@ extern "C" {
    * @param left Output: left side view.
    * @param right Output: right side view.
    * @return Function-specific result.
+   * @group strings.slice.wchar
    */
   X_STRING_API bool      x_wslice_split_at(XWStrview sv, uint32_t delim, XWStrview* left, XWStrview* right);
 
@@ -895,6 +1019,7 @@ extern "C" {
    * @param delim Parameter.
    * @param token Output: extracted token.
    * @return Function-specific result.
+   * @group strings.slice.wchar
    */
   X_STRING_API bool      x_wslice_next_token(XWStrview* input, wchar_t delim, XWStrview* token);
 
@@ -902,6 +1027,7 @@ extern "C" {
    * @brief Creates a non-owning string view from a null-terminated C-string.
    * @param s Source null-terminated C-string (may be NULL).
    * @return XSlice pointing to the provided string, or an empty view if s is NULL.
+   * @group strings.slice
    */
   X_STRING_API XSlice x_slice_from_cstr(const char* s);
 
@@ -909,6 +1035,7 @@ extern "C" {
    * @brief Creates a non-owning string view from a fixed-capacity small string.
    * @param s Source small string (may be NULL).
    * @return XSlice referencing the contents of the small string, or an empty view if s is NULL.
+   * @group strings.slice
    */
   X_STRING_API XSlice x_slice_from_smallstr(const XSmallstr* s);
 
@@ -917,6 +1044,7 @@ extern "C" {
    * @param s Destination small string.
    * @param sv Source string view to append.
    * @return New length of the small string in bytes after the operation (null-terminated).
+   * @group strings.smallstr
    */
   X_STRING_API size_t x_smallstr_append_slice(XSmallstr* s, XSlice sv);
 
@@ -926,6 +1054,7 @@ extern "C" {
    * @param cstr Source C-string (may be NULL).
    * @param n Number of bytes to append from cstr.
    * @return New length of the small string in bytes after the operation.
+   * @group strings.smallstr
    */
   X_STRING_API size_t x_smallstr_append_n(XSmallstr* s, const char* cstr, size_t n);
 
@@ -935,6 +1064,7 @@ extern "C" {
    * @param fmt printf-style format string.
    * @param args va_list argument list.
    * @return New length of the small string in bytes after the operation.
+   * @group strings.smallstr
    */
   X_STRING_API size_t x_smallstr_vappendf(XSmallstr* s, const char* fmt, va_list args);
 
@@ -944,6 +1074,7 @@ extern "C" {
    * @param fmt printf-style format string.
    * @param ... Additional arguments for formatting.
    * @return New length of the small string in bytes after the operation.
+   * @group strings.smallstr
    */
   X_STRING_API size_t x_smallstr_appendf(XSmallstr* s, const char* fmt, ...);
 
@@ -952,6 +1083,7 @@ extern "C" {
    * @param sv Input string view.
    * @param c Character to search for.
    * @return true if the character is found; false otherwise.
+   * @group strings.slice
    */
   X_STRING_API bool x_slice_contains_char(XSlice sv, char c);
 
@@ -960,6 +1092,7 @@ extern "C" {
    * @param sv Input string view.
    * @param codepoint Unicode codepoint to search for.
    * @return true if the codepoint is found; false otherwise.
+   * @group strings.slice
    */
   X_STRING_API bool x_slice_contains_utf8(XSlice sv, uint32_t codepoint);
 
@@ -968,6 +1101,7 @@ extern "C" {
    * @param s Input small string.
    * @param c Character to search for.
    * @return true if the character is found; false otherwise.
+   * @group strings.smallstr
    */
   X_STRING_API bool x_smallstr_contains_char(const XSmallstr* s, char c);
 
@@ -978,12 +1112,14 @@ extern "C" {
    * @param count Number of elements in the parts array.
    * @param sep Separator view inserted between joined elements.
    * @return New length of the small string after concatenation.
+   * @group strings.smallstr
    */
   X_STRING_API size_t x_smallstr_join(XSmallstr* dst, const XSlice* parts, size_t count, XSlice sep);
 
   /**
    * @brief Returns the maximum number of bytes (excluding terminator) a small string can hold.
    * @return The compile-time capacity constant X_SMALLSTR_MAX_LENGTH.
+   * @group strings.smallstr
    */
   X_STRING_API size_t x_smallstr_capacity(void);
 
@@ -991,6 +1127,7 @@ extern "C" {
    * @brief Tests whether a small string is empty.
    * @param s Input small string.
    * @return true if the small string has zero length or is NULL; false otherwise.
+   * @group strings.smallstr
    */
   X_STRING_API bool x_smallstr_is_empty(const XSmallstr* s);
 
@@ -1000,6 +1137,7 @@ extern "C" {
    * @param cstr Source null-terminated C-string.
    * @param out_appended Optional pointer to receive bytes actually appended.
    * @return true if any bytes were appended; false if none or on error.
+   * @group strings.smallstr
    */
   X_STRING_API bool x_smallstr_try_append_cstr(XSmallstr* s, const char* cstr, size_t* out_appended);
 
@@ -1007,6 +1145,7 @@ extern "C" {
    * @brief Creates a compile-time string view from a string literal.
    * @param s String literal.
    * @return XSlice representing the literal contents, excluding the null terminator.
+   * @group strings.slice
    */
 #define X_STRVIEW(s) ((XSlice){ (s), sizeof(s) - 1u })
 

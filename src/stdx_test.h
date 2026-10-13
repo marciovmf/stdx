@@ -91,6 +91,7 @@ extern "C" {
    * @brief Assert that an expression evaluates to true; logs an error and returns 1 from the test on failure.
    * @param expr Boolean expression to evaluate.
    * @return Nothing (on failure, returns 1 from the calling function).
+   * @group test.assertions
    */
 #define ASSERT_TRUE(expr) do { \
   if (!(expr)) { \
@@ -103,6 +104,7 @@ extern "C" {
  * @brief Assert that an expression evaluates to false; logs an error and returns 1 from the test on failure.
  * @param expr Boolean expression to evaluate.
  * @return Nothing (on failure, returns 1 from the calling function).
+ * @group test.assertions
  */
 #define ASSERT_FALSE(expr) ASSERT_TRUE(!(expr))
 
@@ -111,6 +113,7 @@ extern "C" {
  * @param actual Value produced by the code under test.
  * @param expected Value the test expects.
  * @return Nothing (on failure, returns 1 from the calling function).
+ * @group test.assertions
  */
 #define ASSERT_EQ(actual, expected) do { \
   if ((actual) != (expected)) { \
@@ -123,6 +126,7 @@ extern "C" {
  * @brief Default epsilon used by ASSERT_FLOAT_EQ for approximate float comparisons.
  * @param None.
  * @return Nothing.
+ * @group test.assertions
  */
 #define X_TEST_FLOAT_EPSILON 0.1f
 
@@ -131,6 +135,7 @@ extern "C" {
  * @param actual Floating-point value produced by the code under test.
  * @param expected Floating-point value the test expects.
  * @return Nothing (on failure, returns 1 from the calling function).
+ * @group test.assertions
  */
 #define ASSERT_FLOAT_EQ(actual, expected) do { \
   if (fabs((actual) - (expected)) > X_TEST_FLOAT_EPSILON) { \
@@ -144,6 +149,7 @@ extern "C" {
  * @param actual Value produced by the code under test.
  * @param expected Value the test expects it to differ from.
  * @return Nothing (on failure, returns 1 from the calling function).
+ * @group test.assertions
  */
 #define ASSERT_NEQ(actual, expected) do { \
   if ((actual) == (expected)) { \
@@ -156,18 +162,31 @@ extern "C" {
  * @brief Test function signature used by the STDX test runner.
  * @param None.
  * @return 0 on success, 1 (or non-zero) on failure.
+ * @group test.runner
  */
 typedef int32_t (*STDXTestFunction)();
 
+/**
+ * @group test.runner
+ */
 typedef struct
 {
   const char *name;
   STDXTestFunction func;
 } STDXTestCase;
+/**
+ * @group test.runner
+ */
 
 #define X_TEST(name) {#name, name}
 
+  /**
+   * @group test.runner
+   */
   XLogger* x_test_logger(void);
+  /**
+   * @group test.runner
+   */
   int x_tests_run(STDXTestCase* tests, int32_t num_tests, XLogger* logger);
 
 #ifdef __cplusplus

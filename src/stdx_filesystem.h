@@ -67,9 +67,21 @@
 extern "C" {
 #endif
 
+  /**
+   * @group filesystem.paths.manipulation
+   */
   typedef XSmallstr XFSPath;
+  /**
+   * @group filesystem.directories.enumeration
+   */
   typedef struct XFSDireEntry_t XFSDireEntry;
+  /**
+   * @group filesystem.directories.enumeration
+   */
   typedef struct XFSDireHandle_t XFSDireHandle;
+  /**
+   * @group filesystem.watch
+   */
   typedef struct XFSWatch_t XFSWatch;
 
   struct XFSDireEntry_t
@@ -80,6 +92,9 @@ extern "C" {
     int32_t is_directory;
   }; 
 
+  /**
+   * @group filesystem.watch
+   */
   typedef enum
   {
     x_fs_watch_CREATED,
@@ -90,12 +105,18 @@ extern "C" {
     x_fs_watch_UNKNOWN
   } XFSWatchEventType;
 
+  /**
+   * @group filesystem.watch
+   */
   typedef struct
   {
     XFSWatchEventType action;
     const char* filename; // Valid until next x_fs_watch_poll() call
   } XFSWatchEvent;
 
+  /**
+   * @group filesystem.metadata
+   */
   typedef struct XFSTime
   {
     int year;
@@ -108,11 +129,23 @@ extern "C" {
 
   // Filesystem operations
   // Path manipulation
+/**
+ * @group filesystem.paths.manipulation
+ */
 #define       x_fs_path(out, ...) x_fs_path_(out, __VA_ARGS__, 0)
+/**
+ * @group filesystem.paths.manipulation
+ */
 #define       x_fs_path_join(path, ...) x_fs_path_join_(path, __VA_ARGS__, 0)
+/**
+ * @group filesystem.paths.manipulation
+ */
 #define       x_fs_path_join_slice(path, ...) x_fs_path_join_slice_(path, __VA_ARGS__, 0)
 
   // Path manipulation
+  /**
+   * @group filesystem.metadata
+   */
   typedef struct
   {
     size_t size;
@@ -126,6 +159,7 @@ extern "C" {
    * @param path Directory path to search.
    * @param entry Output directory entry filled with the first result.
    * @return Handle used for subsequent enumeration, or NULL on failure.
+   * @group filesystem.directories.enumeration
    */
   X_FILESYSTEM_API XFSDireHandle* x_fs_find_first_file(const char* path, XFSDireEntry* entry);
 
@@ -133,6 +167,7 @@ extern "C" {
    * @brief Create a directory.
    * @param path Directory path to create.
    * @return True on success, false on failure.
+   * @group filesystem.directories
    */
   X_FILESYSTEM_API bool x_fs_directory_create(const char* path);
 
@@ -140,6 +175,7 @@ extern "C" {
    * @brief Create a directory and any missing parent directories.
    * @param path Directory path to create.
    * @return True on success, false on failure.
+   * @group filesystem.directories
    */
   X_FILESYSTEM_API bool x_fs_directory_create_recursive(const char* path);
 
@@ -149,6 +185,7 @@ extern "C" {
    * @param new_directory Destination directory path, which must not exist.
    * @return True on success, false on failure.
    * @note Symbolic links are not followed or copied.
+   * @group filesystem.directories
    */
   X_FILESYSTEM_API bool x_fs_directory_copy(
       const char* directory, const char* new_directory);
@@ -157,6 +194,7 @@ extern "C" {
    * @brief Delete an empty directory.
    * @param directory Directory path to delete.
    * @return True on success, false on failure.
+   * @group filesystem.directories
    */
   X_FILESYSTEM_API bool x_fs_directory_delete(const char* directory);
 
@@ -165,6 +203,7 @@ extern "C" {
    * @param directory Directory path to delete.
    * @return True on success, false on failure.
    * @note Symbolic links are deleted without following their targets.
+   * @group filesystem.directories
    */
   X_FILESYSTEM_API bool x_fs_directory_delete_recursive(
       const char* directory);
@@ -174,6 +213,7 @@ extern "C" {
    * @param directory Source directory path.
    * @param new_directory Destination directory path.
    * @return True on success, false on failure.
+   * @group filesystem.directories
    */
   X_FILESYSTEM_API bool x_fs_directory_rename(
       const char* directory, const char* new_directory);
@@ -183,6 +223,7 @@ extern "C" {
    * @param file Source file path.
    * @param newFile Destination file path.
    * @return True on success, false on failure.
+   * @group filesystem.files
    */
   X_FILESYSTEM_API bool x_fs_file_copy(const char* file, const char* newFile);
 
@@ -190,6 +231,7 @@ extern "C" {
    * @brief Delete a file.
    * @param file File path to delete.
    * @return True on success, false on failure.
+   * @group filesystem.files
    */
   X_FILESYSTEM_API bool x_fs_file_delete(const char* file);
 
@@ -198,6 +240,7 @@ extern "C" {
    * @param file Source file path.
    * @param newFile Destination file path.
    * @return True on success, false on failure.
+   * @group filesystem.files
    */
   X_FILESYSTEM_API bool x_fs_file_rename(const char* file, const char* newFile);
 
@@ -206,6 +249,7 @@ extern "C" {
    * @param dirHandle Enumeration handle returned by x_fs_find_first_file().
    * @param entry Output directory entry filled with the next result.
    * @return True if an entry was written, false if no more entries or on failure.
+   * @group filesystem.directories.enumeration
    */
   X_FILESYSTEM_API bool x_fs_find_next_file(XFSDireHandle* dirHandle, XFSDireEntry* entry);
 
@@ -213,6 +257,7 @@ extern "C" {
    * @brief Get the system temporary folder path.
    * @param out Output path buffer to receive the temp folder.
    * @return Length of the written path (in bytes/chars, excluding terminator), or 0 on failure.
+   * @group filesystem.temporary
    */
   X_FILESYSTEM_API size_t x_fs_get_temp_folder(XFSPath* out);
 
@@ -220,6 +265,7 @@ extern "C" {
    * @brief Get the current working directory.
    * @param path Output path buffer to receive the current working directory.
    * @return Length of the written path (in bytes/chars, excluding terminator), or 0 on failure.
+   * @group filesystem.cwd
    */
   X_FILESYSTEM_API size_t x_fs_cwd_get(XFSPath* path);
 
@@ -227,12 +273,14 @@ extern "C" {
    * @brief Set the current working directory.
    * @param path New working directory path.
    * @return Non-zero on success, 0 on failure.
+   * @group filesystem.cwd
    */
   X_FILESYSTEM_API size_t x_fs_cwd_set(const char* path);
 
   /**
    * @brief Set the current working directory to the executable's directory.
    * @return Non-zero on success, 0 on failure.
+   * @group filesystem.cwd
    */
   X_FILESYSTEM_API size_t x_fs_cwd_set_from_executable_path(void);
 
@@ -240,6 +288,7 @@ extern "C" {
    * @brief Close a directory enumeration handle.
    * @param dirHandle Enumeration handle to close.
    * @return Nothing.
+   * @group filesystem.directories.enumeration
    */
   X_FILESYSTEM_API void x_fs_find_close(XFSDireHandle* dirHandle);
 
@@ -247,6 +296,7 @@ extern "C" {
    * @brief Open a filesystem watcher for the given path.
    * @param path Path to watch (directory or file, depending on platform support).
    * @return Watch handle, or NULL on failure.
+   * @group filesystem.watch
    */
   X_FILESYSTEM_API XFSWatch* x_fs_watch_open(const char* path);
 
@@ -254,6 +304,7 @@ extern "C" {
    * @brief Close a filesystem watcher.
    * @param fw Watch handle to close.
    * @return Nothing.
+   * @group filesystem.watch
    */
   X_FILESYSTEM_API void x_fs_watch_close(XFSWatch* fw);
 
@@ -263,6 +314,7 @@ extern "C" {
    * @param out_events Output array to receive events.
    * @param max_events Maximum number of events to write to out_events.
    * @return Number of events written, or a negative value on error.
+   * @group filesystem.watch
    */
   X_FILESYSTEM_API int32_t x_fs_watch_poll(XFSWatch* fw, XFSWatchEvent* out_events, int32_t max_events);
 
@@ -270,6 +322,7 @@ extern "C" {
    * @brief Normalize a path in-place (e.g., separators, ".", ".." where possible).
    * @param input Path to normalize.
    * @return Pointer to the normalized path (same as input).
+   * @group filesystem.paths.manipulation
    */
   X_FILESYSTEM_API XFSPath* x_fs_path_normalize(XFSPath* input);
 
@@ -277,9 +330,16 @@ extern "C" {
    * @brief Get the filename stem (basename without extension) from a path string.
    * @param input Path as a C string.
    * @return Slice pointing into input containing the stem.
+   * @group filesystem.paths.components
    */
   X_FILESYSTEM_API XSlice x_fs_path_stem_cstr(const char* input);
+  /**
+   * @group filesystem.paths.components
+   */
   X_FILESYSTEM_API XSlice x_fs_path_stem_as_slice(const XFSPath* input);
+  /**
+   * @group filesystem.paths.components
+   */
   X_FILESYSTEM_API size_t x_fs_path_stem(const XFSPath* input, XFSPath* out);
 
 
@@ -287,9 +347,16 @@ extern "C" {
    * @brief Get the basename (final component) from a path string.
    * @param input Path as a C string.
    * @return Slice pointing into input containing the basename.
+   * @group filesystem.paths.components
    */
   X_FILESYSTEM_API XSlice x_fs_path_basename_cstr(const char* input);
+  /**
+   * @group filesystem.paths.components
+   */
   X_FILESYSTEM_API XSlice x_fs_path_basename_as_slice(const XFSPath* input);
+  /**
+   * @group filesystem.paths.components
+   */
   X_FILESYSTEM_API size_t x_fs_path_basename(const XFSPath* input, XFSPath* out);
 
 
@@ -297,9 +364,16 @@ extern "C" {
    * @brief Get the directory name (everything before the final component) from a path string.
    * @param input Path as a C string.
    * @return Slice pointing into input containing the directory portion.
+   * @group filesystem.paths.components
    */
   X_FILESYSTEM_API XSlice x_fs_path_dirname_cstr(const char* input);
+  /**
+   * @group filesystem.paths.components
+   */
   X_FILESYSTEM_API XSlice x_fs_path_dirname_as_slice(const XFSPath* input);
+  /**
+   * @group filesystem.paths.components
+   */
   X_FILESYSTEM_API size_t x_fs_path_dirname(const XFSPath* input, XFSPath* out);
 
 
@@ -307,22 +381,33 @@ extern "C" {
    * @brief Build a path from one or more C string components (variadic), writing to out.
    * @param out Output path to receive the resulting path.
    * @return True on success, false on failure.
+   * @group filesystem.paths.manipulation
    */
   X_FILESYSTEM_API bool x_fs_path_(XFSPath* out, ...);
 
   /* Join path segments (NULL-terminated varargs). Used by x_fs_path_join(). */
+  /**
+   * @group filesystem.paths.manipulation
+   */
   X_FILESYSTEM_API size_t x_fs_path_join_(XFSPath* path, ...);
 
   /* Join path segments from XSlice pointers (NULL-terminated varargs). Used by x_fs_path_join_slice(). */
+  /**
+   * @group filesystem.paths.manipulation
+   */
   X_FILESYSTEM_API size_t x_fs_path_join_slice_(XFSPath* path, ...);
 
   /* Full-path view as XSlice. Valid while the XFSPath is not modified. */
+  /**
+   * @group filesystem.paths.manipulation
+   */
   X_FILESYSTEM_API XSlice x_fs_path_as_slice(const XFSPath* path);
 
   /**
    * @brief Check whether a path exists on disk.
    * @param path Path to check.
    * @return True if it exists, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_exists(const XFSPath* path);
 
@@ -330,6 +415,7 @@ extern "C" {
    * @brief Check whether a C-string path exists on disk.
    * @param path Path to check.
    * @return True if it exists, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_exists_cstr(const char* path);
 
@@ -337,6 +423,7 @@ extern "C" {
    * @brief Check whether a path exists on disk using a faster, less thorough method.
    * @param path Path to check.
    * @return True if it exists, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_exists_quick(const XFSPath* path);
 
@@ -344,6 +431,7 @@ extern "C" {
    * @brief Check whether a C-string path exists on disk using a faster, less thorough method.
    * @param path Path to check.
    * @return True if it exists, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_exists_quick_cstr(const char* path);
 
@@ -351,6 +439,7 @@ extern "C" {
    * @brief Check whether a path is absolute.
    * @param path Path to check.
    * @return True if absolute, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_absolute(const XFSPath* path);
 
@@ -358,6 +447,7 @@ extern "C" {
    * @brief Check whether a C-string path is absolute.
    * @param path Path to check.
    * @return True if absolute, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_absolute_cstr(const char* path);
 
@@ -365,6 +455,7 @@ extern "C" {
    * @brief Check whether a path is absolute using native platform rules.
    * @param path Path to check.
    * @return True if absolute, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_absolute_native(const XFSPath* path);
 
@@ -372,6 +463,7 @@ extern "C" {
    * @brief Check whether a C-string path is absolute using native platform rules.
    * @param path Path to check.
    * @return True if absolute, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_absolute_native_cstr(const char* path);
 
@@ -379,6 +471,7 @@ extern "C" {
    * @brief Check whether a path points to an existing directory.
    * @param path Path to check.
    * @return True if it is a directory, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_directory(const XFSPath* path);
 
@@ -386,6 +479,7 @@ extern "C" {
    * @brief Check whether a C-string path points to an existing directory.
    * @param path Path to check.
    * @return True if it is a directory, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_directory_cstr(const char* path);
 
@@ -393,6 +487,7 @@ extern "C" {
    * @brief Check whether a path points to an existing file.
    * @param path Path to check.
    * @return True if it is a file, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_file(const XFSPath* path);
 
@@ -400,6 +495,7 @@ extern "C" {
    * @brief Check whether a C-string path points to an existing file.
    * @param path Path to check.
    * @return True if it is a file, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_file_cstr(const char* path);
 
@@ -409,6 +505,7 @@ extern "C" {
    *             the name does not already resolve to a file.
    * @param out_path Output path receiving the executable path.
    * @return True when an executable was found, false otherwise.
+   * @group filesystem.executables
    */
   X_FILESYSTEM_API bool x_fs_executable_find(const char* name, XFSPath* out_path);
 
@@ -416,6 +513,7 @@ extern "C" {
    * @brief Check whether a path is relative.
    * @param path Path to check.
    * @return True if relative, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_relative(const XFSPath* path);
 
@@ -423,6 +521,7 @@ extern "C" {
    * @brief Check whether a C-string path is relative.
    * @param path Path to check.
    * @return True if relative, false otherwise.
+   * @group filesystem.paths.queries
    */
   X_FILESYSTEM_API bool x_fs_path_is_relative_cstr(const char* path);
 
@@ -430,6 +529,7 @@ extern "C" {
    * @brief Get a NUL-terminated C string view of an XFSPath.
    * @param p Path object.
    * @return Pointer to the internal NUL-terminated string.
+   * @group filesystem.paths.manipulation
    */
   X_FILESYSTEM_API const char* x_fs_path_cstr(const XFSPath* p);
 
@@ -438,6 +538,7 @@ extern "C" {
    * @param p Path to append to.
    * @param comp Component to append.
    * @return New length of the path after appending.
+   * @group filesystem.paths.manipulation
    */
   X_FILESYSTEM_API size_t x_fs_path_append(XFSPath* p, const char* comp);
 
@@ -446,6 +547,7 @@ extern "C" {
    * @param path Path to modify.
    * @param new_ext New extension (with or without leading dot, depending on implementation).
    * @return New length of the path after the change.
+   * @group filesystem.paths.components
    */
   X_FILESYSTEM_API size_t x_fs_path_change_extension(XFSPath* path, const char* new_ext);
 
@@ -454,6 +556,7 @@ extern "C" {
    * @param a First path.
    * @param b Second path.
    * @return 0 if equal, <0 if a < b, >0 if a > b.
+   * @group filesystem.paths.comparison
    */
   X_FILESYSTEM_API size_t x_fs_path_compare(const XFSPath* a, const XFSPath* b);
 
@@ -462,6 +565,7 @@ extern "C" {
    * @param a Path.
    * @param cstr C string path.
    * @return 0 if equal, <0 if a < cstr, >0 if a > cstr.
+   * @group filesystem.paths.comparison
    */
   X_FILESYSTEM_API int32_t x_fs_path_compare_cstr(const XFSPath* a, const char* cstr);
 
@@ -470,6 +574,7 @@ extern "C" {
    * @param a Path.
    * @param b Small string to compare against.
    * @return True if equal, false otherwise.
+   * @group filesystem.paths.comparison
    */
   X_FILESYSTEM_API bool x_fs_path_eq(const XFSPath* a, const XSmallstr* b);
 
@@ -478,6 +583,7 @@ extern "C" {
    * @param a Path.
    * @param b C string path.
    * @return True if equal, false otherwise.
+   * @group filesystem.paths.comparison
    */
   X_FILESYSTEM_API bool x_fs_path_eq_cstr(const XFSPath* a, const char* b);
 
@@ -485,9 +591,16 @@ extern "C" {
    * @brief Get the extension from a path string.
    * @param input Path as a C string.
    * @return Slice pointing into input containing the extension (may be empty).
+   * @group filesystem.paths.components
    */
   X_FILESYSTEM_API XSlice x_fs_path_extension_cstr(const char* input);
+  /**
+   * @group filesystem.paths.components
+   */
   X_FILESYSTEM_API XSlice x_fs_path_extension_as_slice(const XFSPath* input);
+  /**
+   * @group filesystem.paths.components
+   */
   X_FILESYSTEM_API size_t x_fs_path_extension(const XFSPath* input, XFSPath* out);
 
 
@@ -496,6 +609,7 @@ extern "C" {
    * @param sv Input slice containing a path string.
    * @param out Output path to receive the converted string.
    * @return Length written to out.
+   * @group filesystem.paths.manipulation
    */
   X_FILESYSTEM_API size_t x_fs_path_from_slice(XSlice sv, XFSPath* out);
 
@@ -503,9 +617,13 @@ extern "C" {
    * @brief Append one or more path components to an existing path (variadic).
    * @param path Path to append into.
    * @return New length of the path after joining.
+   * @group filesystem.paths.manipulation
    */
   X_FILESYSTEM_API size_t x_fs_path_join_(XFSPath* path, ...);
 
+  /**
+   * @group filesystem.paths.manipulation
+   */
   X_FILESYSTEM_API size_t x_fs_path_join_slice_(XFSPath* path, ...);
 
   /**
@@ -514,6 +632,7 @@ extern "C" {
    * @param to_path Target path.
    * @param out_path Output path receiving the relative path.
    * @return Length of the written relative path, or 0 on failure.
+   * @group filesystem.paths.relative
    */
   X_FILESYSTEM_API size_t x_fs_path_relative_to_cstr(const char* from_path, const char* to_path, XFSPath* out_path);
 
@@ -523,6 +642,7 @@ extern "C" {
    * @param to_path Second path.
    * @param out_path Output path receiving the common prefix.
    * @return True if a common prefix was written (may be empty depending on implementation), false on failure.
+   * @group filesystem.paths.relative
    */
   X_FILESYSTEM_API bool x_fs_path_common_prefix(const char* from_path, const char* to_path, XFSPath* out_path);
 
@@ -531,6 +651,7 @@ extern "C" {
    * @param p Path to set.
    * @param cstr Source C string.
    * @return Length written to p.
+   * @group filesystem.paths.manipulation
    */
   X_FILESYSTEM_API size_t x_fs_path_set(XFSPath* p, const char* cstr);
 
@@ -539,6 +660,7 @@ extern "C" {
    * @param p Path to set.
    * @param slice stdx slice string.
    * @return Length written to p.
+   * @group filesystem.paths.manipulation
    */
   X_FILESYSTEM_API size_t x_fs_path_set_slice(XFSPath* p, XSlice slice);
 
@@ -549,6 +671,7 @@ extern "C" {
    * @param max_components Maximum number of components to write.
    * @param out_count Output count of components written.
    * @return True on success, false on failure.
+   * @group filesystem.paths.components
    */
   X_FILESYSTEM_API bool x_fs_path_split(const char* input, XFSPath* out_components, size_t max_components, size_t* out_count);
 
@@ -556,6 +679,7 @@ extern "C" {
    * @brief Get the executable path (or executable directory, depending on implementation).
    * @param out Output path to receive the executable path.
    * @return Length written to out, or 0 on failure.
+   * @group filesystem.executables
    */
   X_FILESYSTEM_API size_t x_fs_path_from_executable(XFSPath* out);
 
@@ -564,6 +688,7 @@ extern "C" {
    * @param path File or directory path.
    * @param out_stat Output struct receiving the metadata.
    * @return True on success, false on failure.
+   * @group filesystem.metadata
    */
   X_FILESYSTEM_API bool x_fs_file_stat(const char* path, FSFileStat* out_stat);
 
@@ -572,6 +697,7 @@ extern "C" {
    * @param path File or directory path.
    * @param out_time Output time receiving the modification time.
    * @return True on success, false on failure.
+   * @group filesystem.metadata
    */
   X_FILESYSTEM_API bool x_fs_file_modification_time(const char* path, time_t* out_time);
 
@@ -580,6 +706,7 @@ extern "C" {
    * @param path File or directory path.
    * @param out_time Output time receiving the creation time.
    * @return True on success, false on failure.
+   * @group filesystem.metadata
    */
   X_FILESYSTEM_API bool x_fs_file_creation_time(const char* path, time_t* out_time);
 
@@ -588,6 +715,7 @@ extern "C" {
    * @param path File or directory path.
    * @param out_permissions Output value receiving the permissions (platform-dependent).
    * @return True on success, false on failure.
+   * @group filesystem.metadata
    */
   X_FILESYSTEM_API bool x_fs_file_permissions(const char* path, uint32_t* out_permissions);
 
@@ -596,6 +724,7 @@ extern "C" {
    * @param path File or directory path.
    * @param permissions Permissions value to set (platform-dependent).
    * @return True on success, false on failure.
+   * @group filesystem.metadata
    */
   X_FILESYSTEM_API bool x_fs_file_set_permissions(const char* path, uint32_t permissions);
 
@@ -603,6 +732,7 @@ extern "C" {
    * @brief Check whether a path points to an existing regular file.
    * @param path Path to check.
    * @return True if it is a file, false otherwise.
+   * @group filesystem.metadata
    */
   X_FILESYSTEM_API bool x_fs_is_file(const char* path);
 
@@ -610,6 +740,7 @@ extern "C" {
    * @brief Check whether a path points to an existing directory.
    * @param path Path to check.
    * @return True if it is a directory, false otherwise.
+   * @group filesystem.metadata
    */
   X_FILESYSTEM_API bool x_fs_is_directory(const char* path);
 
@@ -619,6 +750,7 @@ extern "C" {
    * @param path Path to copy.
    * @param out Where to copy path into.
    * @return size_t size of the copy;
+   * @group filesystem.paths.manipulation
    */
   X_FILESYSTEM_API size_t x_fs_path_copy(const XFSPath *path, XFSPath *out);
   
@@ -627,6 +759,7 @@ extern "C" {
    * @param path Path to check compute parent from.
    * @param out Path to write parent into.
    * @return void
+   * @group filesystem.paths.components
    */
   X_FILESYSTEM_API void x_fs_directory_parent(const XFSPath *path, XFSPath* out);
 
@@ -634,6 +767,7 @@ extern "C" {
    * @brief Check whether a path is a symbolic link.
    * @param path Path to check.
    * @return True if it is a symlink, false otherwise.
+   * @group filesystem.symlinks
    */
   X_FILESYSTEM_API bool x_fs_is_symlink(const char* path);
 
@@ -642,6 +776,7 @@ extern "C" {
    * @param path Symbolic link path.
    * @param out_path Output path receiving the resolved link target.
    * @return True on success, false on failure.
+   * @group filesystem.symlinks
    */
   X_FILESYSTEM_API bool x_fs_read_symlink(const char* path, XFSPath* out_path);
 
@@ -650,6 +785,7 @@ extern "C" {
    * @param prefix Prefix to use for the temporary file name.
    * @param out_path Output path receiving the created temp file path.
    * @return True on success, false on failure.
+   * @group filesystem.temporary
    */
   X_FILESYSTEM_API bool x_fs_make_temp_file(const char* prefix, XFSPath* out_path);
 
@@ -658,6 +794,7 @@ extern "C" {
    * @param prefix Prefix to use for the temporary directory name.
    * @param out_path Output path receiving the created temp directory path.
    * @return True on success, false on failure.
+   * @group filesystem.temporary
    */
   X_FILESYSTEM_API bool x_fs_make_temp_directory(const char* prefix, XFSPath* out_path);
 
@@ -666,6 +803,7 @@ extern "C" {
    * @brief Convert a time value from epoch to XFSTime.
    * @param t Time in seconds since Unix epoch.
    * @return XFSTime representation of the given epoch time.
+   * @group filesystem.metadata
    */
   X_FILESYSTEM_API XFSTime x_fs_time_from_epoch(time_t t);
 
@@ -678,6 +816,7 @@ extern "C" {
    *
    * @note The function assumes both paths are normalized.
    * @note The result may contain ".." segments if needed.
+   * @group filesystem.paths.relative
    */
   X_FILESYSTEM_API size_t x_fs_path_relative_to(const XFSPath* from_path, const XFSPath* to_path, XFSPath* out_path);
 
