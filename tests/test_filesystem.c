@@ -288,11 +288,118 @@ int test_x_fs_path_join_slice(void)
 // Test filesystem watching
 // ---------------------------------------------------------------------------
 
+static void s_test_wait_ms(int32_t milliseconds)
+{
+  clock_t start = clock();
+  clock_t ticks =
+      (clock_t)((double)CLOCKS_PER_SEC * (double)milliseconds / 1000.0);
+
+  while ((clock() - start) < ticks)
+  {
+  }
+}
+
+static bool s_watch_event_wait(XFSWatch* watcher, XFSWatchEventType action,
+    const char* filename, XFSWatchEvent* out_event)
+{
+  int32_t attempt;
+
+  for (attempt = 0; attempt < 200; ++attempt)
+  {
+    XFSWatchEvent events[8];
+    int32_t count = x_fs_watch_poll(watcher, events, 8);
+    int32_t i;
+
+    if (count < 0)
+    {
+      return false;
+    }
+
+    for (i = 0; i < count; ++i)
+    {
+      if (events[i].action == action && events[i].filename != NULL &&
+          strcmp(events[i].filename, filename) == 0)
+      {
+        if (out_event)
+        {
+          *out_event = events[i];
+        }
+        return true;
+      }
+    }
+
+    s_test_wait_ms(10);
+  }
+
+  return false;
+}
+
+static void s_watch_clobber_stack(void)
+{
+  volatile unsigned char buffer[X_FS_PATH_MAX_LENGTH * 2];
+  size_t i;
+
+  for (i = 0; i < sizeof(buffer); ++i)
+  {
+    buffer[i] = (unsigned char)i;
+  }
+
+  (void)buffer[0];
+}
+
 int test_x_fs_watch_empty(void)
 {
   XFSWatch* watcher = x_fs_watch_open(".");
   ASSERT_TRUE(watcher != NULL);
   x_fs_watch_close(watcher);
+  return 0;
+}
+
+int test_x_fs_watch_events(void)
+{
+  XFSPath directory = {0};
+  XFSPath created = {0};
+  XFSPath renamed = {0};
+  XFSWatch* watcher;
+  XFSWatchEvent event = {0};
+  FILE* file;
+
+  ASSERT_TRUE(x_fs_make_temp_directory("stdx_watch_", &directory));
+  ASSERT_TRUE(x_fs_path(&created, directory.buf, "created.txt"));
+  ASSERT_TRUE(x_fs_path(&renamed, directory.buf, "renamed.txt"));
+
+  watcher = x_fs_watch_open(directory.buf);
+  ASSERT_TRUE(watcher != NULL);
+
+  file = fopen(created.buf, "wb");
+  ASSERT_TRUE(file != NULL);
+  ASSERT_TRUE(fputs("created", file) >= 0);
+  fclose(file);
+
+  ASSERT_TRUE(s_watch_event_wait(
+      watcher, x_fs_watch_CREATED, "created.txt", &event));
+  s_watch_clobber_stack();
+  ASSERT_TRUE(event.filename != NULL);
+  ASSERT_TRUE(strcmp(event.filename, "created.txt") == 0);
+
+  file = fopen(created.buf, "ab");
+  ASSERT_TRUE(file != NULL);
+  ASSERT_TRUE(fputs(" modified", file) >= 0);
+  fclose(file);
+
+  ASSERT_TRUE(s_watch_event_wait(
+      watcher, x_fs_watch_MODIFIED, "created.txt", NULL));
+
+  ASSERT_TRUE(x_fs_file_rename(created.buf, renamed.buf));
+  ASSERT_TRUE(s_watch_event_wait(
+      watcher, x_fs_watch_RENAMED_TO, "renamed.txt", NULL));
+
+  ASSERT_TRUE(x_fs_file_delete(renamed.buf));
+  ASSERT_TRUE(s_watch_event_wait(
+      watcher, x_fs_watch_DELETED, "renamed.txt", NULL));
+
+  x_fs_watch_close(watcher);
+  ASSERT_TRUE(x_fs_directory_delete(directory.buf));
   return 0;
 }
 
@@ -321,6 +428,7 @@ int main()
     X_TEST(test_x_fs_temp_folder),
 
     X_TEST(test_x_fs_watch_empty),
+    X_TEST(test_x_fs_watch_events),
     X_TEST(test_x_fs_path_join_slice),
 
   };

@@ -47,7 +47,7 @@
 #endif
 
 #define X_FILESYSTEM_VERSION_MAJOR 1
-#define X_FILESYSTEM_VERSION_MINOR 3
+#define X_FILESYSTEM_VERSION_MINOR 4
 #define X_FILESYSTEM_VERSION_PATCH 0
 #define X_FILESYSTEM_VERSION (X_FILESYSTEM_VERSION_MAJOR * 10000 + X_FILESYSTEM_VERSION_MINOR * 100 + X_FILESYSTEM_VERSION_PATCH)
 
@@ -93,7 +93,7 @@ extern "C" {
   typedef struct
   {
     XFSWatchEventType action;
-    const char* filename; // Valid until next poll
+    const char* filename; // Valid until next x_fs_watch_poll() call
   } XFSWatchEvent;
 
   typedef struct XFSTime
@@ -774,11 +774,14 @@ extern "C" {
 
   struct XFSWatch_t
   {
+    char* event_names;
+    int32_t event_name_capacity;
 #ifdef _WIN32
     HANDLE dir;
     OVERLAPPED overlapped;
     char buffer[4096];
     DWORD last_bytes;
+    DWORD offset;
     int32_t ready;
 #elif defined(__linux__)
     int32_t fd;
@@ -1432,35 +1435,113 @@ extern "C" {
     X_FILESYSTEM_FREE(dir_handle);
   }
 
+  static bool s_x_fs_watch_event_names_reserve(
+      XFSWatch* fw, int32_t max_events)
+  {
+    size_t required;
+    char* names;
+
+    if (!fw || max_events <= 0)
+    {
+      return false;
+    }
+
+    if (fw->event_name_capacity >= max_events)
+    {
+      return true;
+    }
+
+    if ((size_t)max_events > SIZE_MAX / X_FS_PATH_MAX_LENGTH)
+    {
+      return false;
+    }
+
+    required = (size_t)max_events * X_FS_PATH_MAX_LENGTH;
+    names = (char*)X_FILESYSTEM_ALLOC(required);
+    if (!names)
+    {
+      return false;
+    }
+
+    X_FILESYSTEM_FREE(fw->event_names);
+    fw->event_names = names;
+    fw->event_name_capacity = max_events;
+    return true;
+  }
+
+  static char* s_x_fs_watch_event_name(XFSWatch* fw, int32_t index)
+  {
+    return fw->event_names + (size_t)index * X_FS_PATH_MAX_LENGTH;
+  }
+
+#ifdef _WIN32
+  static bool s_x_fs_watch_begin_read(XFSWatch* fw)
+  {
+    if (!ResetEvent(fw->overlapped.hEvent))
+    {
+      return false;
+    }
+
+    return ReadDirectoryChangesW(fw->dir, fw->buffer, sizeof(fw->buffer), TRUE,
+        FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE |
+            FILE_NOTIFY_CHANGE_CREATION,
+        NULL, &fw->overlapped, NULL) != 0;
+  }
+#endif
+
   X_FILESYSTEM_API XFSWatch* x_fs_watch_open(const char* path)
   {
-    if (!path) return NULL;
+    if (!path)
+    {
+      return NULL;
+    }
 
     XFSWatch* fw = X_FILESYSTEM_CALLOC(1, sizeof(XFSWatch));
-    if (!fw) return NULL;
+    if (!fw)
+    {
+      return NULL;
+    }
 
 #ifdef _WIN32
     wchar_t wpath[X_FS_MAX_PATH];
-    MultiByteToWideChar(CP_UTF8, 0, path, -1, wpath, X_FS_MAX_PATH);
+    if (MultiByteToWideChar(
+            CP_UTF8, 0, path, -1, wpath, X_FS_MAX_PATH) == 0)
+    {
+      X_FILESYSTEM_FREE(fw);
+      return NULL;
+    }
 
     fw->dir = CreateFileW(wpath, FILE_LIST_DIRECTORY,
         FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
         NULL, OPEN_EXISTING,
         FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, NULL);
 
-    if (fw->dir == INVALID_HANDLE_VALUE) {
+    if (fw->dir == INVALID_HANDLE_VALUE)
+    {
       X_FILESYSTEM_FREE(fw);
       return NULL;
     }
 
     fw->overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    ReadDirectoryChangesW(fw->dir, fw->buffer, sizeof(fw->buffer), TRUE,
-        FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_CREATION,
-        NULL, &fw->overlapped, NULL);
+    if (!fw->overlapped.hEvent)
+    {
+      CloseHandle(fw->dir);
+      X_FILESYSTEM_FREE(fw);
+      return NULL;
+    }
+
+    if (!s_x_fs_watch_begin_read(fw))
+    {
+      CloseHandle(fw->overlapped.hEvent);
+      CloseHandle(fw->dir);
+      X_FILESYSTEM_FREE(fw);
+      return NULL;
+    }
 
 #elif defined(__linux__)
     fw->fd = inotify_init1(IN_NONBLOCK);
-    if (fw->fd < 0) {
+    if (fw->fd < 0)
+    {
       X_FILESYSTEM_FREE(fw);
       return NULL;
     }
@@ -1468,7 +1549,8 @@ extern "C" {
     fw->wd = inotify_add_watch(fw->fd, path,
         IN_CREATE | IN_DELETE | IN_MODIFY | IN_MOVED_FROM | IN_MOVED_TO);
 
-    if (fw->wd < 0) {
+    if (fw->wd < 0)
+    {
       close(fw->fd);
       X_FILESYSTEM_FREE(fw);
       return NULL;
@@ -1483,7 +1565,10 @@ extern "C" {
 
   X_FILESYSTEM_API void x_fs_watch_close(XFSWatch* fw)
   {
-    if (!fw) return;
+    if (!fw)
+    {
+      return;
+    }
 
 #ifdef _WIN32
     CancelIo(fw->dir);
@@ -1494,78 +1579,160 @@ extern "C" {
     close(fw->fd);
 #endif
 
+    X_FILESYSTEM_FREE(fw->event_names);
     X_FILESYSTEM_FREE(fw);
   }
 
-  X_FILESYSTEM_API int32_t x_fs_watch_poll(XFSWatch* fw, XFSWatchEvent* out_events,int32_t max_events)
+  X_FILESYSTEM_API int32_t x_fs_watch_poll(
+      XFSWatch* fw, XFSWatchEvent* out_events, int32_t max_events)
   {
-    if (!fw || !out_events || max_events <= 0) return 0;
-
     int32_t count = 0;
 
-#ifdef _WIN32
-    DWORD bytes;
+    if (!fw || !out_events || max_events <= 0)
+    {
+      return 0;
+    }
 
-    if (!fw->ready) {
-      if (!GetOverlappedResult(fw->dir, &fw->overlapped, &bytes, FALSE)) return 0;
+    if (!s_x_fs_watch_event_names_reserve(fw, max_events))
+    {
+      return -1;
+    }
+
+#ifdef _WIN32
+    if (!fw->ready)
+    {
+      DWORD bytes = 0;
+
+      if (!GetOverlappedResult(fw->dir, &fw->overlapped, &bytes, FALSE))
+      {
+        DWORD error = GetLastError();
+        return error == ERROR_IO_INCOMPLETE ? 0 : -1;
+      }
+
       fw->last_bytes = bytes;
+      fw->offset = 0;
       fw->ready = 1;
     }
 
-    BYTE* ptr = (BYTE*)fw->buffer;
-    FILE_NOTIFY_INFORMATION* fni = NULL;
-    char filename[X_FS_MAX_PATH];
-
-    while (fw->last_bytes && count < max_events) {
-      fni = (FILE_NOTIFY_INFORMATION*)ptr;
-
+    while (fw->offset < fw->last_bytes && count < max_events)
+    {
+      BYTE* ptr = (BYTE*)fw->buffer + fw->offset;
+      FILE_NOTIFY_INFORMATION* fni = (FILE_NOTIFY_INFORMATION*)ptr;
+      char* filename = s_x_fs_watch_event_name(fw, count);
+      XFSWatchEvent event = {x_fs_watch_UNKNOWN, filename};
       int32_t len = WideCharToMultiByte(CP_UTF8, 0, fni->FileName,
-          fni->FileNameLength / 2, filename, sizeof(filename) - 1, NULL, NULL);
-      filename[len] = 0;
+          (int32_t)(fni->FileNameLength / sizeof(WCHAR)), filename,
+          X_FS_PATH_MAX_LENGTH - 1, NULL, NULL);
 
-      XFSWatchEvent ev = { x_fs_watch_UNKNOWN, filename };
-
-      switch (fni->Action) {
-        case FILE_ACTION_ADDED: ev.action = x_fs_watch_CREATED; break;
-        case FILE_ACTION_REMOVED: ev.action = x_fs_watch_DELETED; break;
-        case FILE_ACTION_MODIFIED: ev.action = x_fs_watch_MODIFIED; break;
-        case FILE_ACTION_RENAMED_OLD_NAME: ev.action = x_fs_watch_RENAMED_FROM; break;
-        case FILE_ACTION_RENAMED_NEW_NAME: ev.action = x_fs_watch_RENAMED_TO; break;
+      if (len <= 0)
+      {
+        filename[0] = 0;
+      }
+      else
+      {
+        filename[len] = 0;
       }
 
-      out_events[count++] = ev;
+      switch (fni->Action)
+      {
+      case FILE_ACTION_ADDED:
+        event.action = x_fs_watch_CREATED;
+        break;
+      case FILE_ACTION_REMOVED:
+        event.action = x_fs_watch_DELETED;
+        break;
+      case FILE_ACTION_MODIFIED:
+        event.action = x_fs_watch_MODIFIED;
+        break;
+      case FILE_ACTION_RENAMED_OLD_NAME:
+        event.action = x_fs_watch_RENAMED_FROM;
+        break;
+      case FILE_ACTION_RENAMED_NEW_NAME:
+        event.action = x_fs_watch_RENAMED_TO;
+        break;
+      }
 
-      if (!fni->NextEntryOffset) break;
-      ptr += fni->NextEntryOffset;
+      out_events[count++] = event;
+
+      if (fni->NextEntryOffset == 0)
+      {
+        fw->offset = fw->last_bytes;
+      }
+      else
+      {
+        fw->offset += fni->NextEntryOffset;
+      }
     }
 
-    fw->ready = 0;
-    ReadDirectoryChangesW(fw->dir, fw->buffer, sizeof(fw->buffer), TRUE,
-        FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_CREATION,
-        NULL, &fw->overlapped, NULL);
+    if (fw->offset >= fw->last_bytes)
+    {
+      fw->last_bytes = 0;
+      fw->offset = 0;
+      fw->ready = 0;
+
+      if (!s_x_fs_watch_begin_read(fw))
+      {
+        return -1;
+      }
+    }
 
 #elif defined(__linux__)
-    if (fw->offset >= fw->len) {
-      fw->len = read(fw->fd, fw->buffer, sizeof(fw->buffer));
+    if (fw->offset >= fw->len)
+    {
+      fw->len = (int32_t)read(fw->fd, fw->buffer, sizeof(fw->buffer));
       fw->offset = 0;
-      if (fw->len <= 0) return 0;
-    }
 
-    while (fw->offset < fw->len && count < max_events) {
-      struct inotify_event* e = (struct inotify_event*)&fw->buffer[fw->offset];
-
-      if (e->len > 0) {
-        XFSWatchEvent ev = { x_fs_watch_UNKNOWN, e->name };
-        if (e->mask & IN_CREATE)     ev.action = x_fs_watch_CREATED;
-        if (e->mask & IN_DELETE)     ev.action = x_fs_watch_DELETED;
-        if (e->mask & IN_MODIFY)     ev.action = x_fs_watch_MODIFIED;
-        if (e->mask & IN_MOVED_FROM) ev.action = x_fs_watch_RENAMED_FROM;
-        if (e->mask & IN_MOVED_TO)   ev.action = x_fs_watch_RENAMED_TO;
-
-        out_events[count++] = ev;
+      if (fw->len < 0)
+      {
+        return (errno == EAGAIN || errno == EWOULDBLOCK) ? 0 : -1;
       }
 
-      fw->offset += sizeof(struct inotify_event) + e->len;
+      if (fw->len == 0)
+      {
+        return 0;
+      }
+    }
+
+    while (fw->offset < fw->len && count < max_events)
+    {
+      struct inotify_event* event =
+          (struct inotify_event*)&fw->buffer[fw->offset];
+
+      if (event->len > 0)
+      {
+        char* filename = s_x_fs_watch_event_name(fw, count);
+        size_t filename_length = 0;
+        XFSWatchEvent out_event = {x_fs_watch_UNKNOWN, filename};
+
+        while (filename_length < event->len &&
+               event->name[filename_length] != 0)
+        {
+          filename_length++;
+        }
+
+        if (filename_length >= X_FS_PATH_MAX_LENGTH)
+        {
+          filename_length = X_FS_PATH_MAX_LENGTH - 1;
+        }
+
+        memcpy(filename, event->name, filename_length);
+        filename[filename_length] = 0;
+
+        if (event->mask & IN_CREATE)
+          out_event.action = x_fs_watch_CREATED;
+        if (event->mask & IN_DELETE)
+          out_event.action = x_fs_watch_DELETED;
+        if (event->mask & IN_MODIFY)
+          out_event.action = x_fs_watch_MODIFIED;
+        if (event->mask & IN_MOVED_FROM)
+          out_event.action = x_fs_watch_RENAMED_FROM;
+        if (event->mask & IN_MOVED_TO)
+          out_event.action = x_fs_watch_RENAMED_TO;
+
+        out_events[count++] = out_event;
+      }
+
+      fw->offset += sizeof(struct inotify_event) + event->len;
     }
 
 #else
