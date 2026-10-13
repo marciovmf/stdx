@@ -13,7 +13,7 @@
 #endif
 
 #ifndef DOXTER_MAX_MODULES
-#define DOXTER_MAX_MODULES 64
+#define DOXTER_MAX_MODULES 255
 #endif
 
 
@@ -106,6 +106,8 @@ struct DoxterSymbol
   XSlice declaration;
   XSlice comment;
   XSlice name;
+  u32 source_index;
+  u32 group_id; /* 0 means Ungrouped, otherwise index + 1 */
   bool is_typedef;
   bool is_static;
   bool is_empty_macro;
@@ -179,8 +181,18 @@ struct DoxterConfig
   u8 markdown_index_page;
 };
 
+typedef struct DoxterGroup
+{
+  XSlice path;
+  XSlice name;
+  const char *output_name;
+  u32 parent_id; /* 0 means a top-level group */
+} DoxterGroup;
+
 typedef struct
 {
+  char *group_index_html;
+  char *symbols_index_html;
   char *project_index_html;
   char *project_file_item_html;
   char *file_index_html;
@@ -210,6 +222,7 @@ typedef struct
   XArena            *scratch;     // A scratch buffer.
   XArray            *tokens;      // An array of tokens.
   XArray            *symbols;     // An array of all symbols.
+  XArray            *groups;      /* DoxterGroup nodes */
   uint32_t          source_count;
   DoxterSourceInfo  sources[DOXTER_MAX_MODULES];
 } DoxterProject;

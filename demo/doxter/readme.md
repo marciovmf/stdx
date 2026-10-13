@@ -46,6 +46,23 @@ Comment bloks for Functions support specific tags:
 - `@param <name> <optional description>` document a named function parameter.
 - `@return <details>` document the function return value
 
+## Symbol groups
+
+Use `@group` in a symbol's documentation comment to categorize it by API concept:
+
+```c
+/**
+ * @brief Creates an entity.
+ * @group ecs.entities
+ */
+XEntity x_ecs_entity_create(void);
+```
+
+Dots create nested groups. A symbol belongs to one group; symbols without `@group`
+appear in **Ungrouped**. The generated site uses group pages as the main navigation,
+with a global symbol index and file pages as secondary views. Group pages are named
+`group-ecs.entities.html` and symbols are linked to their group page by default.
+
 ## Global Comments
 
 A comment block that starts at line 1, column 1 and has an empty line immediately after closing the block is considered a file comment (or global comment) and doxter will place this content at the start of the documentation page.

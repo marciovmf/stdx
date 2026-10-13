@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{PAGE_TITLE}} | {{PROJECT_NAME}}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="layout">
+    <nav class="sidebar">
+      <h1>API Reference</h1>
+      <div class="file-name"><a href="index.html">home</a><span>/</span>{{PAGE_TITLE}}</div>
+      <details open><summary>Groups</summary><ul class="group-tree">{{GROUP_TREE}}</ul></details>
+      <details><summary>Files</summary><ul>{{MODULE_LIST}}</ul></details>
+      <ul class="nav-extras"><li><a href="symbols.html">All Symbols</a></li><li><a href="ungrouped.html">Ungrouped</a></li></ul>
+    </nav>
+    <main class="content"><header class="page-header"><h1>{{PAGE_TITLE}}</h1></header>
+      <ul class="global-symbol-index">{{SCOPE_INDEX}}</ul>
+    </main>
+  </div>
+</body>
+</html>

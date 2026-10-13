@@ -9,12 +9,10 @@
 <body>
   <div class="layout">
     <nav class="sidebar">
-      <details open>
-        <summary>Modules</summary>
-        <ul>
-          {{MODULE_LIST}}
-        </ul>
-      </details>
+      <h1>API Reference</h1>
+      <details open><summary>Groups</summary><ul class="group-tree">{{GROUP_TREE}}</ul></details>
+      <details><summary>Files</summary><ul>{{MODULE_LIST}}</ul></details>
+      <ul class="nav-extras"><li><a href="symbols.html">All Symbols</a></li><li><a href="ungrouped.html">Ungrouped</a></li></ul>
     </nav>
     <main class="content">
       <header class="page-header">
@@ -22,6 +20,8 @@
         <p class="subtitle"><a href="{{PROJECT_URL}}">{{PROJECT_URL}}</a></p>
         <p>{{PROJECT_BRIEF}}</p>
       </header>
+      <h2>Browse API</h2>
+      <ul class="group-tree">{{GROUP_TREE}}</ul>
     </main>
   </div>
 </body>

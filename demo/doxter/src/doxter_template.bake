@@ -25,6 +25,16 @@ COLOR_TOK_STR         = "COLOR_TOK_STR"
 DECL                  = "DECL"
 FILE_BRIEF            = "FILE_BRIEF"
 FILE_NAME             = "FILE_NAME"
+GROUP_TREE            = "GROUP_TREE"
+GROUP_CHILDREN        = "GROUP_CHILDREN"
+GROUP_BREADCRUMBS     = "GROUP_BREADCRUMBS"
+GROUP_NAME            = "GROUP_NAME"
+GROUP_SYMBOLS         = "GROUP_SYMBOLS"
+SCOPE_INDEX           = "SCOPE_INDEX"
+SYMBOL_HREF           = "SYMBOL_HREF"
+SOURCE_HREF           = "SOURCE_HREF"
+SOURCE_NAME           = "SOURCE_NAME"
+PAGE_TITLE            = "PAGE_TITLE"
 FONT_CODE             = "FONT_CODE"
 FONT_HEADING          = "FONT_HEADING"
 FONT_SYMBOL           = "FONT_SYMBOL"
@@ -57,6 +67,8 @@ TITLE                 = "TITLE"
 # Bake in template html files
 [DOX_TMPL]
 
+GROUP_INDEX           = @@templates/group_index.html
+SYMBOLS_INDEX         = @@templates/symbols_index.html
 INDEX_ITEM            = @@templates/index_item.html
 MODULE_INDEX          = @@templates/module_index.html
 MODULE_ITEM           = @@templates/module_item.html
