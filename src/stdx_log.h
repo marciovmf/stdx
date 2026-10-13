@@ -26,7 +26,7 @@
 #define X_LOG_H
 
 #define X_LOG_VERSION_MAJOR 1
-#define X_LOG_VERSION_MINOR 0
+#define X_LOG_VERSION_MINOR 2
 #define X_LOG_VERSION_PATCH 0
 #define X_LOG_VERSION (X_LOG_VERSION_MAJOR * 10000 + X_LOG_VERSION_MINOR * 100 + X_LOG_VERSION_PATCH)
 
@@ -79,6 +79,16 @@ extern "C" {
     XLOG_DEFAULT    = XLOG_TAG | XLOG_TIMESTAMP | XLOG_SOURCEINFO
   } XLogComponent;
 
+  /**
+   * @brief Observer called synchronously for a fully formatted log message.
+   * @param level Log severity.
+   * @param message Formatted text; valid only during this call.
+   * @param user Opaque observer data.
+   * @note The observer must not log recursively. Register/remove observers
+   *       only while no other thread is executing a log operation.
+   */
+  typedef void (*XLogListener)(XLogLevel level, const char* message, void* user);
+
   typedef struct
   {
     FILE* console;           /* Console output stream (stdout/stderr). Defaults to stdout. */
@@ -86,6 +96,8 @@ extern "C" {
     bool file_owned;         /* True if logger opened the file and should close it */
     int outputs;             /* Which outputs enabled (console/file/both) */
     XLogLevel level;         /* Minimum level to log */
+    XLogListener listener;   /* Optional formatted-message observer */
+    void* listener_user;     /* Observer context */
 #ifdef _WIN32
     bool vt_enabled;         /* Windows VT ANSI mode enabled? */
 #endif
@@ -138,6 +150,15 @@ extern "C" {
    * @brief Get the current console output stream (never NULL; defaults to stdout).
    */
   FILE* x_log_get_console(const XLogger* logger);
+
+  /**
+   * @brief Set or remove the optional observer for formatted log messages.
+   * @param logger Logger receiving the observer; NULL selects the default.
+   * @param listener Observer callback, or NULL to remove it.
+   * @param user Observer context, ignored when listener is NULL.
+   * @note Registration and removal require no concurrent logging operations.
+   */
+  void x_log_listener_set(XLogger* logger, XLogListener listener, void* user);
 
   /**
    * @brief Emit a formatted log message with full context information.
@@ -279,6 +300,8 @@ extern "C" {
     .file_owned = false,
     .outputs = XLOG_OUTPUT_CONSOLE,
     .level = XLOG_LEVEL_DEBUG,
+    .listener = NULL,
+    .listener_user = NULL,
 #ifdef _WIN32
     .vt_enabled = false,
 #endif
@@ -475,6 +498,13 @@ extern "C" {
     return logger->console;
   }
 
+  void x_log_listener_set(XLogger* logger, XLogListener listener, void* user)
+  {
+    logger = s_x_log_resolve(logger);
+    logger->listener = listener;
+    logger->listener_user = listener != NULL ? user : NULL;
+  }
+
   static void s_x_log_vmessage_to(
       XLogger* logger,
       FILE* out,
@@ -564,6 +594,11 @@ extern "C" {
     {
       s_x_log_output_file(logger, finalbuf);
     }
+
+    if (logger->listener != NULL)
+    {
+      logger->listener(level, finalbuf, logger->listener_user);
+    }
   }
 
   void x_log_message_to(
@@ -629,6 +664,8 @@ extern "C" {
     logger->file_owned = false;
     logger->outputs = outputs;
     logger->level = level;
+    logger->listener = NULL;
+    logger->listener_user = NULL;
 #ifdef _WIN32
     logger->vt_enabled = false;
     s_x_log_enable_windows_vt(logger);
@@ -651,6 +688,8 @@ extern "C" {
   void x_log_close(XLogger* logger)
   {
     logger = s_x_log_resolve(logger);
+    logger->listener = NULL;
+    logger->listener_user = NULL;
 
     if (logger->file && logger->file_owned)
     {

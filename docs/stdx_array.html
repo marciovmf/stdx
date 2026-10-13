@@ -21,6 +21,7 @@
         <summary>Functions</summary>
         <ul>
           <li><a href="#x_array_add">x_array_add</a></li>
+<li><a href="#x_array_add_range">x_array_add_range</a></li>
 <li><a href="#x_array_back">x_array_back</a></li>
 <li><a href="#x_array_capacity">x_array_capacity</a></li>
 <li><a href="#x_array_clear">x_array_clear</a></li>
@@ -170,7 +171,7 @@ additional runtime overhead.</p>
   </div>
   <h2><span class="symbol-name">X_ARRAY_VERSION_MAJOR</span></h2>
   <p class="brief"></p>
-  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_VERSION_MAJOR</span> <span class="tok_num">1</span></code></pre>
+  <pre class="symbol-decl"><code><span class="tok_pp">#define</span> <span class="tok_id">X_ARRAY_VERSION_MAJOR</span> <span class="tok_num">2</span></code></pre>
   
   
 </article>
@@ -323,6 +324,36 @@ additional runtime overhead.</p>
 <dd>Pointer to the array.</dd>
 <dt><code><span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span></code></dt>
 <dd>Pointer to the element data to copy into the array.</dd>
+
+  </dl>
+</section>
+
+  <section class="returns">
+  <h3>Returns</h3>
+  <p>Error code indicating success or failure.</p>
+</section>
+
+</article>
+<article id="x_array_add_range" class="symbol">
+  <div class="meta">
+    <span class="symbol-kind">Function</span>
+  </div>
+  <h2><span class="symbol-name">x_array_add_range</span></h2>
+  <p class="brief">Append a contiguous range of elements to the end of the array.</p>
+  <pre class="symbol-decl"><code><span class="tok_id">X_ARRAY_API</span> <span class="tok_kw"><a href="stdx_array.html#XArrayError">XArrayError</a></span> <span class="tok_id">x_array_add_range</span>(
+ <span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span>,
+ <span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span>,
+ <span class="tok_kw">size_t</span> <span class="tok_id">count</span>
+);</code></pre>
+  <section class="params">
+  <h3>Parameters</h3>
+  <dl>
+    <dt><code><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_id">arr</span></code></dt>
+<dd>Pointer to the array.</dd>
+<dt><code><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_id">data</span></code></dt>
+<dd>Pointer to the first element in the range.</dd>
+<dt><code><span class="tok_kw">size_t</span> <span class="tok_id">count</span></code></dt>
+<dd>Number of elements to append.</dd>
 
   </dl>
 </section>
@@ -636,6 +667,10 @@ additional runtime overhead.</p>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
 <span class="tok_id">T</span> <span class="tok_id">value_copy</span><span class="tok_pun">=</span><span class="tok_id">value</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_kw">return</span> <span class="tok_kw"><a href="stdx_array.html#x_array_add">x_array_add</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">arr</span><span class="tok_pun">,</span><span class="tok_pun">&amp;</span><span class="tok_id">value_copy</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
+<span class="tok_pun">}</span><span class="tok_pun">\</span>
+<span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_kw"><a href="stdx_array.html#XArrayError">XArrayError</a></span> <span class="tok_id">x_array_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_add_range</span><span class="tok_pun">(</span><span class="tok_id">XArray_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">,</span> <span class="tok_kw">const</span> <span class="tok_id">T</span> <span class="tok_pun">*</span><span class="tok_id">values</span><span class="tok_pun">,</span> <span class="tok_kw">size_t</span> <span class="tok_id">count</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
+<span class="tok_pun">{</span><span class="tok_pun">\</span>
+<span class="tok_kw">return</span> <span class="tok_kw"><a href="stdx_array.html#x_array_add_range">x_array_add_range</a></span><span class="tok_pun">(</span><span class="tok_pun">(</span><span class="tok_kw"><a href="stdx_array.html#XArray">XArray</a></span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">arr</span><span class="tok_pun">,</span> <span class="tok_pun">(</span><span class="tok_kw">const</span> <span class="tok_kw">void</span> <span class="tok_pun">*</span><span class="tok_pun">)</span><span class="tok_id">values</span><span class="tok_pun">,</span> <span class="tok_id">count</span><span class="tok_pun">)</span><span class="tok_pun">;</span><span class="tok_pun">\</span>
 <span class="tok_pun">}</span><span class="tok_pun">\</span>
 <span class="tok_kw">static</span> <span class="tok_kw">inline</span> <span class="tok_kw"><a href="stdx_array.html#XArrayError">XArrayError</a></span> <span class="tok_id">x_array_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">_insert_ptr</span><span class="tok_pun">(</span><span class="tok_id">XArray_</span><span class="tok_pun">#</span><span class="tok_pun">#</span><span class="tok_id">suffix</span> <span class="tok_pun">*</span><span class="tok_id">arr</span><span class="tok_pun">,</span> <span class="tok_kw">const</span> <span class="tok_id">T</span> <span class="tok_pun">*</span><span class="tok_id">value_ptr</span><span class="tok_pun">,</span> <span class="tok_kw">unsigned</span> <span class="tok_kw">int</span> <span class="tok_id">index</span><span class="tok_pun">)</span><span class="tok_pun">\</span>
 <span class="tok_pun">{</span><span class="tok_pun">\</span>
