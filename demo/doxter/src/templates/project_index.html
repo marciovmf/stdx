@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>{{PROJECT_NAME}} Documentation</title>
+  <title>{{PROJECT_NAME}} API Reference</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -10,9 +10,8 @@
   <div class="layout">
     <nav class="sidebar">
       <h1>API Reference</h1>
-      <details open><summary>Groups</summary><ul class="group-tree">{{GROUP_TREE}}</ul></details>
-      <details><summary>Files</summary><ul>{{MODULE_LIST}}</ul></details>
-      <ul class="nav-extras"><li><a href="symbols.html">All Symbols</a></li><li><a href="ungrouped.html">Ungrouped</a></li></ul>
+      <ul class="group-tree">{{GROUP_TREE}}</ul>
+      <details class="sidebar-files"><summary>Files</summary><ul>{{MODULE_LIST}}</ul></details>
     </nav>
     <main class="content">
       <header class="page-header">
@@ -20,8 +19,7 @@
         <p class="subtitle"><a href="{{PROJECT_URL}}">{{PROJECT_URL}}</a></p>
         <p>{{PROJECT_BRIEF}}</p>
       </header>
-      <h2>Browse API</h2>
-      <ul class="group-tree">{{GROUP_TREE}}</ul>
+      {{GROUP_SYMBOLS}}
     </main>
   </div>
 </body>

@@ -48,20 +48,30 @@ Comment bloks for Functions support specific tags:
 
 ## Symbol groups
 
-Use `@group` in a symbol's documentation comment to categorize it by API concept:
+Use `@group` on functions (including function-like macros) to group them by API concept:
 
 ```c
 /**
  * @brief Creates an entity.
- * @group ecs.entities
+ * @group ecs
  */
 XEntity x_ecs_entity_create(void);
 ```
 
-Dots create nested groups. A symbol belongs to one group; symbols without `@group`
-appear in **Ungrouped**. The generated site uses group pages as the main navigation,
-with a global symbol index and file pages as secondary views. Group pages are named
-`group-ecs.entities.html` and symbols are linked to their group page by default.
+Groups are optional and can be nested using dotted paths, but flat groups are
+recommended for most projects (one group per module is often enough).
+
+The **main `index.html`** holds the complete function reference in one document,
+with a sidebar tree of groups and function names linked to in-page anchors.
+Function-like macros with an explicit `@group` are included in the API tree.
+Macros that act as constants or configuration switches, structs, enums and typedefs
+are kept in the **file-specific pages**, not the main API tree.
+
+Documented functions with no group appear in an **Ungrouped** section. Undocumented,
+ungrouped declarations remain available in their file pages.
+Each source file also gets an HTML page with all extracted symbols, providing the
+full per-file reference. Groups no longer create separate HTML pages.
+
 
 ## Global Comments
 

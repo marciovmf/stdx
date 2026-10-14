@@ -672,7 +672,35 @@ static void s_symbol_fill_macro_stmt(DoxterProject* proj, DoxterSymbol* sym)
   if (i < end)
   {
     DoxterToken* t = x_array_get(proj->tokens, i);
-    if (s_tok_is_punct_text(t, '('))
+    /* Tokens are duplicated individually; inspect the original declaration
+       to distinguish NAME(args) from NAME (replacement). */
+    const char *text = sym->declaration.ptr;
+    size_t len = sym->declaration.length;
+    size_t at = 0;
+    while (at < len && text[at] != '#')
+    {
+      at++;
+    }
+    if (at < len)
+    {
+      at++;
+    }
+    while (at < len && (text[at] == ' ' || text[at] == '\t'))
+    {
+      at++;
+    }
+    if (at + 6 <= len && memcmp(text + at, "define", 6) == 0)
+    {
+      at += 6;
+    }
+    while (at < len && (text[at] == ' ' || text[at] == '\t'))
+    {
+      at++;
+    }
+    bool function_like = at + sym->name.length < len &&
+        memcmp(text + at, sym->name.ptr, sym->name.length) == 0 &&
+        text[at + sym->name.length] == '(';
+    if (function_like && s_tok_is_punct_text(t, '('))
     {
       u32 close_paren = s_find_matching_paren(proj, i, first, end);
       if (close_paren != 0)

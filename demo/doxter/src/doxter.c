@@ -117,6 +117,7 @@ typedef struct
   XSlice                  params_items;
   XSlice                  return_desc;
   bool                    local_symbol_links;
+  bool                    api_symbol_anchor;
 } DoxterTemplateCtx;
 
 
@@ -563,12 +564,7 @@ static u32 s_group_intern(DoxterProject *proj, XSlice path)
   }
   group.name = x_slice_init(path.ptr + name_offset, path.length - name_offset);
 
-  XStrBuilder *name = x_strbuilder_create();
-  x_strbuilder_append(name, "group-");
-  x_strbuilder_append_substring(name, path.ptr, path.length);
-  x_strbuilder_append(name, ".html");
-  group.output_name = x_arena_strdup(proj->scratch, x_strbuilder_to_string(name));
-  x_strbuilder_destroy(name);
+  group.output_name = NULL;
 
   x_array_push(proj->groups, &group);
   return x_array_count(proj->groups);
@@ -1046,24 +1042,6 @@ static void s_render_scope_index(DoxterProject *proj, DoxterTemplateRole role,
   free(syms);
 }
 
-static void s_render_scope_symbols(DoxterProject *proj, DoxterTemplateRole role,
-    u32 group_id, XStrBuilder *out)
-{
-  DoxterSymbol **syms;
-  u32 count = s_project_collect_scope(proj, role, group_id, &syms);
-  for (u32 i = 0; i < count; ++i)
-  {
-    DoxterTemplateCtx backup;
-    s_template_ctx_push(&backup);
-    s_template_ctx.role = DOX_TMPL_ROLE_SYMBOL;
-    s_template_ctx.symbol = syms[i];
-    s_template_ctx.source_index = syms[i]->source_index;
-    s_render_template(proj->templates.symbol_html, proj, syms[i]->source_index, out);
-    s_template_ctx_pop(&backup);
-  }
-  free(syms);
-}
-
 static int s_group_pointer_compare(const void *a, const void *b)
 {
   const DoxterGroup *ga = *(const DoxterGroup *const *)a;
@@ -1121,112 +1099,198 @@ static u32 s_collect_children(DoxterProject *proj, u32 parent_id, DoxterGroup **
   return count;
 }
 
-/* Expand the current group and its ancestors, but leave unrelated branches collapsed. */
-static bool s_group_is_on_active_path(DoxterProject *proj, u32 group_id)
+/* Function-style macros participate in the API tree; constants and types do not. */
+static bool s_symbol_is_api_function(const DoxterSymbol *sym)
 {
-  if (!s_template_ctx.group)
+  if (sym->name.length == 0)
   {
     return false;
   }
-
-  u32 active_id = (u32)(s_template_ctx.group -
-      (DoxterGroup *)x_array_data(proj->groups)) + 1;
-
-  while (active_id != 0)
+  if (sym->type == DOXTER_FUNCTION)
   {
-    if (active_id == group_id)
-    {
-      return true;
-    }
-
-    const DoxterGroup *active = s_group_by_id(proj, active_id);
-    active_id = active ? active->parent_id : 0;
+    return sym->group_id != 0 || sym->comment.length > 0;
   }
-
+  if (sym->type == DOXTER_MACRO)
+  {
+    return sym->group_id != 0 && sym->stmt.macro.args_ts.count > 0;
+  }
   return false;
+}
+
+static void s_append_api_anchor(const DoxterSymbol *sym, XStrBuilder *out)
+{
+  x_strbuilder_append(out, "symbol-");
+  s_append_anchor(sym, out);
+  x_strbuilder_append_format(out, "-%u-%u", sym->source_index, sym->line);
+}
+
+static void s_append_group_anchor(const DoxterGroup *group, XStrBuilder *out)
+{
+  x_strbuilder_append(out, "group-");
+  x_strbuilder_append_substring(out, group->path.ptr, group->path.length);
+}
+
+static u32 s_collect_api_functions(DoxterProject *proj, u32 group_id,
+    DoxterSymbol ***out_syms)
+{
+  u32 capacity = x_array_count(proj->symbols);
+  DoxterSymbol **syms = malloc(sizeof(*syms) * (capacity ? capacity : 1));
+  if (!syms)
+  {
+    *out_syms = NULL;
+    return 0;
+  }
+  u32 count = 0;
+  for (u32 i = 0; i < capacity; ++i)
+  {
+    DoxterSymbol *sym = x_array_get(proj->symbols, i);
+    if (sym->group_id == group_id && s_symbol_is_api_function(sym))
+    {
+      syms[count++] = sym;
+    }
+  }
+  qsort(syms, count, sizeof(*syms), s_symbol_name_compare);
+  *out_syms = syms;
+  return count;
+}
+
+static bool s_group_contains_api(DoxterProject *proj, u32 group_id)
+{
+  u32 capacity = x_array_count(proj->symbols);
+  for (u32 i = 0; i < capacity; ++i)
+  {
+    const DoxterSymbol *sym = x_array_get(proj->symbols, i);
+    if (!s_symbol_is_api_function(sym))
+    {
+      continue;
+    }
+    u32 current_id = sym->group_id;
+    while (current_id != 0)
+    {
+      if (current_id == group_id)
+      {
+        return true;
+      }
+      const DoxterGroup *group = s_group_by_id(proj, current_id);
+      current_id = group ? group->parent_id : 0;
+    }
+  }
+  return false;
+}
+
+static void s_render_api_nav_items(DoxterProject *proj, u32 group_id,
+    XStrBuilder *out)
+{
+  DoxterSymbol **syms = NULL;
+  u32 count = s_collect_api_functions(proj, group_id, &syms);
+  for (u32 i = 0; i < count; ++i)
+  {
+    x_strbuilder_append(out, "<li class=\"api-function\"><a href=\"#");
+    s_append_api_anchor(syms[i], out);
+    x_strbuilder_append(out, "\">");
+    x_strbuilder_append_substring(out, syms[i]->name.ptr, syms[i]->name.length);
+    x_strbuilder_append(out, "</a></li>");
+  }
+  free(syms);
 }
 
 static void s_render_group_tree(DoxterProject *proj, u32 parent_id, XStrBuilder *out)
 {
-  DoxterGroup **children;
+  DoxterGroup **children = NULL;
   u32 count = s_collect_children(proj, parent_id, &children);
   for (u32 i = 0; i < count; ++i)
   {
     const DoxterGroup *group = children[i];
     u32 child_id = (u32)(group - (DoxterGroup *)x_array_data(proj->groups)) + 1;
-    DoxterGroup **nested;
-    u32 nested_count = s_collect_children(proj, child_id, &nested);
-    free(nested);
-
-    if (nested_count > 0)
+    if (!s_group_contains_api(proj, child_id))
     {
-      x_strbuilder_append(out, "<li class=\"group-node\"><details class=\"group-branch\"");
-      if (s_group_is_on_active_path(proj, child_id))
-      {
-        x_strbuilder_append(out, " open");
-      }
-      x_strbuilder_append(out, "><summary><a href=\"");
-      x_strbuilder_append(out, group->output_name);
-      x_strbuilder_append(out, "\">");
-      s_append_group_name(out, group->name);
-      x_strbuilder_append(out, "</a></summary><ul class=\"group-children\">");
-      s_render_group_tree(proj, child_id, out);
-      x_strbuilder_append(out, "</ul></details></li>");
+      continue;
     }
-    else
-    {
-      x_strbuilder_append(out, "<li class=\"group-leaf\"><a href=\"");
-      x_strbuilder_append(out, group->output_name);
-      x_strbuilder_append(out, "\">");
-      s_append_group_name(out, group->name);
-      x_strbuilder_append(out, "</a></li>");
-    }
-  }
-  free(children);
-}
-
-static void s_render_group_children(DoxterProject *proj, u32 parent_id, XStrBuilder *out)
-{
-  DoxterGroup **children;
-  u32 count = s_collect_children(proj, parent_id, &children);
-  for (u32 i = 0; i < count; ++i)
-  {
-    x_strbuilder_append(out, "<li><a href=\"");
-    x_strbuilder_append(out, children[i]->output_name);
+    x_strbuilder_append(out,
+        "<li class=\"group-node\"><details class=\"group-branch\"><summary><a href=\"#");
+    s_append_group_anchor(group, out);
     x_strbuilder_append(out, "\">");
-    s_append_group_name(out, children[i]->name);
-    x_strbuilder_append(out, "</a></li>");
+    s_append_group_name(out, group->name);
+    x_strbuilder_append(out, "</a></summary><ul class=\"group-children\">");
+    s_render_api_nav_items(proj, child_id, out);
+    s_render_group_tree(proj, child_id, out);
+    x_strbuilder_append(out, "</ul></details></li>");
   }
   free(children);
 }
 
-static void s_render_group_breadcrumbs(DoxterProject *proj, const DoxterGroup *group,
+static void s_render_api_function_content(DoxterProject *proj, u32 group_id,
     XStrBuilder *out)
 {
-  if (group->parent_id != 0)
+  DoxterSymbol **syms = NULL;
+  u32 count = s_collect_api_functions(proj, group_id, &syms);
+  for (u32 i = 0; i < count; ++i)
   {
-    DoxterGroup *parent = s_group_by_id(proj, group->parent_id);
-    if (parent)
-    {
-      s_render_group_breadcrumbs(proj, parent, out);
-    }
+    DoxterTemplateCtx backup;
+    s_template_ctx_push(&backup);
+    s_template_ctx.role = DOX_TMPL_ROLE_SYMBOL;
+    s_template_ctx.symbol = syms[i];
+    s_template_ctx.api_symbol_anchor = true;
+    s_render_template(proj->templates.symbol_html, proj, syms[i]->source_index, out);
+    s_template_ctx_pop(&backup);
   }
-  x_strbuilder_append(out, " <span>/</span> <a href=\"");
-  x_strbuilder_append(out, group->output_name);
-  x_strbuilder_append(out, "\">");
-  s_append_group_name(out, group->name);
-  x_strbuilder_append(out, "</a>");
+  free(syms);
 }
 
-static inline bool s_placeholder_match(const char* a, u32 hash_a, const char* b, u32 hash_b)
+static void s_render_api_group_content(DoxterProject *proj, u32 group_id,
+    XStrBuilder *out)
 {
-  return ((hash_a == hash_b) && (strcmp(a, b) == 0));
+  DoxterGroup *group = s_group_by_id(proj, group_id);
+  if (!group || !s_group_contains_api(proj, group_id))
+  {
+    return;
+  }
+  x_strbuilder_append(out, "<section class=\"api-group\" id=\"");
+  s_append_group_anchor(group, out);
+  x_strbuilder_append(out, "\"><h2>");
+  s_append_group_name(out, group->name);
+  x_strbuilder_append(out, "</h2>");
+  s_render_api_function_content(proj, group_id, out);
+  DoxterGroup **children = NULL;
+  u32 count = s_collect_children(proj, group_id, &children);
+  for (u32 i = 0; i < count; ++i)
+  {
+    u32 child_id = (u32)(children[i] -
+        (DoxterGroup *)x_array_data(proj->groups)) + 1;
+    s_render_api_group_content(proj, child_id, out);
+  }
+  free(children);
+  x_strbuilder_append(out, "</section>");
 }
 
-/**
- * Finds the apropriate value for replacing the template's placeholder and
- * outputs it to the passed in StringBuilder.
- */
+static void s_render_api_document(DoxterProject *proj, XStrBuilder *out)
+{
+  DoxterGroup **children = NULL;
+  u32 count = s_collect_children(proj, 0, &children);
+  for (u32 i = 0; i < count; ++i)
+  {
+    u32 child_id = (u32)(children[i] -
+        (DoxterGroup *)x_array_data(proj->groups)) + 1;
+    s_render_api_group_content(proj, child_id, out);
+  }
+  free(children);
+  DoxterSymbol **ungrouped = NULL;
+  count = s_collect_api_functions(proj, 0, &ungrouped);
+  free(ungrouped);
+  if (count > 0)
+  {
+    x_strbuilder_append(out,
+        "<section class=\"api-group\" id=\"group-ungrouped\"><h2>Ungrouped</h2>");
+    s_render_api_function_content(proj, 0, out);
+    x_strbuilder_append(out, "</section>");
+  }
+}
+
+static bool s_placeholder_match(const char *a, u32 hash_a, const char *b, u32 hash_b)
+{
+  return hash_a == hash_b && strcmp(a, b) == 0;
+}
+
 static void s_template_resolve_placeholder(const char *placeholder,
     DoxterProject *project,
     u32 source_index,
@@ -1243,22 +1307,15 @@ static void s_template_resolve_placeholder(const char *placeholder,
   if (s_placeholder_match(placeholder, hash, DOX_PH_GROUP_TREE_STR, DOX_PH_GROUP_TREE_HASH))
   {
     s_render_group_tree(project, 0, out);
-    return;
-  }
-  if (s_placeholder_match(placeholder, hash, DOX_PH_GROUP_CHILDREN_STR, DOX_PH_GROUP_CHILDREN_HASH))
-  {
-    if (s_template_ctx.group)
+    DoxterSymbol **ungrouped = NULL;
+    u32 count = s_collect_api_functions(project, 0, &ungrouped);
+    free(ungrouped);
+    if (count > 0)
     {
-      u32 group_id = (u32)(s_template_ctx.group - (DoxterGroup *)x_array_data(project->groups)) + 1;
-      s_render_group_children(project, group_id, out);
-    }
-    return;
-  }
-  if (s_placeholder_match(placeholder, hash, DOX_PH_GROUP_BREADCRUMBS_STR, DOX_PH_GROUP_BREADCRUMBS_HASH))
-  {
-    if (s_template_ctx.group)
-    {
-      s_render_group_breadcrumbs(project, s_template_ctx.group, out);
+      x_strbuilder_append(out,
+          "<li class=\"group-leaf\"><a href=\"#group-ungrouped\">Ungrouped</a><ul>");
+      s_render_api_nav_items(project, 0, out);
+      x_strbuilder_append(out, "</ul></li>");
     }
     return;
   }
@@ -1288,10 +1345,9 @@ static void s_template_resolve_placeholder(const char *placeholder,
   }
   if (s_placeholder_match(placeholder, hash, DOX_PH_GROUP_SYMBOLS_STR, DOX_PH_GROUP_SYMBOLS_HASH))
   {
-    if (s_template_ctx.role == DOX_TMPL_ROLE_GROUP_INDEX && s_template_ctx.group)
+    if (s_template_ctx.role == DOX_TMPL_ROLE_PROJECT_INDEX)
     {
-      u32 group_id = (u32)(s_template_ctx.group - (DoxterGroup *)x_array_data(project->groups)) + 1;
-      s_render_scope_symbols(project, DOX_TMPL_ROLE_GROUP_INDEX, group_id, out);
+      s_render_api_document(project, out);
     }
     return;
   }
@@ -1551,7 +1607,14 @@ static void s_template_resolve_placeholder(const char *placeholder,
   {
     if (s_template_ctx.symbol)
     {
-      s_append_anchor(s_template_ctx.symbol, out);
+      if (s_template_ctx.api_symbol_anchor)
+      {
+        s_append_api_anchor(s_template_ctx.symbol, out);
+      }
+      else
+      {
+        s_append_anchor(s_template_ctx.symbol, out);
+      }
     }
     return;
   }
@@ -2144,18 +2207,17 @@ i32 main(i32 argc, char **argv)
       }
       else
       {
-        const char *page_name = source_info->output_name;
-        DoxterGroup *group = s_group_by_id(proj, sym->group_id);
-        if (group)
+        if (s_symbol_is_api_function(sym))
         {
-          page_name = group->output_name;
+          x_smallstr_appendf(&sym->anchor, "index.html#symbol-%.*s-%u-%u",
+              (int)sym->name.length, sym->name.ptr,
+              sym->source_index, sym->line);
         }
-        if (strlen(page_name) + 1 + sym->name.length >= sizeof(sym->anchor.buf))
+        else
         {
-          page_name = source_info->output_name;
+          x_smallstr_appendf(&sym->anchor, "%s#%.*s",
+              source_info->output_name, (int)sym->name.length, sym->name.ptr);
         }
-        x_smallstr_appendf(&sym->anchor, "%s#%.*s%c",
-            page_name, (u32) sym->name.length, sym->name.ptr, 0);
 
         memset(&key, 0, sizeof(key));
         x_smallstr_from_slice(sym->name, &key);
@@ -2168,23 +2230,11 @@ i32 main(i32 argc, char **argv)
   for (u32 source_i = 0; source_i < proj->source_count; ++source_i)
   {
     const char *file_name = proj->sources[source_i].output_name;
-    if (s_output_name_equal(file_name, "index.html") ||
-        s_output_name_equal(file_name, "symbols.html") ||
-        s_output_name_equal(file_name, "ungrouped.html"))
+    if (s_output_name_equal(file_name, "index.html"))
     {
       doxter_error("Reserved output filename: %s\n", file_name);
       s_doxter_project_destroy(proj);
       return 1;
-    }
-    for (u32 group_i = 0; group_i < x_array_count(proj->groups); ++group_i)
-    {
-      DoxterGroup *g = x_array_get(proj->groups, group_i);
-      if (s_output_name_equal(file_name, g->output_name))
-      {
-        doxter_error("Output filename collision: %s\n", file_name);
-        s_doxter_project_destroy(proj);
-        return 1;
-      }
     }
   }
 
@@ -2228,44 +2278,8 @@ i32 main(i32 argc, char **argv)
   }
 
   // --------------------------------------------------------
-  // Generate group pages. All pages live beside index.html.
+  // API categories and functions are rendered together into index.html.
   // --------------------------------------------------------
-  for (u32 group_i = 0; group_i < x_array_count(proj->groups); ++group_i)
-  {
-    DoxterGroup *group = x_array_get(proj->groups, group_i);
-    x_strbuilder_clear(sb);
-    DoxterTemplateCtx backup;
-    s_template_ctx_push(&backup);
-    s_template_ctx.role = DOX_TMPL_ROLE_GROUP_INDEX;
-    s_template_ctx.group = group;
-    s_render_template(proj->templates.group_index_html, proj, 0, sb);
-    s_template_ctx_pop(&backup);
-
-    x_fs_path(&full_path, args.output_directory, group->output_name);
-    if (!x_io_write_text(full_path.buf, x_strbuilder_to_string(sb)))
-    {
-      fprintf(stderr, "Failed to write group page '%s'\n", full_path.buf);
-      had_error = true;
-    }
-  }
-
-  for (u32 page_i = 0; page_i < 2; ++page_i)
-  {
-    const char *name = page_i == 0 ? "symbols.html" : "ungrouped.html";
-    x_strbuilder_clear(sb);
-    DoxterTemplateCtx backup;
-    s_template_ctx_push(&backup);
-    s_template_ctx.role = page_i == 0 ? DOX_TMPL_ROLE_ALL_SYMBOLS : DOX_TMPL_ROLE_UNGROUPED;
-    s_render_template(proj->templates.symbols_index_html, proj, 0, sb);
-    s_template_ctx_pop(&backup);
-
-    x_fs_path(&full_path, args.output_directory, name);
-    if (!x_io_write_text(full_path.buf, x_strbuilder_to_string(sb)))
-    {
-      fprintf(stderr, "Failed to write symbol index '%s'\n", full_path.buf);
-      had_error = true;
-    }
-  }
 
   // --------------------------------------------------------
   // Generate main project index.html
