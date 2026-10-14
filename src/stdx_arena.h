@@ -41,7 +41,7 @@ extern "C" {
 
   /**
    * Arena
-   * @group arena.lifecycle
+   * @group arena
    */
   typedef struct XArena
   {
@@ -52,7 +52,7 @@ extern "C" {
 
   /**
    * A mark is a lightweight snapshot for scoped unwinds.
-   * @group arena.scopes
+   * @group arena
    */
   typedef struct XArenaMark
   {
@@ -63,28 +63,28 @@ extern "C" {
   /**
    * @brief Create a new arena with the given default chunk size.
    * @return pointer to the new arena or NULL if creation fails
-   * @group arena.lifecycle
+   * @group arena
    */
   X_ARENA_API XArena* x_arena_create(size_t chunk_size);
 
   /**
    * @brief Destroy the arena and free all memory.
    * @param arena The arena to destroy.
-   * @group arena.lifecycle
+   * @group arena
    */
   X_ARENA_API void x_arena_destroy(XArena* arena);
 
   /**
    * @brief Reset the arena: keep all chunks, set used = 0.
    * @param arena The arena to reset.
-   * @group arena.reuse
+   * @group arena
    */
   X_ARENA_API void x_arena_reset(XArena* arena);
 
   /**
    * @brief Keep only the head chunk, free the rest.
    * @param arena The arena to reset.
-   * @group arena.reuse
+   * @group arena
    */
   X_ARENA_API void x_arena_reset_keep_head(XArena* arena);
 
@@ -92,7 +92,7 @@ extern "C" {
    * @brief Keep the first `keep_n` chunks, free the rest.
    * @param arena   The arena to trim.
    * @param keep_n  The number of chuncks to preserve.
-   * @group arena.reuse
+   * @group arena
    */
   X_ARENA_API void x_arena_trim(XArena* arena, size_t keep_n);
 
@@ -101,7 +101,7 @@ extern "C" {
    * @param arena   The arena to alloc from.
    * @param size    The size in bytes to alloc.
    * @return        Pointer to the allocated memory region
-   * @group arena.allocation
+   * @group arena
    */
   X_ARENA_API void* x_arena_alloc(XArena* arena, size_t size);
 
@@ -110,7 +110,7 @@ extern "C" {
    * @param arena   The arena to alloc from.
    * @param size    The size in bytes to alloc.
    * @return        Pointer to the allocated memory region
-   * @group arena.allocation
+   * @group arena
    */
   X_ARENA_API void* x_arena_alloc_zero(XArena* arena, size_t size);
 
@@ -119,7 +119,7 @@ extern "C" {
    * @param arena   The arena to allocate string from.
    * @param cstr    Pointer to a c string to duplicate into the arena.
    * @return        Pointer to the allocated memory region
-   * @group arena.allocation
+   * @group arena
    */
   X_ARENA_API char* x_arena_strdup(XArena* arena, const char* cstr);
 
@@ -129,7 +129,7 @@ extern "C" {
    * @param ptr     Pointer to a beggining of the data to duplicate into the arena.
    * @param len     How much data to copy from `ptr` into the arena.
    * @return        Pointer to the allocated memory region
-   * @group arena.allocation
+   * @group arena
    */
   X_ARENA_API char* x_arena_slicedup(XArena* arena, const char* ptr, size_t len, bool null_terminate);
 
@@ -137,7 +137,7 @@ extern "C" {
    * @brief Makes a snapshot of the arena state.
    * @param arena   The arena to take snapshot from.
    * @return        A snapshot of the current arena state.
-   * @group arena.scopes
+   * @group arena
    */
   X_ARENA_API XArenaMark x_arena_mark(XArena* arena);
 
@@ -145,7 +145,7 @@ extern "C" {
    * @brief Rewind the arena to a previous mark (frees newer chunks).
    * @param arena   The arena to apply the snapshot.
    * @param mark    The snapshot to apply.
-   * @group arena.scopes
+   * @group arena
    */
   X_ARENA_API void x_arena_release(XArena* arena, XArenaMark mark);
 
@@ -154,7 +154,7 @@ extern "C" {
    * @param arena The arena to check for pointer ownership
    * @param ptr   The pointer to check
    * @return true if ptr points to an address owned by the arena.
-   * @group arena.lifecycle
+   * @group arena
    */
   X_ARENA_API bool x_arena_has_pointer(const XArena* arena, void* ptr);
 

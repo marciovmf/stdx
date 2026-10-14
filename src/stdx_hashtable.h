@@ -108,19 +108,19 @@ extern "C" {
 #endif
 
   /**
-   * @group hashtable.core
+   * @group hashtable
    */
   typedef size_t  (*XHashFnHash)(const void* key, size_t);
   /**
-   * @group hashtable.core
+   * @group hashtable
    */
   typedef bool    (*XHashFnCompare)(const void* a, const void* b);
   /**
-   * @group hashtable.core
+   * @group hashtable
    */
   typedef void    (*XHashFnClone)(void* dst, const void* src);
   /**
-   * @group hashtable.core
+   * @group hashtable
    */
   typedef void    (*XHashFnDestroy)(void* ptr);
 
@@ -135,7 +135,7 @@ extern "C" {
   } XHashEntry;
 
   /**
-   * @group hashtable.core
+   * @group hashtable
    */
   typedef struct
   {
@@ -162,7 +162,7 @@ extern "C" {
   } XHashtable;
 
   /**
-   * @group hashtable.iteration
+   * @group hashtable
    */
   typedef struct
   {
@@ -179,7 +179,7 @@ extern "C" {
    * @param value_null_terminated True if the value is a NUL-terminated string (C string).
    * @param value_is_pointer True if the value is stored as a pointer value.
    * @return Pointer to a newly created hashtable, or NULL on failure.
-   * @group hashtable.core
+   * @group hashtable
    */
   X_HASHTABLE_API XHashtable* x_hashtable_create_ex(
       size_t key_size,
@@ -200,7 +200,7 @@ extern "C" {
    * @param fn_value_copy Function used to clone/copy values into the table.
    * @param fn_value_free Function used to destroy/free values owned by the table.
    * @return Pointer to a newly created hashtable, or NULL on failure.
-   * @group hashtable.core
+   * @group hashtable
    */
   XHashtable* x_hashtable_create_full(
       size_t          key_size,
@@ -218,7 +218,7 @@ extern "C" {
    * @param key Pointer to the key data.
    * @param value Pointer to the value data.
    * @return True on success, false on failure (e.g., allocation failure).
-   * @group hashtable.core
+   * @group hashtable
    */
   X_HASHTABLE_API bool x_hashtable_set(XHashtable* table, const void* key, const void* value);
 
@@ -228,7 +228,7 @@ extern "C" {
    * @param key Pointer to the key data.
    * @param out_value Output buffer to receive the value.
    * @return True if the key was found and out_value was written, false otherwise.
-   * @group hashtable.core
+   * @group hashtable
    */
   X_HASHTABLE_API bool x_hashtable_get(XHashtable* table, const void* key, void* out_value);
 
@@ -236,7 +236,7 @@ extern "C" {
    * @brief Destroy a hashtable and free all associated resources.
    * @param table Hashtable instance to destroy.
    * @return Nothing.
-   * @group hashtable.core
+   * @group hashtable
    */
   X_HASHTABLE_API void x_hashtable_destroy(XHashtable* table);
 
@@ -244,7 +244,7 @@ extern "C" {
    * @brief Get the number of stored entries in the hashtable.
    * @param table Hashtable instance.
    * @return Number of key/value pairs currently stored.
-   * @group hashtable.core
+   * @group hashtable
    */
   X_HASHTABLE_API size_t x_hashtable_count(const XHashtable* table);
 
@@ -253,7 +253,7 @@ extern "C" {
    * @param a Pointer to the first string (const char*).
    * @param b Pointer to the second string (const char*).
    * @return True if equal, false otherwise.
-   * @group hashtable.helpers
+   * @group hashtable
    */
   X_HASHTABLE_API bool stdx_str_eq(const void* a, const void* b);
 
@@ -262,7 +262,7 @@ extern "C" {
    * @param table Hashtable instance.
    * @param key Pointer to the key data.
    * @return True if the key exists, false otherwise.
-   * @group hashtable.core
+   * @group hashtable
    */
   X_HASHTABLE_API bool x_hashtable_has(XHashtable* table, const void* key);
 
@@ -271,7 +271,7 @@ extern "C" {
    * @param table Hashtable instance.
    * @param key Pointer to the key data.
    * @return True if an entry was removed, false if the key was not found.
-   * @group hashtable.core
+   * @group hashtable
    */
   X_HASHTABLE_API bool x_hashtable_remove(XHashtable* table, const void* key);
 
@@ -280,7 +280,7 @@ extern "C" {
    * @param ptr Pointer to the bytes to hash.
    * @param size Number of bytes to hash.
    * @return Hash value for the given byte buffer.
-   * @group hashtable.hashing
+   * @group hashtable
    */
   X_HASHTABLE_API size_t x_hashtable_hash_bytes(const void* ptr, size_t size);
 
@@ -289,7 +289,7 @@ extern "C" {
    * @param ptr Pointer to the string data (typically const char*).
    * @param size Size parameter (typically ignored for C strings, or used as a limit depending on implementation).
    * @return Hash value for the string.
-   * @group hashtable.hashing
+   * @group hashtable
    */
   X_HASHTABLE_API size_t x_hashtable_hash_cstr(const void* ptr, size_t size);
 
@@ -298,7 +298,7 @@ extern "C" {
    * @param dest Destination storage receiving the cloned string (implementation-defined: may store char*).
    * @param src Source string pointer (const char*).
    * @return Nothing.
-   * @group hashtable.helpers
+   * @group hashtable
    */
   X_HASHTABLE_API void x_hashtable_clone_cstr(void* dest, const void* src);
 
@@ -307,7 +307,7 @@ extern "C" {
    * @param a First string pointer (const char*).
    * @param b Second string pointer (const char*).
    * @return True if equal, false otherwise.
-   * @group hashtable.helpers
+   * @group hashtable
    */
   X_HASHTABLE_API bool x_hashtable_compare_cstr(const void* a, const void* b);
 
@@ -315,7 +315,7 @@ extern "C" {
    * @brief Free a cloned NUL-terminated C string previously allocated by x_hashtable_clone_cstr().
    * @param a Pointer to the stored string (typically a char* or pointer slot containing it).
    * @return Nothing.
-   * @group hashtable.helpers
+   * @group hashtable
    */
   X_HASHTABLE_API void x_hashtable_free_cstr(void* a);
 
@@ -324,7 +324,7 @@ extern "C" {
    * @param table Hashtable instance.
    * @param it Iterator to initialize.
    * @return True if the iterator was initialized (even if empty table), false on invalid args.
-   * @group hashtable.iteration
+   * @group hashtable
    */
   X_HASHTABLE_API bool x_hashtable_iter_begin(XHashtable* table, XHashtableIter* it);
 
@@ -334,13 +334,13 @@ extern "C" {
    * @param out_key Receives pointer to key (user-facing: dereferenced if stored as pointer/string).
    * @param out_value Receives pointer to value (user-facing: dereferenced if stored as pointer/string).
    * @return True if an entry was produced, false if iteration finished or invalid args.
-   * @group hashtable.iteration
+   * @group hashtable
    */
   X_HASHTABLE_API bool x_hashtable_iter_next(XHashtableIter* it, void** out_key, void** out_value);
 
   /**
    * @brief Const-friendly variant of x_hashtable_iter_next().
-   * @group hashtable.iteration
+   * @group hashtable
    */
   X_HASHTABLE_API bool x_hashtable_iter_next_const(XHashtableIter* it, const void** out_key, const void** out_value);
 
@@ -348,16 +348,16 @@ extern "C" {
    * @brief Get the raw slot index of the current entry (mainly for debugging).
    * @param it Iterator.
    * @return Current slot index, or table->capacity if finished/invalid.
-   * @group hashtable.iteration
+   * @group hashtable
    */
   X_HASHTABLE_API size_t x_hashtable_iter_slot(const XHashtableIter* it);
 /**
- * @group hashtable.typed
+ * @group hashtable
  */
 
 #define X_HASHTABLE_TYPE(tk, tv) X_HASHTABLE_TYPE_NAMED(tk, tv, tk##_##tv)
 /**
- * @group hashtable.typed
+ * @group hashtable
  */
 
 #define X_HASHTABLE_TYPE_NAMED(tk, tv, suffix) \

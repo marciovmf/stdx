@@ -41,56 +41,56 @@ extern "C" {
 #endif
 
 /**
- * @group math.vector.vec2
+ * @group math
  */
 typedef struct {
   float x, y;
 } Vec2;
 
 /**
- * @group math.vector.vec3
+ * @group math
  */
 typedef struct {
   float x, y, z;
 } Vec3;
 
 /**
- * @group math.vector.vec4
+ * @group math
  */
 typedef struct {
   float x, y, z, w;
 } Vec4;
 
 /**
- * @group math.matrix.mat2
+ * @group math
  */
 typedef struct {
   float m[4];
 } Mat2;
 
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 typedef struct {
   float m[9];
 } Mat3;
 
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 typedef struct {
   float m[16];
 } Mat4;
 
 /**
- * @group math.quaternion
+ * @group math
  */
 typedef struct {
   float x, y, z, w;
 } Quat;
 
 /**
- * @group math.quaternion.dual
+ * @group math
  */
 typedef struct {
   Quat real;
@@ -99,375 +99,375 @@ typedef struct {
 
 
 /**
- * @group math.scalar
+ * @group math
  */
 inline int32_t i32_max(int32_t a, int32_t b) { return (a > b) ? a : b; }
 /**
- * @group math.scalar
+ * @group math
  */
 inline int32_t i32_min(int32_t a, int32_t b) { return (a < b) ? a : b; }
 
 /**
- * @group math.scalar
+ * @group math
  */
 inline float float_max(float a, float b) { return (a > b) ? a : b; }
 /**
- * @group math.scalar
+ * @group math
  */
 inline float float_min(float a, float b) { return (a < b) ? a : b; }
 
 /**
  * @brief Compare floats using epsilon tolerance.
- * @group math.scalar
+ * @group math
  */
 X_MATH_API bool float_eq(float a, float b); /* Compare floats using epsilon tolerance. */
 /**
  * @brief Returns true if |a| <= STDXM_EPS.
- * @group math.scalar
+ * @group math
  */
 X_MATH_API bool float_is_zero(float a); /* Returns true if |a| <= STDXM_EPS. */
 /**
  * @brief Clamp x between [a,b].
- * @group math.scalar
+ * @group math
  */
 X_MATH_API float float_clamp(float x, float a, float b); /* brief Clamp x between [a,b]. */
 /**
  * @brief Linear interpolation between a and b.
- * @group math.scalar
+ * @group math
  */
 X_MATH_API float float_lerp(float a, float b, float t); /* Linear interpolation between a and b. */
 /**
  * @brief Smooth Hermite interpolation between a and b (ease-in/out).
- * @group math.scalar
+ * @group math
  */
 X_MATH_API float float_smoothstep(float a, float b, float t); /* Smooth Hermite interpolation between a and b (ease-in/out). */
 /**
  * @brief Degrees → radians conversion.
- * @group math.scalar
+ * @group math
  */
 X_MATH_API float deg_to_rad(float d); /* Degrees → radians conversion. */
 /**
  * @brief Radians → degrees conversion.
- * @group math.scalar
+ * @group math
  */
 X_MATH_API float rad_to_deg(float r); /* Radians → degrees conversion. */
 
 /**
  * 2D vector operations; all return-by-value.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API bool vec2_cmp(Vec2 a, Vec2 b); /* Approximate equality */
 /**
  * @brief Dot product.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API float vec2_dot(Vec2 a, Vec2 b); /* Dot product */
 /**
  * @brief Vector length.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API float vec2_len(Vec2 a); /* Vector length */
 /**
  * @brief Squared length.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API float vec2_len2(Vec2 a); /* Squared length */
 /**
  * @brief Component-wise abs.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_abs(Vec2 v); /* Component-wise abs */
 /**
  * @brief Component-wise add.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_add(Vec2 a, Vec2 b); /* Component-wise add */
 /**
  * @brief Component-wise subtract.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_sub(Vec2 a, Vec2 b); /* Component-wise subtract */
 /**
  * @brief Scale by scalar.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_mul(Vec2 a, float s); /* Scale by scalar */
 /**
  * @brief Component-wise multiply.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_mul_vec2(Vec2 a, Vec2 b); /* Component-wise multiply */
 /**
  * @brief Divide by scalar.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_div(Vec2 a, float s); /* Divide by scalar */
 /**
  * @brief Component-wise divide.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_div_vec2(Vec2 a, Vec2 b); /* Component-wise divide */
 /**
  * @brief Negate.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_neg(Vec2 v); /* Negate */
 /**
  * @brief Normalize; returns zero if length≈0.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_norm(Vec2 a); /* Normalize; returns zero if length≈0 */
 /**
  * @brief Clamp components.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_clamp(Vec2 v, float a, float b); /* Clamp components */
 /**
  * @brief Component-wise max.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_max(Vec2 a, Vec2 b); /* Component-wise max */
 /**
  * @brief Component-wise min.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_min(Vec2 a, Vec2 b); /* Component-wise min */
 /**
  * @brief floor() per component.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_floor(Vec2 v); /* floor() per component */
 /**
  * @brief fmod() per component.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_fmod(Vec2 v, float s); /* fmod() per component */
 /**
  * @brief Reflect vector v about normal n.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_reflect(Vec2 v, Vec2 n); /* Reflect vector v about normal n */
 /**
  * @brief Lerp components.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_lerp(Vec2 a, Vec2 b, float t); /* Lerp components */
 /**
  * @brief Smoothstep components.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_smoothstep(Vec2 a, Vec2 b, float t); /* Smoothstep components */
 /**
  * @brief Construct Vec2.
- * @group math.vector.vec2
+ * @group math
  */
 X_MATH_API Vec2 vec2_make(float x, float y); /* Construct Vec2 */
 
 /**
  * @brief 3D vector operations in right-handed space.
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API bool vec3_cmp(Vec3 a, Vec3 b);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API float vec3_dot(Vec3 a, Vec3 b);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API float vec3_len(Vec3 a);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API float vec3_len2(Vec3 a);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_abs(Vec3 v);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_add(Vec3 a, Vec3 b);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_sub(Vec3 a, Vec3 b);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_mul(Vec3 a, float s);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_mul_vec3(Vec3 a, Vec3 b);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_div(Vec3 a, float s);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_div_vec3(Vec3 a, Vec3 b);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_neg(Vec3 v);
 /**
  * @brief Safe normalization.
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_norm(Vec3 a); /* Safe normalization */
 /**
  * @brief Right-handed cross product.
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_cross(Vec3 a, Vec3 b); /* Right-handed cross product */
 /**
  * @brief Project a onto b; returns 0 if b≈0.
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_project(Vec3 a, Vec3 b); /* Project a onto b; returns 0 if b≈0 */
 /**
  * @brief Reflect about normal n (n unit).
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_reflect(Vec3 v, Vec3 n); /* Reflect about normal n (n unit) */
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_refract(
     Vec3 v, Vec3 n, float eta); /* Refract v through surface with ratio η */
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_clamp(Vec3 v, float a, float b);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_max(Vec3 a, Vec3 b);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_min(Vec3 a, Vec3 b);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_floor(Vec3 v);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_fmod(Vec3 v, float s);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_lerp(Vec3 a, Vec3 b, float t);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_smoothstep(Vec3 a, Vec3 b, float t);
 /**
- * @group math.vector.vec3
+ * @group math
  */
 X_MATH_API Vec3 vec3_make(float x, float y, float z);
 
 /**
  * 4D vector operations, used mainly for homogeneous coords.
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API float vec4_dot(Vec4 a, Vec4 b);
 /**
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API Vec4 vec4_abs(Vec4 v);
 /**
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API Vec4 vec4_add(Vec4 a, Vec4 b);
 /**
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API Vec4 vec4_sub(Vec4 a, Vec4 b);
 /**
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API Vec4 vec4_mul(Vec4 a, float s);
 /**
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API Vec4 vec4_mul_vec4(Vec4 a, Vec4 b);
 /**
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API Vec4 vec4_div(Vec4 a, float s);
 /**
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API Vec4 vec4_lerp(Vec4 a, Vec4 b, float t);
 /**
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API Vec4 vec4_smoothstep(Vec4 a, Vec4 b, float t);
 /**
- * @group math.vector.vec4
+ * @group math
  */
 X_MATH_API Vec4 vec4_make(float x, float y, float z, float w);
 
 /**
  * All matrices are column-major; multiply column vectors on the right.
- * @group math.matrix.mat2
+ * @group math
  */
 X_MATH_API Mat2 mat2_identity(void);
 /**
- * @group math.matrix.mat2
+ * @group math
  */
 X_MATH_API Mat2 mat2_make(float a, float b, float c, float d);
 /**
- * @group math.matrix.mat2
+ * @group math
  */
 X_MATH_API Mat2 mat2_transpose(Mat2 m);
 /**
- * @group math.matrix.mat2
+ * @group math
  */
 X_MATH_API float mat2_det(Mat2 m);
 /**
- * @group math.matrix.mat2
+ * @group math
  */
 X_MATH_API Mat2 mat2_inverse(Mat2 m);
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 X_MATH_API Mat3 mat3_identity(void);
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 X_MATH_API Mat3 mat3_make(float xx, float xy, float xz, float yx, float yy, float yz,
     float zx, float zy, float zz);
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 X_MATH_API Mat3 mat3_transpose(Mat3 a);
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 X_MATH_API float mat3_det(Mat3 m);
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 X_MATH_API Mat3 mat3_inverse(Mat3 m);
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 X_MATH_API Mat3 mat3_rot_x(float a);
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 X_MATH_API Mat3 mat3_rot_y(float a);
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 X_MATH_API Mat3 mat3_rot_z(float a);
 /**
- * @group math.matrix.mat3
+ * @group math
  */
 X_MATH_API Mat3 mat3_scale(Vec3 s);
 
@@ -479,276 +479,276 @@ X_MATH_API Mat3 mat3_scale(Vec3 s);
 #define mat4() ((Mat4) { 0 })
 
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_identity(void);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_make(float xx, float xy, float xz, float xw, float yx, float yy,
     float yz, float yw, float zx, float zy, float zz, float zw, float wx, float wy,
     float wz, float ww);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_transpose(Mat4 a);
 /**
  * @brief a·b (apply b then a).
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_mul(Mat4 a, Mat4 b); /* a·b (apply b then a) */
 /**
  * @brief Apply transform to point (w=1).
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Vec3 mat4_mul_point(Mat4 m, Vec3 p); /* Apply transform to point (w=1) */
 /**
  * @brief Apply transform to direction (w=0).
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Vec3 mat4_mul_dir(Mat4 m, Vec3 v); /* Apply transform to direction (w=0) */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_translate(Vec3 t);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_scale(Vec3 s);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_rot_x(float a);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_rot_y(float a);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_rot_z(float a);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_from_axis_angle(Vec3 axis, float angle);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_from_euler(float rx, float ry, float rz);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_from_quat(Quat q);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_compose(Vec3 t, Quat r, Vec3 s);
 /**
  * @brief 4×4 determinant.
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API float mat4_det(Mat4 m); /* 4×4 determinant */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API float mat4_minor(Mat4 m, int row, int col);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API float mat4_cofactor(Mat4 m, int row, int col);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_inverse_affine(
     Mat4 m); /* Fast inverse for affine TRS without shear */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_inverse_affine_uniform_scale(Mat4 m);
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_inverse_full(Mat4 m, bool* ok);
 /**
  * @brief *< Right-handed view.
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_look_at_rh(Vec3 eye, Vec3 target, Vec3 up); /**< Right-handed view
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_look_at_lh(Vec3 eye, Vec3 target, Vec3 up); /**< Left-handed view
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_perspective_rh_no(
     float fovy, float aspect, float n, float f); /* RH, NO (−1..1) */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_perspective_rh_zo(
     float fovy, float aspect, float n, float f); /* RH, ZO (0..1) */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_perspective_lh_no(
     float fovy, float aspect, float n, float f); /* LH, NO (−1..1) */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_perspective_lh_zo(
     float fovy, float aspect, float n, float f); /* LH, ZO (0..1) */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_orthographic_rh_no(
     float l, float r, float b, float t, float n, float f); /* RH, NO (−1..1) */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_orthographic_rh_zo(
     float l, float r, float b, float t, float n, float f); /* RH, ZO (0..1) */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_orthographic_lh_no(
     float l, float r, float b, float t, float n, float f); /* LH, NO (−1..1) */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API Mat4 mat4_orthographic_lh_zo(
     float l, float r, float b, float t, float n, float f); /* LH, ZO (0..1) */
 /**
- * @group math.matrix.mat4
+ * @group math
  */
 X_MATH_API void mat4_decompose(
     Mat4 m, Vec3* out_t, Quat* out_r, Vec3* out_s); /** Decompose TRS (no shear) */
 
 /**
  * Quaternion math (right-handed, scalar-last {x,y,z,w}).
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_id(void);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_make(float x, float y, float z, float w);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_norm(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_conjugate(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_inverse(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_unit_inverse(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_mul(Quat a, Quat b);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_axis_angle(Vec3 axis, float angle);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_from_to(Vec3 from, Vec3 to);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_from_mat3(Mat3 R);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_slerp(Quat a, Quat b, float t);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_exp(Quat w);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_log(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_constrain(Quat q, Vec3 axis);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_constrain_y(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_neg(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_scale(Quat q, float s);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_interpolate(const Quat* qs, const float* ws, int count);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Vec3 quat_mul_vec3(Quat q, Vec3 v);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Vec3 quat_get_right(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Vec3 quat_get_up(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Vec3 quat_get_forward(Quat q);
 /**
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Vec3 quat_to_euler_xyz(Quat q);
 
 /**
  * Dual quaternion operations (translation + rotation).
- * @group math.quaternion
+ * @group math
  */
 X_MATH_API Quat quat_add(Quat a, Quat b);
 /**
- * @group math.quaternion.dual
+ * @group math
  */
 X_MATH_API QuatDual quatdual_id(void);
 /**
- * @group math.quaternion.dual
+ * @group math
  */
 X_MATH_API QuatDual quatdual_make(Quat real, Quat dual);
 /**
- * @group math.quaternion.dual
+ * @group math
  */
 X_MATH_API QuatDual quatdual_from_rt(
     Quat r, Vec3 t); /* Build dual Quat from rotation+translation */
 /**
- * @group math.quaternion.dual
+ * @group math
  */
 X_MATH_API QuatDual quatdual_mul(QuatDual a, QuatDual b);
 /**
- * @group math.quaternion.dual
+ * @group math
  */
 X_MATH_API QuatDual quatdual_norm(QuatDual qd);
 /**
  * @brief Rotate vector only.
- * @group math.quaternion.dual
+ * @group math
  */
 X_MATH_API Vec3 quatdual_mul_vec3_rot(QuatDual qd, Vec3 v); /* Rotate vector only */
 /**
- * @group math.quaternion.dual
+ * @group math
  */
 X_MATH_API Vec3 quatdual_mul_vec3(
     QuatDual qd, Vec3 v); /* Full transform (rotate + translate) */

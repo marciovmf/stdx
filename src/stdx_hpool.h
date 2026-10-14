@@ -148,7 +148,7 @@ extern "C" {
 #define X_HPOOL_NULL_INDEX 0xFFFFFFFFu
 
   /**
-   * @group hpool.handles
+   * @group hpool
    */
   typedef struct XHandle
   {
@@ -157,17 +157,17 @@ extern "C" {
   } XHandle;
 
   /**
-   * @group hpool.lifecycle
+   * @group hpool
    */
   typedef void (*XHPoolCtorFn)(void* user, void* item);
 
   /**
-   * @group hpool.lifecycle
+   * @group hpool
    */
   typedef void (*XHPoolDtorFn)(void* user, void* item);
 
   /**
-   * @group hpool.lifecycle
+   * @group hpool
    */
   typedef struct XHPoolConfig
   {
@@ -176,7 +176,7 @@ extern "C" {
   } XHPoolConfig;
 
   /**
-   * @group hpool.iteration
+   * @group hpool
    */
   typedef struct XHPoolIter
   {
@@ -184,7 +184,7 @@ extern "C" {
   } XHPoolIter;
 
   /**
-   * @group hpool.lifecycle
+   * @group hpool
    */
   typedef struct XHPool
   {
@@ -210,71 +210,71 @@ extern "C" {
   } XHPool;
 
   /**
-   * @group hpool.handles
+   * @group hpool
    */
   X_HPOOL_API XHandle x_handle_null(void);
   /**
-   * @group hpool.handles
+   * @group hpool
    */
   X_HPOOL_API int x_handle_is_null(XHandle h);
   /**
-   * @group hpool.lifecycle
+   * @group hpool
    */
   X_HPOOL_API int x_hpool_init(XHPool* p, size_t item_size, XHPoolConfig cfg, XHPoolCtorFn ctor, XHPoolDtorFn dtor, void* user);
   /**
-   * @group hpool.lifecycle
+   * @group hpool
    */
   X_HPOOL_API void x_hpool_term(XHPool* p);
   /**
-   * @group hpool.lifecycle
+   * @group hpool
    */
   X_HPOOL_API uint32_t x_hpool_page_capacity(XHPool* p);
   /**
-   * @group hpool.lifecycle
+   * @group hpool
    */
   X_HPOOL_API uint32_t x_hpool_capacity(XHPool* p);
   /**
-   * @group hpool.lifecycle
+   * @group hpool
    */
   X_HPOOL_API uint32_t x_hpool_alive_count(XHPool* p);
   /**
-   * @group hpool.access
+   * @group hpool
    */
   X_HPOOL_API int x_hpool_is_alive(XHPool* p, XHandle h);
   /**
-   * @group hpool.access
+   * @group hpool
    */
   X_HPOOL_API void* x_hpool_get(XHPool* p, XHandle h);
   /**
-   * @group hpool.access
+   * @group hpool
    */
   X_HPOOL_API void* x_hpool_get_fast(XHPool* p, XHandle h);
   /**
-   * @group hpool.access
+   * @group hpool
    */
   X_HPOOL_API void* x_hpool_get_unchecked(XHPool* p, uint32_t index);
   /**
-   * @group hpool.allocation
+   * @group hpool
    */
   X_HPOOL_API XHandle x_hpool_alloc(XHPool* p);
   /**
-   * @group hpool.allocation
+   * @group hpool
    */
   X_HPOOL_API void x_hpool_free(XHPool* p, XHandle h);
   /**
-   * @group hpool.allocation
+   * @group hpool
    */
   X_HPOOL_API void x_hpool_clear(XHPool* p);
   /**
-   * @group hpool.iteration
+   * @group hpool
    */
   X_HPOOL_API void* x_hpool_iter_begin(XHPool* p, XHPoolIter* it, XHandle* out_h);
   /**
-   * @group hpool.iteration
+   * @group hpool
    */
   X_HPOOL_API void* x_hpool_iter_next(XHPool* p, XHPoolIter* it, XHandle* out_h);
 /**
- * @group hpool.iteration
+ * @group hpool
  */
 
 #define X_HPOOL_FOREACH(pHPool, Type, itVar, hVar, ptrVar) \

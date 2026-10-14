@@ -39,28 +39,28 @@ extern "C" {
 #endif
 
   /**
-   * @group thread.pool
+   * @group thread
    */
   typedef void (*XThreadTask)(void* arg);
   /**
-   * @group thread.lifecycle
+   * @group thread
    */
   typedef void* (*XThreadFunc)(void*);
 
   /**
-   * @group thread.lifecycle
+   * @group thread
    */
   typedef struct XThread XThread;
   /**
-   * @group thread.synchronization.mutex
+   * @group thread
    */
   typedef struct XMutex XMutex;
   /**
-   * @group thread.synchronization.condition_variable
+   * @group thread
    */
   typedef struct XCondVar XCondVar;
   /**
-   * @group thread.pool
+   * @group thread
    */
   typedef struct XThreadPool XThreadPool;
   typedef struct XTask XTask;
@@ -71,21 +71,21 @@ extern "C" {
  * @param func Thread entry function.
  * @param arg User argument passed to func.
  * @return 0 on success, non-zero on failure.
- * @group thread.lifecycle
+ * @group thread
  */
 int32_t x_thread_create(XThread** t, XThreadFunc func, void* arg);
 
 /**
  * @brief Wait for a thread to finish execution.
  * @param t Thread handle.
- * @group thread.lifecycle
+ * @group thread
  */
 void x_thread_join(XThread* t);
 
 /**
  * @brief Destroy a thread handle and release its resources.
  * @param t Thread handle.
- * @group thread.lifecycle
+ * @group thread
  */
 void x_thread_destroy(XThread* t);
 
@@ -93,28 +93,28 @@ void x_thread_destroy(XThread* t);
  * @brief Create a mutex.
  * @param m Output pointer that receives the created mutex handle.
  * @return 0 on success, non-zero on failure.
- * @group thread.synchronization.mutex
+ * @group thread
  */
 int32_t x_thread_mutex_init(XMutex** m);
 
 /**
  * @brief Lock a mutex, blocking until it becomes available.
  * @param m Mutex handle.
- * @group thread.synchronization.mutex
+ * @group thread
  */
 void x_thread_mutex_lock(XMutex* m);
 
 /**
  * @brief Unlock a mutex.
  * @param m Mutex handle.
- * @group thread.synchronization.mutex
+ * @group thread
  */
 void x_thread_mutex_unlock(XMutex* m);
 
 /**
  * @brief Destroy a mutex and release its resources.
  * @param m Mutex handle.
- * @group thread.synchronization.mutex
+ * @group thread
  */
 void x_thread_mutex_destroy(XMutex* m);
 
@@ -122,7 +122,7 @@ void x_thread_mutex_destroy(XMutex* m);
  * @brief Create a condition variable.
  * @param cv Output pointer that receives the created condition variable handle.
  * @return 0 on success, non-zero on failure.
- * @group thread.synchronization.condition_variable
+ * @group thread
  */
 int32_t x_thread_condvar_init(XCondVar** cv);
 
@@ -130,41 +130,41 @@ int32_t x_thread_condvar_init(XCondVar** cv);
  * @brief Wait on a condition variable.
  * @param cv Condition variable handle.
  * @param m Mutex that will be atomically released while waiting and re-acquired before returning.
- * @group thread.synchronization.condition_variable
+ * @group thread
  */
 void x_thread_condvar_wait(XCondVar* cv, XMutex* m);
 
 /**
  * @brief Wake one thread waiting on a condition variable.
  * @param cv Condition variable handle.
- * @group thread.synchronization.condition_variable
+ * @group thread
  */
 void x_thread_condvar_signal(XCondVar* cv);
 
 /**
  * @brief Wake all threads waiting on a condition variable.
  * @param cv Condition variable handle.
- * @group thread.synchronization.condition_variable
+ * @group thread
  */
 void x_thread_condvar_broadcast(XCondVar* cv);
 
 /**
  * @brief Destroy a condition variable and release its resources.
  * @param cv Condition variable handle.
- * @group thread.synchronization.condition_variable
+ * @group thread
  */
 void x_thread_condvar_destroy(XCondVar* cv);
 
 /**
  * @brief Sleep the current thread for at least the given number of milliseconds.
  * @param ms Duration in milliseconds.
- * @group thread.scheduling
+ * @group thread
  */
 void x_thread_sleep_ms(int ms);
 
 /**
  * @brief Yield execution to allow other threads to run.
- * @group thread.scheduling
+ * @group thread
  */
 void x_thread_yield(void);
 
@@ -172,7 +172,7 @@ void x_thread_yield(void);
  * @brief Create a thread pool with a fixed number of worker threads.
  * @param num_threads Number of worker threads to start.
  * @return Thread pool handle, or NULL on failure.
- * @group thread.pool
+ * @group thread
  */
 XThreadPool* x_threadpool_create(int num_threads);
 
@@ -182,14 +182,14 @@ XThreadPool* x_threadpool_create(int num_threads);
  * @param fn Task function to execute.
  * @param arg User argument passed to fn.
  * @return 0 on success, non-zero on failure.
- * @group thread.pool
+ * @group thread
  */
 int32_t x_threadpool_enqueue(XThreadPool* pool, XThreadTask fn, void* arg);
 
 /**
  * @brief Destroy a thread pool and release its resources.
  * @param pool Thread pool handle.
- * @group thread.pool
+ * @group thread
  */
 void x_threadpool_destroy(XThreadPool* pool);
 

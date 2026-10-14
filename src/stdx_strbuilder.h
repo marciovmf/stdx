@@ -45,7 +45,7 @@ extern "C" {
 #endif
 
   /**
-   * @group strbuilder.lifecycle
+   * @group strbuilder
    */
   typedef struct XStrBuilder
   {
@@ -55,7 +55,7 @@ extern "C" {
   } XStrBuilder;
 
   /**
-   * @group strbuilder.wchar
+   * @group strbuilder
    */
   typedef struct XWStrBuilder
   {
@@ -64,7 +64,7 @@ extern "C" {
     size_t length;
   } XWStrBuilder;
 /**
- * @group strbuilder.append
+ * @group strbuilder
  */
 
 #define x_strbuilder_append_cstr(sb, str) x_strbuilder_append((sb), (str))
@@ -73,7 +73,7 @@ extern "C" {
    * @brief Creates a XStrBuilder
    * @param (none)
    * @return pointer to the XStrBuilder or NULL if creation fails
-   * @group strbuilder.lifecycle
+   * @group strbuilder
    */
   XStrBuilder*  x_strbuilder_create();
 
@@ -81,7 +81,7 @@ extern "C" {
    * @brief Appends a C-string to the builder
    * @param sb Destination builder
    *  @param str Source null-terminated string (NULL is ignored)
-   * @group strbuilder.append
+   * @group strbuilder
    */
   void   x_strbuilder_append(XStrBuilder *sb, const char *str);
 
@@ -89,7 +89,7 @@ extern "C" {
    * @brief Appends one character
    * @param sb Destination builder
    * @param c Character to append
-   * @group strbuilder.append
+   * @group strbuilder
    */
   void   x_strbuilder_append_char(XStrBuilder* sb, char c);
 
@@ -97,7 +97,7 @@ extern "C" {
    * @brief Appends formatted text (printf-style)
    * @param sb Destination builder
    * @param format Format string (printf-style)
-   * @group strbuilder.append
+   * @group strbuilder
    */
   void   x_strbuilder_append_format(XStrBuilder *sb, const char *format, ...);
 
@@ -106,7 +106,7 @@ extern "C" {
    * @param sb Destination builder
    * @param start Pointer to first byte
    * @param length Number of bytes to copy
-   * @group strbuilder.append
+   * @group strbuilder
    */
   void   x_strbuilder_append_substring(XStrBuilder *sb, const char *start, size_t length);
 
@@ -114,21 +114,21 @@ extern "C" {
    * @brief Returns internal buffer pointer
    * @param sb Builder to query
    * @return Pointer to internal NUL-terminated buffer (invalidated by later appends)
-   * @group strbuilder.access
+   * @group strbuilder
    */
   char*  x_strbuilder_to_string(const XStrBuilder *sb);
 
   /**
    * @brief Destroys the builder and frees memory
    * @param sb Builder to destroy (may be NULL)
-   * @group strbuilder.lifecycle
+   * @group strbuilder
    */
   void   x_strbuilder_destroy(XStrBuilder *sb);
 
   /**
    * @brief Clears the builder content
    * @param sb Builder to clear
-   * @group strbuilder.lifecycle
+   * @group strbuilder
    */
   void   x_strbuilder_clear(XStrBuilder *sb);
 
@@ -136,7 +136,7 @@ extern "C" {
    * @brief Returns current length in bytes
    * @param sb Builder to query
    * @return Length in bytes (excluding the NUL)
-   * @group strbuilder.access
+   * @group strbuilder
    */
   size_t x_strbuilder_length(XStrBuilder *sb);
 
@@ -146,7 +146,7 @@ extern "C" {
    * @param utf8 Source UTF-8 string
    * @param start_cp Start code-point index
    * @param len_cp Number of code points to append
-   * @group strbuilder.utf8
+   * @group strbuilder
    */
   void   x_strbuilder_append_utf8_substring(XStrBuilder* sb, const char* utf8, size_t start_cp, size_t len_cp); // UTF-8-aware append
   
@@ -154,7 +154,7 @@ extern "C" {
    * @brief Counts UTF-8 code points contained in the builder
    * @param sb Builder to query
    * @return Number of Unicode code points
-   * @group strbuilder.utf8
+   * @group strbuilder
    */
   size_t x_strbuilder_utf8_charlen(const XStrBuilder* sb); // UTF-8 aware length
 
@@ -162,7 +162,7 @@ extern "C" {
    * @brief Creates a wide-character string builder
    * param (none)
    * @return Pointer to builder or NULL on failure
-   * @group strbuilder.wchar
+   * @group strbuilder
    */
   XWStrBuilder* x_wstrbuilder_create();
 
@@ -170,7 +170,7 @@ extern "C" {
    * @brief Appends a wide C-string
    * @param sb Destination builder
    * @param str Source wide string (NULL is ignored)
-   * @group strbuilder.wchar
+   * @group strbuilder
    */
   void   x_wstrbuilder_append(XWStrBuilder* sb, const wchar_t* str);
 
@@ -178,7 +178,7 @@ extern "C" {
    * @brief Appends one wide character
    * @param sb Destination builder
    * @param c Character to append
-   * @group strbuilder.wchar
+   * @group strbuilder
    */
   void   x_wstrbuilder_append_char(XWStrBuilder* sb, wchar_t c);
 
@@ -186,21 +186,21 @@ extern "C" {
    * @brief Appends formatted wide text (printf-style)
    * @param sb Destination builder
    * @param format Wide format string
-   * @group strbuilder.wchar
+   * @group strbuilder
    */
   void   x_wstrbuilder_append_format(XWStrBuilder* sb, const wchar_t* format, ...);
 
   /**
    * @brief Clears the wide builder content
    * @param sb Builder to clear
-   * @group strbuilder.wchar
+   * @group strbuilder
    */
   void   x_wstrbuilder_clear(XWStrBuilder* sb);
 
   /**
    * @brief Destroys the wide builder and frees memory
    * @param sb Builder to destroy (may be NULL)
-   * @group strbuilder.wchar
+   * @group strbuilder
    */
   void   x_wstrbuilder_destroy(XWStrBuilder* sb);
 
@@ -208,7 +208,7 @@ extern "C" {
    * @brief Returns internal wide buffer pointer
    *  param sb Builder to query
    *  return Pointer to internal NUL-terminated wide buffer (invalidated by later appends)
-   * @group strbuilder.wchar
+   * @group strbuilder
    */
   wchar_t* x_wstrbuilder_to_string(const XWStrBuilder* sb);
 
@@ -216,7 +216,7 @@ extern "C" {
    * @brief Returns current length in wide characters
    *  param sb Builder to query
    *  return Number of wchar_t (excluding the NUL)
-   * @group strbuilder.wchar
+   * @group strbuilder
    */
   size_t x_wstrbuilder_length(const XWStrBuilder* sb);
 

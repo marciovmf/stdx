@@ -38,88 +38,88 @@ extern "C" {
 #endif
 
   /**
-   * @group io.files
+   * @group io
    */
   typedef struct XFile_t XFile;
 
   /**
    * @brief Open a file with mode ("r", "rb", "w", etc.).
-   * @group io.files
+   * @group io
    */
   X_IO_API XFile *x_io_open(const char *filename, const char *mode);           // Open a file with mode ("r", "rb", "w", etc.)
   /**
    * @brief Close a file and free internal memory.
-   * @group io.files
+   * @group io
    */
   X_IO_API void x_io_close(XFile *file);                                       // Close a file and free internal memory
   /**
    * @brief Read up to `size` bytes into buffer. Returns bytes read.
-   * @group io.binary
+   * @group io
    */
   X_IO_API size_t x_io_read(XFile *file, void *buffer, size_t size);           // Read up to `size` bytes into buffer. Returns bytes read.
   /**
    * @brief Read the entire file into a buffer. Returns buffer (null-terminated, but not for text safety). Caller must free.
-   * @group io.binary
+   * @group io
    */
   X_IO_API char *x_io_read_all(XFile *file, size_t *out_size);                 // Read the entire file into a buffer. Returns buffer (null-terminated, but not for text safety). Caller must free.
   /**
    * @brief Convenience: open, read, close. Returns null-terminated text.
-   * @group io.text
+   * @group io
    */
   X_IO_API char *x_io_read_text(const char *filename, size_t* out_size);       // Convenience: open, read, close. Returns null-terminated text.
   /**
    * @brief Write `size` bytes to file. Returns number of bytes written.
-   * @group io.binary
+   * @group io
    */
   X_IO_API size_t x_io_write(XFile *file, const void *data, size_t size);      // Write `size` bytes to file. Returns number of bytes written.
   /**
    * @brief Write null-terminated text to a file (overwrite).
-   * @group io.text
+   * @group io
    */
   X_IO_API bool x_io_write_text(const char *filename, const char *text);       // Write null-terminated text to a file (overwrite).
   /**
    * @brief Append null-terminated text to file.
-   * @group io.text
+   * @group io
    */
   X_IO_API bool x_io_append_text(const char *filename, const char *text);      // Append null-terminated text to file.
   /**
    * @brief Seek within file.
-   * @group io.positioning
+   * @group io
    */
   X_IO_API bool x_io_seek(XFile *file, long offset, int32_t origin);           // Seek within file.
   /**
    * @brief Return current file position.
-   * @group io.positioning
+   * @group io
    */
   X_IO_API long x_io_tell(XFile *file);                                        // Return current file position.
   /**
    * @brief Rewind file to beginning.
-   * @group io.positioning
+   * @group io
    */
   X_IO_API bool x_io_rewind(XFile *file);                                      // Rewind file to beginning.
   /**
    * @brief Flush file buffer.
-   * @group io.status
+   * @group io
    */
   X_IO_API bool x_io_flush(XFile *file);                                       // Flush file buffer.
   /**
    * @brief Check end-of-file.
-   * @group io.status
+   * @group io
    */
   X_IO_API bool x_io_eof(XFile *file);                                         // Check end-of-file.
   /**
    * @brief Check for file error.
-   * @group io.status
+   * @group io
    */
   X_IO_API bool x_io_error(XFile *file);                                       // Check for file error.
   /**
    * @brief Clear file error and EOF flags.
-   * @group io.status
+   * @group io
    */
   X_IO_API void x_io_clearerr(XFile *file);                                    // Clear file error and EOF flags.
   /**
    * @brief Return underlying file descriptor.
-   * @group io.status
+   * @group io
    */
   X_IO_API int32_t x_io_fileno(XFile *file);                                   // Return underlying file descriptor.
 
