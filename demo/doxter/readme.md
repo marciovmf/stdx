@@ -61,16 +61,20 @@ XEntity x_ecs_entity_create(void);
 Groups are optional and can be nested using dotted paths, but flat groups are
 recommended for most projects (one group per module is often enough).
 
-The **main `index.html`** holds the complete function reference in one document,
-with a sidebar tree of groups and function names linked to in-page anchors.
-Function-like macros with an explicit `@group` are included in the API tree.
-Macros that act as constants or configuration switches, structs, enums and typedefs
-are kept in the **file-specific pages**, not the main API tree.
+The **`index.html`** is a navigation-only landing page, with a sidebar tree of
+groups and function names. It does not duplicate symbol documentation. Every
+function links directly to its definition on its source file's HTML page, for
+example `ldk_mesh.html#ldk_mesh_create`. The same API tree is available from
+those file pages.
 
-Documented functions with no group appear in an **Ungrouped** section. Undocumented,
-ungrouped declarations remain available in their file pages.
-Each source file also gets an HTML page with all extracted symbols, providing the
-full per-file reference. Groups no longer create separate HTML pages.
+Function-like macros with an explicit `@group` are included in the API tree.
+Macros that act as constants or configuration switches, structs, enums and
+typedefs appear in the complete reference for their source file instead.
+Documented functions without a group appear under **Ungrouped**.
+
+Each group is a collapsible navigation branch; groups may contain symbols from
+multiple headers. Groups do not generate pages or combine documentation from
+separate files. Each source file owns its documentation and anchor targets.
 
 
 ## Global Comments

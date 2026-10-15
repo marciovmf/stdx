@@ -469,13 +469,13 @@ dt code {
   font-display: swap;
 }
 
-/* Conceptual navigation and group pages */
+/* API navigation tree */
 .sidebar .nav-extras { margin-top: 1.25rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
 .group-tree, .group-list, .global-symbol-index { list-style: none; padding: 0; }
 .group-tree li, .group-list li, .global-symbol-index li { margin: 0.15rem 0; }
 .group-tree .group-children { list-style: none; padding-left: 1.15rem; margin: 0; }
 
-/* Nested groups use native disclosure controls; their names remain regular links. */
+/* Nested groups use native disclosure controls. */
 .group-tree details.group-branch { margin: 0; }
 .group-tree details.group-branch > summary {
   display: flex;
@@ -508,7 +508,7 @@ dt code {
 .source-reference { font-size: 0.8rem; color: var(--muted); }
 .source-reference a { color: var(--muted); }
 
-/* The API index keeps categories and their functions in one navigation tree. */
+/* Categories only organize navigation; symbol pages belong to source files. */
 .sidebar .group-tree { margin-top: 0.5rem; }
 .sidebar .group-tree li { margin: 0; }
 .sidebar .group-tree details { margin: 0; }

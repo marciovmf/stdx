@@ -10,7 +10,9 @@
   <div class="layout">
     <nav class="sidebar">
       <h1>API Reference</h1>
-      <p class="sidebar-back"><a href="index.html">API Reference</a></p>
+      <p class="sidebar-back"><a href="index.html">Home</a></p>
+      <ul class="group-tree">{{GROUP_TREE}}</ul>
+      <details class="sidebar-files"><summary>Files</summary><ul>{{MODULE_LIST}}</ul></details>
 
       <div class="file-name">
         <a href="index.html">home</a>
@@ -18,47 +20,42 @@
         <a href="#{{FILE_NAME}}">{{FILE_NAME}}</a>
       </div>
 
-      <details open>
+      <h2>In this file</h2>
+      <details>
         <summary>Functions</summary>
         <ul>
           {{INDEX_FUNCTIONS}}
         </ul>
       </details>
 
-      <details open>
+      <details>
         <summary>Macros</summary>
         <ul>
           {{INDEX_MACROS}}
         </ul>
       </details>
 
-      <details open>
+      <details>
         <summary>Structs</summary>
         <ul>
           {{INDEX_STRUCTS}}
         </ul>
       </details>
 
-      <details open>
+      <details>
         <summary>Enums</summary>
         <ul>
           {{INDEX_ENUMS}}
         </ul>
       </details>
 
-      <details open>
+      <details>
         <summary>Typedefs</summary>
         <ul>
           {{INDEX_TYPEDEFS}}
         </ul>
       </details>
 
-      <details>
-        <summary>Files</summary>
-        <ul>
-          {{MODULE_LIST}}
-        </ul>
-      </details>
     </nav>
 
     <main class="content" id="{{FILE_NAME}}">
